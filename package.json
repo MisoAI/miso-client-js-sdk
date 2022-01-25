@@ -1,0 +1,31 @@
+{
+  "name": "miso-client-js-sdk",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "clean": "rimraf lib dist es coverage types",
+    "build": "rollup -c",
+    "dev": "rollup -w -c rollup.config.dev.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/askmiso/integration/miso-client-js-sdk.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/askmiso/integration/miso-client-js-sdk/issues"
+  },
+  "homepage": "https://gitlab.com/askmiso/integration/miso-client-js-sdk#readme",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "eslint": "^8.6.0",
+    "rollup": "^2.63.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-serve": "^1.1.0",
+    "rollup-plugin-terser": "^7.0.2"
+  }
+}
