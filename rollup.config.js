@@ -1,5 +1,6 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
+import filesize from 'rollup-plugin-filesize';
 
 export default [
   // UMD
@@ -20,6 +21,10 @@ export default [
           unsafe_comps: true,
           warnings: false
         },
+      }),
+      filesize({
+        showMinifiedSize: false,
+        showGzippedSize: true,
       }),
     ],
   },
