@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rimraf lib dist es coverage types",
     "build": "rollup -c",
-    "dev": "rollup -w -c rollup.config.dev.js"
+    "dev": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'"
   },
   "repository": {
     "type": "git",
@@ -21,8 +21,14 @@
   },
   "homepage": "https://gitlab.com/askmiso/integration/miso-client-js-sdk#readme",
   "devDependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.1",
     "@rollup/plugin-node-resolve": "^13.1.3",
+    "concurrently": "^7.0.0",
     "eslint": "^8.6.0",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "nodemon": "^2.0.15",
     "rollup": "^2.63.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",

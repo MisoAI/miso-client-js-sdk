@@ -1,0 +1,166 @@
+<html>
+
+<head>
+  <title>Miso Client SDK Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="./styles.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script async src="../dist/miso.js"></script>
+  <script src="./demo.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand">Demo</span>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            Dojo Env
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
+            <li><a class="dropdown-item" onclick="demo.goEnv('mock');">Mock</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="margin-top: 1.5rem; margin-bottom: 1.5rem">
+    <!-- Install -->
+    <div class="row">
+      <div class="col">
+        <h3>Install</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          Install Miso client JS SDK on your website.
+        </p>
+      </div>
+      <div class="col">
+        <div class="codebox">
+          <code>&lt;script src="https://some.cdn.io/miso.js"&gt&lt;/script&gt;</code>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          If you had the SDK script loaded asynchronously, use miso functions in the callback.
+        </p>
+      </div>
+      <div class="col">
+        <div class="codebox">
+          <code>&lt;script async src="https://some.cdn.io/miso.js"&gt&lt;/script&gt;</code>
+        </div>
+        <div class="codebox">
+          <code>var miso = window.miso || (window.miso = []);
+miso.push(function() {
+  // miso functions are available here
+});</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config -->
+    <div class="row">
+      <div class="col">
+        <h3>Config</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          Set API key for any future API calls.
+        </p>
+      </div>
+      <div class="col">
+        <div class="codebox">
+          <code>miso.config({
+  api_key: '...'
+});</code>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>
+          Configured <code>user_id</code>, <code>anonymous_id</code>, and <code>user_hash</code> will be passed into API payloads as well.
+        </p>
+        <ul>
+          <li>However they can be overriden per API call.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="codebox">
+          <code>miso.config({
+  anonymous_id: 'miso-client-sdk-demo-anonymous',
+  user_id: 'miso-client-sdk-demo-user',
+  user_hash: '...'
+});</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interaction: home_page_view -->
+    <div class="row">
+      <div class="col">
+        <h3>Interaction</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <p>
+          Upload interaction: <code>home_page_view</code>.
+        </p>
+        <ul>
+          <li>Some context info are automatically read and passed into API payloads.</li>
+          <li><a href="./index.html">Link to this page</a></li>
+          <li><a href="./index.html?utm_source=google&utm_medium=cpc&utm_campaign=my_ad_name">Link to this page w/ UTM params</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="codebox">
+          <code>miso.api.interactions.upload({
+  type: 'home_page_view'
+});</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="row">
+      <div class="col">
+        <h3>Recommendation</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <p>
+          Get data from <code>recommendation/user_to_products</code> API.
+        </p>
+        <div id="products"></div>
+      </div>
+      <div class="col">
+        <div class="codebox">
+          <code>miso.api.recommendation.user_to_products({
+  fl: ['*']
+}).then(function(data) {
+  // ...
+});</code>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

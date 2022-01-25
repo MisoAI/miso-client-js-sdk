@@ -29,9 +29,9 @@ export default class App {
   // TODO: mock
 
   _normalizeConfigValues(values) {
-    const {api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id} = values;
+    const {api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock} = values;
     // TODO
-    return trimObj({api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id});
+    return trimObj({api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock});
   }
 
 }

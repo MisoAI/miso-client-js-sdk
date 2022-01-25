@@ -60,7 +60,11 @@ export default class Api {
 
   _apiUrl(apiName) {
     // TODO: allow overloading api_key here
-    const {api_key, api_base_url} = this._app._config.effectively;
+    let {api_key, api_base_url, mock} = this._app._config.effectively;
+    // TODO: refine this
+    if (mock) {
+      api_base_url = API.MOCK_SERVER_URL;
+    }
     return `${api_base_url}/${apiName}?api_key=${window.encodeURIComponent(api_key)}`;
   }
 
