@@ -2,12 +2,11 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 
-// UMD (dev)
 export default {
   input: 'src/index.js',
   output: {
     file: 'dist/miso.js',
-    format: 'umd',
+    format: 'cjs',
     name: 'Miso',
     indent: true
   },
