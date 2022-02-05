@@ -1,7 +1,7 @@
 import { obj$ } from './util';
 import Config from './util/config';
 import Api from './api';
-import { API }  from './constants';
+import { API, BUILD }  from './constants';
 
 const DEFAULT_CONFIG = new Config(undefined, {
   api_base_url: API.BASE_URL,
@@ -16,7 +16,7 @@ export default class Context {
         return c.values;
       }
     });
-    this.version = __version__;
+    this.version = BUILD.version;
     this.api = new Api(this);
   }
 

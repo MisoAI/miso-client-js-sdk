@@ -15,14 +15,17 @@ export default {
   watch: true,
   plugins: [
     replace({
-      __version__: JSON.stringify(version)
+      preventAssignment: true,
+      values: {
+        __version__: JSON.stringify(version)
+      }
     }),
-  nodeResolve(),
+    nodeResolve(),
     serve({
       port: 10101,
     }),
     livereload({
-      delay: 500, 
+      delay: 500,
       watch: 'dist',
     }),
   ],

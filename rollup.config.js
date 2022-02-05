@@ -16,7 +16,10 @@ export default [
     },
     plugins: [
       replace({
-        __version__: JSON.stringify(version)
+        preventAssignment: true,
+        values: {
+          __version__: JSON.stringify(version)
+        }
       }),
       nodeResolve(),
       babel({
