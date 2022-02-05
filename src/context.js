@@ -1,4 +1,4 @@
-import { trimObj } from './util';
+import { obj$ } from './util';
 import Config from './util/config';
 import Api from './api';
 import { API }  from './constants';
@@ -16,8 +16,8 @@ export default class Context {
         return c.values;
       }
     });
-    this.api = new Api(this);
     this.version = __version__;
+    this.api = new Api(this);
   }
 
   config(values) {
@@ -32,7 +32,7 @@ export default class Context {
   _normalizeConfigValues(values) {
     const {api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock} = values;
     // TODO
-    return trimObj({api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock});
+    return obj$({api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock}).trim().value;
   }
 
 }

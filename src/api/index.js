@@ -1,10 +1,10 @@
-import { trimObj, nullifyIfEmptyObj, parseSearchToObject } from './util';
-import { API }  from './constants';
+import { obj$, parseSearchToObject } from '../util';
+import { API }  from '../constants';
 
 export default class Api {
 
-  constructor(app) {
-    this._app = app;
+  constructor(context) {
+    this._context = context;
   }
 
   // API //
@@ -20,8 +20,8 @@ export default class Api {
     if (!Array.isArray(data)) {
       data = [data];
     }
-    const {anonymous_id, user_id, miso_id} = this._app._config.effectively;
-    const baseObj = trimObj({anonymous_id, user_id, miso_id, context: this._getContext()});
+    const {anonymous_id, user_id, miso_id} = this._context._config.effectively;
+    const baseObj = obj$({anonymous_id, user_id, miso_id, context: this._getContext()}).value;
     data = data.map((obj) => Object.assign({}, baseObj, obj));
     return {data};
   }
@@ -32,7 +32,7 @@ export default class Api {
   }
 
   _normalizeRecommendationUserToProductsPayload(data) {
-    const {anonymous_id, user_id, user_hash} = this._app._config.effectively;
+    const {anonymous_id, user_id, user_hash} = this._context._config.effectively;
     const profile = user_id ? {user_id, user_hash} : {anonymous_id, user_hash};
     data = Object.assign(profile, data);
     return data;
@@ -60,7 +60,7 @@ export default class Api {
 
   _apiUrl(apiName) {
     // TODO: allow overloading api_key here
-    let {api_key, api_base_url, mock} = this._app._config.effectively;
+    let {api_key, api_base_url, mock} = this._context._config.effectively;
     // TODO: refine this
     if (mock) {
       api_base_url = API.MOCK_SERVER_URL;
@@ -69,29 +69,29 @@ export default class Api {
   }
 
   _getContext() {
-    return trimObj({
+    return obj$({
       page: this._readPageInfo(),
       campaign: this._readUtm()
-    });
+    }).trim().value;
   }
 
   _readPageInfo() {
-    return trimObj({
+    return obj$({
       url: window.location.href,
       referrer: document.referrer,
       title: document.title,
-    });
+    }).trim().value;
   }
 
   _readUtm() {
     const {utm_source, utm_medium, utm_campaign, utm_term, utm_content} = parseSearchToObject(window.location.search);
-    return nullifyIfEmptyObj(trimObj({
+    return obj$({
       source: utm_source,
       medium: utm_medium,
       name: utm_campaign,
       term: utm_term,
       content: utm_content
-    }));
+    }).trim().emptyToUndefined().value;
   }
 
 }

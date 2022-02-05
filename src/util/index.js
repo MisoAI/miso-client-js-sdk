@@ -1,15 +1,4 @@
-export function trimObj(obj) {
-  return Object.keys(obj).reduce((acc, key) => {
-    if (obj[key] !== undefined) {
-      acc[key] = obj[key];
-    }
-    return acc;
-  }, {});
-}
-
-export function nullifyIfEmptyObj(obj) {
-  return Object.keys(obj).length === 0 ? undefined : obj;
-}
+export { default as obj$ } from './objq';
 
 // TODO: unit test
 export function parseSearchToObject(str) {
