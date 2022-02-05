@@ -1,50 +1,54 @@
-import App from './app';
+import Context from './context';
 
 (function(){
-  // initialize mist object is not there yet
+  // initialize miso object if absent
   const miso = window.miso || (window.miso = []);
 
-  // check for existing miso instance
-  if (miso._app) {
+  // idempotency
+  if (miso.version) {
     return;
   }
 
-  // default app
-  const app = new App();
+  // default context
+  const context = new Context();
 
   // inject features
-  inject(miso, app);
+  inject(miso, context);
 
   // process existing miso commands
   for (const fn of miso) {
-    execute(app, fn);
+    execute(context, fn);
   }
 })();
 
-function inject(miso, app) {
-  miso._app = app;
-
+function inject(miso, context) {
+  // TODO: extract utils
   Object.defineProperties(miso, {
     // overrides push function so future commands are executed immediately
     push: {
-      value: execute.bind(undefined, app),
+      value: execute.bind(undefined, context),
     },
     config: {
       get: function() {
-        return app.config.bind(app);
+        return context.config.bind(context);
       },
     },
     api: {
       get: function() {
-        return app.api;
+        return context.api;
+      },
+    },
+    version: {
+      get: function() {
+        return context.version;
       },
     },
   });
 }
 
-function execute(app, fn) {
+function execute(context, fn) {
   try {
-    fn();
+    fn(context);
   } catch(e) {
     // TODO
     console.error(e);

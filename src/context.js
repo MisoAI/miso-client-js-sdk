@@ -7,7 +7,7 @@ const DEFAULT_CONFIG = new Config(undefined, {
   api_base_url: API.BASE_URL,
 });
 
-export default class App {
+export default class Context {
   
   constructor() {
     const c = this._config = new Config(DEFAULT_CONFIG);
@@ -17,6 +17,7 @@ export default class App {
       }
     });
     this.api = new Api(this);
+    this.version = __version__;
   }
 
   config(values) {

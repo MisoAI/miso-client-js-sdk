@@ -14,7 +14,9 @@ router
   })
   .post('/api/recommendation/user_to_products', (ctx) => {
     ctx.body = {
-      data: []
+      data: {
+        products: []
+      }
     };
   });
 

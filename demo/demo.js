@@ -60,6 +60,8 @@
 
   var miso = window.miso || (window.miso = []);
   miso.push(function () {
+    document.title += document.querySelector('#version').innerHTML = ` (v${miso.version})`;
+
     miso.config(config);
 
     miso.api.interactionsUpload({type: 'home_page_view'})

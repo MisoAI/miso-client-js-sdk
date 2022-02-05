@@ -1,6 +1,8 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import replace from '@rollup/plugin-replace';
+import { version } from './package.json';
 
 export default {
   input: 'src/index.js',
@@ -12,7 +14,10 @@ export default {
   },
   watch: true,
   plugins: [
-    nodeResolve(),
+    replace({
+      __version__: JSON.stringify(version)
+    }),
+  nodeResolve(),
     serve({
       port: 10101,
     }),
