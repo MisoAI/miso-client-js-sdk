@@ -64,11 +64,11 @@
 
     miso.config(config);
 
-    miso.api.interactionsUpload({type: 'home_page_view'})
+    miso.api.interactions.upload({type: 'home_page_view'})
       .then(console.log.bind(console))
       .catch(console.error.bind(console));
     
-    miso.api.recommendationUserToProducts({fl: ['*']})
+    miso.api.recommendation.user_to_products({fl: ['*']})
       .then(demo.renderProducts)
       .catch(console.error.bind(console));
   });
