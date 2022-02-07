@@ -30,7 +30,7 @@ function inject(miso, context) {
     },
     config: {
       get: function() {
-        return context.config.bind(context);
+        return context.config;
       },
     },
     api: {

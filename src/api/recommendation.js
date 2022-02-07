@@ -1,18 +1,21 @@
-export default class Recommendation {
+import { trimObj } from "../util/objects";
+import ApiBase from "./base";
+
+export default class Recommendation extends ApiBase {
 
   constructor(api) {
-    this._api = api;
+    super(api);
   }
 
   async user_to_products(data) {
-    const url = this._api.helpers.url('recommendation/user_to_products');
-    return this._api.helpers.fetch(url, this._normalizeUserToProductsPayload(data));
+    const url = this.helpers.url('recommendation/user_to_products');
+    return this.helpers.fetch(url, this._normalizeUserToProductsPayload(data));
   }
 
   _normalizeUserToProductsPayload(data) {
     // TODO: extract profile parts
-    const {anonymous_id, user_id, user_hash} = this._api._context._config.effectively;
-    const profile = user_id ? {user_id, user_hash} : {anonymous_id, user_hash};
+    const {anonymous_id, user_id, user_hash} = this.config.values;
+    const profile = trimObj(user_id ? {user_id, user_hash} : {anonymous_id, user_hash});
     data = Object.assign(profile, data);
     return data;
   }

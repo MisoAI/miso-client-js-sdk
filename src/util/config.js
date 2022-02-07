@@ -1,28 +1,31 @@
-export default class Config {
+import { trimObj } from "./objects";
 
-  constructor(parent, values) {
-    Object.defineProperty(this, '_parent', {
-      value: parent
-    });
-    Object.defineProperty(this, 'effectively', {
-      value: cascade(this, parent)
-    });
-    Object.assign(this, values);
+export default function createConfig(normalize) {
+  if (normalize !== undefined && typeof normalize !== 'function') {
+    throw new Error('normalize must be a function or undefined.');
   }
-
-  get values() {
-    return Object.assign({}, this);
-  }
-
-}
-
-function cascade(a, b) {
-  if (typeof a !== 'object' || (b && typeof b !== 'object')) {
-    throw new Error('Expect both arguments to be a object');
-  }
-  return new Proxy({}, {
-    get: function(obj, prop) {
-      return a[prop] !== undefined ? a[prop] : b && b[prop];
+  normalize = normalize || (v => v);
+  let _values = {};
+  const config = (values) => {
+    trimObj(Object.assign(_values, normalize(values)));
+  };
+  const readonly = {};
+  Object.defineProperty(readonly, 'values', {
+    get: () => config.values
+  });
+  Object.defineProperties(config, {
+    values: {
+      get: () => Object.assign({}, _values)
+    },
+    clear: {
+      get: () => {
+        _values = {};
+        return config;
+      }
+    },
+    readonly: {
+      value: readonly
     },
   });
+  return config;
 }

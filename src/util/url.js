@@ -1,4 +1,4 @@
-import obj$ from './objq';
+import { trimObj, emptyObjectToUndefined } from './objects';
 
 // TODO: unit test
 export function parseSearchString(str) {
@@ -16,20 +16,21 @@ export function parseSearchString(str) {
 }
 
 export function readPageInfo() {
-  return obj$({
+  return trimObj({
     url: window.location.href,
     referrer: document.referrer,
     title: document.title,
-  }).trim().value;
+  });
 }
 
 export function readUtm() {
   const {utm_source, utm_medium, utm_campaign, utm_term, utm_content} = parseSearchString(window.location.search);
-  return obj$({
+  let utm = {
     source: utm_source,
     medium: utm_medium,
     name: utm_campaign,
     term: utm_term,
     content: utm_content,
-  }).trim().emptyToUndefined().value;
+  };
+  utm = emptyObjectToUndefined(trimObj(utm));
 }

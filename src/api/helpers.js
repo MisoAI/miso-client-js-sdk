@@ -1,3 +1,4 @@
+import { trimObj } from '../util/objects';
 import { API }  from '../constants';
 import { readPageInfo, readUtm } from '../util/url';
 
@@ -29,7 +30,7 @@ export default class Helpers {
 
   url(apiName) {
     // TODO: allow overloading api_key here
-    let {api_key, api_base_url, mock} = this._context._config.effectively;
+    let {api_key, api_base_url = API.BASE_URL, mock} = this._context.config.values;
     // TODO: refine this
     if (mock) {
       api_base_url = API.MOCK_SERVER_URL;
@@ -38,10 +39,10 @@ export default class Helpers {
   }
 
   buildPayloadContext() {
-    return obj$({
+    return trimObj({
       page: readPageInfo(),
       campaign: readUtm()
-    }).trim().value;
+    });
   }
 
 }

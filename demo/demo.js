@@ -1,3 +1,10 @@
+// utilities //
+(function() {
+  window.onready = function(fn) {
+    document.readyState !== 'loading' ? fn() : window.addEventListener('DOMContentLoaded', fn);
+  };
+})();
+
 // demo site functions //
 (function() {
 
@@ -39,7 +46,7 @@
     }
   };
 
-  window.addEventListener('DOMContentLoaded', function(event) {
+  window.onready(function() {
     document.body.classList.add(demo.env);
     document.querySelector('#navbarDarkDropdownMenuLink').innerHTML = envs[demo.env];
   });
@@ -60,7 +67,11 @@
 
   var miso = window.miso || (window.miso = []);
   miso.push(function () {
-    document.title += document.querySelector('#version').innerHTML = ` (v${miso.version})`;
+    var versionPrefix = ` (v${miso.version})`;
+    document.title += versionPrefix;
+    window.onready(function() {
+      document.querySelector('#version').innerHTML = versionPrefix;
+    });
 
     miso.config(config);
 
