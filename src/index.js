@@ -1,3 +1,4 @@
+import { delegateGetters } from './util/objects';
 import Context from './context';
 
 (function(){
@@ -22,28 +23,13 @@ import Context from './context';
 })();
 
 function inject(miso, context) {
-  // TODO: extract utils
   Object.defineProperties(miso, {
     // overrides push function so future commands are executed immediately
     push: {
       value: execute.bind(undefined, context),
     },
-    config: {
-      get: function() {
-        return context.config;
-      },
-    },
-    api: {
-      get: function() {
-        return context.api;
-      },
-    },
-    version: {
-      get: function() {
-        return context.version;
-      },
-    },
   });
+  delegateGetters(miso, context, ['version', 'config', 'api']);
 }
 
 function execute(context, fn) {

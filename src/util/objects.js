@@ -19,3 +19,16 @@
 export function emptyObjectToUndefined(obj) {
   return typeof obj === 'object' && Object.keys(obj).length === 0 ? undefined : obj;
 }
+
+/**
+ * Delegate getters from source object to target object.
+ */
+export function delegateGetters(target, source, propNames) {
+  propNames = typeof propNames === 'string' ? [propNames] : propNames;
+  Object.defineProperties(target, propNames.reduce((acc, propName) => {
+    acc[propName] = {
+      get: () => source[propName]
+    };
+    return acc;
+  }, {}));
+}
