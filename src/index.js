@@ -40,3 +40,6 @@ function execute(context, fn) {
     console.error(e);
   }
 }
+
+// this will reassign window.miso to itself by UMD, but it's ok
+export default window.miso;

@@ -10,15 +10,15 @@ export default [
     input: 'src/index.js',
     output: {
       file: 'dist/miso.min.js',
-      format: 'cjs',
-      name: 'Miso',
+      format: 'umd',
+      name: 'miso',
       indent: false
     },
     plugins: [
       replace({
         preventAssignment: true,
         values: {
-          __version__: JSON.stringify(version)
+          __version__: JSON.stringify(version || process.env.GIT_HASH)
         }
       }),
       nodeResolve(),

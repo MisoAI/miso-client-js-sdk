@@ -2,14 +2,13 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import replace from '@rollup/plugin-replace';
-import { version } from './package.json';
 
 export default {
   input: 'src/index.js',
   output: {
     file: 'dist/miso.js',
-    format: 'cjs',
-    name: 'Miso',
+    format: 'umd',
+    name: 'miso',
     indent: true
   },
   watch: true,
@@ -17,7 +16,7 @@ export default {
     replace({
       preventAssignment: true,
       values: {
-        __version__: JSON.stringify(version)
+        __version__: JSON.stringify('dev')
       }
     }),
     nodeResolve(),

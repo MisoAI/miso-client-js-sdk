@@ -1,25 +1,28 @@
 {
   "name": "miso-client-js-sdk",
-  "version": "0.1.0",
-  "description": "",
-  "main": "lib/index.js",
+  "description": "Miso client-side JavaScript SDK",
+  "main": "dist/miso.min.js",
   "files": [
-    "lib"
+    "dist/*"
   ],
   "scripts": {
     "clean": "rimraf lib dist es coverage types",
-    "build": "rollup -c",
+    "test": "echo later",
+    "build": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
     "dev": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/askmiso/integration/miso-client-js-sdk.git"
+    "url": "git+ssh://git@github.com:askmiso/miso-client-js-sdk.git"
   },
+  "contributors": [
+    "simonpai <simon.pai@askmiso.com>"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/askmiso/integration/miso-client-js-sdk/issues"
+    "url": "https://github.com/askmiso/miso-client-js-sdk/issues"
   },
-  "homepage": "https://gitlab.com/askmiso/integration/miso-client-js-sdk#readme",
+  "homepage": "https://github.com/askmiso/miso-client-js-sdk#readme",
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
