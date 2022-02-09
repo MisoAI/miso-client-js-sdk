@@ -1,10 +1,13 @@
 {
-  "name": "miso-client-js-sdk",
+  "name": "@miso.ai/client-js-sdk",
   "description": "Miso client-side JavaScript SDK",
   "main": "dist/miso.min.js",
   "files": [
     "dist/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rimraf lib dist es coverage types",
     "test": "echo later",
@@ -35,7 +38,7 @@
     "eslint": "^8.6.0",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.15", 
     "rollup": "^2.63.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",
