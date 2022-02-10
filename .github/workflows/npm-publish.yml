@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-      - run: npm version ${{github.event.release.tag_name}}
+      - run: git config --global user.name "${{ github.actor }}"
+      - run: git config --global user.email "github-action-${{ github.actor }}@users.noreply.github.com"
+      - run: npm version ${{ github.event.release.tag_name }}
       - run: npm test
       - run: npm run build
 
@@ -32,4 +34,4 @@ jobs:
       - run: npm ci
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
