@@ -1,5 +1,5 @@
 {
-  "name": "@miso.ai/client-js-sdk",
+  "name": "@miso.ai/client-sdk",
   "description": "Miso client-side JavaScript SDK",
   "main": "dist/miso.min.js",
   "files": [
