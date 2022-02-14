@@ -1,24 +1,15 @@
 import Koa from 'koa';
-import Router from '@koa/router';
 import cors from '@koa/cors';
 import bodyParser from'koa-bodyparser';
+import createRouter from './routes/index.mjs';
+import Store from './store/index.mjs';
+import Core from './core.mjs';
+
+const store = new Store();
+const core = new Core(store);
+const router = createRouter(core);
 
 const app = new Koa();
-const router = new Router();
-
-router
-  .post('/api/interactions', (ctx) => {
-    ctx.body = {
-      data: {}
-    };
-  })
-  .post('/api/recommendation/user_to_products', (ctx) => {
-    ctx.body = {
-      data: {
-        products: []
-      }
-    };
-  });
 
 const handleUnrecognizedPath = (ctx) => {
   console.log(`Unrecognized Path: ${ctx.method} ${ctx.url}`);

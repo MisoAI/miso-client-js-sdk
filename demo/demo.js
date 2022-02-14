@@ -33,12 +33,12 @@
   };
 
   function renderProduct(product) {
-    return `<div class="product"><h6>${product.title}</h6><div><img height="200" src="${product.cover_image}"></div><h5>$${product.sale_price}</h5></div>`;
+    return `<div class="product"><h5>${product.title}</h5><div><img height="200" src="${product.cover_image}"></div><h5>$${product.sale_price}</h5></div>`;
   }
 
   demo.renderProducts = function(data) {
     var container = document.querySelector('#products');
-    document.querySelector('#products').innerHTML = data.products.reduce(function(acc, product) {
+    container.innerHTML = data.products.slice(0, 3).reduce(function(acc, product) {
       return acc + renderProduct(product);
     }, '');
     for (var product of data.products) {

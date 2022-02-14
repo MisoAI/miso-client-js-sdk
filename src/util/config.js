@@ -1,4 +1,4 @@
-import { trimObj } from "./objects";
+import { trimObj } from './objects';
 
 export default function createConfig(normalize) {
   if (normalize !== undefined && typeof normalize !== 'function') {

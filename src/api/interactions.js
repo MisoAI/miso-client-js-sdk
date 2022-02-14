@@ -1,5 +1,5 @@
-import { trimObj } from "../util/objects";
-import ApiBase from "./base";
+import { trimObj } from '../util/objects';
+import ApiBase from './base';
 
 export default class Interactions extends ApiBase {
 
