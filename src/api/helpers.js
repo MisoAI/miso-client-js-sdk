@@ -30,9 +30,9 @@ export default class Helpers {
 
   url(apiName) {
     // TODO: allow overloading api_key here
-    let {api_key, api_base_url = API.BASE_URL, mock} = this._context.config.values;
+    let {api_key, api_base_url = API.BASE_URL, env} = this._context.config.values;
     // TODO: refine this
-    if (mock) {
+    if (env === 'mock') {
       api_base_url = API.MOCK_SERVER_URL;
     }
     return `${api_base_url}/${apiName}?api_key=${window.encodeURIComponent(api_key)}`;

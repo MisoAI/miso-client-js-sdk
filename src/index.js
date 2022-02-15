@@ -29,7 +29,7 @@ function inject(miso, context) {
       value: execute.bind(undefined, context),
     },
   });
-  delegateGetters(miso, context, ['version', 'config', 'api']);
+  delegateGetters(miso, context, ['version', 'config', 'user', 'api']);
 }
 
 function execute(context, fn) {

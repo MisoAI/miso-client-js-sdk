@@ -8,15 +8,21 @@ export default class Context {
   constructor() {
     this.version = BUILD.version;
     this.config = createConfig(this._normalizeConfig.bind(this));
+    this.user = createConfig(this._normalizeUser.bind(this));
     this.api = new Api(this);
   }
 
   // TODO: mock
 
-  _normalizeConfig(values) {
-    const {api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock} = values;
+  _normalizeConfig(options) {
+    const {api_key, api_base_url, env} = options;
     // TODO
-    return trimObj({api_key, api_base_url, anonymous_id, user_id, user_hash, miso_id, mock});
+    return trimObj({api_key, api_base_url, env});
+  }
+
+  _normalizeUser(options) {
+    const {anonymous_id, user_id, user_hash} = options;
+    return trimObj({anonymous_id, user_id, user_hash});
   }
 
 }

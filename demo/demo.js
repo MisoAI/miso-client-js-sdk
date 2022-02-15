@@ -72,10 +72,17 @@
     anonymous_id: crypto.randomUUID()
   };
   if (useMockService) {
-    config.mock = true;
+    config.env = 'mock';
   } else {
     config.user_id = 'TacoFranz';
     config.user_hash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
+  }
+  var user = {
+    anonymous_id: crypto.randomUUID()
+  };
+  if (!useMockService) {
+    user.user_id = 'TacoFranz';
+    user.user_hash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
   }
   
   var miso = window.miso || (window.miso = []);
@@ -87,6 +94,7 @@
     });
 
     miso.config(config);
+    miso.user(user);
 
     miso.api.interactions.upload({type: 'home_page_view'})
       .then(console.log.bind(console))

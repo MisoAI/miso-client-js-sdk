@@ -19,11 +19,10 @@ export default class Interactions extends ApiBase {
     if (!Array.isArray(data)) {
       data = [data];
     }
-    const {anonymous_id, user_id, miso_id} = this.config.values;
+    const {anonymous_id, user_id} = this.user.values;
     const baseObj = trimObj({
       anonymous_id, 
       user_id, 
-      miso_id, 
       context: this.helpers.buildPayloadContext()
     });
     data = data.map((obj) => Object.assign({}, baseObj, obj));

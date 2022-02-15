@@ -5,6 +5,7 @@ export default class ApiBase {
   constructor(api) {
     this.helpers = api.helpers;
     this.config = api._context.config.readonly;
+    this.user = api._context.user.readonly;
   }
 
 }
