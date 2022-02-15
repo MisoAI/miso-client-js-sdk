@@ -78,27 +78,6 @@
     config.user_hash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
   }
   
-  /*
-  var config = api_key ? {
-    mock: true,
-    api_key: 'miso-client-sdk-demo-api-key',
-    anonymous_id: 'miso-client-sdk-demo-anonymous',
-    user_id: 'miso-client-sdk-demo-user',
-    user_hash: 'miso-client-sdk-demo-user-hash',
-  } : {
-    api_key: api_key,
-    user_id: user_id,
-  };
-
-  var config = {
-    mock: true,
-    api_key: 'miso-client-sdk-demo-api-key',
-    anonymous_id: 'miso-client-sdk-demo-anonymous',
-    user_id: 'miso-client-sdk-demo-user',
-    user_hash: 'miso-client-sdk-demo-user-hash',
-  };
-  */
-
   var miso = window.miso || (window.miso = []);
   miso.push(function () {
     var versionPrefix = ` (v${miso.version})`;
