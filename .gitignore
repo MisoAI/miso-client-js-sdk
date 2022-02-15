@@ -4,7 +4,6 @@ dist
 
 # env
 .env
-.env.test
 
 # log
 *.log
