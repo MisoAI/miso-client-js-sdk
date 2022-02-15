@@ -25,7 +25,7 @@ export default class Helpers {
       err.data = resBody;
       throw err;
     }
-    return resBody.data;
+    return resBody;
   }
 
   url(apiName) {

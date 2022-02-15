@@ -43,14 +43,11 @@
     play: 'Playground'
   };
 
-  demo.renderProducts = function(data) {
+  demo.renderProducts = function(response) {
     var container = document.querySelector('#products');
-    container.innerHTML = data.products.slice(0, 3).reduce(function(acc, product) {
+    container.innerHTML = response.data.products.slice(0, 3).reduce(function(acc, product) {
       return acc + window.template.render('product', product);
     }, '');
-    for (var product of data.products) {
-      console.log(product);
-    }
   };
 
   window.onready(function() {
@@ -64,6 +61,35 @@
 (function() {
 
   var demo = window.demo;
+
+  var searchParams = new URLSearchParams(window.location.search);
+  var api_key = searchParams.get('api_key');
+  //var user_id = searchParams.get('user_id');
+  var useMockService = !api_key;
+
+  var config = {
+    api_key: useMockService ? 'miso-client-sdk-demo-api-key' : api_key,
+    anonymous_id: crypto.randomUUID()
+  };
+  if (useMockService) {
+    config.mock = true;
+  } else {
+    config.user_id = 'TacoFranz';
+    config.user_hash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
+  }
+  
+  /*
+  var config = api_key ? {
+    mock: true,
+    api_key: 'miso-client-sdk-demo-api-key',
+    anonymous_id: 'miso-client-sdk-demo-anonymous',
+    user_id: 'miso-client-sdk-demo-user',
+    user_hash: 'miso-client-sdk-demo-user-hash',
+  } : {
+    api_key: api_key,
+    user_id: user_id,
+  };
+
   var config = {
     mock: true,
     api_key: 'miso-client-sdk-demo-api-key',
@@ -71,6 +97,7 @@
     user_id: 'miso-client-sdk-demo-user',
     user_hash: 'miso-client-sdk-demo-user-hash',
   };
+  */
 
   var miso = window.miso || (window.miso = []);
   miso.push(function () {
