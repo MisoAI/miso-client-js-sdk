@@ -11,7 +11,11 @@ const CALATOG = [
   {"product_id":"b50d0d35-66b6-4cd6-8fbe-abcb9e4e269c","title":"Computer Gear","description":"Quisque odio ante, faucibus id sem a, vehicula elementum magna","original_price":"121.95","sale_price":"108","categories":[["Electronics","Computer"]]},
 ];
 
+function imgurl(product) {
+  return `https://picsum.photos/id/${parseInt(product.product_id.substring(0, 2), 16)}/200`;
+}
+
 export default function hydrate(store) {
-  store.catalog.addm(CALATOG.map(x => Object.assign(x, {cover_image: 'https://picsum.photos/200'})));
+  store.catalog.addm(CALATOG.map(product => Object.assign(product, {cover_image: imgurl(product)})));
   return store;
 }

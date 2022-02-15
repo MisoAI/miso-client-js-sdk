@@ -154,13 +154,26 @@ miso.push(function() {
           <code>miso.api.recommendation.user_to_products({
   fl: ['*']
 }).then(function(data) {
-  // ...
+  // render in your page...
 });</code>
         </div>
       </div>
     </div>
 
   </div>
+
+  <template data-name="product">
+    <div class="product clearfix">
+      <div class="imgbox">
+        <img height="100" src="{{cover_image}}">
+      </div>
+      <div class="infobox">
+        <h6 class="title">{{title}}</h6>
+        <p class="description">{{description}}</p>
+        <h6 class="price">${{sale_price}}</h6>
+      </div>
+    </div>
+  </template>
 </body>
 
 </html>

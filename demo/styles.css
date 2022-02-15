@@ -1,3 +1,8 @@
+.clearfix:after {
+  content: '';
+  display: table;
+  clear: both;
+}
 .row > .col > h3 {
   margin-top: 0.75em;
   margin-bottom: 0.5em;
@@ -19,12 +24,25 @@ body.play .row.playground-only {
   display: flex;
 }
 .product {
+  position: relative;
   padding: 15px;
   margin: 20px 0;
   border: 1px solid #CCC;
   background: #FCFCFC;
 }
+.product .imgbox {
+  float: left;
+  width: 100px;
+  height: 100px;
+  margin-right: 15px;
+}
 .product img {
   margin-bottom: 0.5rem;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+.product .infobox {
+  overflow: hidden;
+}
+.product .price {
+  text-align: right;
 }

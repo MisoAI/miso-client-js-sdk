@@ -3,6 +3,17 @@
   window.onready = function(fn) {
     document.readyState !== 'loading' ? fn() : window.addEventListener('DOMContentLoaded', fn);
   };
+
+  var templates = {};
+  window.template = {
+    render: function(name, data) {
+      data = data || {};
+      var template = templates[name] || (templates[name] = document.querySelector(`template[data-name="${name}"]`));
+      return template.innerHTML.replace(/{{([\w.]+)}}/g, function(_, variable) {
+        return data[variable] !== undefined ? data[variable] : '';
+      });
+    }
+  };
 })();
 
 // demo site functions //
@@ -39,7 +50,7 @@
   demo.renderProducts = function(data) {
     var container = document.querySelector('#products');
     container.innerHTML = data.products.slice(0, 3).reduce(function(acc, product) {
-      return acc + renderProduct(product);
+      return acc + window.template.render('product', product);
     }, '');
     for (var product of data.products) {
       console.log(product);
