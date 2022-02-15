@@ -17,7 +17,7 @@
  * Return undefined on emtpy object, or original input otherwise.
  */
 export function emptyObjectToUndefined(obj) {
-  return typeof obj === 'object' && Object.keys(obj).length === 0 ? undefined : obj;
+  return (typeof obj === 'object' && Object.keys(obj).length === 0) ? undefined : obj;
 }
 
 /**

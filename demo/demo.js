@@ -43,10 +43,6 @@
     play: 'Playground'
   };
 
-  function renderProduct(product) {
-    return `<div class="product"><h5>${product.title}</h5><div><img height="200" src="${product.cover_image}"></div><h5>$${product.sale_price}</h5></div>`;
-  }
-
   demo.renderProducts = function(data) {
     var container = document.querySelector('#products');
     container.innerHTML = data.products.slice(0, 3).reduce(function(acc, product) {

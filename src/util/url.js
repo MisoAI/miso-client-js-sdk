@@ -1,19 +1,6 @@
 import { trimObj, emptyObjectToUndefined } from './objects';
 
 // TODO: unit test
-export function parseSearchString(str) {
-  if (str.charAt(0) === '?') {
-    str = str.substring(1);
-  }
-  if (!str.length) {
-    return {};
-  }
-  return str.split('&').reduce((acc, s) => {
-    const pair = s.split('=');
-    acc[window.decodeURIComponent(pair[0])] = window.decodeURIComponent(pair[1]);
-    return acc;
-  }, {});
-}
 
 export function readPageInfo() {
   return trimObj({
@@ -24,13 +11,13 @@ export function readPageInfo() {
 }
 
 export function readUtm() {
-  const {utm_source, utm_medium, utm_campaign, utm_term, utm_content} = parseSearchString(window.location.search);
+  const params = new URLSearchParams(window.location.search);
   let utm = {
-    source: utm_source,
-    medium: utm_medium,
-    name: utm_campaign,
-    term: utm_term,
-    content: utm_content,
+    source: params.get('utm_source') || undefined,
+    medium: params.get('utm_medium') || undefined,
+    name: params.get('utm_campaign') || undefined,
+    term: params.get('utm_term') || undefined,
+    content: params.get('utm_content') || undefined,
   };
-  utm = emptyObjectToUndefined(trimObj(utm));
+  return emptyObjectToUndefined(trimObj(utm));
 }
