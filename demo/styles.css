@@ -17,6 +17,9 @@
   white-space: pre;
   color: #2f6f9f;
 }
+.v-space {
+  height: 50px;
+}
 .playground-only {
   display: none;
 }

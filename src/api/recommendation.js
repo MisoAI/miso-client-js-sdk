@@ -13,11 +13,7 @@ export default class Recommendation extends ApiBase {
   }
 
   _normalizeUserToProductsPayload(data) {
-    // TODO: extract profile parts
-    const {anonymous_id, user_id, user_hash} = this.user.values;
-    const profile = trimObj(user_id ? {user_id, user_hash} : {anonymous_id, user_hash});
-    data = Object.assign(profile, data);
-    return data;
+    return Object.assign({}, this.helpers.userInfo, data);
   }
 
 }

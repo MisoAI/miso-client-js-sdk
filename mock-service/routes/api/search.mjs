@@ -5,8 +5,9 @@ import { respondSuccess } from './util.mjs';
 
 // TODO
 const search = core => async ctx => {
+  const products = await core.store.catalog.getm();
   respondSuccess(core, ctx, {
-    products: [],
+    products,
     partially_matched_products: [],
     start: 0,
     total: 100,

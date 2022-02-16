@@ -45,4 +45,9 @@ export default class Helpers {
     });
   }
 
+  get userInfo() {
+    const {anonymous_id, user_id, user_hash} = this._context.user.values;
+    return trimObj(user_id ? {user_id, user_hash} : {anonymous_id, user_hash});
+  }
+
 }
