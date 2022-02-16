@@ -1,7 +1,7 @@
 import { delegateGetters } from './util/objects';
 import Context from './context';
 
-(function(){
+(function () {
   // initialize miso object if absent
   const miso = window.miso || (window.miso = []);
 
@@ -35,7 +35,7 @@ function inject(miso, context) {
 function execute(context, fn) {
   try {
     fn(context);
-  } catch(e) {
+  } catch (e) {
     // TODO
     console.error(e);
   }

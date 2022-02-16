@@ -1,5 +1,5 @@
 import { trimObj } from '../util/objects';
-import { API }  from '../constants';
+import { API } from '../constants';
 import { readPageInfo, readUtm } from '../util/url';
 
 export default class Helpers {
@@ -30,7 +30,7 @@ export default class Helpers {
 
   url(apiName) {
     // TODO: allow overloading api_key here
-    let {api_key, api_base_url = API.BASE_URL, env} = this._context.config.values;
+    let { api_key, api_base_url = API.BASE_URL, env } = this._context.config.values;
     // TODO: refine this
     if (env === 'mock') {
       api_base_url = API.MOCK_SERVER_URL;
@@ -46,8 +46,8 @@ export default class Helpers {
   }
 
   get userInfo() {
-    const {anonymous_id, user_id, user_hash} = this._context.user.values;
-    return trimObj(user_id ? {user_id, user_hash} : {anonymous_id, user_hash});
+    const { anonymous_id, user_id, user_hash } = this._context.user.values;
+    return trimObj(user_id ? { user_id, user_hash } : { anonymous_id, user_hash });
   }
 
 }

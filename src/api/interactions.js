@@ -7,26 +7,28 @@ export default class Interactions extends ApiBase {
     super(api);
   }
 
-  async upload(data) {
+  async upload(payload) {
     const url = this.helpers.url('interactions');
-    return this.helpers.fetch(url, this._normalizeUploadPayload(data));
+    payload = this._normalizeUploadPayload(payload);
+    return this.helpers.fetch(url, payload);
   }
 
-  _normalizeUploadPayload(data) {
-    if (typeof data !== 'object') {
+  _normalizeUploadPayload(payload) {
+    if (typeof payload !== 'object') {
       throw new Error(); // TODO
     }
-    if (!Array.isArray(data)) {
-      data = [data];
+    if (!Array.isArray(payload)) {
+      payload = [payload];
     }
-    const {anonymous_id, user_id} = this.user.values;
+    const { anonymous_id, user_id } = this.user.values;
     const baseObj = trimObj({
-      anonymous_id, 
-      user_id, 
+      anonymous_id,
+      user_id,
       context: this.helpers.buildPayloadContext()
     });
-    data = data.map((obj) => Object.assign({}, baseObj, obj));
-    return {data};
+    payload = payload.map((obj) => Object.assign({}, baseObj, obj));
+    // TODO: think about how to align payload with API signature
+    return { data: payload };
   }
 
 }

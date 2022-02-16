@@ -1,7 +1,7 @@
 /**
  * Remove object properties with undefined values and return the object itself.
  */
- export function trimObj(obj) {
+export function trimObj(obj) {
   if (typeof obj !== 'object') {
     return obj;
   }

@@ -1,4 +1,3 @@
-import { trimObj } from '../util/objects';
 import ApiBase from './base';
 
 export default class Search extends ApiBase {
@@ -7,13 +6,34 @@ export default class Search extends ApiBase {
     super(api);
   }
 
-  async search(data) {
+  async search(payload) {
     const url = this.helpers.url('search/search');
-    return this.helpers.fetch(url, this._normalizeSearchPayload(data));
+    payload = this._normalizeSearchPayload(payload);
+    return this.helpers.fetch(url, payload);
   }
 
-  _normalizeSearchPayload(data) {
-    return Object.assign({}, this.helpers.userInfo, data);
+  async autocomplete(payload) {
+    const url = this.helpers.url('search/autocomplete');
+    payload = this._normalizeAutocompletePayload(payload);
+    return this.helpers.fetch(url, payload);
+  }
+
+  async mget(payload) {
+    const url = this.helpers.url('search/mget');
+    payload = this._normalizeMgetPayload(payload);
+    return this.helpers.fetch(url, payload);
+  }
+
+  _normalizeSearchPayload(payload) {
+    return Object.assign({}, this.helpers.userInfo, payload);
+  }
+
+  _normalizeAutocompletePayload(payload) {
+    return Object.assign({}, this.helpers.userInfo, payload);
+  }
+
+  _normalizeMgetPayload(payload) {
+    return Object.assign({}, this.helpers.userInfo, payload);
   }
 
 }
