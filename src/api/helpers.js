@@ -8,6 +8,12 @@ export default class Helpers {
     this._context = context;
   }
 
+  assertReady() {
+    if (!this._context.ready) {
+      throw new Error('Need to call miso.init() before using API.');
+    }
+  }
+
   async fetch(url, payload, {
     method = 'POST',
   } = {}) {
@@ -48,6 +54,10 @@ export default class Helpers {
   get userInfo() {
     const { anonymous_id, user_id, user_hash } = this._context.user.values;
     return trimObj(user_id ? { user_id, user_hash } : { anonymous_id, user_hash });
+  }
+
+  injectUserInfo(payload) {
+    return Object.assign({}, this.userInfo, payload);
   }
 
 }

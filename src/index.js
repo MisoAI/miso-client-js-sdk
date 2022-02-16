@@ -29,14 +29,14 @@ function inject(miso, context) {
       value: execute.bind(undefined, context),
     },
   });
-  delegateGetters(miso, context, ['version', 'config', 'user', 'api']);
+  delegateGetters(miso, context, ['version', 'init', 'ready', 'config', 'user', 'api']);
 }
 
 function execute(context, fn) {
   try {
     fn(context);
   } catch (e) {
-    // TODO
+    // TODO: error handler
     console.error(e);
   }
 }

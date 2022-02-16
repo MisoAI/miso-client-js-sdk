@@ -1,4 +1,4 @@
-import { trimObj } from './objects';
+import { trimObj, delegateGetters } from './objects';
 
 export default function createConfig(normalize) {
   if (normalize !== undefined && typeof normalize !== 'function') {
@@ -7,12 +7,12 @@ export default function createConfig(normalize) {
   normalize = normalize || (v => v);
   let _values = {};
   const config = (values) => {
-    trimObj(Object.assign(_values, normalize(values)));
+    trimObj(Object.assign(_values, normalize(values || {})));
   };
+
   const readonly = {};
-  Object.defineProperty(readonly, 'values', {
-    get: () => config.values
-  });
+  delegateGetters(readonly, config, ['values', 'readonly']);
+
   Object.defineProperties(config, {
     values: {
       get: () => Object.assign({}, _values)

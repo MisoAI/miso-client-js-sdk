@@ -26,9 +26,7 @@ export function emptyObjectToUndefined(obj) {
 export function delegateGetters(target, source, propNames) {
   propNames = typeof propNames === 'string' ? [propNames] : propNames;
   Object.defineProperties(target, propNames.reduce((acc, propName) => {
-    acc[propName] = {
-      get: () => source[propName]
-    };
+    acc[propName] = typeof source[propName] === 'function' ? { value: source[propName].bind(source) } : { get: () => source[propName] };
     return acc;
   }, {}));
 }

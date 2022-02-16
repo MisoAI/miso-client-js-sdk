@@ -8,6 +8,7 @@ export default class Interactions extends ApiBase {
   }
 
   async upload(payload) {
+    this.helpers.assertReady();
     const url = this.helpers.url('interactions');
     payload = this._normalizeUploadPayload(payload);
     return this.helpers.fetch(url, payload);

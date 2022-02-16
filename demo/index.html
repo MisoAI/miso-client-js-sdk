@@ -62,7 +62,7 @@
         <div class="codebox">
           <code>var miso = window.miso || (window.miso = []);
 miso.push(function() {
-  // miso functions are available here
+  // miso API is ready to use
 });</code>
         </div>
       </div>
@@ -77,12 +77,15 @@ miso.push(function() {
     <div class="row">
       <div class="col">
         <p>
-          Set API key for any future API calls.
+          Initialze miso client with configurations.
         </p>
+        <ul>
+          <li>Set your publishable API key.</li>
+        </ul>
       </div>
       <div class="col">
         <div class="codebox">
-          <code>miso.config({
+          <code>miso.init({
   api_key: '...'
 });</code>
         </div>
