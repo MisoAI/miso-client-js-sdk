@@ -4,17 +4,27 @@ import ApiBase from './base';
 export default class Interactions extends ApiBase {
 
   constructor(api) {
-    super(api);
+    super(api, 'interactions');
   }
 
   async upload(payload) {
-    this.helpers.assertReady();
-    const url = this.helpers.url('interactions');
-    payload = this._normalizeUploadPayload(payload);
-    return this.helpers.fetch(url, payload);
+    return this._run('upload', payload);
   }
 
-  _normalizeUploadPayload(payload) {
+  _url() {
+    return this.helpers.url(this._apiPath);
+  }
+
+  _preprocess({ type, payload }) {
+    switch (type) {
+      case 'upload':
+        return this._preprocessUpload(payload);
+      default:
+        return super._preprocess({ type, payload });
+    }
+  }
+
+  _preprocessUpload(payload) {
     if (typeof payload !== 'object') {
       throw new Error(); // TODO
     }

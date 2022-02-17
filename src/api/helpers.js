@@ -34,7 +34,8 @@ export default class Helpers {
     return resBody;
   }
 
-  url(apiName) {
+  url(...paths) {
+    const apiName = paths.filter(s => s).join('/');
     // TODO: allow overloading api_key here
     let { api_key, api_base_url = API.BASE_URL, env } = this._context.config.values;
     // TODO: refine this
