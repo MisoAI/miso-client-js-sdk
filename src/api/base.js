@@ -5,8 +5,8 @@ export default class ApiBase {
   constructor(api, apiPath) {
     this._apiPath = apiPath;
     this.helpers = api.helpers;
-    this.config = api._context.config.readonly;
-    this.user = api._context.user.readonly;
+    this.config = api._client.config;
+    this.user = api._client.user.readonly;
   }
 
   async _run(type, payload) {

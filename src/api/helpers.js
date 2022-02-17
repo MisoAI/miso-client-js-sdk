@@ -4,14 +4,11 @@ import { readPageInfo, readUtm } from '../util/url';
 
 export default class Helpers {
 
-  constructor(context) {
-    this._context = context;
+  constructor(client) {
+    this._client = client;
   }
 
   assertReady() {
-    if (!this._context.ready) {
-      throw new Error('Need to call miso.init() before using API.');
-    }
   }
 
   async fetch(url, payload, {
@@ -37,7 +34,7 @@ export default class Helpers {
   url(...paths) {
     const apiName = paths.filter(s => s).join('/');
     // TODO: allow overloading api_key here
-    let { api_key, api_base_url = API.BASE_URL, env } = this._context.config.values;
+    let { api_key, api_base_url = API.BASE_URL, env } = this._client.config;
     // TODO: refine this
     if (env === 'mock') {
       api_base_url = API.MOCK_SERVER_URL;
@@ -53,7 +50,7 @@ export default class Helpers {
   }
 
   get userInfo() {
-    const { anonymous_id, user_id, user_hash } = this._context.user.values;
+    const { anonymous_id, user_id, user_hash } = this._client.user.values;
     return trimObj(user_id ? { user_id, user_hash } : { anonymous_id, user_hash });
   }
 

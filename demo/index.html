@@ -40,29 +40,33 @@
     <div class="row">
       <div class="col">
         <p>
-          Include Miso Client JS SDK on your website.
+          Include Miso Client SDK on your website.
         </p>
       </div>
       <div class="col">
         <div class="codebox">
-          <code>&lt;script src="https://some.cdn.io/miso.js"&gt&lt;/script&gt;</code>
+          <a href="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest"><code>&lt;script src="https://.../client-sdk@latest"&gt&lt;/script&gt;</code></a>
+        </div>
+        <div class="codebox">
+          <code>const miso = window.miso('your-publishable-api-key');
+</code>
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col">
         <p>
-          If you had the SDK script loaded asynchronously, use miso functions in the callback.
+          If you had the SDK script loaded asynchronously, you can access miso in the following callback.
         </p>
       </div>
       <div class="col">
         <div class="codebox">
-          <code>&lt;script async src="https://some.cdn.io/miso.js"&gt&lt;/script&gt;</code>
+          <a href="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest"><code>&lt;script async src="https://.../client-sdk@latest"&gt&lt;/script&gt;</code></a>
         </div>
         <div class="codebox">
-          <code>var miso = window.miso || (window.miso = []);
-miso.push(function() {
-  // miso API is ready to use
+          <code>const misocmd = window.misocmd || (window.misocmd = []);
+misocmd.push(function() {
+  const miso = window.miso('...');
 });</code>
         </div>
       </div>
@@ -72,23 +76,6 @@ miso.push(function() {
     <div class="row">
       <div class="col">
         <h3>Config</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <p>
-          Initialze miso client with configurations.
-        </p>
-        <ul>
-          <li>Set your publishable API key.</li>
-        </ul>
-      </div>
-      <div class="col">
-        <div class="codebox">
-          <code>miso.init({
-  api_key: '...'
-});</code>
-        </div>
       </div>
     </div>
     <div class="row">

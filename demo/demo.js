@@ -156,9 +156,6 @@
   };
   if (useMockService) {
     config.env = 'mock';
-  } else {
-    config.user_id = 'TacoFranz';
-    config.user_hash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
   }
   var user = {
     anonymous_id: crypto.randomUUID()
@@ -170,10 +167,10 @@
 
   var demo = window.demo;
 
-  var miso = window.miso || (window.miso = []);
-  miso.push(function () {
+  var misocmd = window.misocmd || (window.misocmd = []);
+  misocmd.push(function () {
 
-    miso.init(config);
+    var miso = window.miso(config);
     miso.user(user);
 
     demo.version = miso.version;
