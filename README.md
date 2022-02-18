@@ -1,6 +1,10 @@
 # Miso SDK for JavaScript
 Enhance your site with high conversion magic with [Miso's](https://miso.ai/) power.
 
+<p>
+  <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
+</p>
+
 [Home](https://miso.ai/) |
 [Docs](https://docs.miso.ai/) |
 [REST API](https://api.askmiso.com/) |
