@@ -3,7 +3,7 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
 
 [Home](https://miso.ai/) |
 [Docs](https://docs.miso.ai/) |
-[API](https://api.askmiso.com/) |
+[REST API](https://api.askmiso.com/) |
 [Recipes](https://docs.miso.ai/recipes)
 
 ## Highlights
