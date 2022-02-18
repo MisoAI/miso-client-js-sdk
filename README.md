@@ -8,7 +8,7 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
 
 ## Highlights
 * Lightweight, mobile friendly.
-* Consistent, predictable function signatures.
+* Simple, easy to integrate.
 * Bundled in UMD format. Can be loaded as a CJS/AMD module or by a script tag.
 * For browser. Server-side SDK coming up later.
 
