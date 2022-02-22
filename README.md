@@ -48,5 +48,11 @@ const { products } = await miso.recommendation.product_to_products({ product_id:
 
 Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
 
+<div align="center">
+  <a href="https://miso.ai">
+    <img src="asset/cta.svg" height="45px">
+  </a>
+</div>
+
 ## License
 This library is distributed under the [MIT license](https://github.com/askmiso/miso-client-js-sdk/blob/main/LICENSE).
