@@ -54,5 +54,8 @@ Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
   </a>
 </div>
 
+## Development
+See [Development](./development.md).
+
 ## License
 This library is distributed under the [MIT license](https://github.com/askmiso/miso-client-js-sdk/blob/main/LICENSE).
