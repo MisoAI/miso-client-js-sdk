@@ -126,6 +126,7 @@ misocmd.push(function() {
           <code>const response = await miso.api.search.search({
   q: 'doge'
 });
+const products = response.products;
 </code>
         </div>
       </div>
@@ -150,8 +151,9 @@ misocmd.push(function() {
       </div>
       <div class="col">
         <div class="codebox">
-          <code>const response = miso.api.recommendation.user_to_products({
+          <code>const response = await miso.api.recommendation.user_to_products({
 });
+const products = response.products;
 </code>
         </div>
       </div>

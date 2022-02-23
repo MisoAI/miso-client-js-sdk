@@ -30,7 +30,7 @@ export default class ApiBase {
   }
 
   _postprocess({ response }) {
-    return response;
+    return response.data;
   }
 
 }

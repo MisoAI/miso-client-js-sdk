@@ -112,7 +112,7 @@
       value && this._emit('submit', value);
     }
     render(response) {
-      this.elements.results.innerHTML = response.data.products.slice(0, 3)
+      this.elements.results.innerHTML = response.products.slice(0, 3)
         .reduce((acc, product) => acc + window.template.render('product', product), '');
     }
   }
@@ -128,7 +128,7 @@
       };
     }
     render(response) {
-      this.elements.results.innerHTML = response.data.products.slice(0, 3)
+      this.elements.results.innerHTML = response.products.slice(0, 3)
         .reduce((acc, product) => acc + window.template.render('product', product), '');
     }
 
