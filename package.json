@@ -12,7 +12,7 @@
     "clean": "rimraf lib dist es coverage types",
     "test": "echo later",
     "build": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
-    "dev": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'"
+    "start": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'"
   },
   "repository": {
     "type": "git",
