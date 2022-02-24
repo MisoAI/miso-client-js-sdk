@@ -1,6 +1,7 @@
 # generated
 node_modules/
 dist
+doc-dist
 
 # env
 .env
@@ -12,3 +13,6 @@ npm-debug.log*
 # cache
 .npm
 .eslintcache
+
+# stupid
+.DS_Store

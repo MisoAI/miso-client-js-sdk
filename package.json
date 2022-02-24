@@ -9,10 +9,18 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf lib dist es coverage types",
+    "clean": "npx rimraf lib dist es coverage types",
     "test": "echo later",
     "build": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
-    "start": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'"
+    "start": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'",
+    "doc:clean": "npx rimraf doc-dist",
+    "doc:build:11ty": "npx eleventy",
+    "doc:watch:11ty": "npx eleventy --serve --port=10201",
+    "doc:build:sass": "npx sass doc/scss:doc-dist/css",
+    "doc:watch:sass": "npx sass --watch doc/scss:doc-dist/css",
+    "doc:build": "npm-run-all doc:build:*",
+    "doc:start": "npm-run-all doc:build:sass --parallel doc:watch:*",
+    "doc:debug": "DEBUG=* npx eleventy"
   },
   "repository": {
     "type": "git",
@@ -27,6 +35,7 @@
   },
   "homepage": "https://github.com/MisoAI/miso-client-js-sdk#readme",
   "devDependencies": {
+    "@11ty/eleventy": "^1.0.0",
     "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
     "@koa/cors": "^3.1.0",
@@ -40,11 +49,13 @@
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "nodemon": "^2.0.15",
+    "npm-run-all": "^4.1.5",
     "rollup": "^2.63.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
     "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.49.8",
     "uuid": "^8.3.2"
   }
 }
