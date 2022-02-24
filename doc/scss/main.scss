@@ -17,12 +17,12 @@ aside {
     grid-template-columns: 4fr 1fr;
     grid-template-rows: auto 1fr;
   }
-  .miso-main-container {
+  .mi-body-container {
     grid-template-columns: 1fr 5fr;
   }
 }
 @media (min-width: 768px) {
-  .miso-main-container {
+  .mi-body-container {
     display: grid;
     gap: 1.5rem;
     grid-template-areas: "sidebar main";
