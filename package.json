@@ -14,13 +14,13 @@
     "build": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
     "start": "concurrently 'rollup -w -c rollup.config.dev.js' 'nodemon mock-service/app.mjs'",
     "doc:clean": "npx rimraf doc-dist",
-    "doc:build:11ty": "npx eleventy",
-    "doc:watch:11ty": "npx eleventy --serve --port=10201",
+    "doc:build:11ty": "npx eleventy --config=doc/.eleventy.js",
+    "doc:watch:11ty": "npx eleventy --config=doc/.eleventy.js --serve --port=10201",
     "doc:build:sass": "npx sass doc/scss:doc-dist/css",
     "doc:watch:sass": "npx sass --watch doc/scss:doc-dist/css",
     "doc:build": "npm-run-all doc:build:*",
     "doc:start": "npm-run-all doc:build:sass --parallel doc:watch:*",
-    "doc:debug": "DEBUG=* npx eleventy"
+    "doc:debug": "DEBUG=* npx eleventy --config=doc/.eleventy.js"
   },
   "repository": {
     "type": "git",
@@ -36,6 +36,7 @@
   "homepage": "https://github.com/MisoAI/miso-client-js-sdk#readme",
   "devDependencies": {
     "@11ty/eleventy": "^1.0.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
     "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
     "@koa/cors": "^3.1.0",
@@ -45,9 +46,13 @@
     "@rollup/plugin-replace": "^3.0.1",
     "concurrently": "^7.0.0",
     "dotenv": "^16.0.0",
+    "eleventy-plugin-toc": "^1.1.5",
     "eslint": "^8.6.0",
+    "js-yaml": "^4.1.0",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
+    "markdown-it": "^12.3.2",
+    "markdown-it-anchor": "^8.4.1",
     "nodemon": "^2.0.15",
     "npm-run-all": "^4.1.5",
     "rollup": "^2.63.0",

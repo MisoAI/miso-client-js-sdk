@@ -1,0 +1,109 @@
+/**
+ * Based on GitHub syntax light theme:
+ * https://github.com/primer/github-syntax-light/blob/master/lib/github-light.css
+ */
+:root {
+  --color-code-inline: #953800;
+  --color-code-background: #{rgba($primary-color, .05)};
+  --color-code-block-border: #{rgba($primary-color, .3)};
+  --color-syntax-default: #24292f;
+  --color-syntax-selection-bg: #c1def1;
+  --color-syntax-comment: #6a737d;
+  --color-syntax-keyword: #d73a49;
+  --color-syntax-constant: #005cc5;
+  --color-syntax-string: #032f62;
+  --color-syntax-entity: #6f42c1;
+  --color-syntax-variable: #953800;
+}
+
+pre[class*="language-"],
+code {
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	white-space: pre;
+
+	word-spacing: normal;
+	word-break: normal;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+code:not([class*="language-"]) {
+  padding: 0.125rem 0.25rem;
+  //margin: 0;
+  //font-size: 85%;
+  //border-radius: 6px;
+  background-color: var(--color-code-background);
+  color: var(--color-code-inline);
+}
+
+pre[class*="language-"] {
+  max-width: 100%;
+  overflow: auto;
+  padding: 1em;
+  //border: 1px solid rgba($primary-color, .2);
+  //border-radius: 4px;
+  border-left: 6px solid var(--color-code-block-border);;
+  background-color: var(--color-code-background);
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: var(--color-syntax-default);
+	direction: ltr;
+	text-align: left;
+
+	font-size: .9em;
+	line-height: 1.4em;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+  &::-moz-selection,
+  ::-moz-selection,
+  &::selection,
+  ::selection {
+    background: var(--color-syntax-selection-bg);
+  }
+}
+
+.token {
+  &.important {
+    color: #e90;
+  }
+  &.important,
+  &.bold {
+    font-weight: bold;
+  }
+  &.italic {
+    font-style: italic;
+  }
+
+  &.comment {
+    color: var(--color-syntax-comment);
+  }
+  &.keyword {
+    color: var(--color-syntax-keyword);
+  }
+  &.boolean,
+  &.number,
+  &.operator,
+  &.regex-delimiter {
+    color: var(--color-syntax-constant);
+  }
+  &.string,
+  &.regex {
+    color: var(--color-syntax-string);
+  }
+  &.function,
+  &.entity {
+    color: var(--color-syntax-entity);
+  }
+  &.class-name {
+    color: var(--color-syntax-variable);
+  }
+
+}

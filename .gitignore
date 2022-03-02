@@ -1,10 +1,11 @@
 # generated
 node_modules/
-dist
-doc-dist
+dist/
+doc-dist/
 
 # env
 .env
+local/
 
 # log
 *.log

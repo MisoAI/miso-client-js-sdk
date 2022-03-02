@@ -1,0 +1,53 @@
+{%- set sections = [
+  {
+    title: "Overview",
+    path: "/",
+    children: [
+      {
+        title: "Installation",
+        path: "/installation"
+      }
+    ]
+  },
+  {
+    title: "Modules",
+    path: "/modules",
+    children: [
+      {
+        title: "Configuration",
+        path: "/modules/configuration"
+      },
+      {
+        title: "Search",
+        path: "/modules/search"
+      },
+      {
+        title: "Recommendation",
+        path: "/modules/recommendation"
+      },
+      {
+        title: "Interactions",
+        path: "/modules/interactions"
+      }
+    ]
+  }
+] -%}
+
+<div>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1">
+  {%- for section in sections -%}
+    <li class="mb-1">
+      <a href="{{ section.path | url }}">{{ section.title }}</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small">
+        {%- for page in section.children -%}
+          <li>
+            <a href="{{ page.path | url }}">{{ page.title }}</a>
+          </li>
+        {%- endfor -%}
+        </ul>
+      </div>
+    </li>
+  {%- endfor -%}
+  </ul>
+</div>

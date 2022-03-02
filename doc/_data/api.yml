@@ -1,0 +1,37 @@
+groups:
+- key: search.options
+  props:
+  - q
+  - engine_id
+  - user_id
+  - anonymous_id
+  - fl
+- key: autocomplete.options
+  props:
+  - q
+  - engine_id
+  - user_id
+  - anonymous_id
+  - fl
+  overrides:
+    q:
+      desc: The search query users typed so far.
+
+props:
+- key: engine_id
+  type: string
+  desc: The engine you want to get results from. If not specified, the default engine will be used.
+- key: user_id
+  type: string
+  desc: The user who made the query and for whom Miso will personalize the results. Either `user_id` or `anonymous_id` needs to be specified.
+- key: anonymous_id
+  type: string
+  desc: The anonymous visitor who made the query and for whom Miso will personalize the results. Either `user_id` or `anonymous_id` needs to be specified for personalization to work.
+- key: q
+  required: true
+  type: string
+  desc: The search query the user has entered.
+- key: fl
+  type: Array of strings
+  default: '[]'
+  desc: List of fields to retrieve. Retrieve all fields with `["*"]`

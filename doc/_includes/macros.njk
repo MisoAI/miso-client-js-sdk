@@ -1,0 +1,20 @@
+{% macro proptable(name) %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%- for prop in propGroups[name].props -%}
+    <tr>
+      <td><code>{{ prop.name }}</code></td>
+      <td>{{ prop.type }}</td>
+      <td>{%- if prop.required -%}{{ '**Required.** ' | markdown | safe }}{%- endif -%}{{ prop.desc | markdown | safe }}</td>
+    </tr>
+  {%- endfor -%}
+  </tbody>
+</table>
+{% endmacro %}
