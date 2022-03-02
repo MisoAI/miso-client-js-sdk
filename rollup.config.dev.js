@@ -8,7 +8,7 @@ export default {
   output: {
     file: 'dist/miso.js',
     format: 'umd',
-    name: 'miso',
+    name: 'createMiso',
     indent: true
   },
   watch: true,

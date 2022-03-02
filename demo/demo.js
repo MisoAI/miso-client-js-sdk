@@ -170,7 +170,7 @@
   var misocmd = window.misocmd || (window.misocmd = []);
   misocmd.push(function () {
 
-    var miso = window.miso(config);
+    var miso = window.createMiso(config);
     miso.user(user);
 
     demo.version = miso.version;
