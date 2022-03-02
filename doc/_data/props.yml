@@ -1,104 +1,4 @@
-groups:
-- key: search.options
-  props:
-  - engine_id
-  - user_id
-  - anonymous_id
-  - user_hash
-  - q
-  - fl
-  - type
-  - start_0
-  - rows
-- key: autocomplete.options
-  props:
-  - engine_id
-  - user_id
-  - anonymous_id
-  - user_hash
-  - q
-  - fl
-  - type
-  - start_0
-  - rows
-  overrides:
-    q:
-      desc: |
-        The search query users typed so far.
-        Keep the trailing spaces (if any) intact so that Miso knows whether the user has finished typing the last word or is still typing it.
-- key: user_to_products.options
-  props:
-  - engine_id
-  - user_id
-  - anonymous_id
-  - user_hash
-  - fl
-  - type
-  - pagination_id
-  - start_1
-  - rows
-- key: user_to_attributes.options
-  props:
-  - engine_id
-  - user_id
-  - anonymous_id
-  - user_hash
-  - field
-  - fl
-  - type
-  - pagination_id
-  - start_1
-  - rows
-- key: user_to_trending.options
-  props:
-  - engine_id
-  - user_id
-  - anonymous_id
-  - user_hash
-  - fl
-  - type
-  - pagination_id
-  - start_1
-  - rows
-- key: product_to_products.options
-  props:
-  - engine_id
-  - user_id
-  - anonymous_id
-  - user_hash
-  - product_id
-  - product_ids
-  - product_group_id
-  - buy_together
-  - fl
-  - type
-  - pagination_id
-  - start_1
-  - rows
-- key: search.response
-  props:
-  - products
-  - start_0
-  - total
-- key: autocomplete.response
-  props:
-  - completions
-  - start_0
-  - total
-- key: user_to_products.response
-  props:
-  - products
-- key: user_to_trending.response
-  props:
-  - products
-- key: user_to_attributes.response
-  props:
-  - attributes
-- key: product_to_products.response
-  props:
-  - products
-
-props:
+# config
 - key: engine_id
   type: string
   desc: |
@@ -115,7 +15,15 @@ props:
   type: string
   desc: |
     The hash of `user_id` (or `anonymous_id`) encrypted by your [Secret API Key](https://api.askmiso.com/#section/Authentication/Secret%20API%20Key).
-- key: q
+# criteria
+- key: q_0
+  name: q
+  required: true
+  type: string
+  desc: |
+    The search query the user has entered. Must be non-empty.
+- key: q_1
+  name: q
   required: true
   type: string
   desc: |
@@ -142,6 +50,7 @@ props:
   desc: |
     Whether to focus on the Products that are frequently bought together.
     Default: `false`.
+# product
 - key: fl
   type: array of strings
   default: '[]'
@@ -149,6 +58,11 @@ props:
     List of fields to retrieve. The field `product_id` is always included.
     When not specified, only `product_id` will be retrieved. 
     You can retrieve all fields with `["*"]`
+- key: type
+  type: string
+  desc: |
+    Specify the type of product to return.
+# pagination
 - key: start_0
   name: start
   type: integer
@@ -175,10 +89,6 @@ props:
   type: integer
   desc: |
     The total number of matched records.
-- key: type
-  type: string
-  desc: |
-    Specify the type of product to return.
 - key: miso_id
   type: string
   desc: |

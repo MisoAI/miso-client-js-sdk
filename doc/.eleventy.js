@@ -4,7 +4,7 @@ const markdownItAnchor = require('markdown-it-anchor');
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 // const toc = require('eleventy-plugin-toc');
 const yaml = require('js-yaml');
-const { propGroups } = require('./util/api-data');
+const data = require('./util/data');
 
 const markdown = markdownIt({ html: true }).use(markdownItAnchor);
 
@@ -24,7 +24,8 @@ module.exports = function(config) {
 
   config.addNunjucksFilter('markdown', (value) => markdown.renderInline(value));
 
-  config.addNunjucksGlobal('propGroups', propGroups);
+  config.addNunjucksGlobal('data', data);
+  config.on('eleventy.before', () => data.refresh());
 
   return {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain
