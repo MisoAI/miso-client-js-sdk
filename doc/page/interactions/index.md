@@ -1,4 +1,4 @@
 ---
 layout: base.njk
-title: Modules
+title: Interactions APIs
 ---
