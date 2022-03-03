@@ -30,10 +30,10 @@ const createMiso = require("@miso.ai/client-sdk");
 const miso = createMiso("your-api-key");
 ```
 
-Specify anonymous or registerd user id:
+Specify an anonymous or signed-in user id:
 ```js
-miso.user({ anonymous_id: "an-anonymous-id" });
-miso.user({ user_id: "their-user-id" });
+miso.context.setAnonymousId("an-anonymous-id");
+miso.context.setUserId("the-user-id");
 ```
 
 Deliver fully personalized user experience of search, autocomplete,
