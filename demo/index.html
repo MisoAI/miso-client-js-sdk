@@ -91,11 +91,8 @@ misocmd.push(function() {
       </div>
       <div class="col">
         <div class="codebox">
-          <code>miso.user({
-  anonymous_id: 'miso-client-sdk-demo-anonymous',
-  user_id: 'miso-client-sdk-demo-user',
-  user_hash: '...'
-});</code>
+          <code>miso.context.setUserId('user_id', 'user_hash');
+miso.context.setAnonymousId('anonymous_id', 'anonymous_hash');</code>
         </div>
       </div>
     </div>

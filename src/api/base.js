@@ -6,7 +6,7 @@ export default class ApiBase {
     this._apiPath = apiPath;
     this.helpers = api.helpers;
     this.config = api._client.config;
-    this.user = api._client.user.readonly;
+    this.context = api._client.context;
   }
 
   async _run(type, payload) {

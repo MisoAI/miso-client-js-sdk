@@ -31,7 +31,7 @@ export default class Interactions extends ApiBase {
     if (!Array.isArray(payload)) {
       payload = [payload];
     }
-    const { anonymous_id, user_id } = this.user.values;
+    const { anonymous_id, user_id } = this.context.userInfo;
     const baseObj = trimObj({
       anonymous_id,
       user_id,

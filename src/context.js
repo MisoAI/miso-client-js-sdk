@@ -1,53 +1,34 @@
-import { BUILD } from './constants';
+import { trimObj } from './util/objects';
 
-class Context {
+export default class Context {
 
-  constructor() {
-    this.version = BUILD.version;
-    this.clients = [];
+  constructor(client) {
+    this._client = client;
   }
 
-  register(client) {
-    this.clients.push(client);
+  setUserId(id, hash) {
+    this.user_id = id;
+    this.user_hash = hash;
   }
 
-}
+  setAnonymousId(id, hash) {
+    this.anonymous_id = id;
+    this.anonymous_hash = hash;
+  }
 
-function execute(context, fn) {
-  try {
-    fn(context);
-  } catch (e) {
-    // TODO: error handler
-    console.error(e);
+  clearUserId() {
+    this.user_id = this.user_hash = undefined;
   }
-}
 
-(function () {
-  // idempotency
-  if (window.misoctx) {
-    return;
+  clearAnonymousId() {
+    this.anonymous_id = this.anonymous_hash = undefined;
   }
-  const context = window.misoctx || (window.misoctx = new Context());
-})();
 
-window.setTimeout(function () {
-  const misocmd = window.misocmd || (window.misoctx = []);
-  if (misocmd._processed) {
-    return;
-  }
-  // overrides push function so future commands are executed immediately
-  Object.defineProperty(misocmd, 'push', {
-    value: execute.bind(undefined, window.misoctx),
-  });
-  // process existing miso commands
-  for (const fn of misocmd) {
-    execute(window.misoctx, fn);
-  }
-}, 0);
+  // TODO: readonly proxy
 
-export default function getContext(client) {
-  if (client) {
-    window.misoctx.register(client);
+  get userInfo() {
+    const { user_id, user_hash, anonymous_id, anonymous_hash } = this;
+    return trimObj({ user_id, user_hash, anonymous_id, anonymous_hash });
   }
-  return window.misoctx;
+
 }

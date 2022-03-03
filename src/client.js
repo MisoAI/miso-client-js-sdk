@@ -1,19 +1,19 @@
 import { trimObj } from './util/objects';
-import createConfig from './util/config';
 import Api from './api';
-import getContext from './context';
+import Context from './context';
+import getAdmin from './admin';
 
 export default class MisoClient {
 
   constructor(options) {
-    this._context = getContext(this);
+    this._admin = getAdmin(this);
     this._config(options);
-    this.user = createConfig(this._normalizeUser.bind(this));
+    this.context = new Context(this);
     this.api = new Api(this);
   }
 
   get version() {
-    return this._context.version;
+    return this._admin.version;
   }
 
   _config(options) {
@@ -29,10 +29,6 @@ export default class MisoClient {
       throw new Error('Require API key to initialize miso client.');
     }
     return trimObj({ api_key, api_base_url, env });
-  }
-
-  _normalizeUser({ anonymous_id, user_id, user_hash } = {}) {
-    return trimObj({ anonymous_id, user_id, user_hash });
   }
 
 }

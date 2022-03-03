@@ -49,13 +49,13 @@ export default class Helpers {
     });
   }
 
-  get userInfo() {
-    const { anonymous_id, user_id, user_hash } = this._client.user.values;
-    return trimObj(user_id ? { user_id, user_hash } : { anonymous_id, user_hash });
+  get userInfoForQuery() {
+    const { user_id, user_hash, anonymous_id, anonymous_hash } = this._client.context.userInfo;
+    return user_id ? { user_id, user_hash } : { anonymous_id, user_hash: anonymous_hash };
   }
 
   injectUserInfo(payload) {
-    return Object.assign({}, this.userInfo, payload);
+    return Object.assign({}, this.userInfoForQuery, payload);
   }
 
 }

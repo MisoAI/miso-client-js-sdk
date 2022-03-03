@@ -151,8 +151,7 @@
   var useMockService = !api_key;
 
   var config = {
-    api_key: useMockService ? 'miso-client-sdk-demo-api-key' : api_key,
-    anonymous_id: crypto.randomUUID()
+    api_key: useMockService ? 'miso-client-sdk-demo-api-key' : api_key
   };
   if (useMockService) {
     config.env = 'mock';
@@ -171,7 +170,8 @@
   misocmd.push(function () {
 
     var miso = window.createMiso(config);
-    miso.user(user);
+    miso.context.setAnonymousId(user.anonymous_id);
+    miso.context.setUserId(user.user_id, user.user_hash);
 
     demo.version = miso.version;
 
