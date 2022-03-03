@@ -3,6 +3,8 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
 
 <p>
   <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
+  <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/bundlephobia/minzip/@miso.ai/client-sdk"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
 </p>
 
 [Home](https://miso.ai/) |
