@@ -22,6 +22,18 @@
   props:
   - start_0
   - total
+# shared: event
+- key: _event.product
+  props:
+  - event.product_ids
+  - event.product_group_ids
+- key: _event.context
+  props:
+  - user_id
+  - anonymous_id
+  - event.timestamp
+  - miso_id
+  - event.context
 # request
 - key: search.options
   props:

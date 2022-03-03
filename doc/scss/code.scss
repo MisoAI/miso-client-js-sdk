@@ -1,13 +1,11 @@
-@import './variables.scss';
-
 /**
  * Based on GitHub syntax light theme:
  * https://github.com/primer/github-syntax-light/blob/master/lib/github-light.css
  */
 :root {
   --color-code-inline: #953800;
-  --color-code-background: #{rgba($primary-color, .05)};
-  --color-code-block-border: #{rgba($primary-color, .3)};
+  --color-code-background: var(--color-primary-l8);
+  --color-code-block-border: var(--color-primary-l4);
   --color-syntax-default: #24292f;
   --color-syntax-selection-bg: #c1def1;
   --color-syntax-comment: #6a737d;
@@ -32,13 +30,17 @@ code {
 	hyphens: none;
 }
 
-code:not([class*="language-"]) {
+code:not([class*="language-"]):not(.raw) {
   padding: 0.125rem 0.25rem;
   //margin: 0;
   //font-size: 85%;
   //border-radius: 6px;
   background-color: var(--color-code-background);
   color: var(--color-code-inline);
+}
+
+code.raw {
+  color: inherit;
 }
 
 pre[class*="language-"] {

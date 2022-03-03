@@ -2,6 +2,7 @@
 layout: base.njk
 title: Configuration
 ---
+
 ### Create Miso client
 Create the client instance from npm module:
 ```js

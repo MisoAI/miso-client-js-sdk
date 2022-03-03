@@ -2,6 +2,7 @@
 layout: base.njk
 title: Installation
 ---
+
 ### As NPM Module
 To use SDK as an npm module, run in your project directory:
 ```bash

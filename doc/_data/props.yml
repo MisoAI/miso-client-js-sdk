@@ -1,4 +1,4 @@
-# config
+# context
 - key: engine_id
   type: string
   desc: |
@@ -15,6 +15,10 @@
   type: string
   desc: |
     The hash of `user_id` (or `anonymous_id`) encrypted by your [Secret API Key](https://api.askmiso.com/#section/Authentication/Secret%20API%20Key).
+- key: miso_id
+  type: string
+  desc: |
+    Miso-generated unique Id for each recommendation or search result.
 # criteria
 - key: q_0
   name: q
@@ -89,10 +93,7 @@
   type: integer
   desc: |
     The total number of matched records.
-- key: miso_id
-  type: string
-  desc: |
-    The UUID of the request.
+# response
 - key: products
   type: array of objects
   desc: |

@@ -1,0 +1,89 @@
+- name: type
+  required: true
+  type: string
+  desc: |
+    The type of event.
+- name: custom_action_name
+  used_by:
+  - custom
+  required: true
+  type: string
+  desc: |
+    The name of the custom interaction that you have defined.
+- name: user_id
+  type: string
+  desc: |
+    Identifies the signed-in user who performed the interaction. We will use `user_id` to link Interaction records to your User records. For visitors who have not signed in, see `anonymous_id`.
+- name: anonymous_id
+  type: string
+  desc: |
+    A pseudo-unique substitute for `user_id`. We use `anonymous_id` to identify a visitor who has not signed in. When a visitor signs in and the `user_id` and `anonymous_id` are both present, the `anonymous_id` will be linked to the `user_id` along with the past interactions associated with it.
+- name: category
+  used_by:
+  - category_page_view
+  type: array of strings
+  desc: |
+    A hierarchical list describing the product category. For example, `['home', 'kitchen', 'tools']`.
+- name: search
+  used_by:
+  - search
+  type: object
+  desc: |
+    The search keywords and filters the user uses.
+- name: revenue
+  used_by:
+  - checkout
+  type: object
+  desc: |
+    Total revenue associated with the checkout. The revenue should include generally shipping, tax, etc. that you want to include as part of your revenue calculations.
+- name: quantities
+  used_by:
+  - add_to_cart
+  - checkout
+  type: array of positive integers
+  desc: |
+    The quantities of products the user adds to their cart or checks out with.
+- name: rating
+  used_by:
+  - rate
+  type: number
+  desc: |
+    The rating the user gave in the range of [0, 5]. As a convention in the RecSys community, a rating >= 3.5 is considered positive, a rating <= 2 is negative, and otherwise a rating is neutral. If you use any other rating scale, please normalize it to a [0, 5] scale.
+- name: duration
+  used_by:
+  - product_detail_page_view
+  - category_page_view
+  - home_page_view
+  - promo_page_view
+  - read
+  - watch
+  - listen
+  type: number
+  desc: |
+    How long (in seconds) the user stayed on this page, or consumed (listened, read, or watched) a product.
+- name: product_ids
+  used_by_except:
+  - search
+  - home_page_view
+  type: array of strings
+  desc: |
+    Products or content the user is interacting with. Default: `[]`
+- name: product_group_ids
+  used_by_except:
+  - search
+  - home_page_view
+  type: array of strings
+  desc: |
+    The product groups the user is interacting with.
+- name: timestamp
+  type: string
+  desc: |
+    The ISO-8601 timestamp specifying when the interaction occurred. If the interaction just happened, leave it out and we will default to the server's time.
+- name: miso_id
+  type: string
+  desc: |
+    Miso-generated unique Id for each recommendation or search result.
+- name: context
+  type: object
+  desc: |
+    An object of extra information that provides useful context about an interaction.

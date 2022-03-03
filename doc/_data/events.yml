@@ -1,0 +1,81 @@
+- title: Core click-streams
+  events:
+  - name: product_detail_page_view
+    tier: 1
+    desc: Used when a user views the detail page of a product.
+  - name: category_page_view
+    tier: 1
+    desc: Used when a user views a category page for a specific "family" or "group" or products or content.
+  - name: search
+    tier: 1
+    desc: Used to record a search event with the keywords and filters the user used.
+  - name: impression
+    tier: 3
+    desc: Used to record when a user saw or was presented with a product or content asset.
+- title: Conversion (eCommerce)
+  events:
+  - name: add_to_cart
+    tier: 1
+    desc: Used when a user adds a product into their shopping cart.
+  - name: remove_from_cart
+    tier: 1
+    desc: Used when a user removes a product from their shopping cart.
+  - name: subscribe
+    tier: 1
+    desc: Used when a user subscribes a product for its information.
+  - name: checkout
+    tier: 1
+    desc: Used when a user enters checks out with a set of products.
+  - name: refund
+    tier: 1
+    desc: Used when a user requests a refund of products they bought.
+- title: Consumption (content media)
+  events:
+  - name: read
+    tier: 3
+    desc: Used to record when and for how long a user reads a piece of written content.
+  - name: watch
+    tier: 3
+    desc: Used to record when and for how long a user watches content that is of a video format.
+  - name: listen
+    tier: 3
+    desc: Used to record when and for how long a user listens to content that is of an audio format.
+  - name: add_to_collection
+    tier: 3
+    desc: Used when a user adds a product to their personal collection.
+  - name: remove_from_collection
+    tier: 3
+    desc: Used when a user removes a product from their personal collection.
+- title: Feedback signals
+  events:
+  - name: like
+    tier: 3
+    desc: Used to record when a user indicates a like for a product.
+  - name: dislike
+    tier: 3
+    desc: Used when a user indicates a dislike for a product or indicates they would like to not be recommended content or products like this in the future.
+  - name: share
+    tier: 3
+    desc: Used when a user shares a product or piece of content.
+  - name: rate
+    tier: 2
+    desc: Used when a user gives a rating to a product or piece of content.
+  - name: bookmark
+    tier: 3
+    desc: Used when a user bookmarks a product.
+- title: Additional click-streams
+  events:
+  - name: home_page_view
+    tier: 2
+    desc: Used when a user views your home page.
+  - name: promo_page_view
+    tier: 2
+    desc: Used when a user views a specific promotional or curated marketing page about certain products or content.
+  - name: product_image_view
+    tier: 2
+    desc: Used when a user views the image of a product (e.g. to enlarge a product photo).
+- title: Custom
+  events:
+  - name: custom
+    tier: 1
+    desc: Used when you want to record any custom interaction events between users and products.
