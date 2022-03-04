@@ -19,4 +19,13 @@
 
 
 # Release
-* Create and publish a release on GitHub, which will trigger an npm publish.
+
+## Publish to NPM
+On GitHub
+* Create and publish a release, which will trigger an npm publish.
+
+## Publish doc site
+On GitHub
+* Go to `Actions` tab
+* Select workflow: `Publish doc site`
+* Click on `Run workflow` -> use branch `main` -> `Run workflow`
