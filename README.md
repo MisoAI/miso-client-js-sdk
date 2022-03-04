@@ -7,6 +7,7 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
 </p>
 
+[SDK Reference](https://misoai.github.io/miso-client-js-sdk/) |
 [Home](https://miso.ai/) |
 [Docs](https://docs.miso.ai/) |
 [REST API](https://api.askmiso.com/) |
