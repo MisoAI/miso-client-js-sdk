@@ -1,0 +1,98 @@
+/**
+ * Based on GitHub syntax light theme:
+ * https://github.com/primer/github-syntax-light/blob/master/lib/github-light.css
+ */
+:root {
+  --color-code-inline: #953800;
+  --color-code-background: var(--color-primary-l8);
+  --color-code-block-border: var(--color-primary-l4);
+  --color-syntax-default: #24292f;
+  --color-syntax-selection-bg: #c1def1;
+  --color-syntax-comment: #6a737d;
+  --color-syntax-keyword: #d73a49;
+  --color-syntax-constant: #005cc5;
+  --color-syntax-string: #032f62;
+  --color-syntax-entity: #6f42c1;
+  --color-syntax-variable: #953800;
+}
+
+pre[class*=language-],
+code {
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+code:not([class*=language-]):not(.raw) {
+  padding: 0.125rem 0.25rem;
+  background-color: var(--color-code-background);
+  color: var(--color-code-inline);
+}
+
+code.raw {
+  color: inherit;
+}
+
+pre[class*=language-] {
+  max-width: 100%;
+  overflow: auto;
+  padding: 1em;
+  border-left: 6px solid var(--color-code-block-border);
+  background-color: var(--color-code-background);
+}
+
+code[class*=language-],
+pre[class*=language-] {
+  color: var(--color-syntax-default);
+  direction: ltr;
+  text-align: left;
+  font-size: 0.9em;
+  line-height: 1.4em;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+}
+code[class*=language-]::-moz-selection,
+code[class*=language-] ::-moz-selection, code[class*=language-]::selection,
+code[class*=language-] ::selection,
+pre[class*=language-]::-moz-selection,
+pre[class*=language-] ::-moz-selection,
+pre[class*=language-]::selection,
+pre[class*=language-] ::selection {
+  background: var(--color-syntax-selection-bg);
+}
+
+.token.important {
+  color: #e90;
+}
+.token.important, .token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
+}
+.token.comment {
+  color: var(--color-syntax-comment);
+}
+.token.keyword {
+  color: var(--color-syntax-keyword);
+}
+.token.boolean, .token.number, .token.operator, .token.regex-delimiter {
+  color: var(--color-syntax-constant);
+}
+.token.string, .token.regex {
+  color: var(--color-syntax-string);
+}
+.token.function, .token.entity {
+  color: var(--color-syntax-entity);
+}
+.token.class-name {
+  color: var(--color-syntax-variable);
+}
+
+/*# sourceMappingURL=code.css.map */
