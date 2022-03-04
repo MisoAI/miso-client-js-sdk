@@ -1,4 +1,4 @@
-name: Doc site publish
+name: Publish doc site
 
 on:
   workflow_dispatch:
