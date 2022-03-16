@@ -10,6 +10,7 @@
     "clean": "npm run clean --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
+    "post-publish": "npm run post-publish --workspaces --if-present",
     "start": "concurrently 'npm run start --workspace=packages/client-sdk' 'npm run start --workspace=mock-service'",
     "doc:build": "npm run doc:build --workspace=doc",
     "doc:start": "npm run doc:start --workspace=doc"

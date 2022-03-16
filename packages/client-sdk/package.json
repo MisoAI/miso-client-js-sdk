@@ -12,6 +12,7 @@
     "clean": "npx rimraf lib dist es coverage types",
     "test": "echo later",
     "build": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
+    "post-publish": "curl https://purge.jsdelivr.net/npm/@miso.ai/shopify-client@latest",
     "start": "rollup -w -c rollup.config.dev.js"
   },
   "repository": "MisoAI/miso-client-js-sdk",

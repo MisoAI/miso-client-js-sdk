@@ -36,3 +36,4 @@ jobs:
       - run: npm publish --workspaces
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm run post-publish
