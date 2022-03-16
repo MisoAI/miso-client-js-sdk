@@ -1,7 +1,6 @@
 # generated
 node_modules/
 dist/
-doc-dist/
 
 # env
 .env

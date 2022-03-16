@@ -16,10 +16,10 @@ module.exports = function(config) {
   config.addDataExtension('yml', contents => yaml.load(contents));
 
   config.addPassthroughCopy({
-    'doc/asset': '/'
+    'asset': '/'
   });
   config.setBrowserSyncConfig({
-		files: './doc-dist/css/**/*.css'
+		files: './dist/css/**/*.css'
 	});
 
   config.addNunjucksFilter('markdown', (value) => markdown.renderInline(value));
@@ -31,11 +31,11 @@ module.exports = function(config) {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain
     pathPrefix: '/miso-client-js-sdk/',
     dir: {
-      input: 'doc/page',
+      input: 'page',
       includes: '../_includes',
       layouts: '../_layouts',
       data: '../_data',
-      output: 'doc-dist'
+      output: 'dist'
     }
   }
 };

@@ -1,0 +1,26 @@
+{
+  "name": "@miso.ai/client-sdk",
+  "description": "Miso client-side JavaScript SDK",
+  "main": "dist/miso.min.js",
+  "files": [
+    "dist/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "npx rimraf lib dist es coverage types",
+    "test": "echo later",
+    "build": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
+    "start": "rollup -w -c rollup.config.dev.js"
+  },
+  "repository": "MisoAI/miso-client-js-sdk",
+  "homepage": "https://github.com/MisoAI/miso-client-js-sdk#readme",
+  "license": "MIT",
+  "contributors": [
+    "simonpai <simon.pai@askmiso.com>"
+  ],
+  "bugs": {
+    "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
+  }
+}
