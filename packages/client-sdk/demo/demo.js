@@ -155,9 +155,7 @@
   if (useMockService) {
     config.env = 'mock';
   }
-  var user = {
-    anonymousId: crypto.randomUUID()
-  };
+  var user = {};
   if (!useMockService) {
     user.userId = 'TacoFranz';
     user.userHash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
@@ -169,8 +167,8 @@
   misocmd.push(function () {
 
     var miso = window.createMiso(config);
-    miso.context.setAnonymousId(user.anonymousId);
-    miso.context.setUserId(user.userId, user.userHash);
+    miso.context.user_id = user.userId;
+    miso.context.user_hash = user.userHash;
 
     demo.version = miso.version;
 

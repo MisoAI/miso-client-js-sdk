@@ -6,6 +6,8 @@ sections:
     path: /installation
   - title: Configuration
     path: /configuration
+  - title: Context
+    path: /context
 - title: Search
   path: /search
   pages:

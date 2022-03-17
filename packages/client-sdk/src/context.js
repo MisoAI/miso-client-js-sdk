@@ -4,31 +4,39 @@ export default class Context {
 
   constructor(client) {
     this._client = client;
+    this._anonymousIdManager = new client.constructor.mods.anonymousId();
+    this._user = {};
   }
 
-  setUserId(id, hash) {
-    this.user_id = id;
-    this.user_hash = hash;
+  get anonymous_id() {
+    return this._anonymousIdManager.id;
   }
 
-  setAnonymousId(id, hash) {
-    this.anonymous_id = id;
-    this.anonymous_hash = hash;
+  set anonymous_id(id) {
+    this._anonymousIdManager.id = id;
   }
 
-  clearUserId() {
-    this.user_id = this.user_hash = undefined;
+  get user_id() {
+    return this._user.id;
   }
 
-  clearAnonymousId() {
-    this.anonymous_id = this.anonymous_hash = undefined;
+  set user_id(id) {
+    this._user.id = id;
+  }
+
+  get user_hash() {
+    return this._user.hash;
+  }
+
+  set user_hash(hash) {
+    this._user.hash = hash;
   }
 
   // TODO: readonly proxy
 
   get userInfo() {
-    const { user_id, user_hash, anonymous_id, anonymous_hash } = this;
-    return trimObj({ user_id, user_hash, anonymous_id, anonymous_hash });
+    const { user_id, user_hash, anonymous_id } = this;
+    return trimObj({ user_id, user_hash, anonymous_id });
   }
 
 }

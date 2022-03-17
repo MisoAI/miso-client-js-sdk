@@ -81,18 +81,19 @@ misocmd.push(function() {
     <div class="row">
       <div class="col">
         <p>
-          Specify <code>user_id</code>, <code>anonymous_id</code>, and <code>user_hash</code> once, and they will be passed into API
+          Specify <code>user_id</code> and <code>user_hash</code> once, and they will be passed into API
           payloads automatically.
         </p>
         <ul>
           <li>You can clear or update the values later.</li>
           <li>You can override the values per API call.</li>
+          <li>Miso SDK takes care anonymous id automatically.</li>
         </ul>
       </div>
       <div class="col">
         <div class="codebox">
-          <code>miso.context.setUserId('user_id', 'user_hash');
-miso.context.setAnonymousId('anonymous_id', 'anonymous_hash');</code>
+          <code>miso.context.user_id = 'user_id';
+miso.context.user_hash = 'user_hash';</code>
         </div>
       </div>
     </div>
