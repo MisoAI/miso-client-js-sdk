@@ -6,23 +6,23 @@ export default class Recommendation extends ApiBase {
     super(api, 'recommendation');
   }
 
-  async user_to_products(payload) {
+  async userToProducts(payload) {
     return this._run('user_to_products', payload);
   }
 
-  async user_to_categories(payload) {
+  async userToCategories(payload) {
     return this._run('user_to_products', payload);
   }
 
-  async user_to_attributes(payload) {
+  async userToAttributes(payload) {
     return this._run('user_to_attributes', payload);
   }
 
-  async user_to_trending(payload) {
+  async userToTrending(payload) {
     return this._run('user_to_trending', payload);
   }
 
-  async product_to_products(payload) {
+  async productToProducts(payload) {
     return this._run('product_to_products', payload);
   }
 

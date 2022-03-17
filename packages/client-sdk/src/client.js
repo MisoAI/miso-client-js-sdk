@@ -22,13 +22,13 @@ export default class MisoClient {
 
   _normalizeConfig(options) {
     if (typeof options === 'string') {
-      return { api_key: options };
+      return { apiKey: options };
     }
-    const { api_key, api_base_url, env } = options || {};
-    if (!api_key) {
+    const { apiKey, apiBaseUrl, env } = options || {};
+    if (!apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
-    return trimObj({ api_key, api_base_url, env });
+    return trimObj({ apiKey, apiBaseUrl, env });
   }
 
 }

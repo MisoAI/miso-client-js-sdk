@@ -7,7 +7,7 @@ description: Returns the product attributes that Miso expects to drive a convers
 
 #### Syntax
 ```js
-const response = await miso.api.recommendation.user_to_attributes(options);
+const response = await miso.api.recommendation.userToAttributes(options);
 ```
 
 #### Parameters
@@ -29,7 +29,7 @@ const options = {
   products_per_attribute: 2,
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { attributes } = await miso.api.recommendation.user_to_attributes(options);
+const { attributes } = await miso.api.recommendation.userToAttributes(options);
 ```
 
 #### Learn more

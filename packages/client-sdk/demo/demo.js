@@ -146,22 +146,21 @@
 (function () {
 
   var searchParams = new URLSearchParams(window.location.search);
-  var api_key = searchParams.get('api_key');
-  //var user_id = searchParams.get('user_id');
-  var useMockService = !api_key;
+  var apiKey = searchParams.get('api_key');
+  var useMockService = !apiKey;
 
   var config = {
-    api_key: useMockService ? 'miso-client-sdk-demo-api-key' : api_key
+    apiKey: useMockService ? 'miso-client-sdk-demo-api-key' : apiKey
   };
   if (useMockService) {
     config.env = 'mock';
   }
   var user = {
-    anonymous_id: crypto.randomUUID()
+    anonymousId: crypto.randomUUID()
   };
   if (!useMockService) {
-    user.user_id = 'TacoFranz';
-    user.user_hash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
+    user.userId = 'TacoFranz';
+    user.userHash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
   }
 
   var demo = window.demo;
@@ -170,13 +169,13 @@
   misocmd.push(function () {
 
     var miso = window.createMiso(config);
-    miso.context.setAnonymousId(user.anonymous_id);
-    miso.context.setUserId(user.user_id, user.user_hash);
+    miso.context.setAnonymousId(user.anonymousId);
+    miso.context.setUserId(user.userId, user.userHash);
 
     demo.version = miso.version;
 
     // recommendation //
-    miso.api.recommendation.user_to_products({ fl: ['*'] })
+    miso.api.recommendation.userToProducts({ fl: ['*'] })
       .then((response) => demo.recommendation.render(response))
       .catch(console.error.bind(console));
 

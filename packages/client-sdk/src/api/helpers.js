@@ -33,13 +33,13 @@ export default class Helpers {
 
   url(...paths) {
     const apiName = paths.filter(s => s).join('/');
-    // TODO: allow overloading api_key here
-    let { api_key, api_base_url = API.BASE_URL, env } = this._client.config;
+    // TODO: allow overloading API key here?
+    let { apiKey, apiBaseUrl = API.BASE_URL, env } = this._client.config;
     // TODO: refine this
     if (env === 'mock') {
-      api_base_url = API.MOCK_SERVER_URL;
+      apiBaseUrl = API.MOCK_SERVER_URL;
     }
-    return `${api_base_url}/${apiName}?api_key=${window.encodeURIComponent(api_key)}`;
+    return `${apiBaseUrl}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
   }
 
   buildPayloadContext() {

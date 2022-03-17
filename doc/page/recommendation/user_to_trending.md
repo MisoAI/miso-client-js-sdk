@@ -7,7 +7,7 @@ description: Returns the products that are currently trending and are most likel
 
 #### Syntax
 ```js
-const response = await miso.api.recommendation.user_to_trending(options);
+const response = await miso.api.recommendation.userToTrending(options);
 ```
 
 #### Parameters
@@ -27,7 +27,7 @@ const options = {
   user_hash: '...',
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { products } = await miso.api.recommendation.user_to_trending(options);
+const { products } = await miso.api.recommendation.userToTrending(options);
 ```
 
 #### Learn more

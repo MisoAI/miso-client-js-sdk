@@ -7,7 +7,7 @@ description: Returns the products that are most likely to drive conversion for t
 
 #### Syntax
 ```js
-const response = await miso.api.recommendation.user_to_products(options);
+const response = await miso.api.recommendation.userToProducts(options);
 ```
 
 #### Parameters
@@ -27,7 +27,7 @@ const options = {
   user_hash: '...',
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { products } = await miso.api.recommendation.user_to_products(options);
+const { products } = await miso.api.recommendation.userToProducts(options);
 ```
 
 #### Learn more

@@ -45,8 +45,8 @@ const { completions } = await miso.search.autocomplete("...");
 
 and various kinds of recommendations:
 ```js
-const { products } = await miso.recommendation.user_to_products();
-const { products } = await miso.recommendation.product_to_products({ product_id: "..." });
+const { products } = await miso.recommendation.userToProducts();
+const { products } = await miso.recommendation.productToProducts({ product_id: "..." });
 ```
 
 Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
