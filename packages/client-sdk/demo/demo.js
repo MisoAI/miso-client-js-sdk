@@ -152,11 +152,10 @@
   var config = {
     apiKey: useMockService ? 'miso-client-sdk-demo-api-key' : apiKey
   };
-  if (useMockService) {
-    config.env = 'mock';
-  }
   var user = {};
-  if (!useMockService) {
+  if (useMockService) {
+    config.apiHost = 'mock';
+  } else {
     user.userId = 'TacoFranz';
     user.userHash = 'c657b6de0d2b99cf6b65ef0ea04711b353f7b8ea1f3c39f6cece40509527a29a';
   }

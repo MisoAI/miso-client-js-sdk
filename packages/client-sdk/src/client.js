@@ -26,11 +26,12 @@ class MisoClient {
     if (typeof options === 'string') {
       return { apiKey: options };
     }
-    const { apiKey, apiBaseUrl, env, disableAutoAnonymousId } = options || {};
+    // TODO: option: debug
+    const { apiKey, apiHost, disableAutoAnonymousId } = options || {};
     if (!apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
-    return trimObj({ apiKey, apiBaseUrl, env, disableAutoAnonymousId });
+    return trimObj({ apiKey, apiHost, disableAutoAnonymousId });
   }
 
 }

@@ -32,14 +32,23 @@ export default class Helpers {
   }
 
   url(...paths) {
+    const { apiKey } = this._client.config;
     const apiName = paths.filter(s => s).join('/');
-    // TODO: allow overloading API key here?
-    let { apiKey, apiBaseUrl = API.BASE_URL, env } = this._client.config;
-    // TODO: refine this
-    if (env === 'mock') {
-      apiBaseUrl = API.MOCK_SERVER_URL;
+    // TODO: neutralize use of DOM API
+    return `${this.apiBaseUrl}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
+  }
+
+  get apiBaseUrl() {
+    const { apiHost = 'prod' } = this._client.config;
+    switch (apiHost) {
+      case 'prod':
+        return API.BASE_URL;
+      case 'mock':
+        return API.MOCK_SERVER_URL;
+      default:
+        // TODO: normailize URL
+        return apiHost;
     }
-    return `${apiBaseUrl}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
   }
 
   buildPayloadContext() {
