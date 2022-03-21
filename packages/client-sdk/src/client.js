@@ -1,13 +1,13 @@
+import { BUILD } from './constants';
 import { trimObj } from './util/objects';
 import Api from './api';
 import Context from './context';
-import getAdmin from './admin';
 import defaultMods from './mod';
 
 class MisoClient {
 
   constructor(options) {
-    this._admin = getAdmin(this);
+    this.constructor.instances.push(this);
     this._config(options);
 
     this.context = new Context(this);
@@ -15,7 +15,7 @@ class MisoClient {
   }
 
   get version() {
-    return this._admin.version;
+    return this.constructor.version;
   }
 
   _config(options) {
@@ -26,7 +26,7 @@ class MisoClient {
     if (typeof options === 'string') {
       return { apiKey: options };
     }
-    // TODO: option: debug
+    // TODO: option: debug, noInteraction
     const { apiKey, apiHost, disableAutoAnonymousId } = options || {};
     if (!apiKey) {
       throw new Error('Require API key to initialize miso client.');
@@ -36,6 +36,10 @@ class MisoClient {
 
 }
 
-MisoClient.mods = Object.assign({}, defaultMods);
+Object.defineProperties(MisoClient, {
+  version: { value: BUILD.version },
+  instances: { value: [] },
+  mods: { value: Object.assign({}, defaultMods) }
+});
 
 export default MisoClient;

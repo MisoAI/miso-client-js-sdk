@@ -12,7 +12,7 @@ The SDK takes care of `anonymous_id` automatically using session storage. It wil
 If you want to manage `anonymous_id` by yourself, specify it in the config:
 
 ```js
-const miso = createMiso({
+const miso = new MisoClient({
   apiKey: '...',
   disableAutoAnonymousId: true
 });

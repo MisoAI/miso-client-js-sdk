@@ -165,7 +165,7 @@
   var misocmd = window.misocmd || (window.misocmd = []);
   misocmd.push(function () {
 
-    var miso = window.createMiso(config);
+    var miso = new window.MisoClient(config);
     miso.context.user_id = user.userId;
     miso.context.user_hash = user.userHash;
 

@@ -1,7 +1,14 @@
 import MisoClient from './client';
+import cmd from './cmd';
 
-createMiso.MisoClient = MisoClient;
+if (!window.MisoClient) {
+  window.MisoClient = MisoClient;
+} else {
+  // TODO: check version as well
+  console.warn(`Use already defined window.MisoClient (${window.MisoClient.version}).`);
+}
 
-export default function createMiso(options) {
-  return new MisoClient(options);
-};
+// kick off misocmd execution
+cmd();
+
+export default window.MisoClient;

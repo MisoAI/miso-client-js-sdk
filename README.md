@@ -27,8 +27,8 @@ npm install @miso.ai/client-sdk
 
 Create Miso client:
 ```js
-const createMiso = require("@miso.ai/client-sdk");
-const miso = createMiso("your-api-key");
+const MisoClient = require("@miso.ai/client-sdk");
+const miso = new MisoClient("your-api-key");
 ```
 
 Specify an anonymous or signed-in user id:

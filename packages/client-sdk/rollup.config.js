@@ -11,7 +11,8 @@ export default [
     output: {
       file: 'dist/miso.min.js',
       format: 'umd',
-      name: 'createMiso',
+      name: 'MisoClient',
+      exports: 'default',
       indent: false
     },
     plugins: [
