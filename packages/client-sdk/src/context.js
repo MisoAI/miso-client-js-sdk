@@ -1,8 +1,10 @@
+import Component from './util/component';
 import { trimObj } from './util/objects';
 
-export default class Context {
+export default class Context extends Component {
 
   constructor(client) {
+    super('context', client);
     this._client = client;
     this._anonymousIdManager = new client.constructor.mods.anonymousId();
     this._user = {};

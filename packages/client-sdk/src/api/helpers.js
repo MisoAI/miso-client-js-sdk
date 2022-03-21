@@ -39,6 +39,7 @@ export default class Helpers {
   }
 
   get apiBaseUrl() {
+    // TODO: we may implement mock feature as a plugin
     const { apiHost = 'prod' } = this._client.config;
     switch (apiHost) {
       case 'prod':

@@ -1,4 +1,4 @@
-import AutomaticAnonymousIdManager from "./auto";
+import AutomaticAnonymousIdManager from './auto';
 
 export default function DefaultAnonymousIdManager(disableAutoAnonymousId) {
   return disableAutoAnonymousId ? {} : new AutomaticAnonymousIdManager();

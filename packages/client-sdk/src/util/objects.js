@@ -30,3 +30,21 @@ export function delegateGetters(target, source, propNames) {
     return acc;
   }, {}));
 }
+
+/**
+ * Remove the specified item from array.
+ */
+export function arrayRemoveItem(array, item) {
+  const i = array.indexOf(item);
+  if (i > -1) {
+    array.splice(i, 1);
+  }
+}
+
+export function executeWithCatch(fn, args) {
+  try {
+    fn.apply(undefined, args);
+  } catch (e) {
+    console.error(e);
+  }
+}
