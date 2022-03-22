@@ -15,6 +15,9 @@ export default class Context extends Component {
   }
 
   set anonymous_id(id) {
+    if (typeof id !== 'string') {
+      throw new Error(`Anonymous ID must be a string: ${id}`);
+    }
     this._anonymousIdManager.id = id;
   }
 
@@ -23,6 +26,9 @@ export default class Context extends Component {
   }
 
   set user_id(id) {
+    if (typeof id !== 'string') {
+      throw new Error(`User ID must be a string: ${id}`);
+    }
     this._user.id = id;
   }
 
@@ -31,6 +37,9 @@ export default class Context extends Component {
   }
 
   set user_hash(hash) {
+    if (typeof hash !== 'string') {
+      throw new Error(`User hash must be a string: ${hash}`);
+    }
     this._user.hash = hash;
   }
 
