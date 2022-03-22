@@ -1,4 +1,4 @@
-import { arrayRemoveItem } from '../util/objects';
+import { removeArrayItem } from '../util/objects';
 import Plugin from './base';
 
 const TAG = '%cMiso';
@@ -23,7 +23,7 @@ export default class Debug extends Plugin {
   }
 
   _uninstall(client) {
-    client._debuggers && arrayRemoveItem(client._debuggers, this._log);
+    client._debuggers && removeArrayItem(client._debuggers, this._log);
   }
 
 }

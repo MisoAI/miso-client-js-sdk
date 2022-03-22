@@ -1,36 +1,37 @@
-import { arrayRemoveItem } from "./objects";
+import { removeArrayItem } from "./objects";
 
 export default class EventEmitter {
 
   constructor({ debug, error } = {}) {
     this._error = error || (e => console.error(e));
     this._debug = debug;
-    this._handlers = {};
+    this._callbacks = {};
   }
 
   emit(name) {
-    const handlers = this._handlers[name];
-    if (handlers) {
-      for (const handler of handlers) {
-        handler.apply(undefined, Array.prototype.slice.call(arguments, 1));
+    const callbacks = this._callbacks[name];
+    const restArgs = Array.prototype.slice.call(arguments, 1);
+    if (callbacks) {
+      for (const callback of callbacks) {
+        callback(restArgs);
       }
     }
-    this._debug && this._debug.apply(undefined, arguments);
+    this._debug && this._debug.apply(undefined, Array.prototype.slice.call(arguments));
   }
 
-  on(name, handler) {
+  on(name, callback) {
     this._checkName(name);
-    this._checkHandler(handler);
-    return this._on(name, this._wrapHandler(name, handler));
+    this._checkCallback(callback);
+    return this._on(name, this._wrapCallback(name, callback));
   }
 
-  once(name, handler) {
+  once(name, callback) {
     this._checkName(name);
-    this._checkHandler(handler);
-    const wrappedHandler = this._wrapHandler(name, handler);
-    const off = this._on(name, () => {
-      wrappedHandler.apply(undefined, arguments);
+    this._checkCallback(callback);
+    const wrappedCallback = this._wrapCallback(name, callback);
+    const off = this._on(name, (args) => {
       off();
+      wrappedCallback(args);
     });
     return off;
   }
@@ -42,33 +43,33 @@ export default class EventEmitter {
     }
   }
 
-  _checkHandler(handler) {
-    if (typeof handler !== 'function') {
-      throw new Error(`Event handler should be a function: ${handler}`);
+  _checkCallback(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error(`Event callback should be a function: ${callback}`);
     }
   }
 
-  _wrapHandler(name, handler) {
+  _wrapCallback(name, callback) {
     const self = this;
-    return () => {
+    return (args) => {
       try {
-        handler.apply(undefined, arguments);
+        callback.apply(undefined, args);
       } catch(e) {
-        self._error(new Error(`Error in event handler of ${name}.`, { cause: e }));
+        self._error(new Error(`Error in event callback of ${name}.`, { cause: e }));
       }
     };
   }
 
-  _on(name, wrappedHandler) {
-    const handlers = this._handlers[name] || (this._handlers[name] = []);
-    handlers.push(wrappedHandler);
+  _on(name, wrappedCallback) {
+    const callbacks = this._callbacks[name] || (this._callbacks[name] = []);
+    callbacks.push(wrappedCallback);
     // return the corresponding unsubscribe function
-    return () => this._off(name, wrappedHandler);
+    return () => this._off(name, wrappedCallback);
   }
 
-  _off(name, wrappedHandler) {
-    const handlers = this._handlers[name];
-    handlers && arrayRemoveItem(handlers, wrappedHandler);
+  _off(name, wrappedCallback) {
+    const callbacks = this._callbacks[name];
+    callbacks && removeArrayItem(callbacks, wrappedCallback);
   }
 
 }

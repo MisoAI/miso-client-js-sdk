@@ -1,4 +1,4 @@
-import { arrayRemoveItem, executeWithCatch } from '../util/objects';
+import { removeArrayItem, executeWithCatch } from '../util/objects';
 
 export default class Plugin {
 
@@ -24,7 +24,7 @@ export default class Plugin {
   uninstall(client) {
     executeWithCatch((self, client) => {
       self._uninstall(client);
-      arrayRemoveItem(client.plugins, self);
+      removeArrayItem(client.plugins, self);
     }, [this, client]);
   }
 
