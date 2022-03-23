@@ -44,8 +44,8 @@ class MisoClient extends Component {
     return trimObj({ apiKey, apiHost, disableAutoAnonymousId });
   }
 
-  debug() {
-    this.use(new Debug());
+  debug(options) {
+    this.use(new Debug(options));
   }
 
   use(plugin) {
@@ -89,8 +89,8 @@ Object.defineProperties(MisoClient, {
     },
   },
   debug: {
-    value: function() {
-      MisoClient.use(new Debug())
+    value: function(options) {
+      MisoClient.use(new Debug(options))
     },
   },
   mods: { value: Object.assign({}, defaultMods) }

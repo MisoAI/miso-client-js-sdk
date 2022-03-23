@@ -73,6 +73,8 @@
       this.recommendation.init();
       document.body.classList.add(this.env);
       document.querySelector('#navbarDarkDropdownMenuLink').innerHTML = this.envs[this.env];
+      this._init = true;
+      this._onreadyfns && this._onreadyfns.forEach((fn) => fn());
     }
     set version(value) {
       var versionPrefix = ` (${value})`;
@@ -84,6 +86,13 @@
     reload(env) {
       document.cookie = COOKIE_NAME + '=' + env;
       window.location.reload();
+    }
+    onready(fn) {
+      if (this._init) {
+        fn();
+      } else {
+        (this._onreadyfns || (this._onreadyfns = [])).push(fn);
+      }
     }
   }
 
@@ -103,6 +112,7 @@
       const handleSubmit = this._handleSubmit.bind(this);
       input.addEventListener('keyup', (event) => (event.key === 'Enter') && handleSubmit(event));
       submit.addEventListener('click', handleSubmit);
+      this._init = true;
     }
     _handleSubmit(event) {
       if (event.defaultPrevented) {
@@ -112,8 +122,18 @@
       value && this._emit('submit', value);
     }
     render(response) {
+      this.onready(() => this._render(response));
+    }
+    _render(response) {
       this.elements.results.innerHTML = response.products.slice(0, 3)
         .reduce((acc, product) => acc + window.template.render('product', product), '');
+    }
+    onready(fn) {
+      if (this._init) {
+        fn();
+      } else {
+        (this._onreadyfns || (this._onreadyfns = [])).push(fn);
+      }
     }
   }
 
@@ -126,10 +146,21 @@
       this.elements = {
         results: document.querySelector('#recommendation-results')
       };
+      this._init = true;
     }
     render(response) {
+      this.onready(() => this._render(response));
+    }
+    _render(response) {
       this.elements.results.innerHTML = response.products.slice(0, 3)
         .reduce((acc, product) => acc + window.template.render('product', product), '');
+    }
+    onready(fn) {
+      if (this._init) {
+        fn();
+      } else {
+        (this._onreadyfns || (this._onreadyfns = [])).push(fn);
+      }
     }
 
   }
