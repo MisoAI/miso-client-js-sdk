@@ -19,23 +19,45 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
 * Bundled in UMD format. Can be loaded as a CJS/AMD module or by a script tag.
 * For browser. Server-side SDK coming up later.
 
+## Quick Start
+Install the dependency:
+```bash
+npm install @miso.ai/client-sdk
+```
+
+Create Miso client:
+```js
+const MisoClient = require("@miso.ai/client-sdk");
+const miso = new MisoClient("your-api-key");
+```
+
+Specify user ID optionally. Miso prevails even on fully anonymous data.
+```js
+// miso.context.user_id = "their-user-id";
+```
+
+Deliver fully personalized user experience of search, autocomplete,
+```js
+const { products } = await miso.search.search("...");
+const { completions } = await miso.search.autocomplete("...");
+```
+
+and various kinds of recommendations:
+```js
+const { products } = await miso.recommendation.userToProducts();
+const { products } = await miso.recommendation.productToProducts({ product_id: "..." });
+```
+
+Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
+
 <div align="center">
   <a href="https://miso.ai">
-    <img src="asset/cta.svg" height="36px">
+    <img src="../../asset/cta.svg" height="36px">
   </a>
 </div>
 
-## Packages
-This monorepo contains the following packages:
-
-| Name | NPM | Description |
-| --- | --- | --- |
-| [client-sdk](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk) | The standard build of client JS SDK. |
-
-<!-- -->
-
 ## Development
-See [Development](./development.md).
+See [Development](https://github.com/MisoAI/miso-client-js-sdk/blob/main/development.md).
 
 ## License
 This library is distributed under the [MIT license](https://github.com/askmiso/miso-client-js-sdk/blob/main/LICENSE).
