@@ -13,7 +13,7 @@ export class DryRunPlugin {
     }
     const self = this;
     pluginContext.classes.api.ApiBase.prototype._send = async function({ url }) {
-      this._events.emit('dry-run-send', url);
+      this._events.emit('dry-run-send', { url });
       return self._mockResponse();
     }
   }

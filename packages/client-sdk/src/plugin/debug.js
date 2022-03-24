@@ -9,18 +9,19 @@ export class DebugPlugin {
     this.name = 'debug';
   }
 
-  install(MisoClient, pluginContext) {
+  install(MisoClient) {
     for (const plugin of MisoClient.plugins) {
       if (plugin.id === this.id) {
         console.warn('Debug plugin already installed.');
         return;
       }
     }
+    // TODO: log clients init
     // TODO: log client create
     const _log = this._log.bind(this);
     const _debug = MisoClient.debug;
-    MisoClient.debug = function(name, ...data) {
-      _debug.apply(this, arguments);
+    MisoClient.debug = (name, data) => {
+      _debug(name, data);
       _log(name, data);
     };
   }

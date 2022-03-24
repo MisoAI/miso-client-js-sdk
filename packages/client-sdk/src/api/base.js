@@ -5,7 +5,7 @@ export default class ApiBase extends Component {
   // TODO: use private fields (may encounter issues with rollup)
 
   constructor(api, apiPath) {
-    super('api', api._client);
+    super(apiPath, api);
     this._apiPath = apiPath;
     this.helpers = api.helpers;
     this.config = api._client.config;
@@ -16,10 +16,12 @@ export default class ApiBase extends Component {
     this.helpers.assertReady();
     const url = this._url({ type, payload });
     payload = this._preprocess({ type, payload });
-    this._events.emit('before-send', type, payload);
-    const response = await this._send({ type, url, payload });
-    this._events.emit('after-send', type, payload, response);
-    return this._postprocess({ type, payload, response });
+    const requestData = { type, payload, url };
+    this._events.emit('request', requestData);
+    const response = await this._send(requestData);
+    const responseData = { ...requestData, response };
+    this._events.emit('response', responseData);
+    return this._postprocess(responseData);
   }
 
   _preprocess({ payload }) {

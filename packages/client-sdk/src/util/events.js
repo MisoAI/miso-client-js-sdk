@@ -13,17 +13,17 @@ export default class EventEmitter {
     this._pastEvents = {};
   }
 
-  emit(...args) {
-    const [name, ...restArgs] = args;
+  emit(name, data) {
+    const event = { data };
     const callbacks = this._callbacks[name];
     if (callbacks) {
       for (const callback of callbacks) {
-        callback(restArgs);
+        callback(event);
       }
     }
-    this._debug && this._debug.apply(undefined, args);
+    this._debug && this._debug(name, data);
     if (this._shallKeepInReplay(name)) {
-      (this._pastEvents[name] || (this._pastEvents[name] = [])).push(restArgs);
+      (this._pastEvents[name] || (this._pastEvents[name] = [])).push(event);
     }
   }
 
@@ -37,9 +37,9 @@ export default class EventEmitter {
     this._checkName(name);
     this._checkCallback(callback);
     const wrappedCallback = this._wrapCallback(name, callback);
-    const off = this._on(name, (args) => {
+    const off = this._on(name, (event) => {
       off();
-      wrappedCallback(args);
+      wrappedCallback(event);
     });
     return off;
   }
@@ -63,9 +63,9 @@ export default class EventEmitter {
 
   _wrapCallback(name, callback) {
     const self = this;
-    return (args) => {
+    return ({ data }) => {
       try {
-        callback.apply(undefined, args);
+        callback(data);
       } catch(e) {
         self._error(new Error(`Error in event callback of ${name}.`, { cause: e }));
       }
