@@ -65,7 +65,7 @@ export default class ApiHelpers {
   }
 
   injectUserInfo(payload) {
-    return Object.assign({}, this.userInfoForQuery, payload);
+    return { ...this.userInfoForQuery, ...payload };
   }
 
 }
