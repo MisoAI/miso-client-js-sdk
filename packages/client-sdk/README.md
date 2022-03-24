@@ -52,7 +52,7 @@ Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
 
 <div align="center">
   <a href="https://miso.ai">
-    <img src="../../asset/cta.svg" height="36px">
+    <img src="asset/cta.svg" height="36px">
   </a>
 </div>
 
