@@ -44,10 +44,10 @@
     constructor() {
       this._handlers = {};
     }
-    _emit(name) {
+    _emit(name, ...data) {
       for (const handler of (this._handlers[name] || [])) {
         try {
-          handler.apply(this, Array.prototype.slice.call(arguments, 1));
+          handler.apply(this, data);
         } catch (e) {
           console.error(e);
         }

@@ -1,3 +1,4 @@
+import { delegateGetters } from './objects';
 import EventEmitter from './events';
 
 export default class Component {
@@ -10,21 +11,20 @@ export default class Component {
     this._type = type;
     this._parent = parent;
   
-    const events = this._events = new EventEmitter({
-      debug: this._debug.bind(this),
+    this._events = new EventEmitter({
+      debug: this.debug.bind(this),
       error: this._error.bind(this),
     });
-    this.on = events.on.bind(events);
-    this.once = events.once.bind(events);
+    delegateGetters(this, this._events, ['on', 'once']);
   }
 
-  _debug() {
-    if (this._parent) {
-      const args = Array.prototype.slice.call(arguments);
+  debug(...args) {
+    const parent = this._parent;
+    if (parent) {
       if (this._type) {
         args[0] = `${this._type}:${args[0]}`;
       }
-      this._parent && this._parent._debug.apply(this._parent, args);
+      parent && parent.debug && parent.debug.apply(parent, args);
     }
   }
 

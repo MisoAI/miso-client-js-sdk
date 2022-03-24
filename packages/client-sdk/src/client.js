@@ -1,11 +1,8 @@
-import { BUILD } from './constants';
-import EventEmitter from './util/events';
-import Component from './util/component';
 import { trimObj, executeWithCatch } from './util/objects';
+import Component from './util/component';
+import clients from './clients';
 import Api from './api';
 import Context from './context';
-import defaultMods from './mod';
-import Debug from './plugin/debug';
 
 class MisoClient extends Component {
 
@@ -16,12 +13,7 @@ class MisoClient extends Component {
     this.context = new Context(this);
     this.api = new Api(this);
 
-    MisoClient.instances.push(this);
-    MisoClient._events.emit('instance', this);
-    for (const plugin of MisoClient.plugins) {
-      plugin.install(this);
-    }
-    // TODO: emit debug msg on client instance
+    clients.push(this);
   }
 
   get version() {
@@ -44,56 +36,17 @@ class MisoClient extends Component {
     return trimObj({ apiKey, apiHost, disableAutoAnonymousId });
   }
 
-  debug(options) {
-    this.use(new Debug(options));
-  }
-
-  use(plugin) {
-    plugin.install(this);
-  }
-
-  _debug() {
-    if (this._debuggers) {
-      for (const callback of this._debuggers) {
-        executeWithCatch(callback, arguments);
-      }
-    }
+  debug() {
+    MisoClient.debug.apply(MisoClient, arguments);
   }
 
   _error(e) {
-    MisoClient._error(e);
+    console.error(e);
   }
 
 }
 
-// MisoClient static //
-const events = new EventEmitter({
-  error: (e) => MisoClient._error(e),
-});
-
-Object.assign(MisoClient, {
-  plugins: [],
-  _events: events,
-  _error: (e) => console.error(e)
-});
-
-Object.defineProperties(MisoClient, {
-  version: { value: BUILD.version },
-  instances: { value: [] },
-  use: {
-    value: function(plugin) {
-      for (const inst of MisoClient.instances) {
-        inst.use(plugin);
-      }
-      MisoClient.plugins.push(plugin);
-    },
-  },
-  debug: {
-    value: function(options) {
-      MisoClient.use(new Debug(options))
-    },
-  },
-  mods: { value: Object.assign({}, defaultMods) }
-});
+clients.inject(MisoClient);
+MisoClient.debug = () => {};
 
 export default MisoClient;

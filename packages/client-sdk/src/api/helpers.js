@@ -2,7 +2,7 @@ import { trimObj } from '../util/objects';
 import { API } from '../constants';
 import { readPageInfo, readUtm } from '../util/url';
 
-export default class Helpers {
+export default class ApiHelpers {
 
   constructor(client) {
     this._client = client;

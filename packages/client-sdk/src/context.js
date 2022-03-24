@@ -6,7 +6,7 @@ export default class Context extends Component {
   constructor(client) {
     super('context', client);
     this._client = client;
-    this._anonymousIdManager = new client.constructor.mods.anonymousId();
+    this._anonymousIdManager = new client.constructor.lib.mods.anonymousId();
     this._user = {};
   }
 

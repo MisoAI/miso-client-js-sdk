@@ -1,47 +1,37 @@
-import { removeArrayItem } from '../util/objects';
-import Plugin from './base';
-
 const TAG = '%cMiso';
 const STYLE = 'color: #fff; background-color: #334cbb; padding: 2px 2px 1px 4px;';
 
-export default class Debug extends Plugin {
+export class DebugPlugin {
 
   constructor(options = {}) {
-    super('debug');
     this._options = options;
-    this._log = this._log.bind(this);
+    this.id = 'std:debug';
+    this.name = 'debug';
   }
 
-  _install(client) {
-    const { dryrun = false } = this._options;
-
-    // log events in console
-    // TODO: log client instance
-    const _log = this._log;
-    const debuggers = client._debuggers || (client._debuggers = []);
-    debuggers.push(_log);
-
-    // dryrun mode
-    if (dryrun === true) {
-      client.api.base.prototype._send = async ({ url }) => {
-        _log('api:dryrun-send', url);
-        return { data: {
-          products: [],
-          results: []
-        }};
+  install(MisoClient, pluginContext) {
+    for (const plugin of MisoClient.plugins) {
+      if (plugin.id === this.id) {
+        console.warn('Debug plugin already installed.');
+        return;
       }
     }
+    // TODO: log client create
+    const _log = this._log.bind(this);
+    const _debug = MisoClient.debug;
+    MisoClient.debug = function(name, ...data) {
+      _debug.apply(this, arguments);
+      _log(name, data);
+    };
   }
 
-  _log(name) {
-    const data = Array.prototype.slice.call(arguments, 1);
+  _log(name, data) {
     const args = [TAG, STYLE, `[${name}]`].concat(data);
     console.log.apply(console, args);
   }
 
-  _uninstall(client) {
-    client._debuggers && removeArrayItem(client._debuggers, this._log);
-    // TODO: handle dryrun mode
-  }
+}
 
+export default function debug(options) {
+  return new DebugPlugin(options);
 }

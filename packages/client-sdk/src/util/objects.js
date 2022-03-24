@@ -32,6 +32,17 @@ export function delegateGetters(target, source, propNames) {
 }
 
 /**
+ * Assign values on target object with Object.defineProperties() from source object.
+ */
+export function defineValues(target, source) {
+  for (const name in source) {
+    if (source.hasOwnProperty(name)) {
+      Object.defineProperty(target, name, { value: source[name] });
+    }
+  }
+}
+
+/**
  * Remove the specified item from array.
  */
 export function removeArrayItem(array, item) {
@@ -41,6 +52,9 @@ export function removeArrayItem(array, item) {
   }
 }
 
+/**
+ * Wrap function execution with a try-catch block with errors handled by console logging.
+ */
 export function executeWithCatch(fn, args) {
   try {
     fn.apply(undefined, args);

@@ -1,5 +1,7 @@
-import Debug from './debug';
+import debug from './debug';
+import dryRun from './dry-run';
 
-export default {
-  debug: Debug,
-}
+export default Object.freeze({
+  debug,
+  'dry-run': dryRun,
+})

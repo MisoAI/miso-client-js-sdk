@@ -2,21 +2,29 @@ import { removeArrayItem } from "./objects";
 
 export default class EventEmitter {
 
-  constructor({ debug, error } = {}) {
+  constructor({ debug, error, replay = false } = {}) {
     this._error = error || (e => console.error(e));
     this._debug = debug;
+    if (typeof replay !== 'boolean' && !Array.isArray(replay)) {
+      throw new Error(`Replay option value must be either a boolean or an array of strings: ${replay}`);
+    }
+    this._replay = replay;
     this._callbacks = {};
+    this._pastEvents = {};
   }
 
-  emit(name) {
+  emit(...args) {
+    const [name, ...restArgs] = args;
     const callbacks = this._callbacks[name];
-    const restArgs = Array.prototype.slice.call(arguments, 1);
     if (callbacks) {
       for (const callback of callbacks) {
         callback(restArgs);
       }
     }
-    this._debug && this._debug.apply(undefined, Array.prototype.slice.call(arguments));
+    this._debug && this._debug.apply(undefined, args);
+    if (this._shallKeepInReplay(name)) {
+      (this._pastEvents[name] || (this._pastEvents[name] = [])).push(restArgs);
+    }
   }
 
   on(name, callback) {
@@ -49,6 +57,10 @@ export default class EventEmitter {
     }
   }
 
+  _shallKeepInReplay(name) {
+    return this._replay === true || (Array.isArray(this._replay) && this._replay.indexOf(name) > -1);
+  }
+
   _wrapCallback(name, callback) {
     const self = this;
     return (args) => {
@@ -61,8 +73,9 @@ export default class EventEmitter {
   }
 
   _on(name, wrappedCallback) {
-    const callbacks = this._callbacks[name] || (this._callbacks[name] = []);
-    callbacks.push(wrappedCallback);
+    (this._callbacks[name] || (this._callbacks[name] = [])).push(wrappedCallback);
+    // if this event type is in replay mode, replay past events
+    this._pastEvents[name] && this._pastEvents[name].forEach(wrappedCallback);
     // return the corresponding unsubscribe function
     return () => this._off(name, wrappedCallback);
   }
