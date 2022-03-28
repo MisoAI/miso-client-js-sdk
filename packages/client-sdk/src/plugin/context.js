@@ -1,4 +1,4 @@
-import { defineValues } from '../util/objects';
+import { defineValues } from '@miso.ai/commons/dist/es/objects';
 import Api from '../api';
 import ApiBase from '../api/base';
 import ApiHelpers from '../api/helpers';

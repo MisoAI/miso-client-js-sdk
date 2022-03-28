@@ -1,5 +1,5 @@
+import { trimObj } from '@miso.ai/commons/dist/es/objects';
 import Component from './util/component';
-import { trimObj } from './util/objects';
 
 export default class Context extends Component {
 

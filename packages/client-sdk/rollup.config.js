@@ -10,7 +10,7 @@ export default [
   {
     input: 'src/index.js',
     output: {
-      file: 'dist/miso.min.js',
+      file: 'dist/umd/miso.min.js',
       format: 'umd',
       name: 'MisoClient',
       exports: 'default',

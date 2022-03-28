@@ -1,4 +1,4 @@
-import { removeArrayItem } from "./objects";
+import { removeItem } from "./arrays";
 
 export default class EventEmitter {
 
@@ -82,7 +82,7 @@ export default class EventEmitter {
 
   _off(name, wrappedCallback) {
     const callbacks = this._callbacks[name];
-    callbacks && removeArrayItem(callbacks, wrappedCallback);
+    callbacks && removeItem(callbacks, wrappedCallback);
   }
 
 }

@@ -1,4 +1,4 @@
-import { trimObj, executeWithCatch } from './util/objects';
+import { trimObj } from '@miso.ai/commons/dist/es/objects';
 import Component from './util/component';
 import clients from './clients';
 import Api from './api';

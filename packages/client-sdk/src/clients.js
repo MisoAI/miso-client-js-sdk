@@ -1,5 +1,5 @@
-import { delegateGetters } from './util/objects';
-import EventEmitter from './util/events';
+import { delegateGetters } from '@miso.ai/commons/dist/es/objects';
+import { EventEmitter } from '@miso.ai/commons';
 import mods from './mod';
 import plugins from './plugin';
 import SimplePlugin from './plugin/simple';

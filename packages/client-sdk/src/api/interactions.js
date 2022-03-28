@@ -1,4 +1,4 @@
-import { trimObj } from '../util/objects';
+import { trimObj } from '@miso.ai/commons/dist/es/objects';
 import ApiBase from './base';
 
 export default class Interactions extends ApiBase {

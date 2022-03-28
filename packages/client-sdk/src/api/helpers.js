@@ -1,4 +1,4 @@
-import { trimObj } from '../util/objects';
+import { trimObj } from '@miso.ai/commons/dist/es/objects';
 import { API } from '../constants';
 import { readPageInfo, readUtm } from '../util/url';
 

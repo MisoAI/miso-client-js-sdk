@@ -1,4 +1,4 @@
-import { defineValues } from '../util/objects';
+import { defineValues } from '@miso.ai/commons/dist/es/objects';
 
 export default class SimplePlugin {
 

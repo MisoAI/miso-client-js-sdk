@@ -1,7 +1,7 @@
 {
-  "name": "@miso.ai/client-sdk",
-  "description": "Miso client-side JavaScript SDK",
-  "main": "dist/umd/miso.min.js",
+  "name": "@miso.ai/ui-elements",
+  "description": "A set of custom elements to work with Miso client JS SDK",
+  "main": "dist/es/index.js",
   "module": "dist/es/index.js",
   "files": [
     "dist/*"
@@ -10,13 +10,10 @@
     "access": "public"
   },
   "scripts": {
-    "start": "rollup -w -c rollup.config.dev.js",
     "test": "echo later",
     "build:clean": "npx rimraf dist",
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
-    "build:umd": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
-    "build": "npm run build:clean && npm run build:esm && npm run build:umd",
-    "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"
+    "build": "npm run build:clean && npm run build:esm"
   },
   "repository": "MisoAI/miso-client-js-sdk",
   "homepage": "https://misoai.github.io/miso-client-js-sdk/",
@@ -26,8 +23,5 @@
   ],
   "bugs": {
     "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
-  },
-  "dependencies": {
-    "@miso.ai/commons": "*"
   }
 }

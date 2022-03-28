@@ -1,5 +1,5 @@
-import { delegateGetters } from './objects';
-import EventEmitter from './events';
+import { delegateGetters } from '@miso.ai/commons/dist/es/objects';
+import { EventEmitter } from '@miso.ai/commons';
 
 export default class Component {
 

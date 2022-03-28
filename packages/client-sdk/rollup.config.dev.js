@@ -7,7 +7,7 @@ import replace from '@rollup/plugin-replace';
 export default {
   input: 'src/index.js',
   output: {
-    file: 'dist/miso.js',
+    file: 'dist/umd/miso.js',
     format: 'umd',
     name: 'MisoClient',
     exports: 'default',

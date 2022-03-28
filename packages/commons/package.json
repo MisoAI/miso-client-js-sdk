@@ -1,0 +1,30 @@
+{
+  "name": "@miso.ai/commons",
+  "description": "A collection of shared utilies across many Miso packages",
+  "main": "dist/es/index.js",
+  "module": "dist/es/index.js",
+  "files": [
+    "dist/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo later",
+    "build:clean": "npx rimraf dist",
+    "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
+    "build": "npm run build:clean && npm run build:esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git"
+  },
+  "homepage": "https://misoai.github.io/miso-client-js-sdk/",
+  "license": "MIT",
+  "contributors": [
+    "simonpai <simon.pai@askmiso.com>"
+  ],
+  "bugs": {
+    "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
+  }
+}

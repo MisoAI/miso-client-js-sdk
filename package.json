@@ -2,20 +2,24 @@
   "name": "@miso.ai/client-sdk-monorepo",
   "private": true,
   "workspaces": [
-    "packages/*",
+    "packages/commons",
+    "packages/ui-elements",
+    "packages/client-sdk",
     "mock-service",
     "doc"
   ],
   "scripts": {
-    "clean": "npm run clean --workspaces --if-present",
+    "start": "concurrently 'npm run start --workspace=packages/client-sdk' 'npm run start --workspace=mock-service'",
     "test": "npm run test --workspaces --if-present",
+    "build:clean": "npm run build:clean --workspaces --if-present",
+    "build:esm": "npm run build:esm --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "purge-cdn": "npm run purge-cdn --workspaces --if-present",
-    "start": "concurrently 'npm run start --workspace=packages/client-sdk' 'npm run start --workspace=mock-service'",
     "doc:build": "npm run doc:build --workspace=doc",
     "doc:start": "npm run doc:start --workspace=doc"
   },
   "devDependencies": {
+    "@babel/cli": "^7.17.6",
     "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
     "@rollup/plugin-babel": "^5.3.0",
