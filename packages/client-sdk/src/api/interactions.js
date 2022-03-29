@@ -15,12 +15,12 @@ export default class Interactions extends ApiBase {
     return this.helpers.url(this._apiPath);
   }
 
-  _preprocess({ type, payload }) {
-    switch (type) {
+  _preprocess({ apiName, payload }) {
+    switch (apiName) {
       case 'upload':
         return this._preprocessUpload(payload);
       default:
-        return super._preprocess({ type, payload });
+        return super._preprocess({ apiName, payload });
     }
   }
 

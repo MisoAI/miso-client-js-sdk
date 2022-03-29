@@ -3,12 +3,12 @@ import { EventEmitter } from '@miso.ai/commons';
 
 export default class Component {
 
-  constructor(type, parent) {
-    if (parent === undefined && typeof type === 'object') {
-      parent = type;
-      type = undefined;
+  constructor(name, parent) {
+    if (parent === undefined && typeof name === 'object') {
+      parent = name;
+      name = undefined;
     }
-    this._type = type;
+    this._name = name;
     this._parent = parent;
   
     const error = this._error = this._error.bind(this);

@@ -12,11 +12,11 @@ export default class ApiBase extends Component {
     this.context = api._client.context;
   }
 
-  async _run(type, payload) {
+  async _run(apiName, payload) {
     this.helpers.assertReady();
-    const url = this._url({ type, payload });
-    payload = this._preprocess({ type, payload });
-    const requestData = { type, payload, url };
+    const url = this._url({ apiName, payload });
+    payload = this._preprocess({ apiName, payload });
+    const requestData = { apiName, payload, url };
     this._events.emit('request', requestData);
     const response = await this._send(requestData);
     const responseData = { ...requestData, response };
@@ -28,8 +28,8 @@ export default class ApiBase extends Component {
     return this.helpers.injectUserInfo(payload);
   }
 
-  _url({ type }) {
-    return this.helpers.url(this._apiPath, type);
+  _url({ apiName }) {
+    return this.helpers.url(this._apiPath, apiName);
   }
 
   async _send({ url, payload }) {

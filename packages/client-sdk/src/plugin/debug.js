@@ -35,13 +35,23 @@ export class DebugPlugin {
 
   _handleEvent(component, { name }, data) {
     const path = this._getPath(component);
-    this._log(`[${path.join('.')}]`, name, [data]);
+    const pathStr = path.join('.');
+    if (path[1] === 'api') {
+      this._handleApiEvent(name, data);
+    } else {
+      this._log(`[${pathStr}]`, name, [data]);
+    }
+  }
+
+  _handleApiEvent(eventName, { apiName, url, ...data }) {
+    const pathname = new URL(url).pathname;
+    this._log(`[api.${eventName}]`, `POST ${pathname}`, [{ ...data, url }]);
   }
 
   _getPath(component) {
     const path = [];
     for (let c = component; c; c = c._parent) {
-      c._type && path.push(c._type)
+      c._name && path.push(c._name)
     }
     return path.reverse();
   }
