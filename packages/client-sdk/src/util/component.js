@@ -11,22 +11,14 @@ export default class Component {
     this._type = type;
     this._parent = parent;
   
-    this._events = new EventEmitter({
-      debug: this.debug.bind(this),
-      error: this._error.bind(this),
-    });
+    const error = this._error = this._error.bind(this);
+    this._events = new EventEmitter({ error });
     delegateGetters(this, this._events, ['on', 'once']);
+
+    this.init();
   }
 
-  debug(...args) {
-    const parent = this._parent;
-    if (parent) {
-      if (this._type) {
-        args[0] = `${this._type}:${args[0]}`;
-      }
-      parent && parent.debug && parent.debug.apply(parent, args);
-    }
-  }
+  init() {}
 
   _error(e) {
     if (this._parent) {

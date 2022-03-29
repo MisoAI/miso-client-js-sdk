@@ -2,26 +2,28 @@ import { removeItem } from "./arrays";
 
 export default class EventEmitter {
 
-  constructor({ debug, error, replay = false } = {}) {
+  constructor({ error, replay = false } = {}) {
     this._error = error || (e => console.error(e));
-    this._debug = debug;
     if (typeof replay !== 'boolean' && !Array.isArray(replay)) {
       throw new Error(`Replay option value must be either a boolean or an array of strings: ${replay}`);
     }
     this._replay = replay;
-    this._callbacks = {};
+    this._namedCallbacks = {};
+    this._unnamedCallbacks = [];
     this._pastEvents = {};
   }
 
   emit(name, data) {
-    const event = { data };
-    const callbacks = this._callbacks[name];
+    const event = { data, meta: { name, ts: Date.now() } };
+    const callbacks = this._namedCallbacks[name];
     if (callbacks) {
       for (const callback of callbacks) {
         callback(event);
       }
     }
-    this._debug && this._debug(name, data);
+    for (const callback of this._unnamedCallbacks) {
+      callback(event);
+    }
     if (this._shallKeepInReplay(name)) {
       (this._pastEvents[name] || (this._pastEvents[name] = [])).push(event);
     }
@@ -30,13 +32,13 @@ export default class EventEmitter {
   on(name, callback) {
     this._checkName(name);
     this._checkCallback(callback);
-    return this._on(name, this._wrapCallback(name, callback));
+    return this._on(name, this._wrapCallback(callback));
   }
 
   once(name, callback) {
     this._checkName(name);
     this._checkCallback(callback);
-    const wrappedCallback = this._wrapCallback(name, callback);
+    const wrappedCallback = this._wrapCallback(callback);
     const off = this._on(name, (event) => {
       off();
       wrappedCallback(event);
@@ -61,19 +63,23 @@ export default class EventEmitter {
     return this._replay === true || (Array.isArray(this._replay) && this._replay.indexOf(name) > -1);
   }
 
-  _wrapCallback(name, callback) {
+  _wrapCallback(callback) {
     const self = this;
-    return ({ data }) => {
+    return ({ data, meta }) => {
       try {
-        callback(data);
+        callback(data, meta);
       } catch(e) {
-        self._error(new Error(`Error in event callback of ${name}.`, { cause: e }));
+        self._error(new Error(`Error in callback of event '${meta.name}': ${e.message}`, { cause: e }));
       }
     };
   }
 
   _on(name, wrappedCallback) {
-    (this._callbacks[name] || (this._callbacks[name] = [])).push(wrappedCallback);
+    if (name === '*') {
+      this._unnamedCallbacks.push(wrappedCallback);
+    } else {
+      (this._namedCallbacks[name] || (this._namedCallbacks[name] = [])).push(wrappedCallback);
+    }
     // if this event type is in replay mode, replay past events
     this._pastEvents[name] && this._pastEvents[name].forEach(wrappedCallback);
     // return the corresponding unsubscribe function
@@ -81,8 +87,12 @@ export default class EventEmitter {
   }
 
   _off(name, wrappedCallback) {
-    const callbacks = this._callbacks[name];
-    callbacks && removeItem(callbacks, wrappedCallback);
+    if (name === '*') {
+      removeItem(this._unnamedCallbacks, wrappedCallback);
+    } else {
+      const callbacks = this._namedCallbacks[name];
+      callbacks && removeItem(callbacks, wrappedCallback);
+    }
   }
 
 }

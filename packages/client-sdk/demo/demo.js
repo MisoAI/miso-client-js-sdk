@@ -179,6 +179,7 @@
   var searchParams = new URLSearchParams(window.location.search);
   var apiKey = searchParams.get('api_key');
   var useMockService = !apiKey;
+  var debug = searchParams.has('debug');
 
   var config = {
     apiKey: useMockService ? 'miso-client-sdk-demo-api-key' : apiKey
@@ -196,9 +197,8 @@
   var misocmd = window.misocmd || (window.misocmd = []);
   misocmd.push(function () {
 
-    //MisoClient.debug();
+    debug && MisoClient.use('debug');
     var miso = window.miso = new MisoClient(config);
-    //miso.debug();
     miso.context.user_id = user.userId;
     miso.context.user_hash = user.userHash;
 

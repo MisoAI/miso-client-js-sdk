@@ -28,16 +28,11 @@ class MisoClient extends Component {
     if (typeof options === 'string') {
       return { apiKey: options };
     }
-    // TODO: option: debug, noInteraction
     const { apiKey, apiHost, disableAutoAnonymousId } = options || {};
     if (!apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
     return trimObj({ apiKey, apiHost, disableAutoAnonymousId });
-  }
-
-  debug() {
-    MisoClient.debug.apply(MisoClient, arguments);
   }
 
   _error(e) {
@@ -47,6 +42,5 @@ class MisoClient extends Component {
 }
 
 clients.inject(MisoClient);
-MisoClient.debug = () => {};
 
 export default MisoClient;

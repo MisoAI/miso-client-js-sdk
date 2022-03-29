@@ -13,7 +13,6 @@ class MisoClients {
 
   constructor() {
     this._events = new EventEmitter({
-      //debug: this._debug.bind(this),
       error: this._error.bind(this),
       replay: ['create']
     });

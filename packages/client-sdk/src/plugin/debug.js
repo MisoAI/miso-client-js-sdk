@@ -7,28 +7,43 @@ export class DebugPlugin {
     this._options = options;
     this.id = 'std:debug';
     this.name = 'debug';
+
+    this._log = console.log.bind(console, TAG, STYLE);
   }
 
-  install(MisoClient) {
-    for (const plugin of MisoClient.plugins) {
-      if (plugin.id === this.id) {
-        console.warn('Debug plugin already installed.');
-        return;
-      }
+  install(_, pluginContext) {
+    if (pluginContext.contains(this)) {
+      // There are many ways to turn this on and it's normal to have multiple invocations.
+      // console.warn('Debug plugin already installed.');
+      return;
     }
     // TODO: log clients init
     // TODO: log client create
-    const _log = this._log.bind(this);
-    const _debug = MisoClient.debug;
-    MisoClient.debug = (name, data) => {
-      _debug(name, data);
-      _log(name, data);
-    };
+    this._injectComponent(pluginContext.classes.Component);
   }
 
-  _log(name, data) {
-    const args = [TAG, STYLE, `[${name}]`].concat(data);
-    console.log.apply(console, args);
+  _injectComponent(Component) {
+    const plugin = this;
+    const _init = Component.prototype.init;
+    Object.assign(Component.prototype, {
+      init: function() {
+        _init.apply(this, arguments);
+        this._events.on('*', (data, meta) => plugin._handleEvent(this, meta, data));
+      },
+    });
+  }
+
+  _handleEvent(component, { name }, data) {
+    const path = this._getPath(component);
+    this._log(`[${path.join('.')}]`, name, [data]);
+  }
+
+  _getPath(component) {
+    const path = [];
+    for (let c = component; c; c = c._parent) {
+      c._type && path.push(c._type)
+    }
+    return path.reverse();
   }
 
 }
