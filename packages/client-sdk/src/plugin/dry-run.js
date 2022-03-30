@@ -6,13 +6,13 @@ export class DryRunPlugin {
     this.name = 'dry-run';
   }
 
-  install(_, pluginContext) {
-    if (pluginContext.contains(this)) {
+  install(plugins) {
+    if (plugins.contains(this)) {
       console.warn('DryRun plugin already installed.');
       return;
     }
     const self = this;
-    pluginContext.classes.api.ApiBase.prototype._send = async function({ url }) {
+    plugins.classes.api.ApiBase.prototype._send = async function({ url }) {
       this._events.emit('dry-run-send', { url });
       return self._mockResponse();
     }

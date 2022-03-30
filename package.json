@@ -9,7 +9,11 @@
     "doc"
   ],
   "scripts": {
-    "start": "concurrently 'npm run start --workspace=packages/commons' 'npm run start --workspace=packages/client-sdk' 'npm run start --workspace=mock-service'",
+    "start": "concurrently 'npm:start:*'",
+    "start:commons": "npm run start --workspace=packages/commons",
+    "start:ui-elements": "npm run start --workspace=packages/ui-elements",
+    "start:client-sdk": "npm run start --workspace=packages/client-sdk",
+    "start:mock-service": "npm run start --workspace=mock-service",
     "test": "npm run test --workspaces --if-present",
     "build:clean": "npm run build:clean --workspaces --if-present",
     "build:esm": "npm run build:esm --workspaces --if-present",

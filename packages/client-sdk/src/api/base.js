@@ -1,4 +1,4 @@
-import Component from '../util/component';
+import { Component } from '@miso.ai/commons';
 
 export default class ApiBase extends Component {
 

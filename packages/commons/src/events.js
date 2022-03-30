@@ -1,3 +1,4 @@
+import { delegateGetters } from './objects';
 import { removeItem } from "./arrays";
 
 export default class EventEmitter {
@@ -81,7 +82,13 @@ export default class EventEmitter {
       (this._namedCallbacks[name] || (this._namedCallbacks[name] = [])).push(wrappedCallback);
     }
     // if this event type is in replay mode, replay past events
-    this._pastEvents[name] && this._pastEvents[name].forEach(wrappedCallback);
+    if (name === '*') {
+      for (const key in this._pastEvents) {
+        this._pastEvents[key].forEach(wrappedCallback);
+      }
+    } else {
+      this._pastEvents[name] && this._pastEvents[name].forEach(wrappedCallback);
+    }
     // return the corresponding unsubscribe function
     return () => this._off(name, wrappedCallback);
   }
@@ -93,6 +100,10 @@ export default class EventEmitter {
       const callbacks = this._namedCallbacks[name];
       callbacks && removeItem(callbacks, wrappedCallback);
     }
+  }
+
+  _injectSubscribeInterface(target) {
+    delegateGetters(target, this, ['on', 'once']);
   }
 
 }

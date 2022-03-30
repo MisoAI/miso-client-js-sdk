@@ -1,5 +1,4 @@
-import { trimObj } from '@miso.ai/commons/dist/es/objects';
-import Component from './util/component';
+import { trimObj, Component } from '@miso.ai/commons';
 import clients from './clients';
 import Api from './api';
 import Context from './context';

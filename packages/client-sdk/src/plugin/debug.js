@@ -11,41 +11,49 @@ export class DebugPlugin {
     this._log = console.log.bind(console, TAG, STYLE);
   }
 
-  install(_, pluginContext) {
-    if (pluginContext.contains(this)) {
+  install(plugins) {
+    if (plugins.contains(this)) {
       // There are many ways to turn this on and it's normal to have multiple invocations.
       // console.warn('Debug plugin already installed.');
       return;
     }
     // TODO: log clients init
     // TODO: log client create
-    this._injectComponent(pluginContext.classes.Component);
+    this._injectComponent(plugins.classes.Component);
   }
 
   _injectComponent(Component) {
-    const plugin = this;
-    const _init = Component.prototype.init;
-    Object.assign(Component.prototype, {
-      init: function() {
-        _init.apply(this, arguments);
-        this._events.on('*', (data, meta) => plugin._handleEvent(this, meta, data));
-      },
+    const self = this;
+    Component.on('create', (component) => {
+      component.on('*', (data, meta) => self._handleEvent(component, meta, data));
     });
   }
 
   _handleEvent(component, { name }, data) {
     const path = this._getPath(component);
     const pathStr = path.join('.');
-    if (path[1] === 'api') {
-      this._handleApiEvent(name, data);
-    } else {
-      this._log(`[${pathStr}]`, name, [data]);
+    switch (path[0]) {
+      case 'client':
+        switch (path[1]) {
+          case 'api':
+            this._handleApiEvent(name, data);
+            return;
+        }
+        break;
+      case 'plugins':
+        this._handlePluginsEvent(name, data);
+        return;
     }
+    this._log(`[${pathStr}]`, name, [data]);
   }
 
   _handleApiEvent(eventName, { apiName, url, ...data }) {
     const pathname = new URL(url).pathname;
     this._log(`[api.${eventName}]`, `POST ${pathname}`, [{ ...data, url }]);
+  }
+
+  _handlePluginsEvent(eventName, data) {
+    this._log(`[plugin:${data.name || data.id || '(anonymous)'}]`, `${eventName}`, [data]);
   }
 
   _getPath(component) {

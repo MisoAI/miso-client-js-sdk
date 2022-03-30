@@ -1,12 +1,14 @@
-import { trimObj } from '@miso.ai/commons/dist/es/objects';
-import Component from './util/component';
+import { trimObj, Component } from '@miso.ai/commons';
+import DefaultAnonymousIdManager from './mod/anonymous-id';
+
+// TODO: we may turn this part into a default plugin as well
 
 export default class Context extends Component {
 
   constructor(client) {
     super('context', client);
     this._client = client;
-    this._anonymousIdManager = new client.constructor.lib.mods.anonymousId();
+    this._anonymousIdManager = new DefaultAnonymousIdManager(client.config.disableAutoAnonymousId);
     this._user = {};
   }
 

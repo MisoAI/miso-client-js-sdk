@@ -1,3 +1,4 @@
-export * as arrays from './arrays';
-export * as objects from './objects';
+export * from './arrays';
+export * from './objects';
 export { default as EventEmitter } from './events';
+export { default as Component } from './component';

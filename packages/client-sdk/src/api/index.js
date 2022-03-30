@@ -1,4 +1,4 @@
-import Component from '../util/component';
+import { Component } from '@miso.ai/commons';
 import ApiHelpers from './helpers';
 import Interactions from './interactions';
 import Search from './search';

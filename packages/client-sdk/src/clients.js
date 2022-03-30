@@ -1,10 +1,6 @@
-import { delegateGetters } from '@miso.ai/commons/dist/es/objects';
-import { EventEmitter } from '@miso.ai/commons';
-import mods from './mod';
-import plugins from './plugin';
-import SimplePlugin from './plugin/simple';
+import { delegateGetters, EventEmitter } from '@miso.ai/commons';
 import { BUILD } from './constants';
-import pluginContext from './plugin/context';
+import PluginImpl from './plugin/plugins';
 
 /**
  * This is the singleton boss component that oversees all client components.
@@ -17,12 +13,8 @@ class MisoClients {
       replay: ['create']
     });
     this.version = BUILD.version;
+    this.pluginsImpl = new PluginImpl(this);
     this.instances = [];
-    this.plugins = [];
-    this.lib = Object.freeze({
-      mods: mods,
-      plugins: plugins
-    });
   }
 
   push(client) {
@@ -30,46 +22,15 @@ class MisoClients {
     this._events.emit('create', client);
   }
 
-  use(plugin, options) {
-    if (typeof plugin === 'string') {
-      const pluginLib = this.lib.plugins[plugin];
-      if (!pluginLib) {
-        throw new Error(`Plugin not found: ${plugin}`);
-      }
-      this._use(pluginLib(options));
-    } else {
-      this._use(plugin);
-    }
-  }
-
-  _use(plugin) {
-    const name = plugin && plugin.name || '(anonymous)';
-    if (typeof plugin === 'function') {
-      plugin = new SimplePlugin(name, plugin);
-    }
-    if (typeof plugin.install !== 'function') {
-      // TODO: introduce PluginError
-      throw new Error(`Expect either plugin.install or plugin be a function: ${name}`);
-    }
-    let context = undefined;
-    try {
-      context = plugin.install(this.MisoClient, pluginContext);
-    } catch(e) {
-      // TODO: introduce PluginError
-      throw e;
-    }
-    if (context !== undefined) {
-      plugin.context = context;
-    }
-    pluginContext.installed.push(plugin);
-  }
-
   inject(MisoClient) {
-    this.MisoClient = MisoClient;
+    this.MisoClient = this.pluginsImpl.MisoClient = MisoClient;
     // TODO: delegate frozen arrays for instances, plugins
-    delegateGetters(MisoClient, this, ['version', 'instances', 'use', 'lib', 'on', 'once']);
+    delegateGetters(MisoClient, this, ['version', 'instances']);
+    delegateGetters(MisoClient, this.pluginsImpl, ['use']);
+    this._events._injectSubscribeInterface(MisoClient);
+    // TODO
     Object.defineProperty(MisoClient, 'plugins', {
-      get: () => pluginContext.installed
+      get: () => this.pluginsImpl.installed
     });
   }
 
