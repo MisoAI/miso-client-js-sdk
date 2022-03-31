@@ -114,7 +114,10 @@ export default class PluginRoot extends Component {
       // TODO: introduce PluginError
       throw e;
     }
-    this._installed[instance.id] = instance;
+    if (instance.id) {
+      // we don't track anonymous plugins
+      this._installed[instance.id] = instance;
+    }
     this._events.emit('install', instance);
   }
 
