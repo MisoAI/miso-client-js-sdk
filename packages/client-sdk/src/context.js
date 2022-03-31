@@ -8,7 +8,7 @@ export default class Context extends Component {
   constructor(client) {
     super('context', client);
     this._client = client;
-    this._anonymousIdManager = new DefaultAnonymousIdManager(client.config.disableAutoAnonymousId);
+    this._anonymousIdManager = new DefaultAnonymousIdManager(client.options.disableAutoAnonymousId);
     this._user = {};
   }
 

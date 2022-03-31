@@ -1,37 +1,41 @@
 const TAG = '%cMiso';
 const STYLE = 'color: #fff; background-color: #334cbb; padding: 2px 2px 1px 4px;';
 
-export class DebugPlugin {
+const ID = 'std:debug';
 
-  constructor(options = {}) {
-    this._options = options;
-    this.id = 'std:debug';
-    this.name = 'debug';
+export default class DebugPlugin {
 
+  constructor() {
     this._log = console.log.bind(console, TAG, STYLE);
   }
 
-  install(plugins) {
-    if (plugins.contains(this)) {
-      // There are many ways to turn this on and it's normal to have multiple invocations.
-      // console.warn('Debug plugin already installed.');
-      return;
-    }
-    // TODO: log clients init
-    // TODO: log client create
-    this._injectComponent(plugins.classes.Component);
+  static get id() {
+    return ID;
   }
 
-  _injectComponent(Component) {
-    const self = this;
-    Component.on('create', (component) => {
-      component.on('*', (data, meta) => self._handleEvent(component, meta, data));
-    });
+  // TODO: config({ active })
+
+  install(MisoClient) {
+    this._injectComponents(MisoClient);
+  }
+
+  _injectComponents(component) {
+    component.on('child', (c) => this._injectComponents(c));
+    component.on('*', (data, meta) => this._handleEvent(component, meta, data));
   }
 
   _handleEvent(component, { name }, data) {
-    const path = this._getPath(component);
-    const pathStr = path.join('.');
+    if (name === 'child') {
+      return;
+    }
+    const path = component.meta.path;
+    if (!path.length) {
+      switch (name) {
+        case 'create':
+          this._handleCreateClient(name, data);
+          return;
+      }
+    }
     switch (path[0]) {
       case 'client':
         switch (path[1]) {
@@ -44,7 +48,11 @@ export class DebugPlugin {
         this._handlePluginsEvent(name, data);
         return;
     }
-    this._log(`[${pathStr}]`, name, [data]);
+    this._log(`[${path.join('.')}]`, name, [data]);
+  }
+
+  _handleCreateClient(eventName, data) {
+    this._log(`[client.${eventName}]`, [data]);
   }
 
   _handleApiEvent(eventName, { apiName, url, ...data }) {
@@ -52,20 +60,16 @@ export class DebugPlugin {
     this._log(`[api.${eventName}]`, `POST ${pathname}`, [{ ...data, url }]);
   }
 
-  _handlePluginsEvent(eventName, data) {
-    this._log(`[plugin:${data.name || data.id || '(anonymous)'}]`, `${eventName}`, [data]);
+  _handlePluginsEvent(eventName, plugin) {
+    this._log(`[plugin.${eventName}]`, `${plugin.id || '(anonymous)'}`, [plugin]);
   }
 
   _getPath(component) {
     const path = [];
-    for (let c = component; c; c = c._parent) {
-      c._name && path.push(c._name)
+    for (let c = component; c; c = c.meta.parent) {
+      c.meta.name && path.push(c.meta.name)
     }
     return path.reverse();
   }
 
-}
-
-export default function debug(options) {
-  return new DebugPlugin(options);
 }

@@ -32,7 +32,7 @@ export default class ApiHelpers {
   }
 
   url(...paths) {
-    const { apiKey } = this._client.config;
+    const { apiKey } = this._client.options;
     const apiName = paths.filter(s => s).join('/');
     // TODO: neutralize use of DOM API
     return `${this.apiBaseUrl}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
@@ -40,7 +40,7 @@ export default class ApiHelpers {
 
   get apiBaseUrl() {
     // TODO: we may implement mock feature as a plugin
-    const { apiHost = 'prod' } = this._client.config;
+    const { apiHost = 'prod' } = this._client.options;
     switch (apiHost) {
       case 'prod':
         return API.BASE_URL;

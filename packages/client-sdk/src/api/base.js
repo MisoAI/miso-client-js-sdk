@@ -8,7 +8,7 @@ export default class ApiBase extends Component {
     super(apiPath, api);
     this._apiPath = apiPath;
     this.helpers = api.helpers;
-    this.config = api._client.config;
+    this.clientOptions = api._client.options;
     this.context = api._client.context;
   }
 

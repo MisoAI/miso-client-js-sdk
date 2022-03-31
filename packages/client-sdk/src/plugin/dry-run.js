@@ -1,4 +1,6 @@
-export class DryRunPlugin {
+const ID = 'std:dry-run';
+
+export default class DryRunPlugin {
 
   constructor(options = {}) {
     this._options = options;
@@ -6,13 +8,15 @@ export class DryRunPlugin {
     this.name = 'dry-run';
   }
 
-  install(plugins) {
-    if (plugins.contains(this)) {
-      console.warn('DryRun plugin already installed.');
-      return;
-    }
+  static get id() {
+    return ID;
+  }
+
+  // TODO: config({ active })
+
+  install(_, context) {
     const self = this;
-    plugins.classes.api.ApiBase.prototype._send = async function({ url }) {
+    context.classes.api.ApiBase.prototype._send = async function({ url }) {
       this._events.emit('dry-run-send', { url });
       return self._mockResponse();
     }
@@ -29,13 +33,4 @@ export class DryRunPlugin {
     }
   }
 
-  _log(name, data) {
-    const args = [TAG, STYLE, `[${name}]`].concat(data);
-    console.log.apply(console, args);
-  }
-
-}
-
-export default function dryRun(options) {
-  return new DryRunPlugin(options);
 }

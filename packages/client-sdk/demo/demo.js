@@ -197,7 +197,7 @@
   var misocmd = window.misocmd || (window.misocmd = []);
   misocmd.push(function () {
 
-    debug && MisoClient.use('debug');
+    debug && MisoClient.plugins.use('std:debug');
     var miso = window.miso = new MisoClient(config);
     miso.context.user_id = user.userId;
     miso.context.user_hash = user.userHash;

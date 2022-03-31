@@ -34,3 +34,14 @@ export function defineValues(target, source) {
     }
   }
 }
+
+/**
+ * Offer the constructor a isTypeOf() static method to determine whether an object is a instance of the type that works *across* different script sources.
+ */
+export function defineTypeByKey(constructor, key) {
+  const sym = Symbol.for(key);
+  Object.defineProperty(constructor, sym, { value: true });
+  Object.defineProperty(constructor, 'isTypeOf', {
+    value: (obj) => obj && (obj instanceof constructor) || (typeof obj.constructor === 'function' && obj.constructor[sym] === true)
+  });
+}

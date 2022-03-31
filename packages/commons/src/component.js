@@ -1,12 +1,14 @@
+import { defineValues, defineTypeByKey } from './objects';
 import EventEmitter from './events';
 
-function normalize(name, parent, options) {
+function computeMetaInfo(name, parent, options) {
   const throwException = () => {
     throw new Error(`Invalid Component parameters: ${name}, ${parent}, ${options}`);
   };
+
   // settle name
   let n = name, p = parent, o = options;
-  if (typeof n !== 'string') {
+  if (n !== undefined && typeof n !== 'string') {
     if (o === undefined) {
       o = p;
       p = n;
@@ -15,8 +17,9 @@ function normalize(name, parent, options) {
       throwException();
     }
   }
+
   // settle parent
-  if (!(p instanceof Component)) {
+  if (p !== undefined && !Component.isTypeOf(p)) {
     if (o === undefined) {
       o = p;
       p = undefined;
@@ -24,33 +27,49 @@ function normalize(name, parent, options) {
       throwException();
     }
   }
-  return [n, p, o || {}];
+
+  const path = Object.freeze([...(p ? p.meta.path : []), ...(n ? [n] : [])]);
+  // TODO: uuid
+
+  return Object.freeze({
+    name: n,
+    parent: p,
+    options: o || {},
+    path,
+  });
 }
 
-const staticEvents = new EventEmitter({ replay: ['create'] });
+function mergeEventOptions(options = {}, error) {
+  return {
+    ...options,
+    replay: [...(options.replay || []), 'child'],
+    error,
+  };
+}
 
 export default class Component {
 
   constructor(name, parent, options) {
-    [name, parent, options] = normalize(name, parent, options);
-    this._name = name;
-    this._parent = parent;
-    this._options = options;
+    const meta = computeMetaInfo(name, parent, options);
+    defineValues(this, { meta });
   
     const error = this._error = this._error.bind(this);
-    const events = this._events = new EventEmitter({ ...options.events, error });
+    const events = this._events = new EventEmitter(mergeEventOptions(meta.options.event, error));
     events._injectSubscribeInterface(this);
-    staticEvents.emit('create', this);
+
+    meta.parent && meta.parent._events.emit('child', this);
   }
 
-  _error(e) {
-    if (this._parent) {
-      this._parent._error(e);
-    } else {
-      console.error(e);
-    }
+  _warn() {
+    const parent = this.meta.parent;
+    parent && parent._warn ? parent._warn.apply(parent, arguments) : console.warn.apply(console, arguments);
+  }
+
+  _error() {
+    const parent = this.meta.parent;
+    parent && parent._error ? parent._error.apply(parent, arguments) : console.error.apply(console, arguments);
   }
 
 }
 
-staticEvents._injectSubscribeInterface(Component);
+defineTypeByKey(Component, 'miso:component');

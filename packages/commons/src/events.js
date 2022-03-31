@@ -3,12 +3,12 @@ import { removeItem } from "./arrays";
 
 export default class EventEmitter {
 
-  constructor({ error, replay = false } = {}) {
+  constructor({ error, replay } = {}) {
     this._error = error || (e => console.error(e));
-    if (typeof replay !== 'boolean' && !Array.isArray(replay)) {
-      throw new Error(`Replay option value must be either a boolean or an array of strings: ${replay}`);
+    if (replay !== undefined && !Array.isArray(replay)) {
+      throw new Error(`Replay option value must be an array of strings: ${replay}`);
     }
-    this._replay = replay;
+    this._replay = (replay && replay.length !== 0) ? replay : undefined;
     this._namedCallbacks = {};
     this._unnamedCallbacks = [];
     this._pastEvents = {};
@@ -61,7 +61,7 @@ export default class EventEmitter {
   }
 
   _shallKeepInReplay(name) {
-    return this._replay === true || (Array.isArray(this._replay) && this._replay.indexOf(name) > -1);
+    return this._replay && this._replay.indexOf(name) > -1;
   }
 
   _wrapCallback(callback) {

@@ -1,18 +1,18 @@
 import { trimObj, Component } from '@miso.ai/commons';
-import clients from './clients';
+import { get as root } from './root';
 import Api from './api';
 import Context from './context';
 
 class MisoClient extends Component {
 
   constructor(options) {
-    super('client');
+    super('client', root());
     this._config(options);
 
     this.context = new Context(this);
     this.api = new Api(this);
 
-    clients.push(this);
+    root().push(this);
   }
 
   get version() {
@@ -20,26 +20,19 @@ class MisoClient extends Component {
   }
 
   _config(options) {
-    this.config = Object.freeze(this._normalizeConfig(options));
+    this.options = Object.freeze(this._normalizeOptions(options));
   }
 
-  _normalizeConfig(options) {
+  _normalizeOptions(options = {}) {
     if (typeof options === 'string') {
-      return { apiKey: options };
+      options = { apiKey: options };
     }
-    const { apiKey, apiHost, disableAutoAnonymousId } = options || {};
-    if (!apiKey) {
+    if (!options.apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
-    return trimObj({ apiKey, apiHost, disableAutoAnonymousId });
-  }
-
-  _error(e) {
-    console.error(e);
+    return trimObj(options);
   }
 
 }
-
-clients.inject(MisoClient);
 
 export default MisoClient;
