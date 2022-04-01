@@ -11,7 +11,7 @@ export default class Recommendation extends ApiBase {
   }
 
   async userToCategories(payload) {
-    return this._run('user_to_products', payload);
+    return this._run('user_to_categories', payload);
   }
 
   async userToAttributes(payload) {
