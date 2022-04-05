@@ -24,6 +24,8 @@ export function delegateGetters(target, source, propNames) {
   }, {}));
 }
 
+// TODO: delegate setters
+
 /**
  * Assign values on target object with Object.defineProperties() from source object.
  */

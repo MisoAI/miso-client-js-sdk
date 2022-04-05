@@ -1,63 +1,43 @@
 import { defineValues, defineTypeByKey } from './objects';
+import { uuidv4 } from './uuid';
 import EventEmitter from './events';
 
-function computeMetaInfo(name, parent, options) {
-  const throwException = () => {
-    throw new Error(`Invalid Component parameters: ${name}, ${parent}, ${options}`);
-  };
-
-  // settle name
-  let n = name, p = parent, o = options;
-  if (n !== undefined && typeof n !== 'string') {
-    if (o === undefined) {
-      o = p;
-      p = n;
-      n = undefined;
-    } else {
-      throwException();
-    }
+function buildMeta(name, parent) {
+  if (name !== undefined && typeof name !== 'string' && parent === undefined) {
+    parent = name;
+    name = undefined;
   }
 
-  // settle parent
-  if (p !== undefined && !Component.isTypeOf(p)) {
-    if (o === undefined) {
-      o = p;
-      p = undefined;
-    } else {
-      throwException();
-    }
+  if (name !== undefined && (typeof name !== 'string' || !name)) {
+    throw new Error(`Invalid Component name: "${name}"`);
   }
-
-  const path = Object.freeze([...(p ? p.meta.path : []), ...(n ? [n] : [])]);
-  // TODO: uuid
 
   return Object.freeze({
-    name: n,
-    parent: p,
-    options: o || {},
-    path,
+    name,
+    parent,
+    path: buildPath(name, parent),
+    uuid: uuidv4(),
   });
 }
 
-function mergeEventOptions(options = {}, error) {
-  return {
-    ...options,
-    replay: [...(options.replay || []), 'child'],
-    error,
-  };
+function buildPath(name, parent) {
+  return Object.freeze([...(parent && parent.meta && parent.meta.path || []), ...(name ? [name] : [])]);
 }
 
 export default class Component {
 
-  constructor(name, parent, options) {
-    const meta = computeMetaInfo(name, parent, options);
+  constructor(name, parent) {
+    const meta = buildMeta(name, parent);
     defineValues(this, { meta });
   
     const error = this._error = this._error.bind(this);
-    const events = this._events = new EventEmitter(mergeEventOptions(meta.options.event, error));
+    const events = this._events = new EventEmitter({ error, replays: ['child'] });
     events._injectSubscribeInterface(this);
 
-    meta.parent && meta.parent._events.emit('child', this);
+    this._warn =  this._warn.bind(this);
+
+    parent = meta.parent;
+    parent && parent._events && parent._events.emit('child', this);
   }
 
   _warn() {

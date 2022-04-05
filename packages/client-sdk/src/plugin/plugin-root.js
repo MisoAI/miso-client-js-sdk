@@ -1,33 +1,27 @@
-import { delegateGetters, defineValues, Component } from '@miso.ai/commons';
+import { delegateGetters, defineValues, Registry } from '@miso.ai/commons';
 import classes from './classes';
 import AnonymousPlugin from './anonymous';
 
-export default class PluginRoot extends Component {
+export default class PluginRoot extends Registry {
 
   constructor(root) {
-    super('plugins', root, { event: { replay: ['register', 'install'] }});
-    this._libraries = {};
+    super('plugins', root, {
+      libName: 'plugin class',
+      keyName: 'id',
+    });
+    this._events._replays.add('install');
     this._installed = {};
     this.context = new PluginContext(this, classes);
     this.plugins = new Plugins(this);
   }
 
   isInstalled(id) {
-    this._checkId(id);
-    return this._installed[id];
+    this._checkKey(id);
+    return !!this._installed[id];
   }
 
   get installed() {
     return Object.values(this._installed);
-  }
-
-  isRegistered(id) {
-    this._checkId(id);
-    return this._libraries[id];
-  }
-
-  get registered() {
-    return Object.values(this._libraries);
   }
 
   get(id) {
@@ -38,30 +32,11 @@ export default class PluginRoot extends Component {
     return this._libraries[id];
   }
 
-  register(...pluginClasses) {
-    for (const pluginClass of pluginClasses) {
-      this._register(pluginClass);
-    }
-  }
-
-  _register(pluginClass) {
-    const id = pluginClass.id;
-    if (typeof id !== 'string' || !id) {
-      throw new Error(`Expect a string "id" property on plugin class: ${pluginClass}`);
-    }
-    if (this.isRegistered(id)) {
-      // TODO: warn and overwrite?
-    }
-    this._checkPluginClass(pluginClass);
-    this._libraries[id] = pluginClass;
-    this._events.emit('register', pluginClass);
-  }
-
   use(plugin, options) {
     let instance;
     if (typeof plugin === 'string' && this.isInstalled(plugin)) {
       // already installed, run config() instead
-      instance = this.get(id);
+      instance = this.get(plugin);
       this._tryConfig(instance, options);
       return instance;
     }
@@ -86,7 +61,7 @@ export default class PluginRoot extends Component {
   _instantiate(plugin, options) {
     switch (typeof plugin) {
       case 'string':
-        this._checkId(plugin);
+        this._checkKey(plugin);
         const pluginClass = this._libraries[plugin];
         if (!pluginClass) {
           throw new Error(`Plugin class not found: ${plugin}`);
@@ -119,18 +94,6 @@ export default class PluginRoot extends Component {
       this._installed[instance.id] = instance;
     }
     this._events.emit('install', instance);
-  }
-
-  _checkId(id) {
-    if (typeof id !== 'string' || !id) {
-      throw new Error(`Expect plugin id to be a non-empty string: ${id}`);
-    }
-  }
-
-  _checkPluginClass(pluginClass) {
-    if (typeof pluginClass !== 'function') {
-      throw new Error(`Expect plugin class to be a function: ${pluginClass}`);
-    }
   }
 
 }

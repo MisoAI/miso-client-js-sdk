@@ -62,7 +62,6 @@
     constructor() {
       super();
       this.search = new Search(this);
-      this.recommendation = new Recommendation(this);
       Object.defineProperties(this, {
         env: { value: env },
         envs: { value: envs }
@@ -70,7 +69,6 @@
     }
     init() {
       this.search.init();
-      this.recommendation.init();
       document.body.classList.add(this.env);
       document.querySelector('#navbarDarkDropdownMenuLink').innerHTML = this.envs[this.env];
       this._init = true;
@@ -137,34 +135,6 @@
     }
   }
 
-  class Recommendation extends EventEmitter {
-    constructor(demo) {
-      super();
-      this._demo = demo;
-    }
-    init() {
-      this.elements = {
-        results: document.querySelector('#recommendation-results')
-      };
-      this._init = true;
-    }
-    render(response) {
-      this.onready(() => this._render(response));
-    }
-    _render(response) {
-      this.elements.results.innerHTML = response.products.slice(0, 3)
-        .reduce((acc, product) => acc + window.template.render('product', product), '');
-    }
-    onready(fn) {
-      if (this._init) {
-        fn();
-      } else {
-        (this._onreadyfns || (this._onreadyfns = [])).push(fn);
-      }
-    }
-
-  }
-
   var demo = window.demo = new Demo();
 
   window.onready(demo.init.bind(demo));
@@ -198,16 +168,12 @@
   misocmd.push(function () {
 
     debug && MisoClient.plugins.use('std:debug');
+    MisoClient.plugins.use('std:ui');
     var miso = window.miso = new MisoClient(config);
     miso.context.user_id = user.userId;
     miso.context.user_hash = user.userHash;
 
     demo.version = miso.version;
-
-    // recommendation //
-    miso.api.recommendation.userToProducts({ fl: ['*'] })
-      .then((response) => demo.recommendation.render(response))
-      .catch(console.error.bind(console));
 
     // search //
     demo.search.on('submit', (value) => {

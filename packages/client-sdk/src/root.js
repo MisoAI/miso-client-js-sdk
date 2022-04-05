@@ -8,7 +8,8 @@ import PluginRoot from './plugin/plugin-root';
 class Root extends Component {
 
   constructor() {
-    super({ event: { replay: ['create'] } });
+    super();
+    this._events._replays.add('create');
     this.version = BUILD.version;
     this._pluginRoot = new PluginRoot(this);
     this._clients = [];

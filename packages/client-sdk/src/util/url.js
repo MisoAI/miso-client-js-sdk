@@ -1,5 +1,6 @@
 import { trimObj } from '@miso.ai/commons/dist/es/objects';
 
+// TODO: not utils, move away, make a plugin
 // TODO: unit test
 
 export function readPageInfo() {

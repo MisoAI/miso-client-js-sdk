@@ -3,12 +3,12 @@ import { removeItem } from "./arrays";
 
 export default class EventEmitter {
 
-  constructor({ error, replay } = {}) {
+  constructor({ error, replays = [] } = {}) {
     this._error = error || (e => console.error(e));
-    if (replay !== undefined && !Array.isArray(replay)) {
-      throw new Error(`Replay option value must be an array of strings: ${replay}`);
+    if (!Array.isArray(replays)) {
+      throw new Error(`Replays option must be an array of strings: ${replays}`);
     }
-    this._replay = (replay && replay.length !== 0) ? replay : undefined;
+    this._replays = new Set(replays);
     this._namedCallbacks = {};
     this._unnamedCallbacks = [];
     this._pastEvents = {};
@@ -25,7 +25,7 @@ export default class EventEmitter {
     for (const callback of this._unnamedCallbacks) {
       callback(event);
     }
-    if (this._shallKeepInReplay(name)) {
+    if (this._shallStoreForReplay(name)) {
       (this._pastEvents[name] || (this._pastEvents[name] = [])).push(event);
     }
   }
@@ -36,15 +36,19 @@ export default class EventEmitter {
     return this._on(name, this._wrapCallback(callback));
   }
 
-  once(name, callback) {
+  once(name) {
     this._checkName(name);
-    this._checkCallback(callback);
-    const wrappedCallback = this._wrapCallback(callback);
-    const off = this._on(name, (event) => {
-      off();
-      wrappedCallback(event);
+    const self = this;
+    return new Promise((resolve, reject) => {
+      const off = self._on(name, (event) => {
+        setTimeout(() => off());
+        try {
+          resolve(event);
+        } catch(e) {
+          reject(e);
+        }
+      });
     });
-    return off;
   }
 
   // helper //
@@ -60,8 +64,8 @@ export default class EventEmitter {
     }
   }
 
-  _shallKeepInReplay(name) {
-    return this._replay && this._replay.indexOf(name) > -1;
+  _shallStoreForReplay(name) {
+    return this._replays.has(name);
   }
 
   _wrapCallback(callback) {
