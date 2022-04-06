@@ -146,13 +146,13 @@ const products = response.products;
         <p>
           Get personalized recommendation from <code>recommendation/user_to_products</code> API.
         </p>
-        <miso-list api="user_to_products">
+        <miso-list api="user_to_products" on:start="load">
           <script data-attr="payload" type="application/json">
             {
               "fl": ["*"]
             }
           </script>
-          <script data-attr="template" data-name="item" type="template/text">
+          <script data-attr="template" data-name="item" type="template/string">
             <div class="product clearfix" data-id="${data.product_id}">
               <div class="imgbox">
                 <img width="100" src="${data.cover_image}">

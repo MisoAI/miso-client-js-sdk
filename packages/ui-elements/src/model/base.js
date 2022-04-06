@@ -1,11 +1,11 @@
 import { delegateGetters, defineValues, Component } from '@miso.ai/commons';
-import getRoot from '../root';
+import root from '../root';
 import DataSource from './source';
 
 export default class BaseDataModel extends Component {
 
   constructor(type, { client, api, payload, autoClient = true } = {}) {
-    super('data-model', getRoot());
+    super('data-model', root());
     this._type = type;
   
     if (!api) {

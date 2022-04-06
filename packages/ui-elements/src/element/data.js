@@ -2,13 +2,11 @@ import { mixinReadinessInstance, mixinReadinessPrototype } from '@miso.ai/common
 import MisoElement from './base';
 import root from '../root';
 
-const OBSERVED_ATTRIBUTES = ['model', 'api', 'payload'];
+const OBSERVED_ATTRIBUTES = MisoElement.observedAttributes.concat(['model', 'api', 'payload']);
 const ATTR_TO_PROPS = {
   model: 'modelType',
   api: 'api',
   payload: 'payload',
-  onstart: 'onstart',
-  onview: 'onview',
 };
 
 export default class MisoDataElement extends MisoElement {
@@ -48,6 +46,7 @@ export default class MisoDataElement extends MisoElement {
       throw new Error(`The model has already been set.`);
     }
     this._model = model;
+    this._setupModel(model);
     this._setReady();
   }
 
@@ -77,17 +76,10 @@ export default class MisoDataElement extends MisoElement {
   }
 
   _init() {
-    // build model if parameters are satisfied
-    this._createModelIfReady();
-
     super._init();
-
-    (async () => {
-      if (!this._model) {
-        await this.whenReady();
-      }
-      this._setupModel(this._model);
-    })();
+    // build model if parameters are satisfied
+    // wait for next event loop, for the children elements may not be there yet
+    setTimeout(this._createModelIfReady.bind(this));
   }
 
   _createModelIfReady() {
@@ -98,6 +90,17 @@ export default class MisoDataElement extends MisoElement {
   }
 
   _setupModel(model) {}
+
+  _cmd(command) {
+    (async () => {
+      await this.whenReady();
+      try {
+        (this._model[command])();
+      } catch(e) {
+        this._error(e);
+      }
+    })();
+  }
 
 }
 

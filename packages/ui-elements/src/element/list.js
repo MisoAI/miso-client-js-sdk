@@ -1,4 +1,4 @@
-import { htmlToElement, replaceChildren } from './util';
+import { asElement, replaceChildren } from './util';
 import MisoDataElement from './data';
 import MisoListModel from '../model/list';
 
@@ -17,27 +17,21 @@ export default class MisoListElement extends MisoDataElement {
 
   constructor() {
     super(MisoListModel.type);
-    this._setTemplate('container', () => `<div></div>`);
-    this._setTemplate('items', items => items.map(item => this.template('item').render(item)).join(''));
+    this.templates.set('container', () => `<div></div>`);
   }
 
   _init() {
-    let container = this.template('container').render();
-    if (typeof container === 'string') {
-      container = htmlToElement(container);
-    }
-    this.appendChild(this._elements.container = container);
     super._init();
+    this.appendChild(this._elements.container = asElement(this.templates.get('container').render()));
   }
 
   _setupModel(model) {
+    super._setupModel(model);
     model.on('replace', this._handleReplace.bind(this));
-    // TODO: load on start options
-    model.load();
   }
 
   _handleReplace({ data }) {
-    replaceChildren(this._elements.container, this.template('items').render(data.items));
+    replaceChildren(this._elements.container, data.items.map(item => asElement(this.templates.get('item').render(item))));
   }
 
 }
