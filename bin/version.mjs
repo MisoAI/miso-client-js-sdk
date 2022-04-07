@@ -35,11 +35,15 @@ const root = readPackageFile('.');
 // find workspaces
 // TODO: support wildcard
 const projectPaths = root.workspaces;
-const projectPathSet = new Set(projectPaths);
-
 const projects = [];
 const projectPathToModuleName = {};
-//const moduleNameToProject = {};
+
+// first pass: collect some info
+for (const projectPath of projectPaths) {
+  const project = readPackageFile(projectPath);
+  !project.private && projects.push({ projectPath, project });
+  projectPathToModuleName[projectPath] = project.name;
+}
 
 function overwriteDependencyVersions(dependencies, version) {
   if (!dependencies) {
@@ -53,12 +57,7 @@ function overwriteDependencyVersions(dependencies, version) {
   }
 }
 
-for (const projectPath of projectPaths) {
-  const project = readPackageFile(projectPath);
-  !project.private && projects.push({ projectPath, project });
-  projectPathToModuleName[projectPath] = project.name;
-}
-
+// second pass: overwrite versions
 for (const { projectPath, project } of projects) {
   overwriteDependencyVersions(project.dependencies, version);
   overwriteDependencyVersions(project.devDependencies, version);
