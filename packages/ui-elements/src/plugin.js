@@ -2,11 +2,12 @@ import { delegateGetters } from '@miso.ai/commons';
 import getRoot from './root';
 import MisoListModel from './model/list';
 import MisoListElement from './element/list';
+import { PLUGIN_ID } from './constants';
 
 export default class UiPlugin {
 
   static get id() {
-    return 'std:ui';
+    return PLUGIN_ID;
   }
 
   constructor() {

@@ -9,8 +9,9 @@ export default class PluginRoot extends Registry {
       libName: 'plugin class',
       keyName: 'id',
     });
-    this._events._replays.add('install');
+    this._events._replays.add('install').add('subtree');
     this._installed = {};
+    this._subtrees = [];
     this.context = new PluginContext(this, classes);
     this.plugins = new Plugins(this);
   }
@@ -46,6 +47,11 @@ export default class PluginRoot extends Registry {
   }
 
   // TODO: unuse()
+
+  addSubtree(component) {
+    this._subtrees.push(component);
+    this._events.emit('subtree', component);
+  }
 
   _tryConfig(instance, options) {
     if (options === undefined) {
@@ -104,7 +110,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree']);
     defineValues(this, { classes });
   }
 

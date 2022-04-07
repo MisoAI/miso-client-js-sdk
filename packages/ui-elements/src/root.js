@@ -1,11 +1,12 @@
 import { Component, delegateGetters } from '@miso.ai/commons';
 import ModelRegistry from './model/registry';
 import ElementRegistry from './element/registry';
+import { PLUGIN_ID } from './constants';
 
 class UiPluginRoot extends Component {
 
   constructor() {
-    super('ui');
+    super(PLUGIN_ID);
     this._events._replays.add('client');
     this.models = new ModelRegistry(this);
     this.elements = new ElementRegistry(this);
@@ -18,6 +19,7 @@ class UiPluginRoot extends Component {
   }
 
   install(MisoClient, context) {
+    context.addSubtree(this);
     // bind the first seen client
     (async() => {
       const { data: client } = await MisoClient.once('create');

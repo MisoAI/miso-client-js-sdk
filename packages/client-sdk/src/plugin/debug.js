@@ -3,6 +3,18 @@ const STYLE = 'color: #fff; background-color: #334cbb; padding: 2px 2px 1px 4px;
 
 const ID = 'std:debug';
 
+const _log = (path, name, ...data) => console.log(TAG, STYLE, _path(path), _name(name), ...data);
+
+// format path
+function _path(path) {
+  return `<${typeof path === 'string' ? path : path.filter(v => v).join('/')}>`;
+}
+
+// format event name
+function _name(name) {
+  return `[${name}]`;
+}
+
 export default class DebugPlugin {
 
   constructor() {
@@ -19,16 +31,17 @@ export default class DebugPlugin {
     this._injectComponents(MisoClient);
   }
 
-  _injectComponents(component) {
-    component.on('child', (c) => this._injectComponents(c));
-    component.on('*', (data, meta) => this._handleEvent(component, meta, data));
+  _injectComponents(component, treePath = []) {
+    component.on('child', (c) => this._injectComponents(c, treePath));
+    component.on('subtree', (c) => this._injectComponents(c, treePath.concat(component.meta.path)));
+    component.on('*', (data, meta) => this._handleEvent(component, meta, data, treePath));
   }
 
-  _handleEvent(component, { name }, data) {
-    if (name === 'child') {
+  _handleEvent(component, { name }, data, treePath = []) {
+    if (name === 'child' || name === 'subtree') {
       return;
     }
-    const path = component.meta.path;
+    const path = treePath.concat(component.meta.path);
     if (!path.length) {
       switch (name) {
         case 'create':
@@ -45,23 +58,31 @@ export default class DebugPlugin {
         }
         break;
       case 'plugins':
-        this._handlePluginsEvent(name, data);
+        if (path.length === 1) {
+          this._handlePluginsEvent(name, data);
+        } else {
+          this._handlePluginSpecificEvent(path[1], path.slice(2), name, data);
+        }
         return;
     }
-    this._log(`[${path.join('.')}]`, name, [data]);
+    _log(path.join('.'), name, [data]);
   }
 
   _handleCreateClient(eventName, data) {
-    this._log(`[client.${eventName}]`, [data]);
+    _log('client', eventName, [data]);
   }
 
   _handleApiEvent(eventName, { apiName, url, ...data }) {
     const pathname = new URL(url).pathname;
-    this._log(`[api.${eventName}]`, `POST ${pathname}`, [{ ...data, url }]);
+    _log('api', eventName, `POST ${pathname}`, [{ ...data, url }]);
   }
 
   _handlePluginsEvent(eventName, plugin) {
-    this._log(`[plugin.${eventName}]`, `${plugin.id || '(anonymous)'}`, [plugin]);
+    _log('plugins', eventName, `${plugin.id || '(anonymous)'}`, [plugin]);
+  }
+
+  _handlePluginSpecificEvent(pluginId, path, name, data) {
+    _log([pluginId, path.join('.')], name, [data]);
   }
 
   _getPath(component) {

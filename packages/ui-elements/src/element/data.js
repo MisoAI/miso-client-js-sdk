@@ -91,7 +91,7 @@ export default class MisoDataElement extends MisoElement {
 
   _setupModel(model) {}
 
-  _cmd(command) {
+  _commend(command) {
     (async () => {
       await this.whenReady();
       try {

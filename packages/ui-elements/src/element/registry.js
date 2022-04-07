@@ -1,4 +1,12 @@
-import { Registry } from '@miso.ai/commons';
+import { Registry, Component } from '@miso.ai/commons';
+
+class ElementRoot extends Component {
+
+  constructor(root) {
+    super('element', root);
+  }
+
+}
 
 export default class ElementRegistry extends Registry {
 
@@ -8,6 +16,7 @@ export default class ElementRegistry extends Registry {
       keyName: 'tagName',
     });
     this._root = this.meta.parent;
+    this.elementRoot = new ElementRoot(root);
   }
 
   install() {

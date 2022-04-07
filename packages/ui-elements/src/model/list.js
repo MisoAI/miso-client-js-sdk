@@ -47,7 +47,7 @@ export default class MisoListModel extends BaseDataModel {
 
   _pending(action) {
     this._dispatchIndex = action.index;
-    this._events.emit('pending', action);
+    this._emit('pending', action);
   }
 
   _replace(action) {
@@ -55,7 +55,7 @@ export default class MisoListModel extends BaseDataModel {
     if (index > this._baselineIndex) {
       this._baselineIndex = index;
       this._data = data;
-      this._events.emit('replace', action);
+      this._emit('replace', action);
     }
   }
 
@@ -66,7 +66,7 @@ export default class MisoListModel extends BaseDataModel {
   }
 
   _error(action) {
-    this._events.emit('error', action);
+    this._emit('error', action);
   }
 
 }

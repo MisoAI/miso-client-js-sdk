@@ -5,7 +5,8 @@ import DataSource from './source';
 export default class BaseDataModel extends Component {
 
   constructor(type, { client, api, payload, autoClient = true } = {}) {
-    super('data-model', root());
+    super('model', root());
+    this._events._replays.add('create');
     this._type = type;
   
     if (!api) {
@@ -19,6 +20,7 @@ export default class BaseDataModel extends Component {
 
     this._data = this._createInitialData();
     this._actionIndex = 0;
+    this._events.emit('create', this);
   }
 
   get data() {
@@ -31,6 +33,10 @@ export default class BaseDataModel extends Component {
 
   _nextActionIndex() {
     return ++this._actionIndex;
+  }
+
+  _emit(name, data) {
+    this._events.emit(name, { ...data, instance: this });
   }
 
 }

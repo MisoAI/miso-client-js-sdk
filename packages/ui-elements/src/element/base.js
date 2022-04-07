@@ -103,14 +103,26 @@ export default class MisoElement extends HTMLElement {
   _init() {}
 
   _start() {
-    const command = this._triggers.start;
-    command && this._cmd(command);
+    this._trigger('start');
   }
 
-  _cmd(command) {}
+  _trigger(condition) {
+    const command = this._triggers[condition];
+    if (command) {
+      this._commend(command);
+    }
+    this._emit('trigger', command ? { condition, command } : { condition });
+  }
+
+  _commend(command) {}
+
+  _emit(name, detail) {
+    this.dispatchEvent(new CustomEvent(name, { detail }));
+    root().elements.elementRoot._events.emit(name, { ...detail, instance: this });
+  }
 
   _error(e) {
-    root()._error(e);
+    root().elements.elementRoot._error(e);
   }
 
 }
