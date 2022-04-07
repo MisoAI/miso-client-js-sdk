@@ -15,6 +15,7 @@
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:mock-service": "npm run start --workspace=mock-service",
     "test": "npm run test --workspaces --if-present",
+    "version": "node ./bin/version.mjs",
     "build:clean": "npm run build:clean --workspaces --if-present",
     "build:esm": "npm run build:esm --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
