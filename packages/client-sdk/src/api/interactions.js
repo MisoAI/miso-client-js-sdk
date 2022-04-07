@@ -8,7 +8,15 @@ export default class Interactions extends ApiBase {
   }
 
   async upload(payload) {
-    return this._run('upload', payload);
+    try {
+      return await this._run('upload', payload);
+    } catch(e) {
+      if (e.status === 400 && e.message && e.message.toLowerCase().indexOf('playground') > -1) {
+        this._warn(`Ignore interactions uploaded to playground app.`);
+      } else {
+        throw e;
+      }
+    }
   }
 
   _url() {

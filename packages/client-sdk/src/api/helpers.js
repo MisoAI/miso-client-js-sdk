@@ -26,6 +26,7 @@ export default class ApiHelpers {
     if (res.status >= 400 || resBody.errors) {
       var err = new Error(resBody.message);
       err.data = resBody;
+      err.status = res.status;
       throw err;
     }
     return resBody;
