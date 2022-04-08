@@ -17,8 +17,6 @@ export default class UiPlugin {
     // TODO: find a better place to bundle?
     root.models.register(MisoListModel);
     root.elements.register(MisoListElement);
-
-    root.ui.MisoListModel = MisoListModel;
   }
 
 }

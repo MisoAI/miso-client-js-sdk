@@ -41,6 +41,7 @@ class UiPluginRoot extends Component {
 class Ui {
 
   constructor(root) {
+    delegateGetters(this, root, ['models', 'elements']);
   }
 
 }

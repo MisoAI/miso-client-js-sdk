@@ -9,6 +9,7 @@ export default class ModelRegistry extends Registry {
     });
     this._root = this.meta._parent;
     this._models = [];
+    this.classes = {};
   }
 
   create({ type, ...options }) {
@@ -19,6 +20,13 @@ export default class ModelRegistry extends Registry {
     const model = new modelClass(options);
     this._models.push(model);
     return model;
+  }
+
+  _register(lib) {
+    super._register(lib);
+    if (lib.className) {
+      this.classes[lib.className] = lib;
+    }
   }
 
 }

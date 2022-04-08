@@ -1,11 +1,16 @@
 import BaseDataModel from './base';
 
 const TYPE = 'list-model';
+const CLASS_NAME = 'MisoListModel';
 
 export default class MisoListModel extends BaseDataModel {
 
   static get type() {
     return TYPE;
+  }
+
+  static get className() {
+    return CLASS_NAME;
   }
 
   constructor({ size, ...options } = {}) {
