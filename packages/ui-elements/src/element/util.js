@@ -39,11 +39,14 @@ export function asElement(html) {
   if (isElement(html)) {
     return html;
   }
+  // TODO: render non html as text node
   const template = document.createElement('template');
   template.innerHTML = html.trim();
   // TODO: validate
   return template.content.firstChild;
 }
+
+// TODO: asElements()
 
 export function replaceChildren(element, children) {
   if (typeof children === 'string') {

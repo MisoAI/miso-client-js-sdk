@@ -41,12 +41,15 @@ export default class MisoListModel extends BaseDataModel {
     const action = { index, name: 'load', payload };
     this._pending(action);
     (async () => {
+      let data, hasError;
       try {
-        const data = this._transformData(await this._source.fetch(payload));
-        this._replace({ ...action, data });
+        data = this._transformData(await this._source.fetch(payload));
       } catch (error) {
-        this._error({ ...action, error });
+        hasError = true;
+        this._error(error);
+        this._emit('error', { ...action, error });
       }
+      !hasError && this._replace({ ...action, data });
     })();
   }
 
@@ -68,10 +71,6 @@ export default class MisoListModel extends BaseDataModel {
     return {
       items: items.map(obj => ({ ...obj, miso_id }))
     };
-  }
-
-  _error(action) {
-    this._emit('error', action);
   }
 
 }

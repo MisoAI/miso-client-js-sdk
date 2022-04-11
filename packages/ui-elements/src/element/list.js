@@ -32,6 +32,7 @@ export default class MisoListElement extends MisoDataElement {
 
   _handleReplace({ data }) {
     replaceChildren(this._elements.container, data.items.map(item => asElement(this.templates.get('item').render(item))));
+    this._emit('replace');
   }
 
 }
