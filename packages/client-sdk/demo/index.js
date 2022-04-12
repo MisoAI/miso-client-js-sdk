@@ -111,6 +111,9 @@
       input.addEventListener('keyup', (event) => (event.key === 'Enter') && handleSubmit(event));
       submit.addEventListener('click', handleSubmit);
       this._init = true;
+
+      const recommendationList = document.querySelector('#recommendation-list');
+      recommendationList.addEventListener('replace', (event) => console.log(event));
     }
     _handleSubmit(event) {
       if (event.defaultPrevented) {
