@@ -1,6 +1,6 @@
 <div>
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1">
-  {%- for section in sitemap.sections -%}
+  {%- for section in sitemap.sdk.sections -%}
     <li class="mb-1">
       <a href="{{ section.path | url }}">{{ section.title }}</a>
       <div>

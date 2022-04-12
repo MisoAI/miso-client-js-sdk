@@ -1,0 +1,33 @@
+sections:
+- title: Overview
+  path: /sdk
+  pages:
+  - title: Installation
+    path: /sdk/installation
+  - title: Configuration
+    path: /sdk/configuration
+  - title: Context
+    path: /sdk/context
+- title: Search
+  path: /sdk/search
+  pages:
+  - title: Search
+    path: /sdk/search/search
+  - title: Autocomplete
+    path: /sdk/search/autocomplete
+- title: Recommendation
+  path: /sdk/recommendation
+  pages:
+  - title: User to Products
+    path: /sdk/recommendation/user_to_products
+  - title: User to Attributes
+    path: /sdk/recommendation/user_to_attributes
+  - title: User to Trending
+    path: /sdk/recommendation/user_to_trending
+  - title: Product to Products
+    path: /sdk/recommendation/product_to_products
+- title: Interactions
+  path: /sdk/interactions
+  pages:
+  - title: Upload
+    path: /sdk/interactions/upload
