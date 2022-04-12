@@ -215,13 +215,19 @@ ul.sidebar-list > li > a {
 main {
   padding-right: 1.25rem;
 }
+main > .content h2, main > .content h3 {
+  margin-bottom: 1rem;
+}
 main > .content > h2:nth-child(n+2),
 main > .content > h3:nth-child(n+2) {
-  margin-top: 1.5em;
+  margin-top: 2.5rem;
+}
+main > .content h4, main > .content h5 {
+  margin-bottom: 1rem;
 }
 main > .content > h4:nth-child(n+2),
 main > .content > h5:nth-child(n+2) {
-  margin-top: 1em;
+  margin-top: 1.5rem;
 }
 
 .btn-group-lite input:checked + label.btn,

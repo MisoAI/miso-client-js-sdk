@@ -64,6 +64,8 @@
             <a href="/miso-client-js-sdk/installation">Installation</a>
           </li><li>
             <a href="/miso-client-js-sdk/configuration">Configuration</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/context">Context</a>
           </li></ul>
       </div>
     </li><li class="mb-1">
@@ -108,7 +110,18 @@
         </div>
         
         <div class="content ps-lg-4">
-          
+          <p>This is a quality-of-life module. You can save some shared variables with context API, so they will be passed into other API calls automatically.</p>
+<h3 id="anonymous-id" tabindex="-1">Anonymous ID</h3>
+<p>The SDK takes care of <code>anonymous_id</code> automatically using session storage. It will be managed and passed into API calls automatically.</p>
+<p>If you want to manage <code>anonymous_id</code> by yourself, specify it in the config:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> miso <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">apiKey</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">disableAutoAnonymousId</span><span class="token operator">:</span> <span class="token boolean">true</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>... and then set it yourself:</p>
+<pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>anonymous_id <span class="token operator">=</span> <span class="token string">'my_anonymous_id'</span><span class="token punctuation">;</span></code></pre>
+<h3 id="user-id-and-hash" tabindex="-1">User ID and hash</h3>
+<p>Set <code>user_id</code> and <code>user_hash</code>:</p>
+<pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id <span class="token operator">=</span> <span class="token string">'user_id'</span><span class="token punctuation">;</span><br>miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_hash <span class="token operator">=</span> <span class="token string">'user_hash'</span><span class="token punctuation">;</span></code></pre>
+<p>See <a href="https://api.askmiso.com/#operation/search_v1_search_search_post">REST API</a> for more details about <code>user_hash</code>.</p>
+
         </div>
       </main>
     </div>

@@ -64,6 +64,8 @@
             <a href="/miso-client-js-sdk/installation">Installation</a>
           </li><li>
             <a href="/miso-client-js-sdk/configuration">Configuration</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/context">Context</a>
           </li></ul>
       </div>
     </li><li class="mb-1">
@@ -109,7 +111,7 @@
         
         <div class="content ps-lg-4">
           <h4 id="syntax" tabindex="-1">Syntax</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">user_to_products</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToProducts</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="parameters" tabindex="-1">Parameters</h4>
 <p>The <code>options</code> parameter is an object with the following properties:</p>
 <table class="table">
@@ -190,7 +192,7 @@ Default: <code>5</code>.
     </tr></tbody>
 </table>
 <h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">user_to_products</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToProducts</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="learn-more" tabindex="-1">Learn more</h4>
 <p>For advanced usage, see <a href="https://api.askmiso.com/#operation/user_to_products_v1_recommendation_user_to_products_post">REST API</a>.</p>
 
