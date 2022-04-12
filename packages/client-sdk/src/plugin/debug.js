@@ -53,7 +53,7 @@ export default class DebugPlugin {
       case 'client':
         switch (path[1]) {
           case 'api':
-            this._handleApiEvent(name, data);
+            this._handleApiEvent(name, { ...data, groupName: path[2] });
             return;
         }
         break;
@@ -72,9 +72,14 @@ export default class DebugPlugin {
     _log('client', eventName, [data]);
   }
 
-  _handleApiEvent(eventName, { apiName, url, ...data }) {
+  _handleApiEvent(eventName, { groupName, apiName, url, ...data }) {
     const pathname = new URL(url).pathname;
-    _log('api', eventName, `POST ${pathname}`, [{ ...data, url }]);
+    if (groupName === 'interactions') {
+      const { type } = data.payload.data[0];
+      _log('api', eventName, `POST ${pathname}`, type, [{ ...data, url }]);
+    } else {
+      _log('api', eventName, `POST ${pathname}`, [{ ...data, url }]);
+    }
   }
 
   _handlePluginsEvent(eventName, plugin) {
