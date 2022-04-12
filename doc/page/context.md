@@ -31,3 +31,5 @@ Set `user_id` and `user_hash`:
 miso.context.user_id = 'user_id';
 miso.context.user_hash = 'user_hash';
 ```
+
+See [REST API](https://api.askmiso.com/#operation/search_v1_search_search_post) for more details about `user_hash`.
