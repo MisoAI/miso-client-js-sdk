@@ -43,7 +43,10 @@ export default class MisoListModel extends BaseDataModel {
     (async () => {
       let data, hasError;
       try {
-        data = this._transformData(await this._source.fetch(payload));
+        data = this._defaultTransform(await this._source.fetch(payload));
+        if (this._transform) {
+          data = await this._transform(data);
+        }
       } catch (error) {
         hasError = true;
         this._error(error);
@@ -67,7 +70,7 @@ export default class MisoListModel extends BaseDataModel {
     }
   }
 
-  _transformData({ miso_id, items }) {
+  _defaultTransform({ miso_id, items }) {
     return {
       items: items.map(obj => ({ ...obj, miso_id }))
     };
