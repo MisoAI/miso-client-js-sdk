@@ -27,6 +27,13 @@ export default class BaseDataModel extends Component {
     return this._data;
   }
 
+  set transform(fn) {
+    if (typeof fn !== 'function') {
+      throw new Error(`Transform value must be a function: ${fn}`);
+    }
+    this._transform = fn;
+  }
+
   _createInitialData() {
     throw new Error('_createInitialData Unimplemented.');
   }

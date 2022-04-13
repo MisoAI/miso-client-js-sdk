@@ -27,7 +27,7 @@ export default class MisoListModel extends BaseDataModel {
   }
 
   clear() {
-    this._replace({
+    this._refresh({
       index: (this._dispatchIndex = this._nextActionIndex()),
       name: 'clear',
       data: this._createInitialData(),
@@ -43,13 +43,16 @@ export default class MisoListModel extends BaseDataModel {
     (async () => {
       let data, hasError;
       try {
-        data = this._transformData(await this._source.fetch(payload));
+        data = this._defaultTransform(await this._source.fetch(payload));
+        if (this._transform) {
+          data = await this._transform(data);
+        }
       } catch (error) {
         hasError = true;
         this._error(error);
         this._emit('error', { ...action, error });
       }
-      !hasError && this._replace({ ...action, data });
+      !hasError && this._refresh({ ...action, data });
     })();
   }
 
@@ -58,16 +61,16 @@ export default class MisoListModel extends BaseDataModel {
     this._emit('pending', action);
   }
 
-  _replace(action) {
+  _refresh(action) {
     const { index, data } = action;
     if (index > this._baselineIndex) {
       this._baselineIndex = index;
       this._data = data;
-      this._emit('replace', action);
+      this._emit('refresh', action);
     }
   }
 
-  _transformData({ miso_id, items }) {
+  _defaultTransform({ miso_id, items }) {
     return {
       items: items.map(obj => ({ ...obj, miso_id }))
     };

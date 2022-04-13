@@ -146,7 +146,7 @@ const products = response.products;
         <p>
           Get personalized recommendation from <code>recommendation/user_to_products</code> API.
         </p>
-        <miso-list api="user_to_products" on:start="load">
+        <miso-list id="recommendation-list" api="user_to_products" on:start="load">
           <script data-attr="payload" type="application/json">
             {
               "fl": ["*"]

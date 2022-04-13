@@ -111,6 +111,14 @@
       input.addEventListener('keyup', (event) => (event.key === 'Enter') && handleSubmit(event));
       submit.addEventListener('click', handleSubmit);
       this._init = true;
+
+      const recommendationList = document.querySelector('#recommendation-list');
+      recommendationList.addEventListener('refresh', (event) => console.log(event));
+      (async () => {
+        await window.customElements.whenDefined('miso-list');
+        await recommendationList.whenReady();
+        //recommendationList.model.transform = (data) => ({ ...data, test: 999 });
+      })();
     }
     _handleSubmit(event) {
       if (event.defaultPrevented) {
