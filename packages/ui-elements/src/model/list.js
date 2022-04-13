@@ -27,7 +27,7 @@ export default class MisoListModel extends BaseDataModel {
   }
 
   clear() {
-    this._replace({
+    this._refresh({
       index: (this._dispatchIndex = this._nextActionIndex()),
       name: 'clear',
       data: this._createInitialData(),
@@ -52,7 +52,7 @@ export default class MisoListModel extends BaseDataModel {
         this._error(error);
         this._emit('error', { ...action, error });
       }
-      !hasError && this._replace({ ...action, data });
+      !hasError && this._refresh({ ...action, data });
     })();
   }
 
@@ -61,12 +61,12 @@ export default class MisoListModel extends BaseDataModel {
     this._emit('pending', action);
   }
 
-  _replace(action) {
+  _refresh(action) {
     const { index, data } = action;
     if (index > this._baselineIndex) {
       this._baselineIndex = index;
       this._data = data;
-      this._emit('replace', action);
+      this._emit('refresh', action);
     }
   }
 

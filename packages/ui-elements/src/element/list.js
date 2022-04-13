@@ -27,12 +27,12 @@ export default class MisoListElement extends MisoDataElement {
 
   _setupModel(model) {
     super._setupModel(model);
-    model.on('replace', this._handleReplace.bind(this));
+    model.on('refresh', this._handleRefresh.bind(this));
   }
 
-  _handleReplace({ data }) {
+  _handleRefresh({ data }) {
     replaceChildren(this._elements.container, data.items.map(item => asElement(this.templates.get('item').render(item))));
-    this._emit('replace');
+    this._emit('refresh');
   }
 
 }

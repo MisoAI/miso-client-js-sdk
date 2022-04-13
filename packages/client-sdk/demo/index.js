@@ -113,7 +113,7 @@
       this._init = true;
 
       const recommendationList = document.querySelector('#recommendation-list');
-      recommendationList.addEventListener('replace', (event) => console.log(event));
+      recommendationList.addEventListener('refresh', (event) => console.log(event));
       (async () => {
         await window.customElements.whenDefined('miso-list');
         await recommendationList.whenReady();
