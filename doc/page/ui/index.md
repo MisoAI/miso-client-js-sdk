@@ -1,4 +1,4 @@
 ---
 layout: base.njk
-title: UI libraries for Miso SDK
+title: UI extention for Miso client SDK
 ---

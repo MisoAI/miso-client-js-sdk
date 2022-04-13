@@ -2,7 +2,7 @@
 @import './code.scss';
 
 /* layout */
-.mi-body-container {
+body.base .mi-body-container {
   @media (min-width: 768px) {
     & {
       display: grid;
@@ -16,6 +16,8 @@
       grid-template-columns: 1fr 5fr;
     }
   }
+}
+body.home .mi-body-container {
 }
 aside {
   grid-area: sidebar;
@@ -62,7 +64,7 @@ main {
     }
   }
   */
-}
+}  
 
 /* navbar */
 header {
@@ -160,4 +162,22 @@ main {
       background-color: var(--color-primary-l8);
     }
   }
+}
+
+.btn-outline-primary {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn-outline-primary:hover,
+.btn-check:active+.btn-outline-primary, 
+.btn-check:checked+.btn-outline-primary, 
+.btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show, 
+.btn-outline-primary:active {
+  color: #fff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn-check:focus+.btn-outline-primary, 
+.btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.25rem var(--color-primary-l3);
 }

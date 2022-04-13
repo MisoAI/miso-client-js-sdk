@@ -3,18 +3,13 @@
   <head>
     {% include 'header.njk' %}
   </head>
-  <body>
+  <body class="home">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         {% include 'navbar.njk' %}
       </nav>
     </header>
     <div class="container-xxl my-md-4 mi-body-container">
-      <aside>
-        <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
-          {% include 'sidebar.njk' %}
-        </nav>
-      </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
           {% if title %}<h1>{{ title }}</h1>{% endif %}
