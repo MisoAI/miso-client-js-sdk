@@ -9,7 +9,7 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
 
 [Home](https://miso.ai/) |
 [Docs](https://docs.miso.ai/) |
-[SDK Reference](https://misoai.github.io/miso-client-js-sdk/) |
+[SDK Reference](https://misoai.github.io/miso-client-js-sdk/sdk) |
 [API Reference](https://api.askmiso.com/) |
 [Recipes](https://docs.miso.ai/recipes)
 

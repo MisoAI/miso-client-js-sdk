@@ -13,7 +13,7 @@ Don't have a Miso account? Get yours [here](https://miso.ai).
 
 The core library to work with Miso.
 
-<a class="btn btn-lg btn-outline-primary mb-3" href="./sdk">Get started</a>
+<a class="btn btn-outline-primary mb-3" href="./sdk">Get started</a>
 
 <hr>
 
@@ -21,7 +21,7 @@ The core library to work with Miso.
 
 An extension with built-in data model and custom elements.
 
-<a class="btn btn-lg btn-outline-primary mb-3" href="./ui">Explore</a>
+<a class="btn btn-outline-primary mb-3" href="./ui">Explore</a>
 
 <hr>
 
