@@ -1,6 +1,6 @@
 sections:
 - title: Overview
-  path: /
+  path:
   pages:
   - title: Installation
     path: /installation

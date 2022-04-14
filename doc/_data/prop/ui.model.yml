@@ -1,0 +1,33 @@
+props:
+- key: api
+  type: string
+  required: true
+  desc: |
+    The API used for fetching model data. See below for accepted values.
+- key: payload
+  type: object
+  desc: |
+    The default payload to send with API request.
+- key: autoClient
+  type: boolean
+  default: true
+  desc: |
+    If true, the data model will find or wait for the first available Miso SDK client and connects to it.
+- key: client
+  type: object
+  desc: |
+    The Miso SDK client instance to connect to. If `autoClient` is true (which is by default), you don't need to supply a client.
+
+
+
+groups:
+# shared
+- key: _shared.options
+  props:
+  - api
+  - payload
+  - autoClient
+  - client
+- key: list-model.options
+  props:
+  - _shared.options

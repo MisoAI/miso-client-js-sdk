@@ -1,13 +1,13 @@
 <div>
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1">
-  {%- for section in sitemap.sections -%}
+  {%- for section in sitemap[region].sections -%}
     <li class="mb-1">
-      <a href="{{ section.path | url }}">{{ section.title }}</a>
+      <a href="{{ ['/', region, section.path] | join | url }}">{{ section.title }}</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small">
         {%- for page in section.pages -%}
           <li>
-            <a href="{{ page.path | url }}">{{ page.title }}</a>
+            <a href="{{ ['/', region, page.path] | join | url }}">{{ page.title }}</a>
           </li>
         {%- endfor -%}
         </ul>

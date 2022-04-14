@@ -2,7 +2,6 @@
 layout: base.njk
 title: Upload Interactions
 ---
-{% from 'macros.njk' import proptable %}
 
 #### Syntax
 ```js
@@ -20,7 +19,7 @@ miso.api.interactions.upload(data);
 
 {# TODO: find a better UI #}
 Select an event type:
-{% for group in data.eventGroups %}
+{% for group in data.event.groups %}
 <div>
   <div class="btn-group-lite" id="event-types" role="group" aria-label="{{ group.title }}">
   {%- for event in group.events -%}
@@ -32,7 +31,7 @@ Select an event type:
 {% endfor %}
 
 <style>
-  {% for group in data.eventGroups -%}
+  {% for group in data.event.groups -%}
   {%- for event in group.events -%}
   #event-props-table[data-event-type="{{ event.name }}"] tr[data-used-by-except~="{{ event.name }}"],
   {% endfor -%}
@@ -40,7 +39,7 @@ Select an event type:
   #event-props-table tr[data-used-by] {
     display: none;
   }
-  {% for group in data.eventGroups -%}
+  {% for group in data.event.groups -%}
   {%- for event in group.events -%}
   #event-props-table[data-event-type="{{ event.name }}"] tr[data-used-by~="{{ event.name }}"],
   {% endfor -%}
@@ -59,7 +58,7 @@ Select an event type:
     </tr>
   </thead>
   <tbody>
-  {%- for prop in data.eventProps -%}
+  {%- for prop in data.event.props -%}
     <tr {% if prop.used_by -%}data-used-by="{{ prop.used_by.join(' ') }}"{%- endif %}{% if prop.used_by_except -%}data-used-by-except="{{ prop.used_by_except.join(' ') }}"{%- endif %}>
       <td><code>{{ prop.name }}</code></td>
       <td>{{ prop.type }}</td>

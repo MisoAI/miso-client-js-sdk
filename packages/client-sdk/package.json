@@ -19,7 +19,7 @@
     "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"
   },
   "repository": "MisoAI/miso-client-js-sdk",
-  "homepage": "https://misoai.github.io/miso-client-js-sdk/",
+  "homepage": "https://misoai.github.io/miso-client-js-sdk/sdk",
   "license": "MIT",
   "contributors": [
     "simonpai <simon.pai@askmiso.com>"

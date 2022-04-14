@@ -22,7 +22,7 @@ module.exports = function(config) {
 		files: './dist/css/**/*.css'
 	});
 
-  config.addNunjucksFilter('markdown', (value) => markdown.renderInline(value));
+  config.addNunjucksFilter('markdown', value => markdown.renderInline(value));
 
   config.addNunjucksGlobal('data', data);
   config.on('eleventy.before', () => data.refresh());

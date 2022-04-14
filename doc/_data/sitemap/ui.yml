@@ -1,0 +1,18 @@
+sections:
+- title: Overview
+  path:
+  pages:
+  - title: Quick Start
+    path: /quick-start
+  - title: Concept
+    path: /concept
+- title: Data Model
+  path: /model
+  pages:
+  - title: List Model
+    path: /model/list-model
+- title: Element
+  path: /element
+  pages:
+  - title: <miso-list>
+    path: /element/miso-list

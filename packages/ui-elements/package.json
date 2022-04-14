@@ -17,7 +17,7 @@
     "build": "npm run build:clean && npm run build:esm"
   },
   "repository": "MisoAI/miso-client-js-sdk",
-  "homepage": "https://misoai.github.io/miso-client-js-sdk/",
+  "homepage": "https://misoai.github.io/miso-client-js-sdk/ui",
   "license": "MIT",
   "contributors": [
     "simonpai <simon.pai@askmiso.com>"

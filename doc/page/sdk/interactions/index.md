@@ -5,7 +5,7 @@ desc: Miso’s Interaction APIs let you manage your Interaction records stored w
 ---
 ### Events
 
-{% for group in data.eventGroups %}
+{% for group in data.event.groups %}
 #### {{ group.title }}
 <table class="table">
   <thead>
