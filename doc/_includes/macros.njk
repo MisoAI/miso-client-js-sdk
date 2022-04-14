@@ -1,4 +1,4 @@
-{% macro proptable(name) %}
+{% macro proptable(group, name) %}
 <table class="table">
   <thead>
     <tr>
@@ -8,7 +8,7 @@
     </tr>
   </thead>
   <tbody>
-  {%- for prop in data.propGroups[name].props -%}
+  {%- for prop in data.props[group][name].props -%}
     <tr>
       <td><code>{{ prop.name }}</code></td>
       <td>{{ prop.type }}</td>

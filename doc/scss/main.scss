@@ -1,8 +1,9 @@
 @import './variables.scss';
 @import './code.scss';
+@import './diagram.scss';
 
 /* layout */
-body.base .mi-body-container {
+body.base .miso-body-container {
   @media (min-width: 768px) {
     & {
       display: grid;
@@ -16,8 +17,6 @@ body.base .mi-body-container {
       grid-template-columns: 1fr 5fr;
     }
   }
-}
-body.home .mi-body-container {
 }
 aside {
   grid-area: sidebar;

@@ -11,8 +11,8 @@ sections:
   pages:
   - title: List Model
     path: /model/list-model
-- title: Custom Element
+- title: Element
   path: /element
   pages:
-  - title: Miso List
+  - title: <miso-list>
     path: /element/miso-list

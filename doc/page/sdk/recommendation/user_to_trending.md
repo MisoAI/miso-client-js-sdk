@@ -13,12 +13,12 @@ const response = await miso.api.recommendation.userToTrending(options);
 #### Parameters
 The `options` parameter is an object with the following properties:
 
-{{ proptable('user_to_trending.options') }}
+{{ proptable('sdk', 'user_to_trending.options') }}
 
 #### Return value
 A `Promise` of response object with the following properties:
 
-{{ proptable('user_to_trending.response') }}
+{{ proptable('sdk', 'user_to_trending.response') }}
 
 #### Examples
 ```js

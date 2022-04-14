@@ -13,12 +13,12 @@ const response = await miso.api.search.search(options);
 #### Parameters
 The `options` parameter is an object with the following properties:
 
-{{ proptable('search.options') }}
+{{ proptable('sdk', 'search.options') }}
 
 #### Return value
 A `Promise` of response object with the following properties:
 
-{{ proptable('search.response') }}
+{{ proptable('sdk', 'search.response') }}
 
 #### Examples
 ```js

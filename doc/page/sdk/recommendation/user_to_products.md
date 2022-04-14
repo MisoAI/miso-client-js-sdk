@@ -13,12 +13,12 @@ const response = await miso.api.recommendation.userToProducts(options);
 #### Parameters
 The `options` parameter is an object with the following properties:
 
-{{ proptable('user_to_products.options') }}
+{{ proptable('sdk', 'user_to_products.options') }}
 
 #### Return value
 A `Promise` of response object with the following properties:
 
-{{ proptable('user_to_products.response') }}
+{{ proptable('sdk', 'user_to_products.response') }}
 
 #### Examples
 ```js

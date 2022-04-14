@@ -13,12 +13,12 @@ const response = await miso.api.recommendation.userToAttributes(options);
 #### Parameters
 The `options` parameter is an object with the following properties:
 
-{{ proptable('user_to_attributes.options') }}
+{{ proptable('sdk', 'user_to_attributes.options') }}
 
 #### Return value
 A `Promise` of response object with the following properties:
 
-{{ proptable('user_to_attributes.response') }}
+{{ proptable('sdk', 'user_to_attributes.response') }}
 
 #### Examples
 ```js

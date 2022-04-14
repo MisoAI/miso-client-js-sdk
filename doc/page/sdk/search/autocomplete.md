@@ -13,13 +13,13 @@ const response = await miso.api.search.autocomplete(options);
 #### Parameters
 The `options` parameter is an object with following properties:
 
-{{ proptable('autocomplete.options') }}
+{{ proptable('sdk', 'autocomplete.options') }}
 
 #### Return value
 
 A `Promise` of response object with the following properties:
 
-{{ proptable('autocomplete.response') }}
+{{ proptable('sdk', 'autocomplete.response') }}
 
 #### Examples
 ```js
