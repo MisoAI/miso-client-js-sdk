@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Miso SDK for JavaScript</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-16x16.png" sizes="16x16">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-32x32.png" sizes="32x32">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon.ico" sizes="48x48">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-512x512.png" sizes="192x192">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-192x192.png" sizes="512x512">
+<link rel="apple-touch-icon" href="/miso-client-js-sdk/favicon/apple-touch-icon.png" sizes="180x180">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
+
+  </head>
+  <body class="base">
+    <header class="navbar navbar-expand-md navbar-dark">
+      <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand p-0 me-2" href="/miso-client-js-sdk/" aria-label="Miso">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    height="28" viewbox="0 0 327 132"
+    class="bi d-block my-1" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+  </svg>
+</a>
+<button type="button" class="navbar-toggler"
+  data-bs-toggle="collapse" data-bs-target="#navbar"
+  aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    width="32" height="32" viewbox="0 0 16 16"
+    class="bi" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#list"/>
+  </svg>
+</button>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/sdk">SDK</a>
+    </li>
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/ui">UI</a>
+    </li>
+  </ul>
+  <hr class="d-md-none text-white-50">
+  <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="https://github.com/MisoAI/miso-client-js-sdk" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          viewbox="0 0 16 16"
+          class="bi navbar-nav-svg d-inline-block align-text-top" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#github"/>
+        </svg>
+        <small class="d-md-none ms-2">GitHub</small>
+      </a>
+    </li>
+  </ul>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai">Try Miso</a>
+</div>
+
+      </nav>
+    </header>
+    <div class="container-xxl my-md-4 miso-body-container">
+      <aside>
+        <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
+          <div>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="mb-1">
+      <a href="/miso-client-js-sdk/ui">Overview</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/ui/quick-start">Quick Start</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/ui/concept">Concept</a>
+          </li></ul>
+      </div>
+    </li><li class="mb-1">
+      <a href="/miso-client-js-sdk/ui/model">Data Model</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/ui/model/list-model">List Model</a>
+          </li></ul>
+      </div>
+    </li><li class="mb-1">
+      <a href="/miso-client-js-sdk/ui/element">Element</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/ui/element/miso-list">&lt;miso-list&gt;</a>
+          </li></ul>
+      </div>
+    </li></ul>
+</div>
+
+        </nav>
+      </aside>
+      <main class="order-1">
+        <div class="intro ps-lg-4">
+          <h1>Miso UI quick start</h1>
+          <hr>
+          
+        </div>
+        
+        <div class="content ps-lg-4">
+          <p>We can setup the most basic list element with just few steps.</p>
+<h3 id="turn-on-ui-plugin" tabindex="-1">Turn on UI plugin</h3>
+<pre class="language-js"><code class="language-js">MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">install</span><span class="token punctuation">(</span><span class="token string">'std:ui'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="add-the-custom-element-on-the-page" tabindex="-1">Add the custom element on the page</h3>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-list</span> <span class="token attr-name">api</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>user_to_products<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">on:</span>start</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>load<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">data-attr</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>payload<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>application/json<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript"><br>    <span class="token punctuation">{</span><br>      <span class="token string-property property">"fl"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"*"</span><span class="token punctuation">]</span><br>    <span class="token punctuation">}</span><br>  </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">data-attr</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>template<span class="token punctuation">"</span></span> <span class="token attr-name">data-name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>item<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>template/string<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript"><br>    <span class="token operator">&lt;</span>div data<span class="token operator">-</span>product<span class="token operator">-</span>id<span class="token operator">=</span><span class="token string">"${data.product_id}"</span><span class="token operator">></span><br>      <span class="token operator">&lt;</span>a href<span class="token operator">=</span><span class="token string">"${data.url}"</span><span class="token operator">></span><br>        <span class="token operator">&lt;</span>h3<span class="token operator">></span>$<span class="token punctuation">{</span>data<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>h3<span class="token operator">></span><br>        <span class="token operator">&lt;</span>img src<span class="token operator">=</span><span class="token string">"${data.cover_image}"</span><span class="token operator">></span><br>        <span class="token operator">&lt;</span>h3<span class="token operator">></span>$$<span class="token punctuation">{</span>data<span class="token punctuation">.</span>sale_price<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>h3<span class="token operator">></span><br>      <span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">></span><br>    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span><br>  </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-list</span><span class="token punctuation">></span></span></code></pre>
+
+        </div>
+      </main>
+    </div>
+    <footer class="py-5 mt-5 bg-light">
+      <!-- TODO -->
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

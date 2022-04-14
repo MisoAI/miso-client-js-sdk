@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
 
   </head>
-  <body class="home">
+  <body class="base">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         <a class="navbar-brand p-0 me-2" href="/miso-client-js-sdk/" aria-label="Miso">
@@ -61,32 +61,69 @@
       </nav>
     </header>
     <div class="container-xxl my-md-4 miso-body-container">
+      <aside>
+        <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
+          <div>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="mb-1">
+      <a href="/miso-client-js-sdk/sdk">Overview</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/sdk/installation">Installation</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/configuration">Configuration</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/context">Context</a>
+          </li></ul>
+      </div>
+    </li><li class="mb-1">
+      <a href="/miso-client-js-sdk/sdk/search">Search</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/sdk/search/search">Search</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/search/autocomplete">Autocomplete</a>
+          </li></ul>
+      </div>
+    </li><li class="mb-1">
+      <a href="/miso-client-js-sdk/sdk/recommendation">Recommendation</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/sdk/recommendation/user_to_products">User to Products</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/recommendation/user_to_attributes">User to Attributes</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/recommendation/user_to_trending">User to Trending</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/recommendation/product_to_products">Product to Products</a>
+          </li></ul>
+      </div>
+    </li><li class="mb-1">
+      <a href="/miso-client-js-sdk/sdk/interactions">Interactions</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/sdk/interactions/upload">Upload</a>
+          </li></ul>
+      </div>
+    </li></ul>
+</div>
+
+        </nav>
+      </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Empower business with high conversion by Miso</h1>
+          <h1>Installation</h1>
           <hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Enhance your site with high conversion superpower with <a href="https://miso.ai/">Miso</a>. With the client SDK and surrounding libraries you can unlock fully personalized search and recommendation with ease.</p>
-<p>Don't have a Miso account? Get yours <a href="https://miso.ai">here</a>.</p>
-<hr>
-<h2 id="client-sdk-for-browser" tabindex="-1">Client SDK for browser</h2>
-<p>The core library to work with Miso.</p>
-<p><a class="btn btn-outline-primary mb-3" href="./sdk">Get started</a></p>
-<hr>
-<h2 id="ui" tabindex="-1">UI</h2>
-<p>An extension with built-in data model and custom elements.</p>
-<p><a class="btn btn-outline-primary mb-3" href="./ui">Explore</a></p>
-<hr>
-<h2 id="learn-more" tabindex="-1">Learn more</h2>
-<ul>
-<li><a href="https://miso.ai">Homepage</a></li>
-<li><a href="https://docs.miso.ai">Docs</a></li>
-<li><a href="https://api.askmiso.com">REST API</a></li>
-<li><a href="https://docs.miso.ai/recipes">Recipes</a></li>
-</ul>
+          <h3 id="as-npm-module" tabindex="-1">As NPM Module</h3>
+<p>To use SDK as an npm module, run in your project directory:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> @miso.ai/client-sdk --save</code></pre>
+<h3 id="using-script-tag" tabindex="-1">Using Script Tag</h3>
+<p>The SDK is also served by <a href="https://www.jsdelivr.com/package/npm/@miso.ai/client-sdk">jsDelivr</a>.</p>
+<p>You can also include the SDK in your webpage with script tag:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
 
         </div>
       </main>
