@@ -8,6 +8,10 @@ props:
   type: object
   desc: |
     The default payload to send with API request.
+- key: transform
+  type: function
+  desc: |
+    A function applied to all initial and fetched model data.
 - key: autoClient
   type: boolean
   default: true
@@ -21,13 +25,14 @@ props:
 
 
 groups:
-# shared
-- key: _shared.options
+# data element
+- key: _data.options
   props:
   - api
   - payload
+  - transform
   - autoClient
   - client
 - key: list-model.options
   props:
-  - _shared.options
+  - _data.options

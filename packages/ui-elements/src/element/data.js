@@ -10,6 +10,8 @@ const ATTR_TO_PROPS = {
   transform: 'transform',
 };
 
+// TODO: rename to PrimaryElement
+
 export default class MisoDataElement extends MisoElement {
 
   static get observedAttributes() {
