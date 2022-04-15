@@ -7,6 +7,7 @@ const ATTR_TO_PROPS = {
   model: 'modelType',
   api: 'api',
   payload: 'payload',
+  transform: 'transform',
 };
 
 export default class MisoDataElement extends MisoElement {
@@ -31,11 +32,16 @@ export default class MisoDataElement extends MisoElement {
   }
 
   get api() {
+    // TODO: use delegate util
     return this._modelOptions.api;
   }
 
   get payload() {
     return this._modelOptions.payload;
+  }
+
+  get transform() {
+    return this._modelOptions.transform;
   }
 
   set model(model) {
@@ -48,14 +54,6 @@ export default class MisoDataElement extends MisoElement {
     this._model = model;
     this._setupModel(model);
     this._setReady();
-  }
-
-  set payload(value) {
-    if (typeof value === 'string') {
-      value = JSON.parse(value);
-    }
-    // TODO: more validations
-    this._modelOptions.payload = value;
   }
 
   set modelType(value) {
@@ -75,6 +73,21 @@ export default class MisoDataElement extends MisoElement {
     this._modelOptions.api = value;
   }
 
+  set payload(value) {
+    if (typeof value === 'string') {
+      value = JSON.parse(value);
+    }
+    // TODO: more validations
+    this._modelOptions.payload = value;
+  }
+
+  set transform(value) {
+    if (typeof value !== 'function') {
+      throw new Error(`Transform value must be a function: ${value}`);
+    }
+    this._modelOptions.transform = value;
+  }
+
   _init() {
     super._init();
     // build model if parameters are satisfied
@@ -83,6 +96,7 @@ export default class MisoDataElement extends MisoElement {
   }
 
   _createModelIfReady() {
+    // TODO: we may want a more explicit rule to determine when to create model
     if (this._model || !this._modelOptions.api) {
       return;
     }

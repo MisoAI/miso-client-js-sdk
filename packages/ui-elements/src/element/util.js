@@ -24,6 +24,7 @@ export function parseDataFromElement(element) {
           return JSON.parse(content);
         case 'template/string':
           return new Function('data', `"use strict"; return \`${content}\`;`);
+        case 'application/function':
         case 'template/function':
           return new Function('data', `"use strict"; return (${content})(data);`);
       }

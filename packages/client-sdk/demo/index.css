@@ -32,6 +32,7 @@ body.play .row.playground-only {
   margin: 20px 0;
   border: 1px solid #CCC;
   background: #FCFCFC;
+  overflow: hidden;
 }
 .product .imgbox {
   float: left;
@@ -44,8 +45,19 @@ body.play .row.playground-only {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
 .product .infobox {
+  max-height: 300px;
+  padding-bottom: 1.5em;
+  /*overflow: scroll;*/
   overflow: hidden;
 }
 .product .price {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1em;
+  margin: 0;
+  box-shadow: 0 0 0.5em #FCFCFC;
+  background: #FCFCFC;
   text-align: right;
 }

@@ -20,9 +20,15 @@ export default class MisoListModel extends BaseDataModel {
     this._baselineIndex = this._dispatchIndex = 0;
   }
 
-  _createInitialData() {
+  _createInitialRawData() {
     return {
       items: []
+    };
+  }
+
+  _baseTransform({ miso_id, items }) {
+    return {
+      items: items.map(obj => ({ ...obj, miso_id }))
     };
   }
 
@@ -43,10 +49,7 @@ export default class MisoListModel extends BaseDataModel {
     (async () => {
       let data, hasError;
       try {
-        data = this._defaultTransform(await this._source.fetch(payload));
-        if (this._transform) {
-          data = await this._transform(data);
-        }
+        data = this._applyTransform(await this._source.fetch(payload));
       } catch (error) {
         hasError = true;
         this._error(error);
@@ -68,12 +71,6 @@ export default class MisoListModel extends BaseDataModel {
       this._data = data;
       this._emit('refresh', action);
     }
-  }
-
-  _defaultTransform({ miso_id, items }) {
-    return {
-      items: items.map(obj => ({ ...obj, miso_id }))
-    };
   }
 
 }
