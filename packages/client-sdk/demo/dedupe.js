@@ -141,12 +141,12 @@
   const elements = document.querySelectorAll('miso-list.recommendation');
   const elementCount = elements.length;
 
-  const usedProductIds = new Set();
+  const shownProductIds = new Set();
 
   function transformData({ items, ...data }) {
-    items = items.filter(item => !usedProductIds.has(item.product_id)).slice(0, 2);
+    items = items.filter(item => !shownProductIds.has(item.product_id)).slice(0, 2);
     for (const item of items) {
-      usedProductIds.add(item.product_id);
+      shownProductIds.add(item.product_id);
     }
     return { ...data, items };
   }
