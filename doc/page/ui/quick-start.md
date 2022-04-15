@@ -18,7 +18,7 @@ MisoClient.plugins.install('std:ui');
       "fl": ["*"]
     }
   </script>
-  <script data-attr="template" data-name="item" type="template/string">
+  <template data-name="item">
     <div data-product-id="${data.product_id}">
       <a href="${data.url}">
         <h3>${data.title}</h3>
@@ -26,6 +26,6 @@ MisoClient.plugins.install('std:ui');
         <h3>$${data.sale_price}</h3>
       </a>
     </div>
-  </script>
+  </template>
 </miso-list>
 ```

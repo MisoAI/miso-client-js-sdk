@@ -37,9 +37,9 @@ A mandatory template to render each item of the data array.
 ```html
 <miso-list>
   ...
-  <script data-attr="template" data-name="item" type="template/string">
+  <template data-name="item">
     <li>${data.title}: $${data.sale_price}</li>
-  </script>
+  </template>
   ...
 </miso-list>
 ```
@@ -52,9 +52,9 @@ An optional template for the container element holding the items.
 ```html
 <miso-list>
   ...
-  <script data-attr="template" data-name="container" type="template/string">
+  <template data-name="container">
     <ul></ul>
-  </script>
+  </template>
   ...
 </miso-list>
 ```

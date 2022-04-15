@@ -1,4 +1,4 @@
-import { onChildElement, parseDataFromElement, isStandardScriptType } from './util';
+import { onChildElement, parseDataFromElement, parseTemplateFromElement, isStandardScriptType } from './util';
 import root from '../root';
 
 class Templates {
@@ -48,11 +48,8 @@ export default class MisoElement extends HTMLElement {
   //adoptedCallback() {}
 
   attributeChangedCallback(attr, _, newValue) {
-    const segments = attr.split(':');
-    attr = segments[0];
-    const name = segments[1];
     try {
-      this._setFromAttributeOrChild(attr, name, newValue);
+      this._setFromAttributeOrChild(attr, newValue);
     } catch(e) {
       this._error(e);
     }
@@ -60,33 +57,64 @@ export default class MisoElement extends HTMLElement {
 
   _processChild(child) {
     try {
-      if (child.tagName.toLowerCase() !== 'script' || isStandardScriptType(child.getAttribute('type'))) {
-        return;
+      const tagName = child.tagName.toLowerCase();
+      switch (tagName) {
+        case 'script':
+          if (!isStandardScriptType(child.getAttribute('type'))) {
+            this._processScriptChild(child);
+          }
+          break;
+        case 'template':
+          if (child.dataset.name) {
+            this._processTemplateChild(child);
+          }
+          break;
       }
-      const attr = child.dataset.attr;
-      const name = child.dataset.name;
-      if (!name && (attr === 'template' || attr === 'on')) {
-        throw new Error(`Script element with data-attr="template" requires data-name attribute.`);
-      }
-      let value;
-      try {
-        value = parseDataFromElement(child);
-      } catch (e) {
-        throw new Error(`Error parsing script element content ${attr}${name ? '-' + name : ''}.`, { cause : e });
-      }
-      this._setFromAttributeOrChild(attr, name, value);
     } catch(e) {
       this._error(e);
     }
   }
 
-  _setFromAttributeOrChild(attr, name, value) {
+  _processScriptChild(child) {
+    const attr = child.dataset.attr;
+    /*
+    const name = child.dataset.name;
+    if (!name && (attr === 'template' || attr === 'on')) {
+      throw new Error(`Script element with data-attr="template" requires data-name attribute.`);
+    }
+    */
+    let value;
+    try {
+      value = parseDataFromElement(child);
+    } catch (e) {
+      throw new Error(`Error parsing script element content ${attr}.`, { cause : e });
+    }
+    this._setFromAttributeOrChild(attr, value);
+  }
+
+  _processTemplateChild(child) {
+    const name = child.dataset.name;
+    let value;
+    try {
+      value = parseTemplateFromElement(child);
+    } catch (e) {
+      throw new Error(`Error parsing template element content of template "${name}".`, { cause : e });
+    }
+    this.templates.set(name, value);
+  }
+
+  _setFromAttributeOrChild(attr, value) {
+    const segments = attr.split(':');
+    attr = segments[0];
+    const name = segments[1];
     switch (attr) {
+      /*
       case 'template':
         if (name) {
           this.templates.set(name, value);
         }
         break;
+      */
       case 'on':
         if (name) {
           this._triggers[name] = value;

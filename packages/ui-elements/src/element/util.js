@@ -16,20 +16,37 @@ export function parseDataFromElement(element) {
   const tagName = element.tagName.toLowerCase();
   const type = element.getAttribute('type');
   // TODO: support more
-  switch (element.tagName.toLowerCase()) {
+  switch (tagName) {
     case 'script':
       const content = element.textContent;
-      switch (element.getAttribute('type')) {
+      switch (type) {
         case 'application/json':
           return JSON.parse(content);
+        /*
         case 'template/string':
           return new Function('data', `"use strict"; return \`${content}\`;`);
+        */
         case 'application/function':
-        case 'template/function':
+        //case 'template/function':
           return new Function('data', `"use strict"; return (${content})(data);`);
       }
   }
   throw new Error(`Unsupported ${tagName} element type: ${type}`);
+}
+
+export function parseTemplateFromElement(element) {
+  if (element.tagName.toLowerCase() !== 'template') {
+    throw new Error(`Expected template element: ${element.tagName.toLowerCase()}`);
+  }
+  const type = element.dataset.type || 'string';
+  const content = element.innerHTML;
+  switch (type) {
+    case 'function':
+      return new Function('data', `"use strict"; return (${content})(data);`);
+    case 'string':
+    default:
+      return new Function('data', `"use strict"; return \`${content}\`;`);
+  }
 }
 
 export function isElement(value) {

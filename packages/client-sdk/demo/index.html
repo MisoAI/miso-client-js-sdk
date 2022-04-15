@@ -152,7 +152,7 @@ const products = response.products;
               "fl": ["*"]
             }
           </script>
-          <script data-attr="template" data-name="item" type="template/string">
+          <template data-name="item" data-type="string">
             <div class="product clearfix" data-id="${data.product_id}">
               <div class="imgbox">
                 <img width="100" src="${data.cover_image}">
@@ -163,7 +163,7 @@ const products = response.products;
                 <h6 class="price">$${data.sale_price}</h6>
               </div>
             </div>
-          </script>
+          </template>
         </miso-list>
       </div>
       <div class="col">
