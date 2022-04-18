@@ -2,15 +2,14 @@ import { mixinReadinessInstance, mixinReadinessPrototype } from '@miso.ai/common
 import MisoElement from './base';
 import root from '../root';
 
-const OBSERVED_ATTRIBUTES = MisoElement.observedAttributes.concat(['model', 'api', 'payload']);
+const OBSERVED_ATTRIBUTES = MisoElement.observedAttributes.concat(['auto-model', 'model', 'api', 'payload', 'transform']);
 const ATTR_TO_PROPS = {
+  'auto-model': 'autoModel',
   model: 'modelType',
   api: 'api',
   payload: 'payload',
   transform: 'transform',
 };
-
-// TODO: rename to PrimaryElement
 
 export default class MisoDataElement extends MisoElement {
 
@@ -21,8 +20,13 @@ export default class MisoDataElement extends MisoElement {
   constructor(defaultModelType) {
     super();
     this._attrToProps = { ...super._attrToProps, ...ATTR_TO_PROPS };
+    this._autoModel = true;
     this._modelOptions = { type: defaultModelType };
     mixinReadinessInstance(this);
+  }
+
+  get autoModel() {
+    return this._autoModel;
   }
 
   get model() {
@@ -30,20 +34,41 @@ export default class MisoDataElement extends MisoElement {
   }
 
   get modelType() {
-    return this._model ? this._model.type : this._modelOptions.type;
+    return this._getModelProp('type');
   }
 
   get api() {
-    // TODO: use delegate util
-    return this._modelOptions.api;
+    return this._getModelProp('api');
   }
 
   get payload() {
-    return this._modelOptions.payload;
+    return this._getModelProp('payload');
   }
 
   get transform() {
-    return this._modelOptions.transform;
+    return this._getModelProp('transform');
+  }
+
+  _getModelProp(name) {
+    return this._model ? this._model[name] : this._modelOptions[name];
+  }
+
+  set autoModel(value) {
+    if (this._autoModel === value) {
+      return;
+    }
+    this._autoModel = value;
+    if (!value) {
+      // true -> false
+      if (model) {
+        throw new Error(`The model has already been set.`);
+      }
+    } else {
+      // false -> true
+      if (this._initialized) {
+        this._requestCreateModel();
+      }
+    }
   }
 
   set model(model) {
@@ -93,14 +118,21 @@ export default class MisoDataElement extends MisoElement {
   _init() {
     super._init();
     // build model if parameters are satisfied
+    this._requestCreateModel();
+  }
+
+  _requestCreateModel() {
     // wait for next event loop, for the children elements may not be there yet
     setTimeout(this._createModelIfReady.bind(this));
   }
 
   _createModelIfReady() {
-    // TODO: we may want a more explicit rule to determine when to create model
-    if (this._model || !this._modelOptions.api) {
+    // TODO: we may want to throw error message for api option absence
+    if (this._model || !this._autoModel) {
       return;
+    }
+    if (!this._modelOptions.api) {
+      throw new Error(`Require api attribute to create data model automatically.`);
     }
     this.model = root().models.create(this._modelOptions);
   }

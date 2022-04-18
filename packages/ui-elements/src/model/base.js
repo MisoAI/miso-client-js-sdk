@@ -17,7 +17,7 @@ export default class BaseDataModel extends Component {
     this._source = new DataSource({ client, api, payload, autoClient });
 
     delegateGetters(this, this._source, ['client']);
-    defineValues(this, { type, api, payload });
+    defineValues(this, { type, api, payload, transform });
 
     if (transform !== undefined && typeof transform !== 'function') {
       throw new Error(`Transform value must be a function: ${transform}`);

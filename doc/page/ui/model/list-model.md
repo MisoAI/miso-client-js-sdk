@@ -6,6 +6,7 @@ title: MisoListModel
 
 Most of the time a data model will be created automatically by an element. Nevertheless, you can also create a model manually:
 ```js
+const MisoListModel = MisoClient.ui.models.classes.MisoListModel;
 const model = new MisoListModel(options);
 ```
 

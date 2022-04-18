@@ -30,6 +30,17 @@ The default payload when calling Miso API.
 </miso-list>
 ```
 
+##### auto-model (optional)
+Set it to false if you want to create and attach a data model manually.
+```html
+<miso-list id="my-list" auto-model="false">...</miso-list>
+```
+
+```js
+const element = document.querySelector('#my-list');
+element.model = new MisoListModel({ api, payload });
+```
+
 #### Template slot
 
 ##### item
