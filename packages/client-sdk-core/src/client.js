@@ -1,18 +1,18 @@
 import { trimObj, Component } from '@miso.ai/commons';
-import { get as root } from './root';
+import { root, register } from './root';
 import Api from './api';
 import Context from './context';
 
 class MisoClient extends Component {
 
   constructor(options) {
-    super('client', root());
+    super('client', root);
     this._config(options);
 
     this.context = new Context(this);
     this.api = new Api(this);
 
-    root().push(this);
+    register(this);
   }
 
   get version() {

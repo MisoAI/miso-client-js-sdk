@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "packages/commons",
+    "packages/client-sdk-core",
     "packages/ui-elements",
     "packages/client-sdk",
     "mock-service",
@@ -11,6 +12,7 @@
   "scripts": {
     "start": "concurrently 'npm:start:*'",
     "start:commons": "npm run start --workspace=packages/commons",
+    "start:client-sdk-core": "npm run start --workspace=packages/client-sdk-core",
     "start:ui-elements": "npm run start --workspace=packages/ui-elements",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:mock-service": "npm run start --workspace=mock-service",

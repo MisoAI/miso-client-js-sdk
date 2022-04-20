@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@miso.ai/commons": "file:packages/commons",
+    "@miso.ai/client-sdk-core": "file:packages/client-sdk-core",
     "@miso.ai/ui-elements": "file:packages/ui-elements"
   }
 }

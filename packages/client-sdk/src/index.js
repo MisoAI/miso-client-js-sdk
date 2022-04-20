@@ -1,17 +1,8 @@
-import init from './init';
-import cmd from './cmd';
+import MisoClient from '@miso.ai/client-sdk-core';
+import DebugPlugin from './plugin/debug';
+import DryRunPlugin from './plugin/dry-run';
+import { UiPlugin } from '@miso.ai/ui-elements';
 
-// TODO: full and lite (w/o UI) builds
+MisoClient.plugins.register(DebugPlugin, DryRunPlugin, UiPlugin);
 
-if (!window.MisoClient) {
-  // gaurantee to execute init() only once globally (across different script sources)
-  window.MisoClient = init();
-  // kick off misocmd execution
-  cmd();
-
-} else {
-  // TODO: check version as well
-  console.warn(`Use already defined window.MisoClient (${window.MisoClient.version}).`);
-}
-
-export default window.MisoClient;
+export default MisoClient;

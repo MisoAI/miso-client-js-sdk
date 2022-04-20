@@ -1,6 +1,6 @@
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
-import { writeFileSync } from 'fs';
+import { writeFileSync, existsSync } from 'fs';
 import { dirname, join as joinPath } from 'path';
 
 const require = createRequire(import.meta.url);
@@ -20,6 +20,7 @@ if (!VERSION_REGEXP.test(version)) {
 
 const rootDir = '..';
 const packageFileName = 'package.json';
+const versionFileName = 'src/version.js';
 
 function readPackageFile(path) {
   return require(joinPath(rootDir, path, packageFileName));
@@ -27,6 +28,13 @@ function readPackageFile(path) {
 
 function writePackageFile(path, data) {
   writeFileSync(joinPath(__dirname, rootDir, path, packageFileName), JSON.stringify(data, null, 2));
+}
+
+function writeVersionFile(path, version) {
+  const filePath = joinPath(__dirname, rootDir, path, versionFileName);
+  if (existsSync(filePath)) {
+    writeFileSync(filePath, `export default '${version};'`);
+  }
 }
 
 // read root package.json
@@ -64,4 +72,5 @@ for (const { projectPath, project } of projects) {
   overwriteDependencyVersions(project.peerDependencies, version);
   project.version = version;
   writePackageFile(projectPath, project);
+  writeVersionFile(projectPath, version);
 }

@@ -1,5 +1,5 @@
 import { delegateGetters, defineValues, Registry } from '@miso.ai/commons';
-import classes from './classes';
+import classes from '../classes';
 import AnonymousPlugin from './anonymous';
 
 export default class PluginRoot extends Registry {
@@ -34,9 +34,14 @@ export default class PluginRoot extends Registry {
   }
 
   use(plugin, options) {
+    // use(PluginClass) is a shortcut of register() then use()
+    if (typeof plugin === 'function' && plugin.id && typeof plugin.id === 'string') {
+      this.register(plugin);
+      return this.use(plugin.id, options);
+    }
     let instance;
+    // if already installed, try to run config() instead
     if (typeof plugin === 'string' && this.isInstalled(plugin)) {
-      // already installed, run config() instead
       instance = this.get(plugin);
       this._tryConfig(instance, options);
       return instance;
