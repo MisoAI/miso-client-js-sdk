@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/commons",
     "packages/client-sdk-core",
+    "packages/client-sdk-dev-tool",
     "packages/client-sdk-ui",
     "packages/client-sdk",
     "mock-service",

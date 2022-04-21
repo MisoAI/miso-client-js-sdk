@@ -1,6 +1,5 @@
 import MisoClient from '@miso.ai/client-sdk-core';
-import DebugPlugin from './plugin/debug';
-import DryRunPlugin from './plugin/dry-run';
+import { DebugPlugin, DryRunPlugin } from '@miso.ai/client-sdk-dev-tool';
 
 MisoClient.plugins.register(DebugPlugin, DryRunPlugin);
 
