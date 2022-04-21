@@ -14,7 +14,7 @@ export function trimObj(obj) {
 }
 
 /**
- * Delegate getters from source object to target object.
+ * Delegate getters and methods from source object to target object.
  */
 export function delegateGetters(target, source, propNames) {
   propNames = typeof propNames === 'string' ? [propNames] : propNames;
@@ -24,7 +24,30 @@ export function delegateGetters(target, source, propNames) {
   }, {}));
 }
 
-// TODO: delegate setters
+/**
+ * Delegate setters from source object to target object.
+ */
+export function delegateSetters(target, source, propNames) {
+  propNames = typeof propNames === 'string' ? [propNames] : propNames;
+  Object.defineProperties(target, propNames.reduce((acc, propName) => {
+    acc[propName] = { set: (value) => { source[propName] = value; } };
+    return acc;
+  }, {}));
+}
+
+/**
+ * Delegate setters from source object to target object.
+ */
+ export function delegateProperties(target, source, propNames) {
+  propNames = typeof propNames === 'string' ? [propNames] : propNames;
+  Object.defineProperties(target, propNames.reduce((acc, propName) => {
+    acc[propName] = {
+      get: () => source[propName],
+      set: (value) => { source[propName] = value; },
+    };
+    return acc;
+  }, {}));
+}
 
 /**
  * Assign values on target object with Object.defineProperties() from source object.

@@ -1,11 +1,10 @@
-import { trimObj } from '@miso.ai/commons/dist/es/objects';
 import { API } from '../constants';
-import { readPageInfo, readUtm } from '../util/url';
 
 export default class ApiHelpers {
 
-  constructor(client) {
+  constructor(client, root) {
     this._client = client;
+    this._root = root;
   }
 
   assertReady() {
@@ -53,20 +52,17 @@ export default class ApiHelpers {
     }
   }
 
-  buildPayloadContext() {
-    return trimObj({
-      page: readPageInfo(),
-      campaign: readUtm()
-    });
-  }
-
-  get userInfoForQuery() {
-    const { user_id, user_hash, anonymous_id, anonymous_hash } = this._client.context.userInfo;
-    return user_id ? { user_id, user_hash } : { anonymous_id, user_hash: anonymous_hash };
-  }
-
-  injectUserInfo(payload) {
-    return { ...this.userInfoForQuery, ...payload };
+  applyPayloadPasses(component, apiName, payload) {
+    const apiGroup = component.meta.name;
+    const client = this._client;
+    for (const pass of this._root._payloadPasses) {
+      try {
+        payload = pass({ client, apiGroup, apiName, payload }) || payload;
+      } catch(e) {
+        component.error(e);
+      }
+    }
+    return payload;
   }
 
 }

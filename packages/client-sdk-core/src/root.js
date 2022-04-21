@@ -1,6 +1,6 @@
 import { delegateGetters, Component } from '@miso.ai/commons';
 import version from './version';
-import PluginRoot from './plugin';
+import PluginRoot from './plugin/plugin-root';
 
 /**
  * The hidden singleton root component that oversees all client components.
@@ -12,6 +12,7 @@ class Root extends Component {
     this._events._replays.add('create');
     this._pluginRoot = new PluginRoot(this);
     this._clients = [];
+    this._payloadPasses = [];
     this.version = version || 'dev';
   }
 

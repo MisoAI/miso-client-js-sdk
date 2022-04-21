@@ -10,7 +10,7 @@ class MisoClient extends Component {
     this._config(options);
 
     this.context = new Context(this);
-    this.api = new Api(this);
+    this.api = new Api(this, root);
 
     register(this);
   }

@@ -24,8 +24,8 @@ export default class ApiBase extends Component {
     return this._postprocess(responseData);
   }
 
-  _preprocess({ payload }) {
-    return this.helpers.injectUserInfo(payload);
+  _preprocess({ apiName, payload }) {
+    return this.helpers.applyPayloadPasses(this, apiName, payload);
   }
 
   _url({ apiName }) {
@@ -37,6 +37,7 @@ export default class ApiBase extends Component {
   }
 
   _postprocess({ response }) {
+    // TODO: we can introduce response passes
     return response.data;
   }
 

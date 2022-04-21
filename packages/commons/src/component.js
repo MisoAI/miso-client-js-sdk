@@ -40,14 +40,14 @@ export default class Component {
     parent && parent._events && parent._events.emit('child', this);
   }
 
-  _warn() {
+  _warn(...args) {
     const parent = this.meta.parent;
-    parent && parent._warn ? parent._warn.apply(parent, arguments) : console.warn.apply(console, arguments);
+    ((parent && parent._warn) || console.warn)(...args);
   }
 
-  _error() {
+  _error(...args) {
     const parent = this.meta.parent;
-    parent && parent._error ? parent._error.apply(parent, arguments) : console.error.apply(console, arguments);
+    ((parent && parent._error) || console.error)(...args);
   }
 
 }
