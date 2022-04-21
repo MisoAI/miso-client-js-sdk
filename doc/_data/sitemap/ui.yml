@@ -4,6 +4,8 @@ sections:
   pages:
   - title: Quick Start
     path: /quick-start
+  - title: Installation
+    path: /installation
   - title: Concept
     path: /concept
 - title: Data Model

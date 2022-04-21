@@ -1,13 +1,11 @@
+import deepmerge from 'deepmerge';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
-import replace from '@rollup/plugin-replace';
 
-export default {
-  input: 'src/index.js',
+const config = {
   output: {
-    file: 'dist/umd/miso.js',
     format: 'umd',
     name: 'MisoClient',
     exports: 'default',
@@ -16,12 +14,6 @@ export default {
   watch: true,
   plugins: [
     commonjs(),
-    replace({
-      preventAssignment: true,
-      values: {
-        __version__: JSON.stringify('dev')
-      }
-    }),
     nodeResolve(),
     serve({
       port: 10101,
@@ -32,3 +24,20 @@ export default {
     }),
   ],
 };
+
+const builds = [
+  {
+    input: 'src/index.js',
+    output: {
+      file: 'dist/umd/miso.js',
+    },
+  },
+  {
+    input: 'src/with-ui.js',
+    output: {
+      file: 'dist/umd/miso-with-ui.js',
+    },
+  },
+];
+
+export default builds.map((v) => deepmerge(config, v));
