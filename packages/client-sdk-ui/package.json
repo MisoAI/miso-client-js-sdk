@@ -1,5 +1,5 @@
 {
-  "name": "@miso.ai/ui-elements",
+  "name": "@miso.ai/client-sdk-ui",
   "description": "A set of custom elements to work with Miso client JS SDK",
   "main": "dist/es/index.js",
   "module": "dist/es/index.js",
