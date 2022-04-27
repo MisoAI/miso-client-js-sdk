@@ -1,0 +1,44 @@
+<!--
+<a class="navbar-brand p-0 me-2" href="{{ '/' | url }}" aria-label="Miso">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    height="28" viewbox="0 0 327 132"
+    class="bi d-block my-1" fill="currentColor">
+    <use xlink:href="{{ '/img/miso-logo.svg#index' | url }}"/>
+  </svg>
+</a>
+-->
+<button type="button" class="navbar-toggler"
+  data-bs-toggle="collapse" data-bs-target="#navbar"
+  aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    width="32" height="32" viewbox="0 0 16 16"
+    class="bi" fill="currentColor">
+    <use xlink:href="{{ '/img/bootstrap-icons.svg#list' | url }}"/>
+  </svg>
+</button>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="{{ '/' | url }}">Home</a>
+    </li>
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="{{ '/algolia' | url }}">Algolia</a>
+    </li>
+  </ul>
+  <hr class="d-md-none text-white-50">
+  <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="{{ '/settings' | url }}">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          viewbox="0 0 16 16"
+          class="bi navbar-nav-svg d-inline-block align-text-top" fill="currentColor">
+          <use xlink:href="{{ '/img/bootstrap-icons.svg#gear' | url }}"/>
+        </svg>
+        <small class="d-md-none ms-2">Settings</small>
+      </a>
+    </li>
+  </ul>
+  <!--
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai">Try Miso</a>
+  -->
+</div>

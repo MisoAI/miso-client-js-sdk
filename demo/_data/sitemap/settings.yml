@@ -1,0 +1,6 @@
+sections:
+- title: Settings
+  path:
+  pages:
+  - title: Apps & Users
+    path: /apps

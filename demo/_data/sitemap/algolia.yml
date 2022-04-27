@@ -1,0 +1,6 @@
+sections:
+- title: InstantSearch
+  path: /instantsearch
+  pages:
+  - title: Search
+    path: /instantsearch/search

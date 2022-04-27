@@ -9,6 +9,7 @@
     "packages/client-sdk-algolia",
     "packages/client-sdk",
     "mock-service",
+    "demo",
     "doc"
   ],
   "scripts": {
@@ -16,8 +17,10 @@
     "start:commons": "npm run start --workspace=packages/commons",
     "start:client-sdk-core": "npm run start --workspace=packages/client-sdk-core",
     "start:client-sdk-ui": "npm run start --workspace=packages/client-sdk-ui",
+    "start:client-sdk-algolia": "npm run start --workspace=packages/client-sdk-algolia",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:mock-service": "npm run start --workspace=mock-service",
+    "start:demo": "npm run start --workspace=demo",
     "test": "npm run test --workspaces --if-present",
     "version": "node ./bin/version.mjs",
     "build:clean": "npm run build:clean --workspaces --if-present",
@@ -39,6 +42,7 @@
     "deepmerge": "^4.2.2",
     "dotenv": "^16.0.0",
     "eslint": "^8.6.0",
+    "fast-glob": "^3.2.11",
     "rollup": "^2.63.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",
