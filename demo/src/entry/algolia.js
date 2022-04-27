@@ -4,5 +4,3 @@ import { DemoPlugin } from '../plugin';
 
 MisoClient.plugins.use(DemoPlugin);
 MisoClient.plugins.use(AlgoliaPlugin);
-
-window.client = new MisoClient();

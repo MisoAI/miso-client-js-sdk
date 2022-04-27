@@ -6,6 +6,8 @@
 <div id="hits"></div>
 
 <script>
+const client = new MisoClient();
+
 const search = instantsearch({
   searchClient: client.algoliaClient,
   indexName: ''
@@ -14,6 +16,9 @@ const search = instantsearch({
 search.addWidgets([
   instantsearch.widgets.searchBox({
     container: '#searchbox',
+    autofocus: true,
+    searchAsYouType: false,
+    showSubmit: true,
   }),
   instantsearch.widgets.hits({
     container: '#hits',
