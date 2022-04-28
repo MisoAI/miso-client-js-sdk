@@ -10,10 +10,15 @@ const client = new MisoClient();
 
 const search = instantsearch({
   searchClient: client.algoliaClient,
-  indexName: ''
+  indexName: '',
 });
 
 search.addWidgets([
+  instantsearch.widgets.configure({
+    searchParameters: {
+      hitsPerPage: 8,
+    },
+  }),
   instantsearch.widgets.searchBox({
     container: '#searchbox',
     autofocus: true,

@@ -1,4 +1,4 @@
-import { trimObj } from '@miso.ai/commons';
+import { buildPayload } from './request';
 
 export default class AlgoliaClient {
 
@@ -11,32 +11,34 @@ export default class AlgoliaClient {
   }
 
   async search(requests) {
-    const results = await Promise.all(requests.map(this._searchOne));
-    return { results };
+    return {
+      results: await Promise.all(requests.map(this._searchOne)),
+    };
   }
 
   async _searchOne(request) {
-    const { query } = request.params || {};
-    if (!query) {
-      return { hits: [] };
+    try {
+      const { query } = request.params || {};
+      if (!query) {
+        return { hits: [] };
+      }
+      console.log(request);
+      const payload = this._buildPayload(request);
+      const response = await this._client.api.search.search(payload);
+      return this._transformResponse(response);
+    } catch(e) {
+      console.error(e);
+      throw e;
     }
-    const payload = this._buildPayload(request);
-    const response = await this._client.api.search.search(payload);
-    return this._transformResponse(response);
   }
 
-  _buildPayload({ indexName, params = {} }) {
-    const { query } = params;
-    return trimObj({
-      engine_id: indexName || undefined,
-      q: query,
-      fl: ['*'],
-    });
+  _buildPayload(request) {
+    return buildPayload(this, request);
   }
 
   _transformResponse({ products }) {
     return {
-      hits: products
+      hits: products,
     };
   }
 
