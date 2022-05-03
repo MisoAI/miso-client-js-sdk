@@ -16,7 +16,7 @@
         </nav>
       </aside>
       <main class="order-1">
-        <div class="intro ps-lg-4">
+        <div class="intro">
           {% if title %}<h1>{{ title }}</h1><hr>{% endif %}
           {% if description %}<p>{{ description }}</p>{% endif %}
         </div>
@@ -24,12 +24,12 @@
         <div class="toc mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted">
         </div>
         #}
-        <div class="content ps-lg-4">
+        <div id="demo" class="content">
           {{ content | safe }}
         </div>
       </main>
     </div>
-    <footer class="py-5 mt-5 bg-light">
+    <footer class="py-5 bg-light">
       {% include 'footer.njk' %}
     </footer>
     {% include 'outro.njk' %}

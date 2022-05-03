@@ -1,4 +1,4 @@
-import { buildPayload } from './request';
+import { buildPayload, transformResponse } from './data';
 
 export default class AlgoliaClient {
 
@@ -18,14 +18,14 @@ export default class AlgoliaClient {
 
   async _searchOne(request) {
     try {
-      const { query } = request.params || {};
-      if (!query) {
-        return { hits: [] };
-      }
-      console.log(request);
+      //console.log('request', request);
       const payload = this._buildPayload(request);
-      const response = await this._client.api.search.search(payload);
-      return this._transformResponse(response);
+     // TODO: hook here
+      const misoResponse = await this._client.api.search.search(payload);
+      const response = this._transformResponse(request, misoResponse);
+      // TODO: hook here
+      //console.log('response', response);
+      return response;
     } catch(e) {
       console.error(e);
       throw e;
@@ -36,10 +36,8 @@ export default class AlgoliaClient {
     return buildPayload(this, request);
   }
 
-  _transformResponse({ products }) {
-    return {
-      hits: products,
-    };
+  _transformResponse(request, response) {
+    return transformResponse(this, request, response);
   }
 
   async searchForFacetValues(requests) {

@@ -4,3 +4,7 @@ sections:
   pages:
   - title: Search
     path: /instantsearch/search
+  - title: Facets
+    path: /instantsearch/facets
+  - title: All in One
+    path: /instantsearch/all-in-one

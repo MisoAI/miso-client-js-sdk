@@ -14,6 +14,19 @@ export function trimObj(obj) {
 }
 
 /**
+ * Return a new object which has the same set of properties of the given object and their values mapped by the given function.
+ */
+export function mapValues(obj, fn) {
+  const result = {};
+  for (const k in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, k)) {
+      result[k] = fn(obj[k], k);
+    }
+  }
+  return result;
+}
+
+/**
  * Delegate getters and methods from source object to target object.
  */
 export function delegateGetters(target, source, propNames) {

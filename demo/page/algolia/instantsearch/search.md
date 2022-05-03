@@ -2,8 +2,8 @@
 ---
 
 {% raw %}
-<div id="searchbox" class="ais-SearchBox"></div>
-<div id="hits"></div>
+<div id="search-box" class="ais-SearchBox"></div>
+<div id="hits" class="rows-4"></div>
 
 <script>
 const client = new MisoClient();
@@ -15,17 +15,15 @@ const search = instantsearch({
 
 search.addWidgets([
   instantsearch.widgets.configure({
-    searchParameters: {
-      hitsPerPage: 8,
-    },
+    hitsPerPage: 4,
   }),
   instantsearch.widgets.searchBox({
-    container: '#searchbox',
+    container: '#search-box',
     autofocus: true,
     searchAsYouType: false,
     showSubmit: true,
   }),
-  instantsearch.widgets.hits({
+  instantsearch.widgets.infiniteHits({
     container: '#hits',
     templates: {
       item: `
