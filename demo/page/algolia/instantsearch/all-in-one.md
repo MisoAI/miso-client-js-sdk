@@ -39,7 +39,7 @@
 const client = new MisoClient();
 
 const search = instantsearch({
-  searchClient: client.algoliaClient,
+  searchClient: client.algoliaClient(),
   indexName: '',
 });
 
@@ -73,11 +73,6 @@ search.addWidgets([
     searchAsYouType: false,
     showSubmit: true,
   }),
-  /*
-  instantsearch.connectors.connectAutocomplete((renderOptions, isFirstRender) => {
-    console.log(renderOptions, isFirstRender);
-  }),
-  */
   instantsearch.widgets.infiniteHits({
     container: '#hits',
     templates: {

@@ -2,8 +2,9 @@ import { buildPayload, transformResponse } from './data';
 
 export default class AlgoliaClient {
 
-  constructor(client) {
+  constructor(client, { autocomplete = false } = {}) {
     this._client = client;
+    this._defaultApiName = autocomplete ? 'autocomplete' : 'search';
     this._searchOne = this._searchOne.bind(this);
   }
 
@@ -19,9 +20,11 @@ export default class AlgoliaClient {
   async _searchOne(request) {
     try {
       //console.log('request', request);
+      const [ engine_id, apiName ] = this._getEngineIdAndApiName(request);
+      request = { ...request, engine_id, apiName };
       const payload = this._buildPayload(request);
      // TODO: hook here
-      const misoResponse = await this._client.api.search.search(payload);
+      const misoResponse = await this._client.api.search[apiName](payload);
       const response = this._transformResponse(request, misoResponse);
       // TODO: hook here
       //console.log('response', response);
@@ -30,6 +33,17 @@ export default class AlgoliaClient {
       console.error(e);
       throw e;
     }
+  }
+
+  _getEngineIdAndApiName({ indexName }) {
+    let engine_id;
+    let apiName = this._defaultApiName;
+    if (indexName) {
+      const [ e, a ] = indexName.trim().split(':');
+      engine_id = e || undefined;
+      apiName = a || apiName;
+    }
+    return [ engine_id, apiName ];
   }
 
   _buildPayload(request) {

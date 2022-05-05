@@ -12,11 +12,9 @@ export default class AlgoliaPlugin {
   }
 
   install(MisoClient) {
-    Object.defineProperties(MisoClient.prototype, {
-      algoliaClient: {
-        get: function() {
-          return this._algoliaClient || (this._algoliaClient = new AlgoliaClient(this));
-        }
+    Object.assign(MisoClient.prototype, {
+      algoliaClient: function(options) {
+        return new AlgoliaClient(this, options);
       }
     });
   }

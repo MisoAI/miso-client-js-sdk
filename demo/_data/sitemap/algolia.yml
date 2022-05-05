@@ -1,10 +1,19 @@
 sections:
-- title: InstantSearch
+- title: InstantSearch.js
   path: /instantsearch
   pages:
   - title: Search
     path: /instantsearch/search
   - title: Facets
     path: /instantsearch/facets
+#  - title: Query Suggestion
+#    path: /instantsearch/query-suggestion
   - title: All in One
     path: /instantsearch/all-in-one
+- title: Autocomplete
+  path: /autocomplete
+  pages:
+  - title: Basic
+    path: /autocomplete/basic
+  - title: With InstantSearch.js
+    path: /autocomplete/instantsearch

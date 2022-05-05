@@ -36,7 +36,7 @@
 const client = new MisoClient();
 
 const search = instantsearch({
-  searchClient: client.algoliaClient,
+  searchClient: client.algoliaClient(),
   indexName: '',
 });
 
