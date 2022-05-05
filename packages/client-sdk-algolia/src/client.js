@@ -2,9 +2,9 @@ import { buildPayload, transformResponse } from './data';
 
 export default class AlgoliaClient {
 
-  constructor(client, { autocomplete = false } = {}) {
+  constructor(client, { api =  'search' } = {}) {
     this._client = client;
-    this._defaultApiName = autocomplete ? 'autocomplete' : 'search';
+    this._api = api;
     this._searchOne = this._searchOne.bind(this);
   }
 
@@ -37,13 +37,13 @@ export default class AlgoliaClient {
 
   _getEngineIdAndApiName({ indexName }) {
     let engine_id;
-    let apiName = this._defaultApiName;
+    let api = this._api;
     if (indexName) {
       const [ e, a ] = indexName.trim().split(':');
       engine_id = e || undefined;
-      apiName = a || apiName;
+      api = a || api;
     }
-    return [ engine_id, apiName ];
+    return [ engine_id, api ];
   }
 
   _buildPayload(request) {

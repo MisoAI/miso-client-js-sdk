@@ -118,15 +118,14 @@ const MISO_MARK_REGEXP = new RegExp(`${MISO_MARK_PRE_TAG}|${MISO_MARK_POST_TAG}`
 function transformCompletionsToHits({ query, highlightPreTag = '<em>', highlightPostTag = '</em>' }, { completions }) {
   const hits = [];
   for (const _attribute in completions) {
-    for (const { product, text_with_inverted_markups: marked } of completions[_attribute]) {
-      if (!product) {
-        // skip non-record-based hits
-        continue;
-      }
+    for (const { product, text, text_with_markups, text_with_inverted_markups: marked } of completions[_attribute]) {
       const hasMark = marked.indexOf(MISO_MARK_PRE_TAG) > -1;
       hits.push(trimObj({
         ...product,
         _attribute,
+        _text: text,
+        _text_with_markups: text_with_markups,
+        _text_with_inverted_markups: marked,
         _highlightResult: {
           [_attribute]: {
             matchLevel: hasMark ? 'full' : 'none',

@@ -17,25 +17,28 @@ autocomplete({
     query: '',
   },
   onSubmit: ({ state }) => {
-    const { query } = state;
-    setInstantSearchQueryState(query);
+    setInstantSearchQueryState(state.query);
   },
   onReset: () => {
     setInstantSearchQueryState();
   },
+  autoFocus: true,
   getSources: ({ query }) => {
     // this is triggered on every user input
     return [{
       getItems: () => getAlgoliaResults({
-        searchClient: client.algoliaClient({ autocomplete: true }),
+        searchClient: client.algolia.autocompleteClient(),
         queries: [{
           query: query,
           params: {
             hitsPerPage: 5,
-            attributesToHighlight: ['title'],
+            attributesToHighlight: ['suggested_queries'],
           },
         }],
       }),
+      onSelect: ({ setQuery, item }) => {
+        setQuery(item._text);
+      },
       templates: {
         item: ({ item, components, html }) => html`
           <div class="aa-ItemWrapper">
@@ -44,7 +47,7 @@ autocomplete({
                 <div class="aa-ItemContentTitle">
                   ${components.Highlight({
                     hit: item,
-                    attribute: 'title',
+                    attribute: 'suggested_queries',
                   })}
                 </div>
               </div>

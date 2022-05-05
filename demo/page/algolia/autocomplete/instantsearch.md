@@ -13,13 +13,13 @@ const client = new MisoClient();
 const indexName = '';
 
 const search = instantsearch({
-  searchClient: client.algoliaClient(),
+  searchClient: client.algolia.searchClient(),
   indexName: indexName,
 });
 
 search.addWidgets([
   instantsearch.widgets.configure({
-    hitsPerPage: 4,
+    hitsPerPage: 8,
   }),
   // Mount a virtual search box to manipulate InstantSearch's `query` UI state parameter
   instantsearch.connectors.connectSearchBox(() => {})({}),
@@ -31,7 +31,7 @@ search.addWidgets([
     showSubmit: true,
   }),
   */
-  instantsearch.widgets.infiniteHits({
+  instantsearch.widgets.hits({
     container: '#hits',
     templates: {
       item: `
@@ -60,6 +60,18 @@ function setInstantSearchQueryState(query = '') {
   }));
 }
 
+/*
+function tryPrintPanel() {
+  const panel = document.querySelector('.aa-Panel');
+  if (!panel) {
+    setTimeout(tryPrintPanel, 5000);
+    return;
+  }
+  console.log(panel.innerHTML);
+}
+tryPrintPanel();
+*/
+
 autocomplete({
   container: '#autocomplete',
   initialState: {
@@ -72,19 +84,25 @@ autocomplete({
   onReset: () => {
     setInstantSearchQueryState();
   },
+  autoFocus: true,
   getSources: ({ query }) => {
     // this is triggered on every user input
     return [{
       getItems: () => getAlgoliaResults({
-        searchClient: client.algoliaClient({ autocomplete: true }),
+        searchClient: client.algolia.autocompleteClient(),
         queries: [{
           query: query,
           params: {
             hitsPerPage: 5,
-            attributesToHighlight: ['title'],
+            attributesToHighlight: ['suggested_queries'],
           },
         }],
       }),
+      onSelect: ({ setQuery, item }) => {
+        const query = item._text;
+        setQuery(query);
+        setInstantSearchQueryState(query);
+      },
       templates: {
         item: ({ item, components, html }) => html`
           <div class="aa-ItemWrapper">
@@ -93,7 +111,7 @@ autocomplete({
                 <div class="aa-ItemContentTitle">
                   ${components.Highlight({
                     hit: item,
-                    attribute: 'title',
+                    attribute: 'suggested_queries',
                   })}
                 </div>
               </div>
