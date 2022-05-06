@@ -3,7 +3,7 @@ import { buildFilters } from './filter';
 
 const DEFAULT_ROWS = 5;
 
-export function buildPayload(algoliaClient, { engine_id, query, params = {} }) {
+export function buildPayload(algoliaClient, { apiName, engine_id, query, params = {} }) {
   const { payload, query: queryFromParams, attributesToRetrieve, ...resrParams } = params;
   checkForUnsupportedParameters(resrParams);
   return trimObj({
@@ -14,7 +14,7 @@ export function buildPayload(algoliaClient, { engine_id, query, params = {} }) {
     ...buildPageInfo(params),
     ...buildFilters(algoliaClient, params),
     ...buildFacets(params),
-    ...buildForAutoComplete(params),
+    ...buildForAutoComplete(apiName, params),
   });
 }
 
@@ -71,7 +71,10 @@ function buildFacets({ facets, maxValuesPerFacet }) {
   return { facets };
 }
 
-function buildForAutoComplete({ attributesToHighlight, highlightPreTag, highlightPostTag }) {
+function buildForAutoComplete(apiName, { attributesToHighlight, highlightPreTag, highlightPostTag }) {
+  if (apiName !== 'autocomplete') {
+    return {};
+  }
   for (const attr of (attributesToHighlight || [])) {
     if (attr === '*') {
       throw new Error(`attributesToHighlight = ['*'] is not supported.`);
