@@ -6,16 +6,16 @@ export default class Search extends ApiBase {
     super(api, 'search');
   }
 
-  async search(payload) {
-    return this._run('search', payload);
+  async search(payload, options) {
+    return this._run('search', payload, options);
   }
 
   async autocomplete(payload) {
-    return this._run('autocomplete', payload);
+    return this._run('autocomplete', payload, options);
   }
 
   async mget(payload) {
-    return this._run('mget', payload);
+    return this._run('mget', payload, options);
   }
 
 }

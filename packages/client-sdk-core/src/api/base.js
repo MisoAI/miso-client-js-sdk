@@ -12,28 +12,31 @@ export default class ApiBase extends Component {
     this.context = api._client.context;
   }
 
-  async _run(apiName, payload) {
+  async _run(apiName, payload, options = {}) {
     this.helpers.assertReady();
-    const url = this._url({ apiName, payload });
-    payload = this._preprocess({ apiName, payload });
-    const requestData = { apiName, payload, url };
-    this._events.emit('request', requestData);
+    const { bulk } = options;
+    const bulkInfo = bulk ? { bulk: this.helpers.bulkInfo } : undefined;
+    const apiGroup = this._apiPath;
+    const url = this._url({ apiGroup, apiName, payload, options });
+    payload = this._preprocess({ apiGroup, apiName, payload, options });
+    const requestData = { apiGroup, apiName, payload, url, options };
+    this._events.emit('request', { ...requestData, ...bulkInfo });
     const response = await this._send(requestData);
     const responseData = { ...requestData, response };
-    this._events.emit('response', responseData);
+    this._events.emit('response', { ...responseData, ...bulkInfo });
     return this._postprocess(responseData);
   }
 
-  _preprocess({ apiName, payload }) {
-    return this.helpers.applyPayloadPasses(this, apiName, payload);
+  _preprocess({ apiGroup, apiName, payload }) {
+    return this.helpers.applyPayloadPasses(this, apiGroup, apiName, payload);
   }
 
-  _url({ apiName }) {
-    return this.helpers.url(this._apiPath, apiName);
+  _url({ apiGroup, apiName }) {
+    return this.helpers.url(apiGroup, apiName);
   }
 
-  async _send({ url, payload }) {
-    return this.helpers.fetch(url, payload);
+  async _send({ apiGroup, apiName, url, payload, options: { bulk } = {} }) {
+    return bulk ? this.helpers.fetchForBulk(apiGroup, apiName, payload) : this.helpers.fetch(url, payload);
   }
 
   _postprocess({ response }) {

@@ -1,3 +1,4 @@
+import { Bulk } from '@miso.ai/commons';
 import { API } from '../constants';
 
 export default class ApiHelpers {
@@ -5,6 +6,7 @@ export default class ApiHelpers {
   constructor(client, root) {
     this._client = client;
     this._root = root;
+    this._bulk = new Bulk(this._runBulkFetch.bind(this), client._error.bind(client));
   }
 
   assertReady() {
@@ -31,6 +33,37 @@ export default class ApiHelpers {
     return resBody;
   }
 
+  get bulkInfo() {
+    return this._bulk.info;
+  }
+
+  async fetchForBulk(apiGroup, apiName, payload, { method } = {}) {
+    if (method && method !== 'POST') {
+      throw new Error(`Non-POST API is not supported in bulk mode: ${url}`);
+    }
+    return this._bulk.run({ apiGroup, apiName, payload });
+  }
+
+  async _runBulkFetch(requests) {
+    const url = this.url('bulk');
+    const payload = {
+      requests: requests.map(({ action: { apiGroup, apiName, payload } }) => ({
+        api_name: `${apiGroup}/${apiName}`,
+        body: payload,
+      })),
+    };
+    const { data: responses } = await this.fetch(url, payload);
+    for (let i = 0, len = requests.length; i < len; i++) {
+      const { resolution } = requests[i];
+      const { error, status_code, body } = responses[i];
+      if (status_code >= 400 || error) {
+        resolution.reject({ status_code, body });
+      } else {
+        resolution.resolve(body);
+      }
+    }
+  }
+
   url(...paths) {
     const { apiKey } = this._client.options;
     const apiName = paths.filter(s => s).join('/');
@@ -52,8 +85,7 @@ export default class ApiHelpers {
     }
   }
 
-  applyPayloadPasses(component, apiName, payload) {
-    const apiGroup = component.meta.name;
+  applyPayloadPasses(component, apiGroup, apiName, payload) {
     const client = this._client;
     for (const pass of this._root._payloadPasses) {
       try {

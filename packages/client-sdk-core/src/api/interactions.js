@@ -1,4 +1,3 @@
-import { trimObj } from '@miso.ai/commons/dist/es/objects';
 import ApiBase from './base';
 
 export default class Interactions extends ApiBase {
@@ -7,9 +6,9 @@ export default class Interactions extends ApiBase {
     super(api, 'interactions');
   }
 
-  async upload(payload) {
+  async upload(payload, options) {
     try {
-      return await this._run('upload', payload);
+      return await this._run('upload', payload, options);
     } catch (e) {
       if (e.status === 400 && e.message && e.message.toLowerCase().indexOf('playground') > -1) {
         this._warn(`Ignore interactions uploaded to playground app.`);

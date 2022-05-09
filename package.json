@@ -16,6 +16,7 @@
     "start": "concurrently 'npm:start:*'",
     "start:commons": "npm run start --workspace=packages/commons",
     "start:client-sdk-core": "npm run start --workspace=packages/client-sdk-core",
+    "start:client-sdk-dev-tool": "npm run start --workspace=packages/client-sdk-dev-tool",
     "start:client-sdk-ui": "npm run start --workspace=packages/client-sdk-ui",
     "start:client-sdk-algolia": "npm run start --workspace=packages/client-sdk-algolia",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",

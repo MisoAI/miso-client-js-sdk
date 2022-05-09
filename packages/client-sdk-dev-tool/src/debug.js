@@ -72,14 +72,23 @@ export default class DebugPlugin {
     _log('client', eventName, [data]);
   }
 
-  _handleApiEvent(eventName, { groupName, apiName, url, ...data }) {
+  _handleApiEvent(eventName, { groupName, apiName, url, bulk, ...data }) {
     const pathname = new URL(url).pathname;
+    const args = ['api', eventName];
+
+    bulk && args.push(`(bulk ${bulk.bulkId})`);
+
+    args.push(`POST ${pathname}`);
+
     if (groupName === 'interactions') {
+      // TODO: handle multiple interactions
       const { type } = data.payload.data[0];
-      _log('api', eventName, `POST ${pathname}`, type, [{ ...data, url }]);
-    } else {
-      _log('api', eventName, `POST ${pathname}`, [{ ...data, url }]);
+      args.push(type);
     }
+
+    args.push([{ ...data, url }]);
+
+    _log.apply(undefined, args);
   }
 
   _handlePluginsEvent(eventName, plugin) {

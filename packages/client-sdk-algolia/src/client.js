@@ -12,19 +12,20 @@ export default class AlgoliaClient {
   }
 
   async search(requests) {
+    const bulk = requests.length > 1;
     return {
-      results: await Promise.all(requests.map(this._searchOne)),
+      results: await Promise.all(requests.map(request => this._searchOne(request, bulk))),
     };
   }
 
-  async _searchOne(request) {
+  async _searchOne(request, bulk) {
     try {
       //console.log('request', request);
       const [ engine_id, apiName ] = this._getEngineIdAndApiName(request);
       request = { ...request, engine_id, apiName };
       const payload = this._buildPayload(request);
      // TODO: hook here
-      const misoResponse = await this._client.api.search[apiName](payload);
+      const misoResponse = await this._client.api.search[apiName](payload, { bulk });
       const response = this._transformResponse(request, misoResponse);
       // TODO: hook here
       //console.log('response', response);
