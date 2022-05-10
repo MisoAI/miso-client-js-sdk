@@ -4,7 +4,7 @@ import root from '../root';
 
 const OBSERVED_ATTRIBUTES = MisoElement.observedAttributes.concat(['auto-model', 'model', 'api', 'payload', 'transform']);
 const ATTR_TO_PROPS = {
-  'auto-model': 'autoModel',
+  'auto-model': ['autoModel', 'boolean'],
   model: 'modelType',
   api: 'api',
   payload: 'payload',
@@ -60,7 +60,7 @@ export default class MisoDataElement extends MisoElement {
     this._autoModel = value;
     if (!value) {
       // true -> false
-      if (model) {
+      if (this._model) {
         throw new Error(`The model has already been set.`);
       }
     } else {

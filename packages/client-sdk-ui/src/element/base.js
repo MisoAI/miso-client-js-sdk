@@ -32,10 +32,16 @@ export default class MisoElement extends HTMLElement {
     this._elements = {};
     this._triggers = {};
     this.templates = new Templates();
+
+    onChildElement(this, this._processChild.bind(this));
+    this._doInit = this._doInit.bind(this);
   }
 
   connectedCallback() {
-    onChildElement(this, this._processChild.bind(this));
+    setTimeout(this._doInit);
+  }
+
+  _doInit() {
     if (!this._initialized) {
       this._initialized = true;
       this._init();
@@ -77,12 +83,6 @@ export default class MisoElement extends HTMLElement {
 
   _processScriptChild(child) {
     const attr = child.dataset.attr;
-    /*
-    const name = child.dataset.name;
-    if (!name && (attr === 'template' || attr === 'on')) {
-      throw new Error(`Script element with data-attr="template" requires data-name attribute.`);
-    }
-    */
     let value;
     try {
       value = parseDataFromElement(child);
@@ -108,22 +108,22 @@ export default class MisoElement extends HTMLElement {
     attr = segments[0];
     const name = segments[1];
     switch (attr) {
-      /*
-      case 'template':
-        if (name) {
-          this.templates.set(name, value);
-        }
-        break;
-      */
       case 'on':
         if (name) {
           this._triggers[name] = value;
         }
         break;
       default:
-        const prop = this._attrToProps[attr];
+        let prop = this._attrToProps[attr];
+        let transform = v => v;
+        if (Array.isArray(prop)) {
+          [prop, transform] = prop;
+        }
+        if (typeof transform === 'string') {
+          transform = TRAMSFORMS[transform];
+        }
         if (prop) {
-          this[prop] = value;
+          this[prop] = transform(value);
         }
     }
   }
@@ -154,3 +154,8 @@ export default class MisoElement extends HTMLElement {
   }
 
 }
+
+const TRAMSFORMS = {
+  boolean: v => v !== 'false' && v,
+  // TODO: number
+};
