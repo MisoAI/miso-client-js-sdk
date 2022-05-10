@@ -35,8 +35,8 @@ export default class ApiBase extends Component {
     return this.helpers.url(apiGroup, apiName);
   }
 
-  async _send({ apiGroup, apiName, url, payload, options: { bulk } = {} }) {
-    return bulk ? this.helpers.fetchForBulk(apiGroup, apiName, payload) : this.helpers.fetch(url, payload);
+  async _send({ apiGroup, apiName, url, payload, options: { bulk, timeout } = {} }) {
+    return bulk ? this.helpers.fetchForBulk(apiGroup, apiName, payload) : this.helpers.fetch(url, payload, { timeout });
   }
 
   _postprocess({ response }) {

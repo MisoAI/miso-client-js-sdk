@@ -14,15 +14,25 @@ export default class ApiHelpers {
 
   async fetch(url, payload, {
     method = 'POST',
+    timeout,
   } = {}) {
     // TODO: organize arguments
     const body = JSON.stringify(payload);
+
+    const controller = timeout && new AbortController();
+    const signal = controller && controller.signal;
+    const timeoutId = controller && setTimeout(() => controller.abort(), timeout);
+
     const res = await window.fetch(url, {
       method,
       body,
       cache: 'no-cache',
       mode: 'cors',
+      signal,
     });
+
+    timeoutId && clearTimeout(timeoutId);
+
     const resBody = await res.json();
     if (res.status >= 400 || resBody.errors) {
       var err = new Error(resBody.message);
