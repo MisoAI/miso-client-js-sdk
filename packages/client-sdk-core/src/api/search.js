@@ -10,11 +10,11 @@ export default class Search extends ApiBase {
     return this._run('search', payload, options);
   }
 
-  async autocomplete(payload) {
+  async autocomplete(payload, options) {
     return this._run('autocomplete', payload, options);
   }
 
-  async mget(payload) {
+  async mget(payload, options) {
     return this._run('mget', payload, options);
   }
 
