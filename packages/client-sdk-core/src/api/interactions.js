@@ -22,11 +22,11 @@ export default class Interactions extends ApiBase {
     return this.helpers.url(this._apiPath);
   }
 
-  _preprocess({ apiName, payload }) {
+  _preprocess({ apiGroup, apiName, payload }) {
     if (apiName === 'upload') {
       payload = this._normalizeUploadPayload(payload);
     }
-    return super._preprocess({ apiName, payload });
+    return super._preprocess({ apiGroup, apiName, payload });
   }
 
   _normalizeUploadPayload(payload) {
