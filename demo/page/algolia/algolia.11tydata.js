@@ -1,4 +1,5 @@
 module.exports = {
   layout: 'base.njk',
-  region: 'algolia'
+  region: 'algolia',
+  dependency: 'algolia',
 };

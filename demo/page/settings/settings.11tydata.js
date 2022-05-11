@@ -1,4 +1,5 @@
 module.exports = {
   layout: 'base.njk',
-  region: 'settings'
+  region: 'settings',
+  dependency: 'settings',
 };

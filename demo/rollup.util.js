@@ -6,7 +6,6 @@ import replace from '@rollup/plugin-replace';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
-import filesize from 'rollup-plugin-filesize';
 
 const cwd = join(__dirname, 'src/entry');
 export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3));
@@ -36,16 +35,12 @@ function _config(name, env = 'prod') {
           warnings: false
         },
       }),
-      filesize({
-        showMinifiedSize: false,
-        showGzippedSize: true,
-      }),
     ];
   }
   return {
     input: `src/entry/${name}.js`,
     output: {
-      file: prod ? `dist/js/${name}.min.js` : `dist/js/${name}.js`,
+      file: `dist/js/${name}.js`,
       format: 'umd',
       indent: !prod,
     },

@@ -45,36 +45,13 @@ main {
   @media (min-width: 768px) {
     padding: 1rem 1.5rem;
   }
-    // unlock TOC when necessary
-  /*
-  @media (min-width: 768px) {
-    & {
-      display: grid;
-      gap: inherit;
-      grid-template-areas:
-          "intro"
-          "toc"
-          "content";
-      grid-template-rows: auto auto 1fr;
-    }
-  }
-  @media (min-width: 992px) {
-    & {
-      grid-template-areas:
-          "intro toc"
-          "content toc";
-      grid-template-columns: 4fr 1fr;
-      grid-template-rows: auto 1fr;
-    }
-  }
-  */
 }  
 
 /* navbar */
 header {
   padding: 1rem !important;
   @media (min-width: 768px) {
-    padding: 0.75rem 1.25rem !important;
+    padding: 0.5rem 1rem !important;
   }
   background-color: var(--color-primary);
 
@@ -190,4 +167,125 @@ main {
 .btn-check:focus+.btn-outline-primary, 
 .btn-outline-primary:focus {
   box-shadow: 0 0 0 0.25rem var(--color-primary-l3);
+}
+
+#demo {
+  .product-list {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 1rem -0.5rem;
+
+    > .product-card {
+      width: calc(100% - 1rem);
+      height: 300px;
+
+      &.row-4 {
+        width: calc(25% - 1rem);
+      }
+    }
+    &.selectable {
+      > .product-card {
+        // TODO
+      }
+    }
+  }
+  .product-card {
+    position: relative;
+    background: #fff;
+    box-shadow: 0 0 5px #eee;
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+    padding: 1rem;
+    margin: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    > div {
+      position: relative;
+      height: 100%;
+      padding-bottom: 1.25rem;
+    }
+
+    .image > img {
+      height: 100px;
+    }
+
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1.25rem;
+    }
+  }
+  .suggested-query-list {
+    position: absolute;
+    top: 100%;
+    margin-top: 0.5rem;
+    border: 1px solid #ddd;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 6px;
+    z-index: 10;
+    background: #fff;
+    box-shadow: 0 0 10px #ccc;
+
+    &:empty {
+      display: none;
+    }
+  }
+  .suggested-query {
+    padding: 0.25rem;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--color-primary-l7);
+    }
+    mark {
+      padding: 0;
+      font-weight: bold;
+      background-color: transparent;
+    }
+  }
+
+  screen {
+    display: block;
+    position: relative;
+    margin-top: 1rem;
+  }
+  .stdout,
+  .stderr {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0.75rem;
+    width: 100%;
+
+    &::before {
+      content: 'Test';
+      position: absolute;
+      top: -1em;
+      padding: 0.15em;
+      font-size: 0.85em;
+      background-color: #fff;
+      color: #888;
+    }
+    &:empty {
+      display: none;
+    }
+  }
+  .stdout {
+    color: #333;
+    border-color: #999;
+    &::before {
+      content: 'Output';
+    }
+  }
+  .stderr {
+    color: #333;
+    border-color: #999;
+    &::before {
+      content: 'Error';
+    }
+  }
 }

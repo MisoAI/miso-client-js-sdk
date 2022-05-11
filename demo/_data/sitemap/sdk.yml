@@ -1,0 +1,14 @@
+sections:
+- title: API
+  path: /api
+  pages:
+  - title: Interactions
+    path: /api/interactions
+  - title: Search
+    path: /api/search
+  - title: Autocomplete
+    path: /api/autocomplete
+  - title: Recommendation
+    path: /api/recommendation
+  - title: Options
+    path: /api/options

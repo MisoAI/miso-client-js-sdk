@@ -9,7 +9,7 @@
 <div id="hits" class="rows-4"></div>
 
 <script>
-const client = new MisoClient();
+const client = new MisoClient('...');
 const indexName = '';
 
 const search = instantsearch({
@@ -59,18 +59,6 @@ function setInstantSearchQueryState(query = '') {
     },
   }));
 }
-
-/*
-function tryPrintPanel() {
-  const panel = document.querySelector('.aa-Panel');
-  if (!panel) {
-    setTimeout(tryPrintPanel, 5000);
-    return;
-  }
-  console.log(panel.innerHTML);
-}
-tryPrintPanel();
-*/
 
 autocomplete({
   container: '#autocomplete',

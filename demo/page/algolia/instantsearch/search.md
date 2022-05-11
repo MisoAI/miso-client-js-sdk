@@ -6,7 +6,7 @@
 <div id="hits" class="rows-4"></div>
 
 <script>
-const client = new MisoClient();
+const client = new MisoClient('...');
 
 const search = instantsearch({
   searchClient: client.algolia.searchClient(),
