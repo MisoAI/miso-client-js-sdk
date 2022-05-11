@@ -82,13 +82,10 @@ export default class ApiHelpers {
   }
 
   get apiBaseUrl() {
-    // TODO: we may implement mock feature as a plugin
     const { apiHost = 'prod' } = this._client.options;
     switch (apiHost) {
       case 'prod':
         return API.BASE_URL;
-      case 'mock':
-        return API.MOCK_SERVER_URL;
       default:
         // TODO: normailize URL
         return apiHost;
