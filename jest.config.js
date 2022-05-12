@@ -4,6 +4,9 @@ module.exports = {
   globals: {
     NODE_ENV: 'test'
   },
+  modulePaths: [
+    "<rootDir>"
+  ],
   transform: {
     '^.+\\.js$': 'babel-jest'
   }
