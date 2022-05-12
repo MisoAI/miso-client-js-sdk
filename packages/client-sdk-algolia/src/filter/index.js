@@ -26,13 +26,13 @@ const NUMERIC_COMPARISON_REGEXP = new RegExp(`(?<attr>${LITERAL_REGEXP.source})\
 const NUMERIC_RANGE_REGEXP = new RegExp(`(?<attr>${LITERAL_REGEXP.source}):(?<valueX>${NUMERIC_REGEXP.source})\\s+TO\\s+(?<valueY>${NUMERIC_REGEXP.source})`, 'g');
 const NUMERIC_RANGE_SOLR_FORMAT = '$<attr>:[$<valueX> TO $<valueY>]';
 const TAG_REGEXP = new RegExp(`(?<intro>${COND_LB_REGEXP.source})(?:_tags:)?(?<value>${LITERAL_REGEXP.source})(?<outro>${COND_RB_REGEXP.source})`, 'g');
-const TAG_SOLR_FORMAT = '$<intro>tags:$<attr>$<outro>';
-const FACET_FILTER_REGEXP = new RegExp(`[(?<expr>${LITERAL_REGEXP.source}:${LITERAL_REGEXP.source})]`, 'g');
+const TAG_SOLR_FORMAT = '$<intro>tags:$<value>$<outro>';
+const FACET_FILTER_REGEXP = new RegExp(`\\[(?<expr>(?:${LITERAL_REGEXP.source}):(?:${LITERAL_REGEXP.source}))\\]`, 'g');
 
 // we only take care of "AND|OR NOT attr:value", but that should be enough
 // TODO: we can find AND|OR followed by NOT and then search for pairing ()
-const BARE_NOT_REGEXP = new RegExp(`\b(?<intro>AND|OR)\\s+NOT\\s+(?<expr>${LITERAL_REGEXP.source}:${LITERAL_REGEXP.source})`, 'g');
-const NOT_SOLR_FORMAT = '$<intro>\\sNOT\\s<expr>';
+const BARE_NOT_REGEXP = new RegExp(`\\b(?<intro>AND|OR)\\s+NOT\\s+(?<expr>(?:${LITERAL_REGEXP.source}):(?:${LITERAL_REGEXP.source}))`, 'g');
+const NOT_SOLR_FORMAT = '$<intro> (NOT $<expr>)';
 
 function translateFilters(algoliaClient, { filters }) {
   try {
@@ -75,6 +75,7 @@ function translateOptionalFilters(algoliaClient, { optionalFilters }) {
 }
 
 export function translateFiltersExpr(expr) {
+  expr = expr && expr.trim();
   if (!expr) {
     return '';
   }
@@ -134,8 +135,8 @@ function translateFacetFilterExpr(expr) {
   return shadow(expr.trim())
     .map(expr => {
       const [attr, value] = expr.split(':');
-      return value.charCodeAt(0) === CHAR_MINUS ? `(NOT ${attr}:${value})` :
-        value.startsWith('\\-') ? `${attr}:"${value}"` : expr;
+      return value.charCodeAt(0) === CHAR_MINUS ? `(NOT ${attr}:${value.substring(1)})` :
+        value.startsWith('\\-') ? `${attr}:"${value.substring(1)}"` : expr;
     })
     .unshadow();
 }

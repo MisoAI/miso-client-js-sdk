@@ -20,6 +20,7 @@
     "start:client-sdk-algolia": "npm run start --workspace=packages/client-sdk-algolia",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
+    "test:watch": "npm run test:watch --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "version": "node ./bin/version.mjs",
     "build:clean": "npm run build:clean --workspaces --if-present",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.16.12",
+    "@babel/plugin-transform-modules-commonjs": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.2",
@@ -42,6 +44,7 @@
     "dotenv": "^16.0.0",
     "eslint": "^8.6.0",
     "fast-glob": "^3.2.11",
+    "jest": "^28.1.0",
     "rollup": "^2.63.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",
