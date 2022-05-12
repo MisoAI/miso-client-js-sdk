@@ -8,6 +8,7 @@ export function getApiGroup(name) {
     case 'user_to_categories':
     case 'user_to_attributes':
     case 'user_to_trending':
+    case 'user_to_history':
     case 'product_to_products':
       return 'recommendation';
     case 'search':
@@ -33,6 +34,7 @@ export function transformResponse(apiName, response) {
   switch (apiName) {
     case 'user_to_products':
     case 'user_to_trending':
+    case 'user_to_history':
     case 'product_to_products':
     case 'search':
     case 'mget':

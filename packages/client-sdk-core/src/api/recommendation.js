@@ -22,6 +22,10 @@ export default class Recommendation extends ApiBase {
     return this._run('user_to_trending', payload, options);
   }
 
+  async userToHistory(payload, options) {
+    return this._run('user_to_history', payload, options);
+  }
+
   async productToProducts(payload, options) {
     return this._run('product_to_products', payload, options);
   }
