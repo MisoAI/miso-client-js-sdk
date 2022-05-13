@@ -7,5 +7,7 @@ sections:
 - title: Recipe
   path: /recipe
   pages:
+  - title: Custom API
+    path: /recipe/custom-api
   - title: Deduplication
     path: /recipe/deduplication

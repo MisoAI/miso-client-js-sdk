@@ -1,6 +1,7 @@
 export * from './arrays';
 export * from './objects';
 export * from './uuid';
+export * from './validation';
 export * from './readiness';
 export { default as Resolution } from './resolution';
 export { default as Bulk } from './bulk';

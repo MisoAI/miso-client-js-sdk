@@ -1,4 +1,5 @@
 import BaseDataModel from './base';
+import { transformResponse } from '../api';
 
 const TYPE = 'list-model';
 const CLASS_NAME = 'MisoListModel';
@@ -49,7 +50,7 @@ export default class MisoListModel extends BaseDataModel {
     (async () => {
       let data, hasError;
       try {
-        data = this._applyTransform(await this._source.fetch(payload));
+        data = this._applyTransform(transformResponse(this.api, await this._fetch(action)));
       } catch (error) {
         hasError = true;
         this._error(error);

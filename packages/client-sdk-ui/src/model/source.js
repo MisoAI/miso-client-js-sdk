@@ -1,6 +1,6 @@
 import { mixinReadinessInstance, mixinReadinessPrototype } from '@miso.ai/commons';
 import getRoot from '../root';
-import { getApiGroup, getBasePayload, transformResponse } from '../api';
+import { getApiGroup, getBasePayload } from '../api';
 
 export default class DataSource {
 
@@ -55,13 +55,16 @@ export default class DataSource {
     this._setReady();
   }
 
-  async fetch(payload) {
-    payload = { ...getBasePayload(this._apiName), ...this._defaultPayload, ...payload };
+  async fetch({ payload }) {
+    const apiName = this._apiName;
+    if (apiName === 'custom') {
+      throw new Error(`Custom fetch function is required for models with "custom" api.`);
+    }
+    payload = { ...getBasePayload(apiName), ...this._defaultPayload, ...payload };
     if (!this.ready) {
       await this.whenReady();
     }
-    const response = await this.client.api[this._apiGroup]._run(this._apiName, payload);
-    return transformResponse(this._apiName, response);
+    return this.client.api[this._apiGroup]._run(apiName, payload);
   }
 
   _setupApiName(apiName) {
