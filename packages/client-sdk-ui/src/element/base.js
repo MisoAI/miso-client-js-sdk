@@ -26,9 +26,9 @@ export default class MisoElement extends HTMLElement {
     return OBSERVED_ATTRIBUTES;
   }
 
-  constructor() {
+  constructor({ attrToProps }) {
     super();
-    this._attrToProps = {};
+    this._attrToProps = attrToProps || {};
     this._elements = {};
     this._triggers = {};
     this.templates = new Templates();

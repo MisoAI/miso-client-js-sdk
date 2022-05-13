@@ -18,8 +18,7 @@ export default class MisoDataElement extends MisoElement {
   }
 
   constructor(defaultModelType) {
-    super();
-    this._attrToProps = { ...super._attrToProps, ...ATTR_TO_PROPS };
+    super({ attrToProps: ATTR_TO_PROPS });
     this._autoModel = true;
     this._modelOptions = { type: defaultModelType };
     mixinReadinessInstance(this);
