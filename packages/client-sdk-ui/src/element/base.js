@@ -32,12 +32,11 @@ export default class MisoElement extends HTMLElement {
     this._elements = {};
     this._triggers = {};
     this.templates = new Templates();
-
-    onChildElement(this, this._processChild.bind(this));
     this._doInit = this._doInit.bind(this);
   }
 
   connectedCallback() {
+    onChildElement(this, this._processChild.bind(this));
     setTimeout(this._doInit);
   }
 
