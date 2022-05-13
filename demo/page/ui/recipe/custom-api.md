@@ -3,12 +3,6 @@
 
 {% raw %}
 <miso-list auto-model="false" on:start="load">
-  <script data-attr="payload" type="application/json">
-    {
-      "fl": ["*"],
-      "rows": 8
-    }
-  </script>
   <template data-name="container" data-type="string">
     <div class="product-list"></div>
   </template>
@@ -33,10 +27,6 @@ const element = document.querySelector('miso-list');
 function createModel() {
   return new MisoClient.ui.models.classes.MisoListModel({
     api: 'custom',
-    payload: {
-      fl: ['*'],
-      rows: 4
-    },
     fetch: async ({ payload, client }) => {
       const [ searchResponse, recommendationResponse ] = await Promise.all([
         client.api.search.search({ q: 'shiba', fl: ['*'], rows: 4 }, { bulk: true }),
