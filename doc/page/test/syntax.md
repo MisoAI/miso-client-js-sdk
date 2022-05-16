@@ -3,7 +3,8 @@ layout: base.njk
 title: Syntax Test Page
 ---
 ### Inline Code
-This is a piece of `Inline Code`.
+This is a piece of `inline code`.
+
 ### JS
 ```js
 // line comment
@@ -37,7 +38,53 @@ class Shiba extends Dog {
    */
   run({p1} = {}, ...args) {
     const {p2} = p1;
-    return Object.key(p2);
+    return Object.keys(p2);
   }
+}
+```
+
+### JSON
+```json
+{
+  "products": [
+    {
+      "title": "title",
+      "price": 5.95
+    },
+    {}
+  ]
+}
+```
+
+### HTML
+```html
+<!DOCTYPE html>
+<div class="my-class" style="width: 100%">
+  <img src="//some.io/image.svg">
+  <p><![CDATA[cdata section]]></p>
+  <style>
+    .my-class {
+      height: 100px;
+    }
+  </style>
+  <script>
+    const variable = (function() {
+      return 99;
+    })();
+  </script>
+</div>
+```
+
+### CSS
+```css
+@namespace url(http://www.w3.org/1999/xhtml);
+
+span.class:hover {
+  width: 100%;
+  height: calc(1px + 2rem);
+}
+[attr="value"]::before {
+  font-weight: bold;
+  content: 'test';
 }
 ```
