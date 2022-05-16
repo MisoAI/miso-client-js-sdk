@@ -9,16 +9,7 @@ This is a quality-of-life module. You can save some shared variables with contex
 
 The SDK takes care of `anonymous_id` automatically using session storage. It will be managed and passed into API calls automatically.
 
-If you want to manage `anonymous_id` by yourself, specify it in the config:
-
-```js
-const miso = new MisoClient({
-  apiKey: '...',
-  disableAutoAnonymousId: true
-});
-```
-
-... and then set it yourself:
+You can also set `anonymous_id` by yourself:
 
 ```js
 miso.context.anonymous_id = 'my_anonymous_id';

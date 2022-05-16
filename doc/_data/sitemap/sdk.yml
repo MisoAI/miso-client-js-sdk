@@ -8,6 +8,8 @@ sections:
     path: /configuration
   - title: Context
     path: /context
+  - title: Request Options
+    path: /request-options
 - title: Search
   path: /search
   pages:

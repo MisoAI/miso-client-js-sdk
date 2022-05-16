@@ -20,6 +20,16 @@ props:
   type: string
   desc: |
     Miso-generated unique Id for each recommendation or search result.
+# request options
+- key: timeout
+  type: integer
+  desc: |
+    Request timeout in milliseconds.
+- key: bulk
+  type: boolean
+  desc: |
+    Bulked API requests froms the same event loop is packed into a single HTTP request.
+    Default: `false`.
 # criteria
 - key: q_0
   name: q
@@ -157,35 +167,35 @@ groups:
   - miso_id
   - event.context
 # request
-- key: search.options
+- key: search.payload
   props:
   - _config
   - q_0
   - _product
   - _page_0
-- key: autocomplete.options
+- key: autocomplete.payload
   props:
   - _config
   - q_1
   - _product
   - _page_0
-- key: user_to_products.options
+- key: user_to_products.payload
   props:
   - _config
   - _product
   - _page_1
-- key: user_to_attributes.options
+- key: user_to_attributes.payload
   props:
   - _config
   - field
   - _product
   - _page_1
-- key: user_to_trending.options
+- key: user_to_trending.payload
   props:
   - _config
   - _product
   - _page_1
-- key: product_to_products.options
+- key: product_to_products.payload
   props:
   - _config
   - product_id
@@ -194,6 +204,10 @@ groups:
   - buy_together
   - _product
   - _page_1
+- key: request.options
+  props:
+  - timeout
+  - bulk
 # response
 - key: search.response
   props:

@@ -7,13 +7,17 @@ description: Returns the products that are most likely to drive conversion for t
 
 #### Syntax
 ```js
-const response = await miso.api.recommendation.userToProducts(options);
+const response = await miso.api.recommendation.userToProducts(payload, options);
 ```
 
-#### Parameters
-The `options` parameter is an object with the following properties:
+#### Payload
+The `payload` parameter is an object with the following properties:
 
-{{ proptable('sdk', 'user_to_products.options') }}
+{{ proptable('sdk', 'user_to_products.payload') }}
+
+{% include 'section/request-options.md' %}
+
+{{ proptable('sdk', 'request.options') }}
 
 #### Return value
 A `Promise` of response object with the following properties:
@@ -22,12 +26,12 @@ A `Promise` of response object with the following properties:
 
 #### Examples
 ```js
-const options = {
+const payload = {
   user_id: '...',
   user_hash: '...',
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { products } = await miso.api.recommendation.userToProducts(options);
+const { products } = await miso.api.recommendation.userToProducts(payload);
 ```
 
 #### Learn more

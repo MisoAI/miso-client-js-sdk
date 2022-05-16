@@ -7,13 +7,15 @@ description: Returns the products that are currently trending and are most likel
 
 #### Syntax
 ```js
-const response = await miso.api.recommendation.userToTrending(options);
+const response = await miso.api.recommendation.userToTrending(payload, options);
 ```
 
-#### Parameters
-The `options` parameter is an object with the following properties:
+#### Payload
+The `payload` parameter is an object with the following properties:
 
-{{ proptable('sdk', 'user_to_trending.options') }}
+{{ proptable('sdk', 'user_to_trending.payload') }}
+
+{% include 'section/request-options.md' %}
 
 #### Return value
 A `Promise` of response object with the following properties:
@@ -22,12 +24,12 @@ A `Promise` of response object with the following properties:
 
 #### Examples
 ```js
-const options = {
+const payload = {
   user_id: '...',
   user_hash: '...',
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { products } = await miso.api.recommendation.userToTrending(options);
+const { products } = await miso.api.recommendation.userToTrending(payload);
 ```
 
 #### Learn more

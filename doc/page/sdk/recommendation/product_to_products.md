@@ -7,13 +7,15 @@ description: Returns the products that are related to an anchor product (often t
 
 #### Syntax
 ```js
-const response = await miso.api.recommendation.productToProducts(options);
+const response = await miso.api.recommendation.productToProducts(payload, options);
 ```
 
-#### Parameters
-The `options` parameter is an object with the following properties:
+#### Payload
+The `payload` parameter is an object with the following properties:
 
-{{ proptable('sdk', 'product_to_products.options') }}
+{{ proptable('sdk', 'product_to_products.payload') }}
+
+{% include 'section/request-options.md' %}
 
 #### Return value
 A `Promise` of response object with the following properties:
@@ -22,14 +24,14 @@ A `Promise` of response object with the following properties:
 
 #### Examples
 ```js
-const options = {
+const payload = {
   user_id: '...',
   user_hash: '...',
   product_id: '...',
   buy_together: true,
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { products } = await miso.api.recommendation.productToProducts(options);
+const { products } = await miso.api.recommendation.productToProducts(payload);
 ```
 
 #### Learn more

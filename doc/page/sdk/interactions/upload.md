@@ -5,10 +5,11 @@ title: Upload Interactions
 
 #### Syntax
 ```js
-miso.api.interactions.upload(data);
+miso.api.interactions.upload(event);
 ```
 
 #### Parameters
+The `event` parameter is an object with the properties depending on the event type:
 <script>
   let table;
   function onSelectEventType(value) {
@@ -80,11 +81,11 @@ A `Promise` without value. In general you don't need to wait for the response.
 
 #### Examples
 ```js
-const data = {
+const event = {
   type: 'add_to_cart',
   product_ids: ['a001', 'a002'],
   quantities: [3, 5],
   user_id: '...'
 };
-miso.api.interactions.upload(data);
+miso.api.interactions.upload(event);
 ```
