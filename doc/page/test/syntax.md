@@ -88,3 +88,8 @@ span.class:hover {
   content: 'test';
 }
 ```
+
+### Bash
+```bash
+npm install --save @miso.ai/client-sdk
+```
