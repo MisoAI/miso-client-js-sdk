@@ -3,17 +3,17 @@
  * https://github.com/primer/github-syntax-light/blob/master/lib/github-light.css
  */
 :root {
-  --color-code-inline: #953800;
+  --color-code-inline: #5566aa;
   --color-code-background: var(--color-primary-l8);
   --color-code-block-border: var(--color-primary-l4);
-  --color-syntax-default: #24292f;
+  --color-syntax-default: #444444;
   --color-syntax-selection-bg: #c1def1;
-  --color-syntax-comment: #6a737d;
-  --color-syntax-keyword: #d73a49;
-  --color-syntax-constant: #005cc5;
-  --color-syntax-string: #032f62;
-  --color-syntax-entity: #6f42c1;
-  --color-syntax-variable: #953800;
+  --color-syntax-comment: #777777;
+  --color-syntax-keyword: #4466bb;
+  --color-syntax-value: #008822;
+  --color-syntax-function: #ff6600;
+  --color-syntax-regex: #cc2200;
+  --color-syntax-string: #aa3366;
 }
 
 pre[class*=language-],
@@ -76,23 +76,26 @@ pre[class*=language-] ::selection {
 .token.italic {
   font-style: italic;
 }
-.token.comment {
-  color: var(--color-syntax-comment);
+.token.comment, .token.atrule, .token.atrule *, .token.prolog {
+  color: var(--color-syntax-comment) !important;
 }
-.token.keyword {
+.token.property, .token.interpolation-punctuation, .token.keyword, .token.doctype, .token.tag {
   color: var(--color-syntax-keyword);
 }
-.token.boolean, .token.number, .token.operator, .token.regex-delimiter {
-  color: var(--color-syntax-constant);
+.token.boolean, .token.number, .token.symbol, .token.deleted {
+  color: var(--color-syntax-value);
 }
-.token.string, .token.regex {
+.token.string, .token.attr-value {
   color: var(--color-syntax-string);
 }
-.token.function, .token.entity {
-  color: var(--color-syntax-entity);
+.token.regex, .token.cdata {
+  color: var(--color-syntax-regex);
 }
-.token.class-name {
-  color: var(--color-syntax-variable);
+.token.function, .token.entity, .token.attr-name, .token.attr-value .punctuation, .token.class-name, .token.selector {
+  color: var(--color-syntax-function);
+}
+.token.namespace {
+  opacity: 0.75;
 }
 
 /*# sourceMappingURL=code.css.map */

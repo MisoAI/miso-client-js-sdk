@@ -41,6 +41,9 @@
     <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/ui">UI</a>
     </li>
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/algolia">Plugins</a>
+    </li>
   </ul>
   <hr class="d-md-none text-white-50">
   <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
@@ -73,6 +76,8 @@
             <a href="/miso-client-js-sdk/sdk/configuration">Configuration</a>
           </li><li>
             <a href="/miso-client-js-sdk/sdk/context">Context</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/request-options">Request Options</a>
           </li></ul>
       </div>
     </li><li class="mb-1">
@@ -111,8 +116,7 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Context Variables</h1>
-          <hr>
+          <h1>Context Variables</h1><hr>
           
         </div>
         
@@ -120,9 +124,7 @@
           <p>This is a quality-of-life module. You can save some shared variables with context API, so they will be passed into other API calls automatically.</p>
 <h3 id="anonymous-id" tabindex="-1">Anonymous ID</h3>
 <p>The SDK takes care of <code>anonymous_id</code> automatically using session storage. It will be managed and passed into API calls automatically.</p>
-<p>If you want to manage <code>anonymous_id</code> by yourself, specify it in the config:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> miso <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">apiKey</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">disableAutoAnonymousId</span><span class="token operator">:</span> <span class="token boolean">true</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>... and then set it yourself:</p>
+<p>You can also set <code>anonymous_id</code> by yourself:</p>
 <pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>anonymous_id <span class="token operator">=</span> <span class="token string">'my_anonymous_id'</span><span class="token punctuation">;</span></code></pre>
 <h3 id="user-id-and-hash" tabindex="-1">User ID and hash</h3>
 <p>Set <code>user_id</code> and <code>user_hash</code>:</p>

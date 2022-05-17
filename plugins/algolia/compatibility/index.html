@@ -68,28 +68,14 @@
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="mb-1">
-      <a href="/miso-client-js-sdk/ui">Overview</a>
+      <a href="/miso-client-js-sdk/plugins/algolia">Algolia</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li>
-            <a href="/miso-client-js-sdk/ui/quick-start">Quick Start</a>
+            <a href="/miso-client-js-sdk/plugins/algolia/installation">Installation</a>
           </li><li>
-            <a href="/miso-client-js-sdk/ui/installation">Installation</a>
+            <a href="/miso-client-js-sdk/plugins/algolia/instantsearch-js">InstantSearch.js</a>
           </li><li>
-            <a href="/miso-client-js-sdk/ui/concept">Concept</a>
-          </li></ul>
-      </div>
-    </li><li class="mb-1">
-      <a href="/miso-client-js-sdk/ui/model">Data Model</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li>
-            <a href="/miso-client-js-sdk/ui/model/list-model">List Model</a>
-          </li></ul>
-      </div>
-    </li><li class="mb-1">
-      <a href="/miso-client-js-sdk/ui/element">Element</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li>
-            <a href="/miso-client-js-sdk/ui/element/miso-list">&lt;miso-list&gt;</a>
+            <a href="/miso-client-js-sdk/plugins/algolia/autocomplete">Autocomplete</a>
           </li></ul>
       </div>
     </li></ul>
@@ -99,16 +85,15 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso UI&#39;s custom elements</h1><hr>
+          <h1>Compatibility</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <h3 id="built-in-elements" tabindex="-1">Built-in elements</h3>
-<p><a href="./miso-list">&lt;miso-list&gt;</a></p>
-<ul>
-<li>A basic element which renders a list of items (products, completions, etc.).</li>
-</ul>
+          <h3 id="index-name" tabindex="-1">Index Name</h3>
+<p>In InstantSearch.js and Autocomplete, you have to pass a mandatory parameter for index name to their init functions. We use this parameter to correspond to Miso's engine ID:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> engineId <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span> <span class="token comment">// empty string for default Miso engine</span><br><br><span class="token keyword">const</span> search <span class="token operator">=</span> <span class="token function">instantsearch</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">//searchClient: searchClient,</span><br>  <span class="token literal-property property">searchClient</span><span class="token operator">:</span> client<span class="token punctuation">.</span>algolia<span class="token punctuation">.</span><span class="token function">searchClient</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">indexName</span><span class="token operator">:</span> engineId<br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="algolia's-search-parameters" tabindex="-1">Algolia's search parameters</h3>
 
         </div>
       </main>

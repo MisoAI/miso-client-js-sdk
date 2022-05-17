@@ -99,16 +99,25 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso UI&#39;s custom elements</h1><hr>
+          <h1>Installation</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <h3 id="built-in-elements" tabindex="-1">Built-in elements</h3>
-<p><a href="./miso-list">&lt;miso-list&gt;</a></p>
-<ul>
-<li>A basic element which renders a list of items (products, completions, etc.).</li>
-</ul>
+          <h3 id="as-npm-module" tabindex="-1">As NPM Module</h3>
+<p>To use SDK as an npm module, run in your project directory:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> --save @miso.ai/client-sdk @miso.ai/client-sdk-ui</code></pre>
+<p>In your application, register the UI plugin before creating an SDK client.</p>
+<pre><code>const MisoClient = require('@miso.ai/client-sdk');
+const { UiPlugin } = require('@miso.ai/client-sdk-ui');
+
+MisoClient.plugins.use(UiPlugin);
+</code></pre>
+<h3 id="using-script-tag" tabindex="-1">Using Script Tag</h3>
+<p>The SDK is also served by <a href="https://www.jsdelivr.com/package/npm/@miso.ai/client-sdk">jsDelivr</a>.</p>
+<p>You can also include the SDK bundled with UI plugin in your webpage with script tag:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk/dist/umd/miso-with-ui.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>You don't need to register the plugin in this case, as the bundled version have done this for you.</p>
 
         </div>
       </main>

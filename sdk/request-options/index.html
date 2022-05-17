@@ -116,170 +116,20 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Interactions APIs</h1><hr>
+          <h1>Request Options</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <h3 id="events" tabindex="-1">Events</h3>
-<h4 id="core-click-streams" tabindex="-1">Core click-streams</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td></td>
-      <td><code>product_detail_page_view</code></td>
-      <td>Used when a user views the detail page of a product.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>category_page_view</code></td>
-      <td>Used when a user views a category page for a specific &quot;family&quot; or &quot;group&quot; or products or content.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>search</code></td>
-      <td>Used to record a search event with the keywords and filters the user used.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>impression</code></td>
-      <td>Used to record when a user saw or was presented with a product or content asset.</td>
-    </tr></tbody>
-</table>
-<h4 id="conversion-(ecommerce)" tabindex="-1">Conversion (eCommerce)</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td></td>
-      <td><code>add_to_cart</code></td>
-      <td>Used when a user adds a product into their shopping cart.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>remove_from_cart</code></td>
-      <td>Used when a user removes a product from their shopping cart.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>subscribe</code></td>
-      <td>Used when a user subscribes a product for its information.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>checkout</code></td>
-      <td>Used when a user enters checks out with a set of products.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>refund</code></td>
-      <td>Used when a user requests a refund of products they bought.</td>
-    </tr></tbody>
-</table>
-<h4 id="consumption-(content-media)" tabindex="-1">Consumption (content media)</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td></td>
-      <td><code>read</code></td>
-      <td>Used to record when and for how long a user reads a piece of written content.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>watch</code></td>
-      <td>Used to record when and for how long a user watches content that is of a video format.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>listen</code></td>
-      <td>Used to record when and for how long a user listens to content that is of an audio format.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>add_to_collection</code></td>
-      <td>Used when a user adds a product to their personal collection.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>remove_from_collection</code></td>
-      <td>Used when a user removes a product from their personal collection.</td>
-    </tr></tbody>
-</table>
-<h4 id="feedback-signals" tabindex="-1">Feedback signals</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td></td>
-      <td><code>like</code></td>
-      <td>Used to record when a user indicates a like for a product.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>dislike</code></td>
-      <td>Used when a user indicates a dislike for a product or indicates they would like to not be recommended content or products like this in the future.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>share</code></td>
-      <td>Used when a user shares a product or piece of content.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>rate</code></td>
-      <td>Used when a user gives a rating to a product or piece of content.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>bookmark</code></td>
-      <td>Used when a user bookmarks a product.</td>
-    </tr></tbody>
-</table>
-<h4 id="additional-click-streams" tabindex="-1">Additional click-streams</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td></td>
-      <td><code>home_page_view</code></td>
-      <td>Used when a user views your home page.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>promo_page_view</code></td>
-      <td>Used when a user views a specific promotional or curated marketing page about certain products or content.</td>
-    </tr><tr>
-      <td></td>
-      <td><code>product_image_view</code></td>
-      <td>Used when a user views the image of a product (e.g. to enlarge a product photo).</td>
-    </tr></tbody>
-</table>
-<h4 id="custom" tabindex="-1">Custom</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td></td>
-      <td><code>custom</code></td>
-      <td>Used when you want to record any custom interaction events between users and products.</td>
-    </tr></tbody>
-</table>
+          <p>You can specify a few parameters in any API request options:</p>
+<h4 id="timeout" tabindex="-1">Timeout</h4>
+<p>You can specify a timeout in milleseconds.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">try</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToProducts</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">timeout</span><span class="token operator">:</span> <span class="token number">5000</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span></code></pre>
+<h4 id="bulk" tabindex="-1">Bulk</h4>
+<p>You can call API in bulk mode. API calls in bulk mode from the same event loop will be packed into a single HTTP request to save communication resources.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> <span class="token punctuation">[</span> responseA<span class="token punctuation">,</span> responseB <span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">await</span> Promise<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token punctuation">[</span><br>  miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToProducts</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">bulk</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToTrending</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">bulk</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><br><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Be aware of asynchrony. In the following example, the bulk mode will NOT be in effect:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> responseA <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToProducts</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">bulk</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> responseB <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToProducts</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">bulk</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

@@ -41,6 +41,9 @@
     <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/ui">UI</a>
     </li>
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/algolia">Plugins</a>
+    </li>
   </ul>
   <hr class="d-md-none text-white-50">
   <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
@@ -70,6 +73,8 @@
         <ul class="list-unstyled fw-normal pb-1 small"><li>
             <a href="/miso-client-js-sdk/ui/quick-start">Quick Start</a>
           </li><li>
+            <a href="/miso-client-js-sdk/ui/installation">Installation</a>
+          </li><li>
             <a href="/miso-client-js-sdk/ui/concept">Concept</a>
           </li></ul>
       </div>
@@ -94,16 +99,16 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso UI quick start</h1>
-          <hr>
+          <h1>Miso UI quick start</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
           <p>We can setup the most basic list element with just few steps.</p>
-<h3 id="turn-on-ui-plugin" tabindex="-1">Turn on UI plugin</h3>
-<pre class="language-js"><code class="language-js">MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">install</span><span class="token punctuation">(</span><span class="token string">'std:ui'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h3 id="add-the-custom-element-on-the-page" tabindex="-1">Add the custom element on the page</h3>
+<h3 id="use-the-sdk-bundled-with-ui-plugin" tabindex="-1">Use the SDK bundled with UI plugin</h3>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk/dist/umd/miso-with-ui.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>See the <a href="./installation">installation</a> section for other methods to setup.</p>
+<h3 id="add-a-custom-element-on-the-page" tabindex="-1">Add a custom element on the page</h3>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-list</span> <span class="token attr-name">api</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>user_to_products<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">on:</span>start</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>load<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">data-attr</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>payload<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>application/json<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript"><br>    <span class="token punctuation">{</span><br>      <span class="token string-property property">"fl"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"*"</span><span class="token punctuation">]</span><br>    <span class="token punctuation">}</span><br>  </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span> <span class="token attr-name">data-name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>item<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">data-product-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>${data.product_id}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>${data.url}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h3</span><span class="token punctuation">></span></span>${data.title}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h3</span><span class="token punctuation">></span></span><br>        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>${data.cover_image}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h3</span><span class="token punctuation">></span></span>$${data.sale_price}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h3</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-list</span><span class="token punctuation">></span></span></code></pre>
 
         </div>

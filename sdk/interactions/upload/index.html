@@ -41,6 +41,9 @@
     <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/ui">UI</a>
     </li>
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/algolia">Plugins</a>
+    </li>
   </ul>
   <hr class="d-md-none text-white-50">
   <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
@@ -73,6 +76,8 @@
             <a href="/miso-client-js-sdk/sdk/configuration">Configuration</a>
           </li><li>
             <a href="/miso-client-js-sdk/sdk/context">Context</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/sdk/request-options">Request Options</a>
           </li></ul>
       </div>
     </li><li class="mb-1">
@@ -111,15 +116,15 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Upload Interactions</h1>
-          <hr>
+          <h1>Upload Interactions</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
           <h4 id="syntax" tabindex="-1">Syntax</h4>
-<pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="parameters" tabindex="-1">Parameters</h4>
+<p>The <code>event</code> parameter is an object with the properties depending on the event type:</p>
 <script>
   let table;
   function onSelectEventType(value) {
@@ -317,7 +322,7 @@
 <h4 id="return-value" tabindex="-1">Return value</h4>
 <p>A <code>Promise</code> without value. In general you don't need to wait for the response.</p>
 <h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'add_to_cart'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'a001'</span><span class="token punctuation">,</span> <span class="token string">'a002'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">quantities</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br>miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> event <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'add_to_cart'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'a001'</span><span class="token punctuation">,</span> <span class="token string">'a002'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">quantities</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br>miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>
