@@ -7,13 +7,15 @@ description: Provides real-time, personalized, typo resistant typeahead for your
 
 #### Syntax
 ```js
-const response = await miso.api.search.autocomplete(options);
+const response = await miso.api.search.autocomplete(payload, options);
 ```
 
-#### Parameters
-The `options` parameter is an object with following properties:
+#### Payload
+The `payload` parameter is an object with following properties:
 
-{{ proptable('sdk', 'autocomplete.options') }}
+{{ proptable('sdk', 'autocomplete.payload') }}
+
+{% include 'section/request-options.md' %}
 
 #### Return value
 
@@ -23,14 +25,14 @@ A `Promise` of response object with the following properties:
 
 #### Examples
 ```js
-const options = {
+const payload = {
   user_id: '...',
   user_hash: '...',
   q: 'shiba ',
   fl: ['title', 'sale_price'],
   completion_fields: ['title', 'tags', 'custom_attributes.author']
 };
-const { completions } = await miso.api.search.autocomplete(options);
+const { completions } = await miso.api.search.autocomplete(payload);
 for (const { text, text_with_markups, product } of completions.title) {
   // ...
 }

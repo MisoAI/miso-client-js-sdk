@@ -7,13 +7,15 @@ description: Perform a personalized, typo-correcting, semantic search.
 
 #### Syntax
 ```js
-const response = await miso.api.search.search(options);
+const response = await miso.api.search.search(payload, options);
 ```
 
-#### Parameters
-The `options` parameter is an object with the following properties:
+#### Payload
+The `payload` parameter is an object with the following properties:
 
-{{ proptable('sdk', 'search.options') }}
+{{ proptable('sdk', 'search.payload') }}
+
+{% include 'section/request-options.md' %}
 
 #### Return value
 A `Promise` of response object with the following properties:
@@ -22,13 +24,13 @@ A `Promise` of response object with the following properties:
 
 #### Examples
 ```js
-const options = {
+const payload = {
   user_id: '...',
   user_hash: '...',
   q: 'doge',
   fl: ['title', 'sale_price', 'custom_attributes.*']
 };
-const { products } = await miso.api.search.search(options);
+const { products } = await miso.api.search.search(payload);
 ```
 
 #### Learn more

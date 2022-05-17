@@ -17,8 +17,6 @@ The `payload` parameter is an object with the following properties:
 
 {% include 'section/request-options.md' %}
 
-{{ proptable('sdk', 'request.options') }}
-
 #### Return value
 A `Promise` of response object with the following properties:
 
