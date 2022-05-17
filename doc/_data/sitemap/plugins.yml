@@ -1,0 +1,10 @@
+sections:
+- title: Algolia
+  path: /algolia
+  pages:
+  - title: Installation
+    path: /algolia/installation
+  - title: InstantSearch.js
+    path: /algolia/instantsearch-js
+  - title: Autocomplete
+    path: /algolia/autocomplete
