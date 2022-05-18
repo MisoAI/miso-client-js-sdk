@@ -1,7 +1,6 @@
 ---
 ---
 
-<h3>User to products</h3>
 <div id="results" class="product-list selectable"></div>
 
 {% raw %}

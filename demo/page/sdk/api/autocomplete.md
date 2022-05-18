@@ -6,17 +6,7 @@
   <input id="input" type="text" class="form-control">
   <div id="suggested-queries" class="suggested-query-list"></div>
 </div>
-<script>
-window.renderSuggestedQuery = suggestedQuery => `
-  <div class="suggested-query" data-text="${suggestedQuery.text}">
-    ${suggestedQuery.text_with_inverted_markups}
-  </div>
-`;
-document.querySelector('#input').focus();
-</script>
-{% endraw %}
 
-{% raw %}
 <script>
 const input = document.querySelector('#input');
 const submit = document.querySelector('#submit');
@@ -48,9 +38,18 @@ function renderSuggestedQueries(response, id) {
     .join('');
 }
 
+function renderSuggestedQuery(suggestedQuery) {
+  return `
+    <div class="suggested-query" data-text="${suggestedQuery.text}">
+      ${suggestedQuery.text_with_inverted_markups}
+    </div>
+  `;
+}
+
 function clearSuggestedQueries() {
   suggestedQueries.innerHTML = '';
 }
 
+input.focus();
 </script>
 {% endraw %}

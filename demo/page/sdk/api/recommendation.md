@@ -1,10 +1,10 @@
 ---
 ---
 
+{% raw %}
 <h3>User to products</h3>
 <div id="results" class="product-list selectable"></div>
 
-{% raw %}
 <script>
 const results = document.querySelector('#results');
 

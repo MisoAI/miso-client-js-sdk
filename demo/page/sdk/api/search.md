@@ -7,12 +7,7 @@
   <button id="submit" class="btn btn-outline-secondary" type="button">Search</button>
 </div>
 <div id="results" class="product-list"></div>
-<script>
-document.querySelector('#input').focus();
-</script>
-{% endraw %}
 
-{% raw %}
 <script>
 const input = document.querySelector('#input');
 const submit = document.querySelector('#submit');
@@ -38,5 +33,6 @@ function renderSearchResults(response) {
     .join('');
 }
 
+input.focus();
 </script>
 {% endraw %}
