@@ -11,8 +11,6 @@
   },
   "scripts": {
     "start": "npx babel src --root-mode upward --out-dir dist/es --watch",
-    "test:watch": "jest --no-cache --config ../../jest.config.js --watch",
-    "test": "jest --no-cache --config ../../jest.config.js",
     "build:clean": "npx rimraf dist",
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build": "npm run build:clean && npm run build:esm"

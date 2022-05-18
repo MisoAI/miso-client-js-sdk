@@ -11,7 +11,6 @@
   },
   "scripts": {
     "start": "rollup -w -c rollup.config.dev.js",
-    "test": "echo later",
     "build:clean": "npx rimraf dist",
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build:umd": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
