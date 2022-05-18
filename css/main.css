@@ -8,10 +8,6 @@
   --color-primary-l8: rgba(51, 76, 187, 0.05);
 }
 
-/**
- * Based on GitHub syntax light theme:
- * https://github.com/primer/github-syntax-light/blob/master/lib/github-light.css
- */
 :root {
   --color-code-inline: #5566aa;
   --color-code-background: var(--color-primary-l8);
