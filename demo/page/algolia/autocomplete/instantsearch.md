@@ -76,6 +76,7 @@ autocomplete({
   getSources: ({ query }) => {
     // this is triggered on every user input
     return [{
+      sourceId: 'miso',
       getItems: () => getAlgoliaResults({
         searchClient: client.algolia.autocompleteClient(),
         queries: [{
