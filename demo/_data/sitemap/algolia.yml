@@ -6,8 +6,6 @@ sections:
     path: /instantsearch/search
   - title: Facets
     path: /instantsearch/facets
-#  - title: Query Suggestion
-#    path: /instantsearch/query-suggestion
   - title: All in One
     path: /instantsearch/all-in-one
 - title: Autocomplete
@@ -17,3 +15,5 @@ sections:
     path: /autocomplete/basic
   - title: With InstantSearch.js
     path: /autocomplete/instantsearch
+  - title: All in One
+    path: /autocomplete/all-in-one

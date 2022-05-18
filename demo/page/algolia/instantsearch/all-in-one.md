@@ -2,20 +2,6 @@
 ---
 
 {% raw %}
-<style>
-#demo .body {
-  display: grid;
-  grid-template-areas: "demo-aside demo-main";
-  grid-template-columns: 1fr 3fr;
-  gap: 1rem;
-}
-#demo .aside {
-  grid-area: demo-aside;
-}
-#demo .main {
-  grid-area: demo-main;
-}
-</style>
 <div class="body">
   <div class="aside">
     <h3>Refinement</h3>

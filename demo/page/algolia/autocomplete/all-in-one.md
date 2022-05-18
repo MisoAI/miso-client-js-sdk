@@ -1,106 +1,115 @@
 ---
-layout: base.njk
-title: Working with Autocomplete
 ---
 
-You can combine the power of Miso with InstantSearch.js and Autocomplete.
+{% raw %}
+<div class="body">
+  <div class="aside">
+    <h3>Refinement</h3>
+    <hr>
+    <h6>Author</h6>
+    <div id="refinement-list-authors"></div>
+    <hr>
+    <h6>Availability</h6>
+    <div id="refinement-list-availability"></div>
+    <hr>
+    <h6>Sale Price</h6>
+    <div id="price-menu"></div>
+  </div>
+  <div class="main">
+    <div id="autocomplete"></div>
+    <div id="hits" class="rows-3"></div>
+  </div>
+</div>
 
-1. [Install]({{ '/plugins/algolia/installation' | url }}) Miso SDK and its Algolia plugin.
-1. Install [Autocomplete](https://www.algolia.com/doc/ui-libraries/autocomplete/introduction/getting-started/).
-1. Follow the [guide](https://www.algolia.com/doc/ui-libraries/autocomplete/integrations/with-instantsearch/) to integrate InstantSearch.js and Autocomplete.
-1. Use the autocomplete client from Miso in place of Algolia's original search client.
-
-### Example
-
-Setup InstantSearch:
-
-```js
+<script>
 const client = new MisoClient('...');
-const indexName = ''; // empty string for your default Miso engine
+const indexName = '';
 
 const search = instantsearch({
-  // use Miso's search client
   searchClient: client.algolia.searchClient(),
-  indexName: indexName
+  indexName: indexName,
 });
 
 search.addWidgets([
   instantsearch.widgets.configure({
-    hitsPerPage: 8
+    hitsPerPage: 6,
   }),
-  // remove the original search box widget
-  /*
-  instantsearch.widgets.searchBox({
-    container: '#search-box',
-    autofocus: true,
-    searchAsYouType: false,
-    showSubmit: true,
+  instantsearch.widgets.refinementList({
+    container: '#refinement-list-authors',
+    attribute: 'authors',
+    limit: 5,
+    showMore: true,
   }),
-  */
-  // mount a virtual search box to manipulate InstantSearch's `query` UI state parameter
+  instantsearch.widgets.refinementList({
+    container: '#refinement-list-availability',
+    attribute: 'availability',
+  }),
+  instantsearch.widgets.numericMenu({
+    container: '#price-menu',
+    attribute: 'sale_price',
+    items: [
+      { label: 'All' },
+      { label: 'Less than $49.99', end: 49.99 },
+      { label: 'Between $50 - $99.99', start: 50, end: 99.99 },
+      { label: 'More than $100', start: 100 },
+    ],
+  }),
   instantsearch.connectors.connectSearchBox(() => {})({}),
-  instantsearch.widgets.hits({
+  instantsearch.widgets.infiniteHits({
     container: '#hits',
-    templates: { /* ... */ }
-  })
+    templates: {
+      item: `
+        <div>
+          <div class="title">{{ title }}</div>
+          <div class="image">
+            <img src="{{ cover_image }}">
+          </div>
+          <div class="footer">\${{ sale_price }}</div>
+        </div>
+      `,
+    },
+  }),
 ]);
 
 search.start();
-```
 
-Make a tool function to sync Autocomplete's query to InstantSearch's query state:
-
-```js
 function setInstantSearchQueryState(query = '') {
   search.setUiState(uiState => ({
     ...uiState,
     [indexName]: {
       ...uiState[indexName],
       page: 1,
-      query: query
-    }
+      query: query,
+      refinementList: undefined,
+    },
   }));
 }
-```
 
-Setup Autocomplete:
-
-```js
 autocomplete({
   container: '#autocomplete',
   initialState: {
-    query: ''
+    query: '',
   },
   onSubmit: ({ state }) => {
-    setInstantSearchQueryState(state.query);
+    const { query } = state;
+    setInstantSearchQueryState(query);
   },
   onReset: () => {
     setInstantSearchQueryState();
   },
-  /*
-  // for a submit-based search paradigm, comment out this part
-  onStateChange: ({ prevState, state }) => {
-    const { query: prevQuery } = prevState;
-    const { query } = state;
-    if (prevQuery !== query) {
-      setInstantSearchQueryState(query);
-    }
-  },
-  */
   autoFocus: true,
   getSources: ({ query }) => {
     // this is triggered on every user input
     return [{
       getItems: () => getAlgoliaResults({
-        // use Miso's autocomplete client
         searchClient: client.algolia.autocompleteClient(),
         queries: [{
           query: query,
           params: {
             hitsPerPage: 5,
             attributesToHighlight: ['suggested_queries'],
-          }
-        }]
+          },
+        }],
       }),
       onSelect: ({ setQuery, item }) => {
         const query = item._text;
@@ -124,6 +133,8 @@ autocomplete({
         `
       }
     }];
-  }
+  },
 });
-```
+
+</script>
+{% endraw %}
