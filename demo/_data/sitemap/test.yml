@@ -1,0 +1,6 @@
+sections:
+- title: Core
+  path: /core
+  pages:
+  - title: Script Tag
+    path: /core/script-tag
