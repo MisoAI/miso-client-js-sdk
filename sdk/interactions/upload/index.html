@@ -152,7 +152,8 @@
   <div class="btn-group-lite" id="event-types" role="group" aria-label="Consumption (content media)"><input type="radio" class="btn-check" name="event-type" id="event-type-read" value="read" autocomplete="off" onchange="onSelectEventType(this.value)">
     <label class="btn" for="event-type-read"><code class="raw">read</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-watch" value="watch" autocomplete="off" onchange="onSelectEventType(this.value)">
     <label class="btn" for="event-type-watch"><code class="raw">watch</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-listen" value="listen" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-listen"><code class="raw">listen</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-add_to_collection" value="add_to_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
+    <label class="btn" for="event-type-listen"><code class="raw">listen</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-complete" value="complete" autocomplete="off" onchange="onSelectEventType(this.value)">
+    <label class="btn" for="event-type-complete"><code class="raw">complete</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-add_to_collection" value="add_to_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
     <label class="btn" for="event-type-add_to_collection"><code class="raw">add_to_collection</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_collection" value="remove_from_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
     <label class="btn" for="event-type-remove_from_collection"><code class="raw">remove_from_collection</code></label></div>
 </div>
@@ -187,6 +188,7 @@
   #event-props-table[data-event-type="read"] tr[data-used-by-except~="read"],
   #event-props-table[data-event-type="watch"] tr[data-used-by-except~="watch"],
   #event-props-table[data-event-type="listen"] tr[data-used-by-except~="listen"],
+  #event-props-table[data-event-type="complete"] tr[data-used-by-except~="complete"],
   #event-props-table[data-event-type="add_to_collection"] tr[data-used-by-except~="add_to_collection"],
   #event-props-table[data-event-type="remove_from_collection"] tr[data-used-by-except~="remove_from_collection"],
   #event-props-table[data-event-type="like"] tr[data-used-by-except~="like"],
@@ -213,6 +215,7 @@
   #event-props-table[data-event-type="read"] tr[data-used-by~="read"],
   #event-props-table[data-event-type="watch"] tr[data-used-by~="watch"],
   #event-props-table[data-event-type="listen"] tr[data-used-by~="listen"],
+  #event-props-table[data-event-type="complete"] tr[data-used-by~="complete"],
   #event-props-table[data-event-type="add_to_collection"] tr[data-used-by~="add_to_collection"],
   #event-props-table[data-event-type="remove_from_collection"] tr[data-used-by~="remove_from_collection"],
   #event-props-table[data-event-type="like"] tr[data-used-by~="like"],

@@ -92,6 +92,15 @@
             <a href="/miso-client-js-sdk/ui/element/miso-list">&lt;miso-list&gt;</a>
           </li></ul>
       </div>
+    </li><li class="mb-1">
+      <a href="/miso-client-js-sdk/ui/recipe">Recipes</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li>
+            <a href="/miso-client-js-sdk/ui/recipe/custom-api">Custom API</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/ui/recipe/deduplication">Deduplication</a>
+          </li></ul>
+      </div>
     </li></ul>
 </div>
 
@@ -106,6 +115,7 @@
         <div class="content ps-lg-4">
           <p>Most of the time a data model will be created automatically by an element. Nevertheless, you can also create a model manually:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> MisoListModel <span class="token operator">=</span> MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>models<span class="token punctuation">.</span>classes<span class="token punctuation">.</span>MisoListModel<span class="token punctuation">;</span><br><span class="token keyword">const</span> model <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoListModel</span><span class="token punctuation">(</span>options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="options" tabindex="-1">Options</h4>
 <p>The <code>options</code> parameter is an object with the following properties:</p>
 <table class="table">
   <thead>
@@ -126,6 +136,11 @@
       <td>The default payload to send with API request.
 </td>
     </tr><tr>
+      <td><code>fetch</code></td>
+      <td>function</td>
+      <td>A function to override default data fetching behavior. Only applied when <code>api=&quot;custom&quot;</code>.
+</td>
+    </tr><tr>
       <td><code>transform</code></td>
       <td>function</td>
       <td>A function applied to all initial and fetched model data.
@@ -142,8 +157,14 @@
 </td>
     </tr></tbody>
 </table>
+<h4 id="api-types" tabindex="-1">API Types</h4>
 <p>Possible <code>api</code> values and their corresponding data items are:</p>
 <table class="table">
+  <colgroup>
+    <col span="1" style="width: 25%;">
+    <col span="1" style="width: 25%;">
+    <col span="1">
+  </colgroup>
   <thead>
     <tr>
       <th scope="col">Value</th>
@@ -154,33 +175,39 @@
   <tbody>
     <tr>
       <td><code>user_to_products</code></td>
-      <td><a href="../../../sdk/recommendation/user_to_products">User To Products</a></td>
+      <td><a href="/miso-client-js-sdk/sdk/recommendation/user_to_products">User To Products</a></td>
       <td>product</td>
     </tr>
     <tr>
       <td><code>user_to_attributes</code></td>
-      <td><a href="../../../sdk/recommendation/user_to_attributes">User To Attributes</a></td>
+      <td><a href="/miso-client-js-sdk/sdk/recommendation/user_to_attributes">User To Attributes</a></td>
       <td>attribute</td>
     </tr>
     <tr>
       <td><code>user_to_trending</code></td>
-      <td><a href="../../../sdk/recommendation/user_to_trending">User To Trendings</a></td>
+      <td><a href="/miso-client-js-sdk/sdk/recommendation/user_to_trending">User To Trendings</a></td>
       <td>product</td>
     </tr>
     <tr>
       <td><code>product_to_products</code></td>
-      <td><a href="../../../sdk/recommendation/product_to_products">Products To Products</a></td>
+      <td><a href="/miso-client-js-sdk/sdk/recommendation/product_to_products">Products To Products</a></td>
       <td>product</td>
     </tr>
     <tr>
       <td><code>search</code></td>
-      <td><a href="../../../sdk/search/search">Search</a></td>
+      <td><a href="/miso-client-js-sdk/sdk/search/search">Search</a></td>
       <td>product</td>
     </tr>
     <tr>
       <td><code>autocomplete</code></td>
-      <td><a href="../../../sdk/search/autocomplete">Autocomplete</a></td>
+      <td><a href="/miso-client-js-sdk/sdk/search/autocomplete">Autocomplete</a></td>
       <td>completion</td>
+    </tr>
+    <tr>
+      <td><code>custom</code></td>
+      <td colspan="2">
+        Determined by the <code>fetch</code> parameter. See <a href="/miso-client-js-sdk/ui/recipe/custom-api">Custom API</a> for an example.
+      </td>
     </tr>
   </tbody>
 </table>

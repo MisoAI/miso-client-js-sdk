@@ -76,6 +76,8 @@
             <a href="/miso-client-js-sdk/plugins/algolia/instantsearch-js">InstantSearch.js</a>
           </li><li>
             <a href="/miso-client-js-sdk/plugins/algolia/autocomplete">Autocomplete</a>
+          </li><li>
+            <a href="/miso-client-js-sdk/plugins/algolia/compatibility">Compatibility</a>
           </li></ul>
       </div>
     </li></ul>
@@ -90,10 +92,190 @@
         </div>
         
         <div class="content ps-lg-4">
-          <h3 id="index-name" tabindex="-1">Index Name</h3>
+          <p>The page elaborates the compatibility between Algolia's API and Miso's implementation.</p>
+<h4 id="index-name" tabindex="-1">Index Name</h4>
 <p>In InstantSearch.js and Autocomplete, you have to pass a mandatory parameter for index name to their init functions. We use this parameter to correspond to Miso's engine ID:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> engineId <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span> <span class="token comment">// empty string for default Miso engine</span><br><br><span class="token keyword">const</span> search <span class="token operator">=</span> <span class="token function">instantsearch</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">//searchClient: searchClient,</span><br>  <span class="token literal-property property">searchClient</span><span class="token operator">:</span> client<span class="token punctuation">.</span>algolia<span class="token punctuation">.</span><span class="token function">searchClient</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">indexName</span><span class="token operator">:</span> engineId<br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h3 id="algolia's-search-parameters" tabindex="-1">Algolia's search parameters</h3>
+<h2 id="search-parameters" tabindex="-1">Search parameters</h2>
+<table class="table">
+  <colgroup>
+    <col span="1" style="width: 20%;">
+    <col span="1" style="width: 20%;">
+    <col span="1">
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Algolia</th>
+      <th scope="col">Miso</th>
+      <th scope="col">Notes</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><div>
+          <code>query</code>
+        </div></td>
+      <td><div>
+          <code>q</code>
+        </div></td>
+      <td></td>
+    </tr><tr>
+      <td><div>
+          <code>attributesToRetrieve</code>
+        </div></td>
+      <td><div>
+          <code>fl</code>
+        </div></td>
+      <td>Miso does NOT support exclusion pattern like <code>['*', '-attr_x']</code>.
+</td>
+    </tr><tr>
+      <td><div>
+          <code>attributesToHighlight</code>
+        </div></td>
+      <td><div>
+          <code>completion_fields</code>
+        </div></td>
+      <td>Only applies to autocomplete
+</td>
+    </tr></tbody>
+</table>
+<h4 id="pagination" tabindex="-1">Pagination</h4>
+<p>Both kinds of Algolia's pagination paradigm are supported.</p>
+<table class="table">
+  <colgroup>
+    <col span="1" style="width: 20%;">
+    <col span="1" style="width: 20%;">
+    <col span="1">
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Algolia</th>
+      <th scope="col">Miso</th>
+      <th scope="col">Notes</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><div>
+          <code>page</code>
+        </div><div>
+          <code>hitsPerPage</code>
+        </div></td>
+      <td><div>
+          <code>rows</code>
+        </div><div>
+          <code>start</code>
+        </div></td>
+      <td>Miso has 5 rows per page by default.
+</td>
+    </tr><tr>
+      <td><div>
+          <code>length</code>
+        </div></td>
+      <td><div>
+          <code>rows</code>
+        </div></td>
+      <td></td>
+    </tr><tr>
+      <td><div>
+          <code>offset</code>
+        </div></td>
+      <td><div>
+          <code>start</code>
+        </div></td>
+      <td></td>
+    </tr></tbody>
+</table>
+<p>For example, the following parameters:</p>
+<pre class="language-js"><code class="language-js">searchClient<span class="token punctuation">.</span><span class="token function">search</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">{</span> <span class="token literal-property property">hitsPerPage</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">page</span><span class="token operator">:</span> <span class="token number">5</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>are mapped to Miso's parameters like this:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>search<span class="token punctuation">.</span><span class="token function">search</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">start</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token operator">*</span> <span class="token number">5</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="filters" tabindex="-1">Filters</h4>
+<p>Algolia's filter expressions are translated to Miso's syntax.</p>
+<table class="table">
+  <colgroup>
+    <col span="1" style="width: 20%;">
+    <col span="1" style="width: 20%;">
+    <col span="1">
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Algolia</th>
+      <th scope="col">Miso</th>
+      <th scope="col">Notes</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><div>
+          <code>facetFilters</code>
+        </div><div>
+          <code>tagFilters</code>
+        </div><div>
+          <code>numericFilters</code>
+        </div></td>
+      <td><div>
+          <code>fq</code>
+        </div></td>
+      <td></td>
+    </tr><tr>
+      <td><div>
+          <code>filters</code>
+        </div></td>
+      <td><div>
+          <code>fq</code>
+        </div></td>
+      <td></td>
+    </tr></tbody>
+</table>
+<h4 id="facets" tabindex="-1">Facets</h4>
+<table class="table">
+  <colgroup>
+    <col span="1" style="width: 20%;">
+    <col span="1" style="width: 20%;">
+    <col span="1">
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Algolia</th>
+      <th scope="col">Miso</th>
+      <th scope="col">Notes</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><div>
+          <code>facets</code>
+        </div><div>
+          <code>maxValuesPerFacet</code>
+        </div></td>
+      <td><div>
+          <code>facets</code>
+        </div></td>
+      <td></td>
+    </tr></tbody>
+</table>
+<h4 id="highlighting" tabindex="-1">Highlighting</h4>
+<table class="table">
+  <colgroup>
+    <col span="1" style="width: 20%;">
+    <col span="1" style="width: 20%;">
+    <col span="1">
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Algolia</th>
+      <th scope="col">Miso</th>
+      <th scope="col">Notes</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><div>
+          <code>highlightPreTag</code>
+        </div><div>
+          <code>highlightPostTag</code>
+        </div></td>
+      <td>N/A</td>
+      <td>They don't correspond to Miso's API parameters but they are supported by SDK.
+</td>
+    </tr></tbody>
+</table>
 
         </div>
       </main>
