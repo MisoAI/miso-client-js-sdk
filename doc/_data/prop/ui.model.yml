@@ -8,6 +8,10 @@ props:
   type: object
   desc: |
     The default payload to send with API request.
+- key: fetch
+  type: function
+  desc: |
+    A function to override default data fetching behavior. Only applied when `api="custom"`.
 - key: transform
   type: function
   desc: |
@@ -30,6 +34,7 @@ groups:
   props:
   - api
   - payload
+  - fetch
   - transform
   - autoClient
   - client

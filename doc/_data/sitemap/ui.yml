@@ -18,3 +18,10 @@ sections:
   pages:
   - title: <miso-list>
     path: /element/miso-list
+- title: Recipes
+  path: /recipe
+  pages:
+  - title: Custom API
+    path: /recipe/custom-api
+  - title: Deduplication
+    path: /recipe/deduplication

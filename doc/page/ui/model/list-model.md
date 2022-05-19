@@ -10,53 +10,13 @@ const MisoListModel = MisoClient.ui.models.classes.MisoListModel;
 const model = new MisoListModel(options);
 ```
 
+#### Options
+
 The `options` parameter is an object with the following properties:
 
 {{ proptable('ui:model', 'list-model.options') }}
 
-Possible `api` values and their corresponding data items are:
-
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Value</th>
-      <th scope="col">API Method</th>
-      <th scope="col">Data Item Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>user_to_products</code></td>
-      <td><a href="../../../sdk/recommendation/user_to_products">User To Products</a></td>
-      <td>product</td>
-    </tr>
-    <tr>
-      <td><code>user_to_attributes</code></td>
-      <td><a href="../../../sdk/recommendation/user_to_attributes">User To Attributes</a></td>
-      <td>attribute</td>
-    </tr>
-    <tr>
-      <td><code>user_to_trending</code></td>
-      <td><a href="../../../sdk/recommendation/user_to_trending">User To Trendings</a></td>
-      <td>product</td>
-    </tr>
-    <tr>
-      <td><code>product_to_products</code></td>
-      <td><a href="../../../sdk/recommendation/product_to_products">Products To Products</a></td>
-      <td>product</td>
-    </tr>
-    <tr>
-      <td><code>search</code></td>
-      <td><a href="../../../sdk/search/search">Search</a></td>
-      <td>product</td>
-    </tr>
-    <tr>
-      <td><code>autocomplete</code></td>
-      <td><a href="../../../sdk/search/autocomplete">Autocomplete</a></td>
-      <td>completion</td>
-    </tr>
-  </tbody>
-</table>
+{% include 'section/ui-model-api-types.md' %}
 
 #### Data
 The current state of model data. The initial state of `items` is an empty array.
