@@ -18,3 +18,49 @@
   </tbody>
 </table>
 {% endmacro %}
+
+{% macro comparisontable(topic, group) %}
+<table class="table">
+  <colgroup>
+    <col span="1" style="width: 20%;">
+    <col span="1" style="width: 20%;">
+    <col span="1">
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">{{ data.comparisons[topic].header.left }}</th>
+      <th scope="col">{{ data.comparisons[topic].header.right }}</th>
+      <th scope="col">Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%- for prop in data.comparisons[topic].groups[group].props -%}
+    <tr>
+      <td>
+      {%- if prop.left | length -%}
+        {%- for item in prop.left -%}
+        <div>
+          <code>{{ item }}</code>
+        </div>
+        {%- endfor -%}
+      {%- else -%}
+        N/A
+      {%- endif -%}
+      </td>
+      <td>
+      {%- if prop.right | length -%}
+        {%- for item in prop.right -%}
+        <div>
+          <code>{{ item }}</code>
+        </div>
+        {%- endfor -%}
+      {%- else -%}
+        N/A
+      {%- endif -%}
+      </td>
+      <td>{%- if prop.desc -%}{{ prop.desc | markdown | safe }}{%- endif -%}</td>
+    </tr>
+  {%- endfor -%}
+  </tbody>
+</table>
+{% endmacro %}

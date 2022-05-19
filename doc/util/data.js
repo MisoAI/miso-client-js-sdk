@@ -1,5 +1,9 @@
 const { loadYaml } = require('./file');
 
+function asArray(value) {
+  return value === undefined ? [] : Array.isArray(value) ? value : [value];
+}
+
 function isMixin(key) {
   return key && key.charCodeAt(0) === 95; // '_'
 }
@@ -49,6 +53,20 @@ function getPropGroupMap(file) {
   }, {}));
 }
 
+function getComparisonGroup(file) {
+  let { header, groups } = loadYaml(file);
+  groups = groups.reduce((m, { props, ...group }) => {
+    props = props.map(({ left, right, ...prop }) => ({
+      ...prop,
+      left: asArray(left),
+      right: asArray(right),
+    }));
+    m[group.key] = { ...group, props };
+    return m;
+  }, {});
+  return Object.freeze({ header, groups });
+}
+
 
 
 function computeProps() {
@@ -81,10 +99,17 @@ function computeEvent() {
   return Object.freeze({ props, groups });
 }
 
+function computeComparisons() {
+  return Object.freeze({
+    algolia: getComparisonGroup('comparison/algolia.yml'),
+  });
+}
+
 function compute() {
   return Object.freeze({
     props: computeProps(),
     event: computeEvent(),
+    comparisons: computeComparisons(),
   });
 }
 
@@ -100,6 +125,9 @@ class Data {
   }
   get event() {
     return this._data.event;
+  }
+  get comparisons() {
+    return this._data.comparisons;
   }
 }
 

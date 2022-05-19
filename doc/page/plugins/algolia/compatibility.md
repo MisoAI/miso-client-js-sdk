@@ -2,8 +2,11 @@
 layout: base.njk
 title: Compatibility
 ---
+{% from 'macros.njk' import comparisontable %}
 
-### Index Name
+The page elaborates the compatibility between Algolia's API and Miso's implementation.
+
+#### Index Name
 In InstantSearch.js and Autocomplete, you have to pass a mandatory parameter for index name to their init functions. We use this parameter to correspond to Miso's engine ID:
 
 ```js
@@ -17,4 +20,31 @@ const search = instantsearch({
 });
 ```
 
-### Algolia's search parameters
+## Search parameters
+{{ comparisontable('algolia', 'basic') }}
+
+#### Pagination
+Both kinds of Algolia's pagination paradigm are supported.
+
+{{ comparisontable('algolia', 'pagination') }}
+
+For example, the following parameters:
+```js
+searchClient.search([{ hitsPerPage: 10, page: 5 /* ... */ }]);
+```
+
+are mapped to Miso's parameters like this:
+```js
+client.api.search.search({ rows: 10, start: 10 * 5 /* ... */ });
+```
+
+#### Filters
+Algolia's filter expressions are translated to Miso's syntax.
+
+{{ comparisontable('algolia', 'filter') }}
+
+#### Facets
+{{ comparisontable('algolia', 'facet') }}
+
+#### Highlighting
+{{ comparisontable('algolia', 'highlighting') }}

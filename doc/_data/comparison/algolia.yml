@@ -1,0 +1,41 @@
+header:
+  left: Algolia
+  right: Miso
+groups:
+- key: basic
+  props:
+  - left: query
+    right: q
+  - left: attributesToRetrieve
+    right: fl
+    desc: |
+      Miso does NOT support exclusion pattern like `['*', '-attr_x']`.
+  - left: attributesToHighlight
+    right: completion_fields
+    desc: |
+      Only applies to autocomplete
+- key: pagination
+  props:
+  - left: [page, hitsPerPage]
+    right: [rows, start]
+    desc: |
+      Miso has 5 rows per page by default.
+  - left: length
+    right: rows
+  - left: offset
+    right: start
+- key: filter
+  props:
+  - left: [facetFilters, tagFilters, numericFilters]
+    right: fq
+  - left: filters
+    right: fq
+- key: facet
+  props:
+  - left: [facets, maxValuesPerFacet]
+    right: facets
+- key: highlighting
+  props:
+  - left: [highlightPreTag, highlightPostTag]
+    desc: |
+      They don't correspond to Miso's API parameters but they are supported by SDK.

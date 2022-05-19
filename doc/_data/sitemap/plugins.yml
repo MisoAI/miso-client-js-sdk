@@ -8,3 +8,5 @@ sections:
     path: /algolia/instantsearch-js
   - title: Autocomplete
     path: /algolia/autocomplete
+  - title: Compatibility
+    path: /algolia/compatibility
