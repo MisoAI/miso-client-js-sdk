@@ -40,6 +40,9 @@
   - name: listen
     tier: 3
     desc: Used to record when and for how long a user listens to content that is of an audio format.
+  - name: complete
+    tier: 3
+    desc: Used when a user "complete" a product (e.g. complete a course or a video).
   - name: add_to_collection
     tier: 3
     desc: Used when a user adds a product to their personal collection.
