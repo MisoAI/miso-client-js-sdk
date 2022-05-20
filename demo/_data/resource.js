@@ -8,7 +8,7 @@ function sdkUmdPath(env) {
     case 'dev':
     case 'development':
     default:
-      return '//localhost:10101/dist/umd';
+      return '//localhost:10099/dist/umd';
   }
 }
 

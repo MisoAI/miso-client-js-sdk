@@ -40,7 +40,7 @@ function _config(name, env = 'prod') {
     plugins = [
       ...plugins,
       serve({
-        port: 10101,
+        port: 10099,
       }),
       livereload({
         delay: 500,
