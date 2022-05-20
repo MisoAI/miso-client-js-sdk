@@ -22,7 +22,7 @@ Enhance your site with high conversion magic with [Miso's](https://miso.ai/) pow
 ## Quick Start
 Install the dependency:
 ```bash
-npm install @miso.ai/client-sdk
+npm install --save @miso.ai/client-sdk
 ```
 
 Create Miso client:
@@ -38,14 +38,14 @@ Specify user ID optionally. Miso prevails even on fully anonymous data.
 
 Deliver fully personalized user experience of search, autocomplete,
 ```js
-const { products } = await miso.search.search("...");
-const { completions } = await miso.search.autocomplete("...");
+const { products } = await miso.api.search.search("...");
+const { completions } = await miso.api.search.autocomplete("...");
 ```
 
 and various kinds of recommendations:
 ```js
-const { products } = await miso.recommendation.userToProducts();
-const { products } = await miso.recommendation.productToProducts({ product_id: "..." });
+const { products } = await miso.api.recommendation.userToProducts();
+const { products } = await miso.api.recommendation.productToProducts({ product_id: "..." });
 ```
 
 Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
@@ -55,9 +55,6 @@ Explore more opportunities with Miso's [recipes](https://docs.miso.ai/recipes).
     <img src="asset/cta.svg" height="36px">
   </a>
 </div>
-
-## Development
-See [Development](https://github.com/MisoAI/miso-client-js-sdk/blob/main/development.md).
 
 ## License
 This library is distributed under the [MIT license](https://github.com/askmiso/miso-client-js-sdk/blob/main/LICENSE).

@@ -5,16 +5,25 @@
 * Git clone this project
 * `npm ci`
 
+## Test (locallly)
+* `npm run test`
+
 ## Build (locallly)
 * `npm run build`
 
 ## Run (locally)
-* `npm start`
-* Open browser and visit `http://localhost:10101/demo/index.html`
+* Write the API key in `demo/.env` file:
+
+```
+DEFAULT_API_KEY='...'
+```
+
+* `npm run start`
+* Open browser and visit `http://localhost:10100`
 
 ## Run doc site (locally)
 * `npm run doc:start`
-* Open browser and visit `http://http://localhost:10201/miso-client-js-sdk`
+* Open browser and visit `http://http://localhost:10101/miso-client-js-sdk`
 
 
 
@@ -22,7 +31,8 @@
 
 ## Publish to NPM
 On GitHub
-* Create and publish a release, which will trigger an npm publish.
+* Create and publish a release (or prerelease), which will trigger an npm publish.
+* If it's a release (not prerelease), the doc site will be published as well.
 
 ## Publish doc site
 On GitHub

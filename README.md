@@ -31,8 +31,9 @@ This monorepo contains the following packages:
 | Name | NPM | Description |
 | --- | --- | --- |
 | [client-sdk](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk) | The standard build of client JS SDK. |
-
-<!-- -->
+| [client-sdk-core](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-core) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-core) | The SDK core. |
+| [client-sdk-ui](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-ui) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-ui) | A UI Plugin for fast prototyping. |
+| [client-sdk-algolia](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-algolia) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-algolia) | A Plugin to integrate with InstantSearch.js and Autocomplete |
 
 ## Development
 See [Development](./development.md).
