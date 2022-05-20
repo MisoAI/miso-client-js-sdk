@@ -129,6 +129,9 @@ class Data {
   get comparisons() {
     return this._data.comparisons;
   }
+  isCurrentPage(region, path) {
+    console.log(region, path);
+  }
 }
 
-module.exports = new Data();
+module.exports = Data;

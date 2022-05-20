@@ -1,13 +1,13 @@
 <div>
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1">
   {%- for section in sitemap[region].sections -%}
-    <li class="mb-1">
+    <li class="section mb-1">
       <span class="title">{{ section.title }}</span>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small">
-        {%- for page in section.pages -%}
-          <li>
-            <a href="{{ ['/', region, page.path] | join | url }}">{{ page.title }}</a>
+        {%- for p in section.pages -%}
+          <li class="page{{ ' active' if helpers.isCurrentPage(page.url, region, p.path)}}">
+            <a href="{{ ['/', region, p.path] | join | url }}">{{ p.title }}</a>
           </li>
         {%- endfor -%}
         </ul>

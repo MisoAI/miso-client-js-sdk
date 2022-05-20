@@ -21,6 +21,8 @@ module.exports = function(config) {
 
   config.addNunjucksFilter('markdown', value => markdown.renderInline(value));
 
+  config.addNunjucksGlobal('helpers', new Helpers());
+
   return {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain
     dir: {
@@ -32,3 +34,13 @@ module.exports = function(config) {
     }
   }
 };
+
+class Helpers {
+
+  constructor() {}
+
+  isCurrentPage(pageUrl, region, path) {
+    return pageUrl === '/' + region + (path || '') + '/';
+  }
+
+}
