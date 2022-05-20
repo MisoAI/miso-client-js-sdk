@@ -1,21 +1,25 @@
+import { Component } from '@miso.ai/commons';
 import AlgoliaClient from './client';
 
-const ID = 'std:algolia';
+const PLUGIN_ID = 'std:algolia';
 
-export default class AlgoliaPlugin {
+export default class AlgoliaPlugin extends Component {
 
   static get id() {
-    return ID;
+    return PLUGIN_ID;
   }
 
   constructor() {
+    super(PLUGIN_ID);
   }
 
-  install(MisoClient) {
+  install(MisoClient, context) {
+    context.addSubtree(this);
+    const self = this;
     Object.defineProperties(MisoClient.prototype, {
       algolia: {
         get: function() {
-          return this._algolia || (this._algolia = new Algolia(this));
+          return this._algolia || (this._algolia = new Algolia(self, this));
         }
       }
     });
@@ -25,16 +29,23 @@ export default class AlgoliaPlugin {
 
 class Algolia {
 
-  constructor(client) {
+  constructor(plugin, client) {
+    this._plugin = plugin;
     this._client = client;
   }
 
-  searchClient(options = {}) {
-    return new AlgoliaClient(this._client, { ...options, api: 'search' });
+  searchClient(options) {
+    return this._createClient('search', options);
   }
 
-  autocompleteClient(options = {}) {
-    return new AlgoliaClient(this._client, { ...options, api: 'autocomplete' });
+  autocompleteClient(options) {
+    return this._createClient('autocomplete', options);
+  }
+
+  _createClient(api, options = {}) {
+    const client = new AlgoliaClient(this, { ...options, api });
+    this._plugin._events.emit('client', client);
+    return client;
   }
 
 }

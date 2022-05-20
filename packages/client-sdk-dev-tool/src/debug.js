@@ -5,6 +5,16 @@ const ID = 'std:debug';
 
 const _log = (path, name, ...data) => console.log(TAG, STYLE, _path(path), _name(name), ...data);
 
+function _logw(path, name, data) {
+  if (data === undefined) {
+    _log(path, name);
+  } else if (Array.isArray(data)) {
+    _log(path, name, ...data.map(_wrapObj));
+  } else {
+    _log(path, name, _wrapObj(data));
+  }
+}
+
 // format path
 function _path(path) {
   return `<${typeof path === 'string' ? path : path.filter(v => v).join('/')}>`;
@@ -13,6 +23,11 @@ function _path(path) {
 // format event name
 function _name(name) {
   return `[${name}]`;
+}
+
+function _wrapObj(value) {
+  const type = typeof value;
+  return type === 'function' || (type === 'object' && !Array.isArray(value)) ? [value] : value;
 }
 
 export default class DebugPlugin {
@@ -65,11 +80,11 @@ export default class DebugPlugin {
         }
         return;
     }
-    _log(path.join('.'), name, [data]);
+    _logw(path.join('.'), name, data);
   }
 
   _handleCreateClient(eventName, data) {
-    _log('client', eventName, [data]);
+    _logw('client', eventName, data);
   }
 
   _handleApiEvent(eventName, { groupName, apiName, url, bulk, ...data }) {
@@ -96,7 +111,7 @@ export default class DebugPlugin {
   }
 
   _handlePluginSpecificEvent(pluginId, path, name, data) {
-    _log([pluginId, path.join('.')], name, [data]);
+    _logw([pluginId, path.join('.')], name, data);
   }
 
   _getPath(component) {

@@ -1,9 +1,12 @@
+import { Component } from '@miso.ai/commons';
 import { buildPayload, transformResponse } from './data';
 
-export default class AlgoliaClient {
+export default class AlgoliaClient extends Component {
 
-  constructor(client, { api =  'search' } = {}) {
-    this._client = client;
+  constructor(algolia, { api = 'search' } = {}) {
+    super('client', algolia._plugin);
+    this._plugin = algolia._plugin;
+    this._client = algolia._client;
     this._api = api;
     this._searchOne = this._searchOne.bind(this);
   }
@@ -12,15 +15,17 @@ export default class AlgoliaClient {
   }
 
   async search(requests) {
+    this._events.emit('request', ['search', requests]);
     const bulk = requests.length > 1;
-    return {
+    const response = {
       results: await Promise.all(requests.map(request => this._searchOne(request, bulk))),
     };
+    this._events.emit('response', ['search', response]);
+    return response;
   }
 
   async _searchOne(request, bulk) {
     try {
-      //console.log('request', request);
       const [ engine_id, apiName ] = this._getEngineIdAndApiName(request);
       request = { ...request, engine_id, apiName };
       const payload = this._buildPayload(request);
@@ -28,7 +33,6 @@ export default class AlgoliaClient {
       const misoResponse = await this._client.api.search[apiName](payload, { bulk });
       const response = this._transformResponse(request, misoResponse);
       // TODO: hook here
-      //console.log('response', response);
       return response;
     } catch(e) {
       console.error(e);
