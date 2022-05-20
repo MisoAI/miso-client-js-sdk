@@ -4,7 +4,7 @@
   "scripts": {
     "clean": "npx rimraf dist",
     "build:11ty": "npx eleventy",
-    "watch:11ty": "NODE_ENV=development npx eleventy --serve --port=10101",
+    "watch:11ty": "NODE_ENV=development npx eleventy --serve --port=10100",
     "build:sass": "npx sass scss:dist/css",
     "watch:sass": "npx sass --watch scss:dist/css",
     "build:js": "rollup -c",

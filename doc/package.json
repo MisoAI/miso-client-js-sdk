@@ -4,7 +4,7 @@
   "scripts": {
     "clean": "npx rimraf dist",
     "doc:build:11ty": "npx eleventy",
-    "doc:watch:11ty": "npx eleventy --serve --port=10201",
+    "doc:watch:11ty": "npx eleventy --serve --port=10101",
     "doc:build:sass": "npx sass scss:dist/css",
     "doc:watch:sass": "npx sass --watch scss:dist/css",
     "doc:build": "npm-run-all doc:build:*",
