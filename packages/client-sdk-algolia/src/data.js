@@ -3,12 +3,12 @@ import { buildFilters } from './filter';
 
 const DEFAULT_ROWS = 5;
 
-export function buildPayload(algoliaClient, { apiName, engine_id, query, params = {} }) {
+export function buildPayload(algoliaClient, apiName, { indexName, query, params = {} }) {
   const { payload, query: queryFromParams, attributesToRetrieve, ...resrParams } = params;
   checkForUnsupportedParameters(resrParams);
   return trimObj({
     ...payload,
-    engine_id: engine_id || undefined,
+    engine_id: indexName || undefined,
     q: query || queryFromParams || '*',
     fl: buildFl(algoliaClient, attributesToRetrieve),
     ...buildPageInfo(params),
@@ -87,7 +87,7 @@ function buildForAutoComplete(apiName, { attributesToHighlight, highlightPreTag,
 
 
 
-export function transformResponse(algoliaClient, { apiName, params = {} }, response) {
+export function transformResponse(algoliaClient, apiName, { params = {} }, response) {
   const { query, page, hitsPerPage } = params;
   const { miso_id, total, took, facet_counts } = response;
   return trimObj({

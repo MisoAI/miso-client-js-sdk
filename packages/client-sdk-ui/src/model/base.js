@@ -35,8 +35,7 @@ export default class BaseDataModel extends Component {
     defineValues(this, { type, api, payload, transform });
 
     // transform pass
-    assertNullableFunction(transform, value => `Parameter "transform" must be a function: ${value}`);
-    this._transform = transform || identity;
+    this._transform = assertNullableFunction(transform, value => `Parameter "transform" must be a function: ${value}`) || identity;
 
     // custom fetch
     assertNullableFunction(fetch, value => `Parameter "fetch" must be a function: ${value}`);
