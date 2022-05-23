@@ -1,12 +1,17 @@
 sections:
 - title: Algolia
   path: /algolia
+  desc: Integrate with Algolia's InstantSearch.js and Autocomplete.
   pages:
   - title: Installation
     path: /algolia/installation
+    desc: How to setup the plugin.
   - title: InstantSearch.js
     path: /algolia/instantsearch-js
+    desc: Working with InstantSearch.js.
   - title: Autocomplete
     path: /algolia/autocomplete
+    desc: Working with Autocomplete.
   - title: Compatibility
     path: /algolia/compatibility
+    desc: Feature mappings and limitations.

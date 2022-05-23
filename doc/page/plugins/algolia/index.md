@@ -9,3 +9,5 @@ With Miso's Algolia plugin, you can easily work with:
 
 * [InstantSearch.js](https://github.com/algolia/instantsearch.js/)
 * [Autocomplete](https://github.com/algolia/autocomplete)
+
+{% include 'section_toc.njk' %}

@@ -4,24 +4,34 @@ sections:
   pages:
   - title: Quick Start
     path: /quick-start
+    desc: The simplest setup to play around with the UI plugin.
   - title: Installation
     path: /installation
+    desc: A more detailed setup guide.
   - title: Concept
     path: /concept
+    desc: Explain how UI plugin works.
 - title: Data Model
   path: /model
+  desc: Introduce built-in data models.
   pages:
-  - title: List Model
+  - title: MisoListModel
     path: /model/list-model
+    desc: A list model to represent search, autocomplete, recommendation results.
 - title: Element
   path: /element
+  desc: Introduce built-in elements.
   pages:
   - title: <miso-list>
     path: /element/miso-list
+    desc: A customizable list element to display search, autocomplete, recommendation results.
 - title: Recipes
   path: /recipe
+  desc: Recipes for common scenarios.
   pages:
   - title: Custom API
     path: /recipe/custom-api
+    desc: Customize how data model fetchs data from Miso SDK client, or combined with results from other sources.
   - title: Deduplication
     path: /recipe/deduplication
+    desc: Deduplicate recommendation results across multiple elements on the same page.

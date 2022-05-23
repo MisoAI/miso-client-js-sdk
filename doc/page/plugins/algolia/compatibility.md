@@ -2,7 +2,7 @@
 layout: base.njk
 title: Compatibility
 ---
-{% from 'macros.njk' import comparisontable %}
+{% from 'macros.njk' import comparison_table %}
 
 The page elaborates the compatibility between Algolia's API and Miso's implementation.
 
@@ -21,12 +21,12 @@ const search = instantsearch({
 ```
 
 ## Search parameters
-{{ comparisontable('algolia', 'basic') }}
+{{ comparison_table('algolia', 'basic') }}
 
 #### Pagination
 Both kinds of Algolia's pagination paradigm are supported.
 
-{{ comparisontable('algolia', 'pagination') }}
+{{ comparison_table('algolia', 'pagination') }}
 
 For example, the following parameters:
 ```js
@@ -41,10 +41,10 @@ client.api.search.search({ rows: 10, start: 10 * 5 /* ... */ });
 #### Filters
 Algolia's filter expressions are translated to Miso's syntax.
 
-{{ comparisontable('algolia', 'filter') }}
+{{ comparison_table('algolia', 'filter') }}
 
 #### Facets
-{{ comparisontable('algolia', 'facet') }}
+{{ comparison_table('algolia', 'facet') }}
 
 #### Highlighting
-{{ comparisontable('algolia', 'highlighting') }}
+{{ comparison_table('algolia', 'highlighting') }}

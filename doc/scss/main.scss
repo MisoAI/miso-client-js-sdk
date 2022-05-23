@@ -94,7 +94,7 @@ header {
   border-color: #fff;
   &:hover,
   &:active {
-    color: $primary-color;
+    color: var(--color-primary);
     background-color: #fff;
     border-color: #fff;
   }
@@ -124,13 +124,21 @@ ul.sidebar-list {
   }
   li.section {
     &::before, > a {
-      color: $primary-color;
+      color: var(--color-primary);
     }
     > a {
       border-bottom: 1px solid var(--color-primary-l3);
       margin-bottom: 0.25em;
       font-weight: 600;
     }
+  }
+}
+
+/* region/section TOC */
+.region-toc,
+.section-toc {
+  a, .title {
+    color: var(--color-primary);
   }
 }
 

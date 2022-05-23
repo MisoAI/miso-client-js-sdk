@@ -1,0 +1,21 @@
+<h3>Table of Content</h3>
+{%- for section in sitemap[region].sections -%}
+  {%- if helpers.isCurrentPage(page.url, region, section.path) -%}
+  <div class="section-toc">
+    <ul class="page-list list-unstyled">
+    {%- for p in section.pages -%}
+      <li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="{{ ['/', region, p.path] | join | url }}">{{ p.title }}</a>
+        </h5>
+        {%- if p.desc -%}
+        <p class="mb-0">
+          {{ p.desc }}
+        </p>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+    </ul>
+  </div>
+  {%- endif -%}
+{%- endfor -%}

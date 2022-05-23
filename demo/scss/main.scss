@@ -83,7 +83,7 @@ header {
   border-color: #fff;
   &:hover,
   &:active {
-    color: $primary-color;
+    color: var(--color-primary);
     background-color: #fff;
     border-color: #fff;
   }
@@ -113,7 +113,7 @@ ul.sidebar-list {
   }
   li.section {
     &::before, > a, > .title {
-      color: $primary-color;
+      color: var(--color-primary);
     }
     > a, > .title {
       border-bottom: 1px solid var(--color-primary-l3);

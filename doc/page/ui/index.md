@@ -8,3 +8,5 @@ Miso client SDK comes with a built-in UI extension to let you quickly visualize 
 * A data model driven mechanism to render results from Miso API.
 * Custom elements.
 * Data models.
+
+{% include 'region_toc.njk' %}

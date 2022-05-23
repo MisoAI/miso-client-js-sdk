@@ -4,6 +4,8 @@ title: Miso UI's core concept
 ---
 
 The UI plugin follows a simple data model driven paradigm.
+* Data models keep track of state and its transition.
+* Elements trigger actions on the models and listen to their data events to update themselves.
 
 <table class="miso-diagram">
   <tr>
