@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: Product to Products
 description: Returns the products that are related to an anchor product (often the product the user is currently engaging with) and are also likely to drive conversions by connecting with the user’s interests. 
 ---

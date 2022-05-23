@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: User to Attributes
 description: Returns the product attributes that Miso expects to drive a conversion for the current user.
 ---

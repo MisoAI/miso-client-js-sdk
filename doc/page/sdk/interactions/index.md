@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: Interactions APIs
 desc: Miso’s Interaction APIs let you manage your Interaction records stored with Miso.
 ---

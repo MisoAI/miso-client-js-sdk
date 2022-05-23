@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: User to Trending
 description: Returns the products that are currently trending and are most likely to be of interest to this user.
 ---

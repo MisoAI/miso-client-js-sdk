@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: Miso UI's core concept
 ---
 

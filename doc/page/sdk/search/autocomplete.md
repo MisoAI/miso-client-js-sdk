@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: Autocomplete
 description: Provides real-time, personalized, typo resistant typeahead for your search bar.
 ---

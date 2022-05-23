@@ -28,8 +28,9 @@ module.exports = function(config) {
   const data = new Data();
   config.addNunjucksGlobal('data', data);
   config.on('eleventy.before', () => data.refresh());
-
   config.addNunjucksGlobal('helpers', new Helpers());
+
+  config.addGlobalData('layout', 'base.njk');
 
   return {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain

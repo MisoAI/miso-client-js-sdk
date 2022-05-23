@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: Compatibility
 ---
 {% from 'macros.njk' import comparison_table %}

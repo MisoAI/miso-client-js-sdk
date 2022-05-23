@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: Search
 description: Perform a personalized, typo-correcting, semantic search.
 ---

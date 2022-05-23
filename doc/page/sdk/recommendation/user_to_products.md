@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: User to Products
 description: Returns the products that are most likely to drive conversion for the given user.
 ---

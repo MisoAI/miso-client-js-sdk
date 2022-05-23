@@ -1,5 +1,4 @@
 ---
-layout: base.njk
 title: MisoListModel
 ---
 {% from 'macros.njk' import proptable %}
