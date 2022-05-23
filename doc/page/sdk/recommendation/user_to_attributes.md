@@ -1,25 +1,15 @@
 ---
+api: user_to_attributes
 title: User to Attributes
 description: Returns the product attributes that Miso expects to drive a conversion for the current user.
 ---
-{% from 'macros.njk' import proptable %}
 
 #### Syntax
 ```js
 const response = await miso.api.recommendation.userToAttributes(payload, options);
 ```
 
-#### Payload
-The `payload` parameter is an object with the following properties:
-
-{{ proptable('sdk', 'user_to_attributes.payload') }}
-
-{% include 'section/request-options.md' %}
-
-#### Return value
-A `Promise` of response object with the following properties:
-
-{{ proptable('sdk', 'user_to_attributes.response') }}
+{% include 'section/sdk-api.md' %}
 
 #### Examples
 ```js

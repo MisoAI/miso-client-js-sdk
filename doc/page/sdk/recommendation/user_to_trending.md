@@ -1,25 +1,15 @@
 ---
+api: user_to_trending
 title: User to Trending
 description: Returns the products that are currently trending and are most likely to be of interest to this user.
 ---
-{% from 'macros.njk' import proptable %}
 
 #### Syntax
 ```js
 const response = await miso.api.recommendation.userToTrending(payload, options);
 ```
 
-#### Payload
-The `payload` parameter is an object with the following properties:
-
-{{ proptable('sdk', 'user_to_trending.payload') }}
-
-{% include 'section/request-options.md' %}
-
-#### Return value
-A `Promise` of response object with the following properties:
-
-{{ proptable('sdk', 'user_to_trending.response') }}
+{% include 'section/sdk-api.md' %}
 
 #### Examples
 ```js

@@ -1,25 +1,15 @@
 ---
+api: search
 title: Search
 description: Perform a personalized, typo-correcting, semantic search.
 ---
-{% from 'macros.njk' import proptable %}
 
 #### Syntax
 ```js
 const response = await miso.api.search.search(payload, options);
 ```
 
-#### Payload
-The `payload` parameter is an object with the following properties:
-
-{{ proptable('sdk', 'search.payload') }}
-
-{% include 'section/request-options.md' %}
-
-#### Return value
-A `Promise` of response object with the following properties:
-
-{{ proptable('sdk', 'search.response') }}
+{% include 'section/sdk-api.md' %}
 
 #### Examples
 ```js
