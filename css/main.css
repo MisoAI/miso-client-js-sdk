@@ -321,7 +321,7 @@ body.home main #components ul {
   display: flex;
   flex-flow: row wrap;
   margin: 0;
-  padding: 1.5rem;
+  padding: 0 1.5rem;
   list-style: none;
 }
 body.home main #components ul > li {
@@ -352,6 +352,38 @@ body.home main #components ul .card > .title > span {
   background-color: #fff;
   margin: 0 -5px;
   padding: 0 5px;
+}
+
+footer {
+  color: #666;
+}
+footer #footer-notes {
+  font-size: 0.9rem;
+}
+footer a {
+  color: #666;
+  text-decoration: none;
+}
+footer a:hover {
+  color: #0d6efd;
+  text-decoration: underline;
+}
+footer .link-group-title {
+  font-size: 1.2rem;
+}
+footer .link-list {
+  display: flex;
+  flex-flow: row wrap;
+}
+footer .link {
+  line-height: 1.75;
+  width: 50%;
+}
+
+/* util */
+.brand {
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .btn-group-lite input:checked + label.btn,

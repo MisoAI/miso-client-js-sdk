@@ -17,7 +17,7 @@
   <body class="home">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
-        <a class="navbar-brand p-0 me-2" href="/miso-client-js-sdk/" aria-label="Miso">
+        <a class="navbar-brand brand p-0 me-2" href="/miso-client-js-sdk/" aria-label="Miso">
   <svg xmlns="http://www.w3.org/2000/svg" role="img"
     height="28" viewbox="0 0 327 132"
     class="bi d-block my-1" fill="currentColor">
@@ -65,70 +65,91 @@
     </header>
     <main>
       
-<div id="hero" class="container-xxl my-md-5">    
-  <div class="col-md-8 mx-auto text-center">
-    <h1>Boost your revenue<br>with Miso API</h1>
-    <p>
-      Unlock personalization experience
-      <br>
-      via Miso JavaScript SDK for browser.
-      <br>
-      Don't have a Miso account? Get yours <a href="https://miso.ai/">here</a>.
-    </p>
+<div id="hero" class="container-lg my-md-5">    
+  <div class="row">
+    <div class="col-md-8 mx-auto text-center">
+      <h1>Boost your revenue<br>with Miso API</h1>
+      <p>
+        Unlock personalization experience
+        <br>
+        via Miso JavaScript SDK for browser.
+        <br>
+        Don't have a Miso account? Get yours <a href="https://miso.ai/">here</a>.
+      </p>
+    </div>
   </div>
 </div>
 
-<div id="components" class="container-xxl my-md-4">
-  <div class="col">
-    <ul class="component-list list-unstyled"><li class="component">
-        <a href="/miso-client-js-sdk/sdk">
-          <div class="card">
-            <h4 class="title">
-              <span>SDK</span>
-            </h4>
-            <p>Integrate your website with Miso&#39;s power.</p>
-          </div>
-        </a>
-      </li><li class="component">
-        <a href="/miso-client-js-sdk/ui">
-          <div class="card">
-            <h4 class="title">
-              <span>UI Plugin</span>
-            </h4>
-            <p>Bootstraping UI elements to render Miso&#39;s results.</p>
-          </div>
-        </a>
-      </li><li class="component">
-        <a href="/miso-client-js-sdk/plugins/algolia">
-          <div class="card">
-            <h4 class="title">
-              <span>Algolia Plugin</span>
-            </h4>
-            <p>Integrate Miso SDK with InstantSearch.js and Autocomplete</p>
-          </div>
-        </a>
-      </li></ul>
-  </div>
-</div>
-
-<div id="externals" class="container-xxl my-md-4">    
-  <div class="col-md-8 mx-auto text-center">
-    <h3>Learn More</h3>
-    <ul class="external-list list-unstyled"><li class="external">
-        <a href="https://miso.ai">Home</a>
-      </li><li class="external">
-        <a href="https://docs.miso.ai">Documentation</a>
-      </li><li class="external">
-        <a href="https://api.askmiso.com">REST API</a>
-      </li><li class="external">
-        <a href="https://docs.miso.ai/recipes">Recipes</a>
-      </li></ul>
+<div id="components" class="container-lg my-md-4">
+  <div class="row">
+    <div class="col">
+      <ul class="component-list list-unstyled"><li class="component">
+          <a href="/miso-client-js-sdk/sdk">
+            <div class="card">
+              <h4 class="title">
+                <span>SDK</span>
+              </h4>
+              <p>Integrate your website with Miso&#39;s power.</p>
+            </div>
+          </a>
+        </li><li class="component">
+          <a href="/miso-client-js-sdk/ui">
+            <div class="card">
+              <h4 class="title">
+                <span>UI Plugin</span>
+              </h4>
+              <p>Bootstraping UI elements to render Miso&#39;s results.</p>
+            </div>
+          </a>
+        </li><li class="component">
+          <a href="/miso-client-js-sdk/plugins/algolia">
+            <div class="card">
+              <h4 class="title">
+                <span>Algolia Plugin</span>
+              </h4>
+              <p>Integrate Miso SDK with InstantSearch.js and Autocomplete</p>
+            </div>
+          </a>
+        </li></ul>
+    </div>
   </div>
 </div>
 
     </main>
     <footer class="py-5 mt-5 bg-light">
-      <!-- TODO -->
+      <div class="container-lg">
+  <div class="row gx-4">
+    <div id="footer-notes" class="col-md-4">
+      <div class="brand mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          height="28" viewbox="0 0 327 132"
+          class="bi d-block my-1" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+        </svg>
+      </div>
+      <p>
+        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE">MIT</a>
+        <br>
+        Documentation <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+        <br>
+        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+      </p>
+    </div>
+    <div class="col-md-8">
+      <h5 class="link-group-title mb-3">Learn More</h5>
+      <div class="link-list"><div class="link">
+          <a href="https://miso.ai">Home</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai">Documentation</a>
+        </div><div class="link">
+          <a href="https://api.askmiso.com">REST API</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai/recipes">Recipes</a>
+        </div></div>
+    </div>
+  </div>
+</div>
+
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
