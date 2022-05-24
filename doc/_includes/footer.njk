@@ -17,12 +17,14 @@
       </p>
     </div>
     <div class="col-md-8">
-      <h5 class="link-group-title">Learn More</h5>
+      <h5 class="link-group-title mb-3">Learn More</h5>
+      <div class="link-list">
       {%- for external in intro.externals -%}
-      <div>
-        <a href="{{ external.url | url }}">{{ external.title }}</a>
-      </div>
+        <div class="link">
+          <a href="{{ external.url | url }}">{{ external.title }}</a>
+        </div>
       {%- endfor -%}
+      </div>
     </div>
   </div>
 </div>

@@ -242,6 +242,14 @@ footer {
   .link-group-title {
     font-size: 1.2rem;
   }
+  .link-list {
+    display: flex;
+    flex-flow: row wrap;
+  }
+  .link {
+    line-height: 1.75;
+    width: 50%;
+  }
 }
 
 /* util */
