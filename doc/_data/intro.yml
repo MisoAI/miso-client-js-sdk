@@ -1,0 +1,19 @@
+components:
+- path: /sdk
+  title: SDK
+  desc: Integrate your website with Miso's power.
+- path: /ui
+  title: UI Plugin
+  desc: Bootstraping UI elements to render Miso's results.
+- path: /plugins/algolia
+  title: Algolia Plugin
+  desc: Integrate Miso SDK with InstantSearch.js and Autocomplete
+externals:
+- title: Home
+  url: https://miso.ai
+- title: Documentation
+  url: https://docs.miso.ai
+- title: REST API
+  url: https://api.askmiso.com
+- title: Recipes
+  url: https://docs.miso.ai/recipes

@@ -9,22 +9,9 @@
         {% include 'navbar.njk' %}
       </nav>
     </header>
-    <div class="container-xxl my-md-4 miso-body-container">
-      <main class="order-1">
-        <div class="intro ps-lg-4">
-          {% if title %}<h1>{{ title }}</h1>{% endif %}
-          <hr>
-          {% if description %}<p>{{ description }}</p>{% endif %}
-        </div>
-        {#
-        <div class="toc mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted">
-        </div>
-        #}
-        <div class="content ps-lg-4">
-          {{ content | safe }}
-        </div>
-      </main>
-    </div>
+    <main>
+      {{ content | safe }}
+    </main>
     <footer class="py-5 mt-5 bg-light">
       {% include 'footer.njk' %}
     </footer>
