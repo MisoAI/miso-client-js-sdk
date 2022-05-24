@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* variable */
 :root {
   --color-primary: #334cbb;
@@ -246,7 +247,7 @@ header .navbar-brand {
   border-color: #fff;
 }
 .try-miso-btn:hover, .try-miso-btn:active {
-  color: #334cbb;
+  color: var(--color-primary);
   background-color: #fff;
   border-color: #fff;
 }
@@ -254,15 +255,36 @@ header .navbar-brand {
 /* sidebar */
 ul.sidebar-list a {
   display: block;
-  padding: 0.15em 0.25em;
+  padding: 0.15em 0.05em;
   text-decoration: none;
-  color: #777;
 }
-ul.sidebar-list > li > a {
+ul.sidebar-list li {
+  position: relative;
+}
+ul.sidebar-list li.active::before {
+  content: "‣";
+  position: absolute;
+  right: 100%;
+  top: -0.05em;
+  padding: 0.15em 0.25em;
+}
+ul.sidebar-list li.page::before, ul.sidebar-list li.page > a {
+  color: #666;
+}
+ul.sidebar-list li.section::before, ul.sidebar-list li.section > a {
+  color: var(--color-primary);
+}
+ul.sidebar-list li.section > a {
   border-bottom: 1px solid var(--color-primary-l3);
   margin-bottom: 0.25em;
   font-weight: 600;
-  color: #334cbb;
+}
+
+/* region/section TOC */
+.region-toc a, .region-toc .title,
+.section-toc a,
+.section-toc .title {
+  color: var(--color-primary);
 }
 
 /* main */
@@ -282,6 +304,54 @@ main > .content h4, main > .content h5 {
 main > .content > h4:nth-child(n+2),
 main > .content > h5:nth-child(n+2) {
   margin-top: 1.5rem;
+}
+
+body.home main {
+  padding: 0 !important;
+  font-size: 1.1rem;
+}
+body.home main #hero h1 {
+  font-size: 2.5rem;
+}
+body.home main a {
+  text-decoration: none !important;
+  color: var(--color-primary) !important;
+}
+body.home main #components ul {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0;
+  padding: 1.5rem;
+  list-style: none;
+}
+body.home main #components ul > li {
+  width: 33.3333%;
+  position: relative;
+  display: block;
+  padding: 1.5rem;
+}
+body.home main #components ul .card {
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1.2rem;
+  height: 280px;
+  color: #333;
+  background-color: #fff;
+  user-select: none;
+}
+body.home main #components ul .card:hover {
+  transition: transform 0.1s ease-in;
+  transform: scale(1.03);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+body.home main #components ul .card > .title {
+  margin-top: calc(-2.1rem - 1px);
+  color: var(--color-primary) !important;
+}
+body.home main #components ul .card > .title > span {
+  background-color: #fff;
+  margin: 0 -5px;
+  padding: 0 5px;
 }
 
 .btn-group-lite input:checked + label.btn,
