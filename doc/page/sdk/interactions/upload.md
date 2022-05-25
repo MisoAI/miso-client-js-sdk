@@ -88,3 +88,6 @@ const event = {
 };
 miso.api.interactions.upload(event);
 ```
+
+#### Learn more
+For more information, see [REST API](https://api.askmiso.com/#operation/interaction_upload_api_v1_interactions_post).
