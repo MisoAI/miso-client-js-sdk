@@ -1,5 +1,5 @@
-@import './variables.scss';
-@import './code.scss';
+@import './_variables.scss';
+@import './_code.scss';
 
 /* layout */
 body.base .miso-body-container {
@@ -139,31 +139,6 @@ main {
     > h4:nth-child(n+2),
     > h5:nth-child(n+2) {
       margin-top: 1.5rem;
-    }
-  }
-}
-
-.btn-group-lite {
-  input:checked + label.btn,
-  label.btn.active,
-  label.btn:active {
-    > * {
-      color: var(--color-primary) !important;
-    }
-    background-color: var(--color-primary-l6) !important;
-  }
-  > label {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.9em;
-    color: var(--color-primary-l2);
-    border-color: transparent;
-    background-color: transparent;
-    box-shadow: none !important;
-
-    &:hover {
-      color: var(--color-primary);
-      border-color: transparent;
-      background-color: var(--color-primary-l8);
     }
   }
 }

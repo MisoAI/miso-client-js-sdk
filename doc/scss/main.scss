@@ -1,6 +1,8 @@
-@import './variables.scss';
-@import './code.scss';
-@import './diagram.scss';
+@import './_variables.scss';
+@import './_code.scss';
+@import './_diagram.scss';
+@import './_util.scss';
+@import './_home.scss';
 
 /* layout */
 body.base .miso-body-container {
@@ -165,65 +167,7 @@ main {
   }
 }
 
-$component-gutter-half: 1.5rem;
-
-body.home {
-  main {
-    padding: 0 !important;
-    font-size: 1.1rem;
-
-    #hero h1 {
-      font-size: 2.5rem;
-    }
-
-    a {
-      text-decoration: none !important;
-      color: var(--color-primary) !important;
-    }
-
-    #components ul {
-      display: flex;
-      flex-flow: row wrap;
-      margin: 0;
-      padding: 0 $component-gutter-half;
-      list-style: none;
-
-      > li {
-        width: 33.3333%;
-        position: relative;
-        display: block;
-        padding: $component-gutter-half;
-      }
-      .card {
-        border: 1px solid #333;
-        border-radius: 8px;
-        padding: 1.2rem;
-        height: 280px;
-        color: #333;
-        background-color: #fff;
-        user-select: none;
-
-        &:hover {
-          transition: transform 0.1s ease-in;
-          transform: scale(1.03);
-          box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-
-        > .title {
-          margin-top: calc(-1.5rem * 0.6 - 1.2rem - 1px);
-          color: var(--color-primary) !important;
-
-          > span {
-            background-color: #fff;
-            margin: 0 -5px;
-            padding: 0 5px;
-          }
-        }
-      }
-    }
-  }
-}
-
+/* footer */
 footer {
   color: #666;
 
@@ -250,52 +194,4 @@ footer {
     line-height: 1.75;
     width: 50%;
   }
-}
-
-/* util */
-.brand {
-  text-decoration: none;
-  white-space: nowrap;
-}
-.btn-group-lite {
-  input:checked + label.btn,
-  label.btn.active,
-  label.btn:active {
-    > * {
-      color: var(--color-primary) !important;
-    }
-    background-color: var(--color-primary-l6) !important;
-  }
-  > label {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.9em;
-    color: var(--color-primary-l2);
-    border-color: transparent;
-    background-color: transparent;
-    box-shadow: none !important;
-
-    &:hover {
-      color: var(--color-primary);
-      border-color: transparent;
-      background-color: var(--color-primary-l8);
-    }
-  }
-}
-
-.btn-outline-primary {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-}
-.btn-outline-primary:hover,
-.btn-check:active+.btn-outline-primary, 
-.btn-check:checked+.btn-outline-primary, 
-.btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show, 
-.btn-outline-primary:active {
-  color: #fff;
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-}
-.btn-check:focus+.btn-outline-primary, 
-.btn-outline-primary:focus {
-  box-shadow: 0 0 0 0.25rem var(--color-primary-l3);
 }
