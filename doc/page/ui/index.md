@@ -1,5 +1,5 @@
 ---
-title: UI extention for Miso client SDK
+title: UI extension for Miso client SDK
 ---
 
 Miso client SDK comes with a built-in UI extension to let you quickly visualize Miso API results with basic elements. It consists of
