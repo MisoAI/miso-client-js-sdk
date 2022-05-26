@@ -1,0 +1,4 @@
+# Miso SDK for JavaScript: Core
+The core module of the SDK.
+
+Visit [Documentation](https://misoai.github.io/miso-client-js-sdk) for details.
