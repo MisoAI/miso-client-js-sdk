@@ -1,7 +1,7 @@
 <div>
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1">
   {%- for section in sitemap[region].sections -%}
-    <li class="section mb-1{{ ' active' if helpers.isCurrentPage(page.url, region, section.path)}}">
+    <li class="section mb-3{{ ' active' if helpers.isCurrentPage(page.url, region, section.path)}}">
       <a href="{{ ['/', region, section.path] | join | url }}">{{ section.title }}</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small">
