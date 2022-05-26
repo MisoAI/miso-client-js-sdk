@@ -17,23 +17,31 @@ The `event` parameter is an object with the properties depending on the event ty
   }
 </script>
 
+<script>
+
+</script>
+
 {# TODO: find a better UI #}
-Select an event type:
-{% for group in data.event.groups %}
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="{{ group.title }}">
+<p>
+  Select an event type:
+</p>
+<div id="event-types" class="clearfix">
+  {% for group in data.event.groups %}
+  <div class="btn-group-lite" role="group" aria-label="{{ group.title }}">
   {%- for event in group.events -%}
-    <input type="radio" class="btn-check" name="event-type" id="event-type-{{ event.name }}" value="{{ event.name }}" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-{{ event.name }}"><code class="raw">{{ event.name }}</code></label>
+    <div class="labeled-input">
+      <input type="radio" class="btn-check" name="event-type" id="event-type-{{ event.value }}" value="{{ event.value }}" autocomplete="off" onchange="onSelectEventType(this.value)">
+      <label class="btn" for="event-type-{{ event.value }}"><code class="raw">{{ event.value }}</code></label>
+    </div>
   {%- endfor -%}
   </div>
+  {% endfor %}
 </div>
-{% endfor %}
 
 <style>
   {% for group in data.event.groups -%}
   {%- for event in group.events -%}
-  #event-props-table[data-event-type="{{ event.name }}"] tr[data-used-by-except~="{{ event.name }}"],
+  #event-props-table[data-event-type="{{ event.value }}"] tr[data-used-by-except~="{{ event.value }}"],
   {% endfor -%}
   {%- endfor -%}
   #event-props-table tr[data-used-by] {
@@ -41,7 +49,7 @@ Select an event type:
   }
   {% for group in data.event.groups -%}
   {%- for event in group.events -%}
-  #event-props-table[data-event-type="{{ event.name }}"] tr[data-used-by~="{{ event.name }}"],
+  #event-props-table[data-event-type="{{ event.value }}"] tr[data-used-by~="{{ event.value }}"],
   {% endfor -%}
   {%- endfor -%}
   tr {
