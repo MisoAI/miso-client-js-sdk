@@ -24,9 +24,8 @@
   white-space: nowrap;
 }
 .btn-group-lite {
-  display: inline-block;
-  float: left;
-  width: 210px;
+  //float: left;
+  min-width: 190px;
 
   input:checked + label.btn,
   label.btn.active,
@@ -37,12 +36,14 @@
     background-color: var(--color-primary-l6) !important;
   }
   .labeled-input > label {
+    width: 100%;
     padding: 0.25rem 0.5rem;
-    font-size: 0.9em;
+    border-width: 0;
+    font-size: 0.85em;
     color: var(--color-primary-l2);
-    border-color: transparent;
     background-color: transparent;
     box-shadow: none !important;
+    text-align: left;
 
     &:hover {
       color: var(--color-primary);
