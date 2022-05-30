@@ -13,6 +13,7 @@ npm-debug.log*
 # cache
 .npm
 .eslintcache
+.parcel-cache
 
 # stupid
 .DS_Store
