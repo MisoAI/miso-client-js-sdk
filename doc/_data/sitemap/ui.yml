@@ -1,6 +1,8 @@
+title: UI
 sections:
 - title: Overview
   path:
+  desc: Overview of UI plugin.
   pages:
   - title: Quick Start
     path: /quick-start

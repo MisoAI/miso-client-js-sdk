@@ -31,6 +31,7 @@ module.exports = function(config) {
   config.addNunjucksGlobal('helpers', new Helpers());
 
   config.addGlobalData('layout', 'base.njk');
+  config.addGlobalData('hostname', 'misoai.github.io');
 
   return {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain

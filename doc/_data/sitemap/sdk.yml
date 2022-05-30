@@ -1,6 +1,8 @@
+title: SDK
 sections:
 - title: Overview
   path:
+  desc: Overview of SDK.
   pages:
   - title: Installation
     path: /installation

@@ -1,4 +1,4 @@
-const { loadYaml } = require('./file');
+const { loadYaml, readdir } = require('./file');
 
 function asArray(value) {
   return value === undefined ? [] : Array.isArray(value) ? value : [value];
@@ -105,11 +105,36 @@ function computeComparisons() {
   });
 }
 
+function computePageMeta(file) {
+  const regionPath = file.split('.')[0];
+  const region = loadYaml(`sitemap/${file}`);
+  const result = {};
+  function addPageInfo({ path, title, desc }) {
+    result[`/${regionPath}${path || ''}/`] = {
+      title: `${region.title} - ${title}`,
+      desc,
+    };
+  }
+  for (const { pages, ...section } of region.sections) {
+    addPageInfo(section);
+    for (const page of pages) {
+      addPageInfo(page);
+    }
+  }
+  console.log(result);
+  return result;
+}
+
+function computeAllPageMeta() {
+  return Object.freeze(readdir('sitemap').reduce((acc, file) => ({ ...acc, ...computePageMeta(file) }), {}));
+}
+
 function compute() {
   return Object.freeze({
     props: computeProps(),
     event: computeEvent(),
     comparisons: computeComparisons(),
+    pageMeta: computeAllPageMeta(),
   });
 }
 
@@ -129,8 +154,8 @@ class Data {
   get comparisons() {
     return this._data.comparisons;
   }
-  isCurrentPage(region, path) {
-    console.log(region, path);
+  get pageMeta() {
+    return this._data.pageMeta;
   }
 }
 
