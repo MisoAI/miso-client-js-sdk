@@ -1,9 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Miso SDK for JavaScript</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miso SDK for JavaScript</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/sdk/interactions/upload/" />
+<meta name="description" content="Send user interaction events to Miso&#39;s data consumer." />
+
+<meta property="og:title" content="Miso SDK for JavaScript" />
+<meta property="og:description" content="Send user interaction events to Miso&#39;s data consumer." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/sdk/interactions/upload/" />
+<meta property="og:type" content="documentation" />
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@askmiso">
+<meta name="twitter:creator" content="@askmiso">
+<meta name="twitter:title" content="Miso SDK for JavaScript">
+<meta name="twitter:description" content="Send user interaction events to Miso&#39;s data consumer.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/sdk/interactions/upload/">
+
+
+
 <link rel="icon" href="/miso-client-js-sdk/favicon/favicon-16x16.png" sizes="16x16">
 <link rel="icon" href="/miso-client-js-sdk/favicon/favicon-32x32.png" sizes="32x32">
 <link rel="icon" href="/miso-client-js-sdk/favicon/favicon.ico" sizes="48x48">
@@ -17,7 +34,7 @@
   <body class="base">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
-        <a class="navbar-brand brand p-0 me-2" href="/miso-client-js-sdk/" aria-label="Miso">
+        <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
   <svg xmlns="http://www.w3.org/2000/svg" role="img"
     height="28" viewbox="0 0 327 132"
     class="bi d-block my-1" fill="currentColor">
@@ -67,7 +84,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-1">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
       <a href="/miso-client-js-sdk/sdk">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -80,7 +97,7 @@
             <a href="/miso-client-js-sdk/sdk/request-options">Request Options</a>
           </li></ul>
       </div>
-    </li><li class="section mb-1">
+    </li><li class="section mb-3">
       <a href="/miso-client-js-sdk/sdk/search">Search</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -89,7 +106,7 @@
             <a href="/miso-client-js-sdk/sdk/search/autocomplete">Autocomplete</a>
           </li></ul>
       </div>
-    </li><li class="section mb-1">
+    </li><li class="section mb-3">
       <a href="/miso-client-js-sdk/sdk/recommendation">Recommendation</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -102,7 +119,7 @@
             <a href="/miso-client-js-sdk/sdk/recommendation/product_to_products">Product to Products</a>
           </li></ul>
       </div>
-    </li><li class="section mb-1">
+    </li><li class="section mb-3">
       <a href="/miso-client-js-sdk/sdk/interactions">Interactions</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page active">
@@ -125,61 +142,35 @@
 <pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="parameters" tabindex="-1">Parameters</h4>
 <p>The <code>event</code> parameter is an object with the properties depending on the event type:</p>
-<script>
-  let table;
-  function onSelectEventType(value) {
-    table = table || document.querySelector('#event-props-table');
-    table.setAttribute('data-event-type', value);
+<style>
+#event-types {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+@media (min-width: 1200px) {
+  #event-props-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-areas: "selection table";
+    grid-template-columns: min-content 1fr;
   }
-</script>
-<p>Select an event type:</p>
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="Core click-streams"><input type="radio" class="btn-check" name="event-type" id="event-type-product_detail_page_view" value="product_detail_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-product_detail_page_view"><code class="raw">product_detail_page_view</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-category_page_view" value="category_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-category_page_view"><code class="raw">category_page_view</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-search" value="search" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-search"><code class="raw">search</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-impression" value="impression" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-impression"><code class="raw">impression</code></label></div>
-</div>
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="Conversion (eCommerce)"><input type="radio" class="btn-check" name="event-type" id="event-type-add_to_cart" value="add_to_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-add_to_cart"><code class="raw">add_to_cart</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_cart" value="remove_from_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-remove_from_cart"><code class="raw">remove_from_cart</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-subscribe" value="subscribe" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-subscribe"><code class="raw">subscribe</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-checkout" value="checkout" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-checkout"><code class="raw">checkout</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-refund" value="refund" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-refund"><code class="raw">refund</code></label></div>
-</div>
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="Consumption (content media)"><input type="radio" class="btn-check" name="event-type" id="event-type-read" value="read" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-read"><code class="raw">read</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-watch" value="watch" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-watch"><code class="raw">watch</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-listen" value="listen" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-listen"><code class="raw">listen</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-complete" value="complete" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-complete"><code class="raw">complete</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-add_to_collection" value="add_to_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-add_to_collection"><code class="raw">add_to_collection</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_collection" value="remove_from_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-remove_from_collection"><code class="raw">remove_from_collection</code></label></div>
-</div>
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="Feedback signals"><input type="radio" class="btn-check" name="event-type" id="event-type-like" value="like" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-like"><code class="raw">like</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-dislike" value="dislike" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-dislike"><code class="raw">dislike</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-share" value="share" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-share"><code class="raw">share</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-rate" value="rate" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-rate"><code class="raw">rate</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-bookmark" value="bookmark" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-bookmark"><code class="raw">bookmark</code></label></div>
-</div>
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="Additional click-streams"><input type="radio" class="btn-check" name="event-type" id="event-type-home_page_view" value="home_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-home_page_view"><code class="raw">home_page_view</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-promo_page_view" value="promo_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-promo_page_view"><code class="raw">promo_page_view</code></label><input type="radio" class="btn-check" name="event-type" id="event-type-product_image_view" value="product_image_view" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-product_image_view"><code class="raw">product_image_view</code></label></div>
-</div>
-<div>
-  <div class="btn-group-lite" id="event-types" role="group" aria-label="Custom"><input type="radio" class="btn-check" name="event-type" id="event-type-custom" value="custom" autocomplete="off" onchange="onSelectEventType(this.value)">
-    <label class="btn" for="event-type-custom"><code class="raw">custom</code></label></div>
-</div>
+  #event-types-panel {
+    grid-area: selection;
+  }
+  #event-props-table {
+    grid-area: table;
+  }
+}
+</style>
 <style>
   #event-props-table[data-event-type="product_detail_page_view"] tr[data-used-by-except~="product_detail_page_view"],
   #event-props-table[data-event-type="category_page_view"] tr[data-used-by-except~="category_page_view"],
   #event-props-table[data-event-type="search"] tr[data-used-by-except~="search"],
   #event-props-table[data-event-type="impression"] tr[data-used-by-except~="impression"],
+  #event-props-table[data-event-type="home_page_view"] tr[data-used-by-except~="home_page_view"],
+  #event-props-table[data-event-type="promo_page_view"] tr[data-used-by-except~="promo_page_view"],
+  #event-props-table[data-event-type="product_image_view"] tr[data-used-by-except~="product_image_view"],
   #event-props-table[data-event-type="add_to_cart"] tr[data-used-by-except~="add_to_cart"],
   #event-props-table[data-event-type="remove_from_cart"] tr[data-used-by-except~="remove_from_cart"],
   #event-props-table[data-event-type="subscribe"] tr[data-used-by-except~="subscribe"],
@@ -196,9 +187,6 @@
   #event-props-table[data-event-type="share"] tr[data-used-by-except~="share"],
   #event-props-table[data-event-type="rate"] tr[data-used-by-except~="rate"],
   #event-props-table[data-event-type="bookmark"] tr[data-used-by-except~="bookmark"],
-  #event-props-table[data-event-type="home_page_view"] tr[data-used-by-except~="home_page_view"],
-  #event-props-table[data-event-type="promo_page_view"] tr[data-used-by-except~="promo_page_view"],
-  #event-props-table[data-event-type="product_image_view"] tr[data-used-by-except~="product_image_view"],
   #event-props-table[data-event-type="custom"] tr[data-used-by-except~="custom"],
   #event-props-table tr[data-used-by] {
     display: none;
@@ -207,6 +195,9 @@
   #event-props-table[data-event-type="category_page_view"] tr[data-used-by~="category_page_view"],
   #event-props-table[data-event-type="search"] tr[data-used-by~="search"],
   #event-props-table[data-event-type="impression"] tr[data-used-by~="impression"],
+  #event-props-table[data-event-type="home_page_view"] tr[data-used-by~="home_page_view"],
+  #event-props-table[data-event-type="promo_page_view"] tr[data-used-by~="promo_page_view"],
+  #event-props-table[data-event-type="product_image_view"] tr[data-used-by~="product_image_view"],
   #event-props-table[data-event-type="add_to_cart"] tr[data-used-by~="add_to_cart"],
   #event-props-table[data-event-type="remove_from_cart"] tr[data-used-by~="remove_from_cart"],
   #event-props-table[data-event-type="subscribe"] tr[data-used-by~="subscribe"],
@@ -223,109 +214,192 @@
   #event-props-table[data-event-type="share"] tr[data-used-by~="share"],
   #event-props-table[data-event-type="rate"] tr[data-used-by~="rate"],
   #event-props-table[data-event-type="bookmark"] tr[data-used-by~="bookmark"],
-  #event-props-table[data-event-type="home_page_view"] tr[data-used-by~="home_page_view"],
-  #event-props-table[data-event-type="promo_page_view"] tr[data-used-by~="promo_page_view"],
-  #event-props-table[data-event-type="product_image_view"] tr[data-used-by~="product_image_view"],
   #event-props-table[data-event-type="custom"] tr[data-used-by~="custom"],
   tr {
     display: table-row;
   }
 </style>
-<table id="event-props-table" class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Type</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr >
-      <td><code>type</code></td>
-      <td>string</td>
-      <td><strong>Required.</strong> The type of event.
+<div id="event-props-container">
+  <div id="event-types-panel">
+    <p>
+      Select an event type:
+    </p>
+    <div id="event-types" class="clearfix"><div class="btn-group-lite mb-4" role="group" aria-label="Clickstream"><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-product_detail_page_view" value="product_detail_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-product_detail_page_view"><code class="raw">product_detail_page_view</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-category_page_view" value="category_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-category_page_view"><code class="raw">category_page_view</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-search" value="search" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-search"><code class="raw">search</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-impression" value="impression" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-impression"><code class="raw">impression</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-home_page_view" value="home_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-home_page_view"><code class="raw">home_page_view</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-promo_page_view" value="promo_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-promo_page_view"><code class="raw">promo_page_view</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-product_image_view" value="product_image_view" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-product_image_view"><code class="raw">product_image_view</code></label>
+        </div></div><div class="btn-group-lite mb-4" role="group" aria-label="Conversion (eCommerce)"><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-add_to_cart" value="add_to_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-add_to_cart"><code class="raw">add_to_cart</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_cart" value="remove_from_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-remove_from_cart"><code class="raw">remove_from_cart</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-subscribe" value="subscribe" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-subscribe"><code class="raw">subscribe</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-checkout" value="checkout" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-checkout"><code class="raw">checkout</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-refund" value="refund" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-refund"><code class="raw">refund</code></label>
+        </div></div><div class="btn-group-lite mb-4" role="group" aria-label="Consumption (content media)"><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-read" value="read" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-read"><code class="raw">read</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-watch" value="watch" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-watch"><code class="raw">watch</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-listen" value="listen" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-listen"><code class="raw">listen</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-complete" value="complete" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-complete"><code class="raw">complete</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-add_to_collection" value="add_to_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-add_to_collection"><code class="raw">add_to_collection</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_collection" value="remove_from_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-remove_from_collection"><code class="raw">remove_from_collection</code></label>
+        </div></div><div class="btn-group-lite mb-4" role="group" aria-label="Feedback signals"><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-like" value="like" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-like"><code class="raw">like</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-dislike" value="dislike" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-dislike"><code class="raw">dislike</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-share" value="share" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-share"><code class="raw">share</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-rate" value="rate" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-rate"><code class="raw">rate</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-bookmark" value="bookmark" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-bookmark"><code class="raw">bookmark</code></label>
+        </div></div><div class="btn-group-lite mb-4" role="group" aria-label="Custom"><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-custom" value="custom" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-custom"><code class="raw">custom</code></label>
+        </div></div></div>
+  </div>
+  <table id="event-props-table" class="table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Type</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody><tr >
+        <td><code>type</code></td>
+        <td>string</td>
+        <td><strong>Required.</strong> The type of event.
 </td>
-    </tr><tr data-used-by="custom">
-      <td><code>custom_action_name</code></td>
-      <td>string</td>
-      <td><strong>Required.</strong> The name of the custom interaction that you have defined.
+      </tr><tr data-used-by="custom">
+        <td><code>custom_action_name</code></td>
+        <td>string</td>
+        <td><strong>Required.</strong> The name of the custom interaction that you have defined.
 </td>
-    </tr><tr >
-      <td><code>user_id</code></td>
-      <td>string</td>
-      <td>Identifies the signed-in user who performed the interaction. We will use <code>user_id</code> to link Interaction records to your User records. For visitors who have not signed in, see <code>anonymous_id</code>.
+      </tr><tr >
+        <td><code>user_id</code></td>
+        <td>string</td>
+        <td>Identifies the signed-in user who performed the interaction. We will use <code>user_id</code> to link Interaction records to your User records. For visitors who have not signed in, see <code>anonymous_id</code>.
 </td>
-    </tr><tr >
-      <td><code>anonymous_id</code></td>
-      <td>string</td>
-      <td>A pseudo-unique substitute for <code>user_id</code>. We use <code>anonymous_id</code> to identify a visitor who has not signed in. When a visitor signs in and the <code>user_id</code> and <code>anonymous_id</code> are both present, the <code>anonymous_id</code> will be linked to the <code>user_id</code> along with the past interactions associated with it.
+      </tr><tr >
+        <td><code>anonymous_id</code></td>
+        <td>string</td>
+        <td>A pseudo-unique substitute for <code>user_id</code>. We use <code>anonymous_id</code> to identify a visitor who has not signed in. When a visitor signs in and the <code>user_id</code> and <code>anonymous_id</code> are both present, the <code>anonymous_id</code> will be linked to the <code>user_id</code> along with the past interactions associated with it.
 </td>
-    </tr><tr data-used-by="category_page_view">
-      <td><code>category</code></td>
-      <td>array of strings</td>
-      <td>A hierarchical list describing the product category. For example, <code>['home', 'kitchen', 'tools']</code>.
+      </tr><tr data-used-by="category_page_view">
+        <td><code>category</code></td>
+        <td>array of strings</td>
+        <td>A hierarchical list describing the product category. For example, <code>['home', 'kitchen', 'tools']</code>.
 </td>
-    </tr><tr data-used-by="search">
-      <td><code>search</code></td>
-      <td>object</td>
-      <td>The search keywords and filters the user uses.
+      </tr><tr data-used-by="search">
+        <td><code>search</code></td>
+        <td>object</td>
+        <td>The search keywords and filters the user uses.
 </td>
-    </tr><tr data-used-by="checkout">
-      <td><code>revenue</code></td>
-      <td>object</td>
-      <td>Total revenue associated with the checkout. The revenue should include generally shipping, tax, etc. that you want to include as part of your revenue calculations.
+      </tr><tr data-used-by="checkout">
+        <td><code>revenue</code></td>
+        <td>object</td>
+        <td>Total revenue associated with the checkout. The revenue should include generally shipping, tax, etc. that you want to include as part of your revenue calculations.
 </td>
-    </tr><tr data-used-by="add_to_cart checkout">
-      <td><code>quantities</code></td>
-      <td>array of positive integers</td>
-      <td>The quantities of products the user adds to their cart or checks out with.
+      </tr><tr data-used-by="add_to_cart checkout">
+        <td><code>quantities</code></td>
+        <td>array of positive integers</td>
+        <td>The quantities of products the user adds to their cart or checks out with.
 </td>
-    </tr><tr data-used-by="rate">
-      <td><code>rating</code></td>
-      <td>number</td>
-      <td>The rating the user gave in the range of [0, 5]. As a convention in the RecSys community, a rating &gt;= 3.5 is considered positive, a rating &lt;= 2 is negative, and otherwise a rating is neutral. If you use any other rating scale, please normalize it to a [0, 5] scale.
+      </tr><tr data-used-by="rate">
+        <td><code>rating</code></td>
+        <td>number</td>
+        <td>The rating the user gave in the range of [0, 5]. As a convention in the RecSys community, a rating &gt;= 3.5 is considered positive, a rating &lt;= 2 is negative, and otherwise a rating is neutral. If you use any other rating scale, please normalize it to a [0, 5] scale.
 </td>
-    </tr><tr data-used-by="product_detail_page_view category_page_view home_page_view promo_page_view read watch listen">
-      <td><code>duration</code></td>
-      <td>number</td>
-      <td>How long (in seconds) the user stayed on this page, or consumed (listened, read, or watched) a product.
+      </tr><tr data-used-by="product_detail_page_view category_page_view home_page_view promo_page_view read watch listen">
+        <td><code>duration</code></td>
+        <td>number</td>
+        <td>How long (in seconds) the user stayed on this page, or consumed (listened, read, or watched) a product.
 </td>
-    </tr><tr data-used-by-except="search home_page_view">
-      <td><code>product_ids</code></td>
-      <td>array of strings</td>
-      <td>Products or content the user is interacting with. Default: <code>[]</code>
+      </tr><tr data-used-by-except="search home_page_view">
+        <td><code>product_ids</code></td>
+        <td>array of strings</td>
+        <td>Products or content the user is interacting with. Default: <code>[]</code>
 </td>
-    </tr><tr data-used-by-except="search home_page_view">
-      <td><code>product_group_ids</code></td>
-      <td>array of strings</td>
-      <td>The product groups the user is interacting with.
+      </tr><tr data-used-by-except="search home_page_view">
+        <td><code>product_group_ids</code></td>
+        <td>array of strings</td>
+        <td>The product groups the user is interacting with.
 </td>
-    </tr><tr >
-      <td><code>timestamp</code></td>
-      <td>string</td>
-      <td>The ISO-8601 timestamp specifying when the interaction occurred. If the interaction just happened, leave it out and we will default to the server's time.
+      </tr><tr >
+        <td><code>timestamp</code></td>
+        <td>string</td>
+        <td>The ISO-8601 timestamp specifying when the interaction occurred. If the interaction just happened, leave it out and we will default to the server's time.
 </td>
-    </tr><tr >
-      <td><code>miso_id</code></td>
-      <td>string</td>
-      <td>Miso-generated unique Id for each recommendation or search result.
+      </tr><tr >
+        <td><code>miso_id</code></td>
+        <td>string</td>
+        <td>Miso-generated unique Id for each recommendation or search result.
 </td>
-    </tr><tr >
-      <td><code>context</code></td>
-      <td>object</td>
-      <td>An object of extra information that provides useful context about an interaction.
+      </tr><tr >
+        <td><code>context</code></td>
+        <td>object</td>
+        <td>An object of extra information that provides useful context about an interaction.
 </td>
-    </tr></tbody>
-</table>
+      </tr></tbody>
+  </table>
+</div>
 <script>
   // TODO: find a better way
+  const table = document.querySelector('#event-props-table');
   const radio = document.querySelector('#event-types input[type="radio"]');
   radio.checked = true;
+  function onSelectEventType(value) {
+    table.setAttribute('data-event-type', value);
+  }
   onSelectEventType(radio.value);
 </script>
 <h4 id="return-value" tabindex="-1">Return value</h4>
 <p>A <code>Promise</code> without value. In general you don't need to wait for the response.</p>
 <h4 id="examples" tabindex="-1">Examples</h4>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> event <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'add_to_cart'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'a001'</span><span class="token punctuation">,</span> <span class="token string">'a002'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">quantities</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br>miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="learn-more" tabindex="-1">Learn more</h4>
+<p>For more information, see <a href="https://api.askmiso.com/#operation/interaction_upload_api_v1_interactions_post">REST API</a>.</p>
 
         </div>
       </main>
