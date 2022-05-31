@@ -16,3 +16,6 @@ sections:
   - title: Compatibility
     path: /algolia/compatibility
     desc: Feature mappings and limitations.
+  - title: Customization
+    path: /algolia/customization
+    desc: What you can customize with this plugin.

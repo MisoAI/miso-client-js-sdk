@@ -35,7 +35,7 @@ search.addWidgets([
     container: '#hits',
     templates: {
       item: `
-        <div>
+        <div class="product">
           <div class="title">{{ title }}</div>
           <div class="image">
             <img src="{{ cover_image }}">

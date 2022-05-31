@@ -8,8 +8,21 @@
 <script>
 const client = new MisoClient('...');
 
+async function handleSearch({ misoApiName, mapRequest, callMisoApi, mapResponse }, request, options) {
+  console.log('[Step 1]', misoApiName, request, options);
+  const payload = mapRequest(misoApiName, request);
+  console.log('[Step 2]', payload);
+  const misoResponse = await callMisoApi(misoApiName, payload, options);
+  console.log('[Step 3]', misoResponse);
+  const response = mapResponse(misoApiName, request, misoResponse);
+  console.log('[Step 4]', response);
+  return response;
+}
+
 const search = instantsearch({
-  searchClient: client.algolia.searchClient(),
+  searchClient: client.algolia.searchClient({
+    handleSearch: handleSearch,
+  }),
   indexName: '',
 });
 

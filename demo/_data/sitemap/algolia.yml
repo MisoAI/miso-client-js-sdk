@@ -8,6 +8,8 @@ sections:
     path: /instantsearch/facets
   - title: All in One
     path: /instantsearch/all-in-one
+  - title: Custom Handler
+    path: /instantsearch/custom-handler
 - title: Autocomplete
   path: /autocomplete
   pages:
