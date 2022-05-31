@@ -5,7 +5,7 @@
   --color-primary-l3: rgba(51, 76, 187, 0.5);
   --color-primary-l4: rgba(51, 76, 187, 0.3);
   --color-primary-l6: rgba(51, 76, 187, 0.1);
-  --color-primary-l8: rgba(51, 76, 187, 0.05);
+  --color-primary-l8: rgba(51, 76, 187, 0.04);
 }
 
 :root {
@@ -364,10 +364,10 @@ ul.sidebar-list li {
   position: relative;
 }
 ul.sidebar-list li.page > a {
-  color: #666;
+  color: #555;
 }
 ul.sidebar-list li.page.active > a {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 ul.sidebar-list li.section > a {
   border-bottom: 1px solid var(--color-primary-l3);

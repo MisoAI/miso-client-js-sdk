@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - </title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/plugins/" />
-<meta name="description" content="" />
+<title>Miso SDK for JavaScript</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/plugins/algolia/customization/" />
+<meta name="description" content="What you can customize with this plugin." />
 
-<meta property="og:title" content="Miso SDK for JavaScript - " />
-<meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/" />
+<meta property="og:title" content="Miso SDK for JavaScript" />
+<meta property="og:description" content="What you can customize with this plugin." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/algolia/customization/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - ">
-<meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/">
+<meta name="twitter:title" content="Miso SDK for JavaScript">
+<meta name="twitter:description" content="What you can customize with this plugin.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/algolia/customization/">
 
 
 
@@ -95,7 +95,7 @@
             <a href="/miso-client-js-sdk/plugins/algolia/autocomplete">Autocomplete</a>
           </li><li class="page">
             <a href="/miso-client-js-sdk/plugins/algolia/compatibility">Compatibility</a>
-          </li><li class="page">
+          </li><li class="page active">
             <a href="/miso-client-js-sdk/plugins/algolia/customization">Customization</a>
           </li></ul>
       </div>
@@ -106,19 +106,14 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso client SDK plugins</h1><hr>
+          <h1>Customization</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <h3>Table of Content</h3>
-<div class="region-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4"><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/plugins/algolia">Algolia</a>
-      </h5><p class="mb-0">
-        Integrate with Algolia&#39;s InstantSearch.js and Autocomplete.
-      </p></li></ul>
-</div>
+          <h3 id="custom-search-handler" tabindex="-1">Custom search handler</h3>
+<p>You can fully control how Algolia's search request is processed by passing a handler function:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> searchClient <span class="token operator">=</span> client<span class="token punctuation">.</span>algolia<span class="token punctuation">.</span><span class="token function">searchClient</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token function-variable function">handleSearch</span><span class="token operator">:</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> misoApiName<span class="token punctuation">,</span> mapRequest<span class="token punctuation">,</span> callMisoApi<span class="token punctuation">,</span> mapResponse <span class="token punctuation">}</span><span class="token punctuation">,</span> request<span class="token punctuation">,</span> options</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>    <span class="token comment">// this is equivalent to the default behavior</span><br>    <span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token function">mapRequest</span><span class="token punctuation">(</span>misoApiName<span class="token punctuation">,</span> request<span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token keyword">const</span> misoResponse <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">callMisoApi</span><span class="token punctuation">(</span>misoApiName<span class="token punctuation">,</span> payload<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token keyword">return</span> <span class="token function">mapResponse</span><span class="token punctuation">(</span>misoApiName<span class="token punctuation">,</span> request<span class="token punctuation">,</span> misoResponse<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>
