@@ -106,22 +106,21 @@ function computeComparisons() {
 }
 
 function computePageMeta(file) {
-  const regionPath = file.split('.')[0];
-  const region = loadYaml(`sitemap/${file}`);
+  const chapterPath = file.split('.')[0];
+  const chapter = loadYaml(`sitemap/${file}`);
   const result = {};
   function addPageInfo({ path, title, desc }) {
-    result[`/${regionPath}${path || ''}/`] = {
-      title: `${region.title} - ${title}`,
+    result[`/${chapterPath}${path || ''}/`] = {
+      title: `${chapter.title} - ${title}`,
       desc,
     };
   }
-  for (const { pages, ...section } of region.sections) {
+  for (const { pages, ...section } of chapter.sections) {
     addPageInfo(section);
     for (const page of pages) {
       addPageInfo(page);
     }
   }
-  console.log(result);
   return result;
 }
 

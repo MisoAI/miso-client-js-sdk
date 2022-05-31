@@ -4,8 +4,8 @@ class Helpers {
 
   constructor() {}
 
-  isCurrentPage(pageUrl, region, path) {
-    return pageUrl === '/' + region + (path || '') + '/';
+  isCurrentPage(pageUrl, chapter, path) {
+    return pageUrl === '/' + chapter + (path || '') + '/';
   }
 
   getIndex(pageUrl) {

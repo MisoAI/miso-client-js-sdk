@@ -11,4 +11,4 @@ This library is Miso's client side SDK for browser. You can
 ### Latest version
 [![npm badge](https://img.shields.io/npm/v/@miso.ai/client-sdk)](https://www.npmjs.com/package/@miso.ai/client-sdk)
 
-{% include 'region_toc.njk' %}
+{% include 'chapter_toc.njk' %}

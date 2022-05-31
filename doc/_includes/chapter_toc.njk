@@ -1,9 +1,9 @@
 <h3>Table of Content</h3>
-<div class="region-toc">
+<div class="chapter-toc">
   <ul class="section-list list-unstyled">
-  {%- for section in sitemap[region].sections -%}
+  {%- for section in sitemap[chapter].sections -%}
     <li class="section mb-4">
-    {%- if helpers.isCurrentPage(page.url, region, section.path) -%}
+    {%- if helpers.isCurrentPage(page.url, chapter, section.path) -%}
       <h5 class="title mb-2">
         {{ section.title }}
       </h5>
@@ -12,7 +12,7 @@
         {%- for p in section.pages -%}
           <li class="page">
             <div>
-              <a href="{{ ['/', region, p.path] | join | url }}">{{ p.title }}</a>
+              <a href="{{ ['/', chapter, p.path] | join | url }}">{{ p.title }}</a>
             </div>
             {%- if p.desc -%}
             <p class="mb-0 ps-3">
@@ -25,7 +25,7 @@
       </div>
     {%- else -%}
       <h5 class="title mb-2">
-        <a href="{{ ['/', region, section.path] | join | url }}">{{ section.title }}</a>
+        <a href="{{ ['/', chapter, section.path] | join | url }}">{{ section.title }}</a>
       </h5>
       {%- if section.desc -%}
       <p class="mb-0">
