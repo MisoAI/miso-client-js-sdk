@@ -1,7 +1,7 @@
 {
   "name": "@miso.ai/client-sdk-example-algolia-all-in-one",
   "version": "1.0.0",
-  "description": "",
+  "description": "Live Demo: Miso SDK - Algolia plugin",
   "scripts": {
     "start": "parcel index.html --port 10109 --open",
     "build": "parcel build index.html"
