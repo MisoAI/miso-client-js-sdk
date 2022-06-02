@@ -52,3 +52,12 @@
     }
   }
 }
+.live-demo-link {
+  font-size: 1.1rem;
+
+  > svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    margin: 0.2rem -0.1rem 0.3rem 0.25rem;
+  }
+}
