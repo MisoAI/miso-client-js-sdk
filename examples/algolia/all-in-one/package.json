@@ -1,5 +1,5 @@
 {
-  "name": "@miso.ai/client-sdk-example-algolia-all-in-one",
+  "name": "@miso.ai/client-sdk-examples-algolia-all-in-one",
   "version": "1.0.0",
   "description": "Live Demo: Miso SDK - Algolia plugin",
   "scripts": {
