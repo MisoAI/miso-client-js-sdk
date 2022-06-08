@@ -23,7 +23,7 @@ const search = instantsearch({
 
 search.addWidgets([
   configure({
-    hitsPerPage: 6
+    hitsPerPage: 8
   }),
   refinementList({
     container: '#refinement-list-authors',
@@ -50,12 +50,10 @@ search.addWidgets([
     container: '#hits',
     templates: {
       item: `
-        <div class="product">
+        <div class="product card">
           <img class="image" src="{{ cover_image }}">
-          <div class="main">
-            <div class="title">{{ title }}</div>
-            <div class="price">{{ sale_price }}</div>
-          </div>
+          <div class="title">{{ title }}</div>
+          <div class="price">{{ sale_price }}</div>
         </div>
       `
     }

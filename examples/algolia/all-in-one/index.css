@@ -1,51 +1,92 @@
+:root {
+  --gap-lg: 1.5rem;
+  --gap-md: 1rem;
+  --gap-sm: 0.75rem;
+  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.09);
+  --card-min-width: 200px;
+}
+
 .body {
   display: grid;
   grid-template-areas: "aside main";
   grid-template-columns: max-content 1fr;
-  gap: 1.5rem;
-  padding: 1rem;
+  gap: var(--gap-lg);
+  padding: var(--gap-lg);
 }
 
 aside {
   grid-area: aside;
 }
 
+aside > .card {
+  padding: var(--gap-md);
+}
+
+.card {
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.175) !important;
+  border-radius: 3px !important;
+  overflow: hidden;
+}
+
 main {
   grid-area: main;
 }
 
-aside > h5 {
+aside h5 {
   text-align: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--gap-sm);
+}
+
+.ais-RefinementList {
+  text-align: center;
+}
+
+#hits {
+  margin-top: var(--gap-lg);
 }
 
 .ais-InfiniteHits-list,
 .ais-Hits-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
+  gap: var(--gap-lg);
 }
 
-.product {
-  position: relative;
+.ais-Hits-item,
+.ais-InfiniteHits-item {
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 3px !important;
+  padding: 0 !important;
+}
+
+.product.card {
+  display: grid;
+  grid-template-rows: max-content 1fr max-content;
+  grid-template-areas: 'image' 'title' 'price';
+  gap: var(--gap-sm);
   height: 100%;
+  padding-bottom: var(--gap-sm);
   color: #333;
 }
 
-.product .image {
-  float: left;
-  width: 100px;
-  margin-right: 1rem;
+.product.card .image {
+  grid-area: image;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
 }
 
-.product .price {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1.25rem;
-  text-align: right;
-  font-size: 1.15em;
+.product.card .title {
+  grid-area: title;
+  padding: 0 var(--gap-sm);
+}
+
+.product.card .price {
+  grid-area: price;
+  padding: 0 var(--gap-sm);
+  font-size: 1.2em;
   font-weight: 400;
 }
 
@@ -53,9 +94,6 @@ aside > h5 {
   content: '$';
 }
 
-.product .main {
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  padding-bottom: 1.75rem;
+button {
+  border-radius: 1rem !important;
 }
