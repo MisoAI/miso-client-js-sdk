@@ -23,7 +23,7 @@ const packageFileName = 'package.json';
 const versionFileName = 'src/version.js';
 
 function readPackageFile(path) {
-  return require(joinPath(rootDir, path, packageFileName));
+  return require(joinPath(__dirname, rootDir, path, packageFileName));
 }
 
 function writePackageFile(path, data) {

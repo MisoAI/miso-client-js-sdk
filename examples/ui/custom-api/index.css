@@ -1,0 +1,57 @@
+:root {
+  --gap-lg: 1.5rem;
+  --gap-md: 1rem;
+  --gap-sm: 0.75rem;
+  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.09);
+  --card-min-width: 200px;
+}
+
+.body {
+  padding: var(--gap-lg);
+}
+
+.miso-list-container {
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr) );
+  gap: var(--gap-lg);
+  display: grid;
+}
+
+.card {
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.175) !important;
+  border-radius: 3px !important;
+  overflow: hidden;
+}
+
+.product.card {
+  display: grid;
+  grid-template-rows: max-content 1fr max-content;
+  grid-template-areas: 'image' 'title' 'price';
+  gap: var(--gap-sm);
+  height: 100%;
+  padding-bottom: var(--gap-sm);
+  color: #333;
+}
+
+.product.card [data-column="cover_image"] {
+  grid-area: image;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.product.card [data-column="title"] {
+  grid-area: title;
+  padding: 0 var(--gap-sm);
+}
+
+.product.card [data-column="price"] {
+  grid-area: price;
+  padding: 0 var(--gap-sm);
+  font-size: 1.2em;
+  font-weight: 400;
+}
+
+[data-column="price"]::before {
+  content: '$';
+}

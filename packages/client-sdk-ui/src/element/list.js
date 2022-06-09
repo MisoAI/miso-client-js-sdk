@@ -17,7 +17,7 @@ export default class MisoListElement extends MisoDataElement {
 
   constructor() {
     super(MisoListModel.type);
-    this.templates.set('container', () => `<div></div>`);
+    this.templates.set('container', () => `<div class="miso-list-container"></div>`);
   }
 
   _init() {

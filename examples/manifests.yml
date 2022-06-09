@@ -1,3 +1,6 @@
 ---
+path: ui/custom-api
+archetypes: [key]
+---
 path: algolia/all-in-one
 archetypes: [key, algolia]
