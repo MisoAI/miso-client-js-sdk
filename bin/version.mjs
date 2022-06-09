@@ -1,9 +1,8 @@
-import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { writeFileSync, existsSync } from 'fs';
 import { dirname, join as joinPath } from 'path';
+import { readPackageFileSync, writePackageFileSync } from './package.mjs';
 
-const require = createRequire(import.meta.url);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const VERSION_REGEXP = /^\d+\.\d+\.\d+(?:-beta\.\d+)?$/;
@@ -18,27 +17,18 @@ if (!VERSION_REGEXP.test(version)) {
   process.exit(1);
 }
 
-const rootDir = '..';
-const packageFileName = 'package.json';
+const rootDir = joinPath(__dirname, '..');
 const versionFileName = 'src/version.js';
 
-function readPackageFile(path) {
-  return require(joinPath(__dirname, rootDir, path, packageFileName));
-}
-
-function writePackageFile(path, data) {
-  writeFileSync(joinPath(__dirname, rootDir, path, packageFileName), JSON.stringify(data, null, 2));
-}
-
 function writeVersionFile(path, version) {
-  const filePath = joinPath(__dirname, rootDir, path, versionFileName);
+  const filePath = joinPath(rootDir, path, versionFileName);
   if (existsSync(filePath)) {
     writeFileSync(filePath, `export default '${version}';`);
   }
 }
 
 // read root package.json
-const root = readPackageFile('.');
+const root = readPackageFileSync(rootDir);
 
 // find workspaces
 // TODO: support wildcard
@@ -48,7 +38,7 @@ const projectPathToModuleName = {};
 
 // first pass: collect some info
 for (const projectPath of projectPaths) {
-  const project = readPackageFile(projectPath);
+  const project = readPackageFileSync(joinPath(rootDir, projectPath));
   !project.private && projects.push({ projectPath, project });
   projectPathToModuleName[projectPath] = project.name;
 }
@@ -71,6 +61,6 @@ for (const { projectPath, project } of projects) {
   overwriteDependencyVersions(project.devDependencies, version);
   overwriteDependencyVersions(project.peerDependencies, version);
   project.version = version;
-  writePackageFile(projectPath, project);
+  writePackageFileSync(joinPath(rootDir, projectPath), project);
   writeVersionFile(projectPath, version);
 }
