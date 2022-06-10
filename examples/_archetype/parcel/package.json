@@ -1,17 +1,7 @@
 {
-  "name": "@miso.ai/client-sdk-examples-ui-custom-api",
-  "version": "1.0.0",
-  "description": "Live Demo: Miso SDK",
-  "keywords": [
-    "Miso"
-  ],
   "scripts": {
     "start": "parcel index.html --port 10109 --open",
     "build": "parcel build index.html"
-  },
-  "dependencies": {
-    "@miso.ai/client-sdk": "1.3.1",
-    "@miso.ai/client-sdk-ui": "1.3.1"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.6.0",

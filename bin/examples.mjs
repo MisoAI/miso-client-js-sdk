@@ -1,23 +1,26 @@
 import { fileURLToPath } from 'url';
 import { dirname, join as joinPath } from 'path';
-import { readFileSync, copyFileSync, existsSync, mkdirSync } from 'fs';
-import { loadAll as readYamlMultiDocs } from 'js-yaml';
-import glob from 'fast-glob';
+import { readdirSync, readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from 'fs';
+import { loadAll as readYamlMultiDocs, load as readYaml } from 'js-yaml';
+import deepmerge from 'deepmerge';
 import { readPackageFileSync, writePackageFileSync } from './package.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const DEEPMERGE_OPTIONS = {
+  arrayMerge: (_, source) => source
+};
+
 const cmd = process.argv[2];
-const path = process.argv[3];
 const args = Array.prototype.slice.call(process.argv, 3);
 
-if ((cmd !== 'sync' && cmd !== 'init') || (cmd === 'init' && !path)) {
-  console.log(`Usage:\n  npm run examples sync`);
-}
-
 const examplesDir = joinPath(__dirname, '../examples');
-const manifestsPath = joinPath(examplesDir, 'manifests.yml');
-const manifests = readYamlMultiDocs(readFileSync(manifestsPath, 'utf8'));
+
+const projects = getProjects(examplesDir);
+const archetypes = getArchetypes(examplesDir);
+
+validateArchetypes(archetypes);
+validate(projects, archetypes);
 
 switch (cmd) {
   case 'help':
@@ -25,9 +28,6 @@ switch (cmd) {
     break;
   case 'sync':
     sync();
-    break;
-  case 'init':
-    init(...args);
     break;
   default:
     console.log(`Unrecognized command: ${cmd}`);
@@ -43,41 +43,72 @@ Usage:
 
 // sync //
 function sync() {
-  for (const manifest of manifests) {
-    syncOne(manifest);
+  for (const project of projects) {
+    syncOne(project);
   }
 }
 
-function syncOne(manifest) {
-  if (!manifest) {
+function syncOne(project) {
+  if (!project) {
     return;
   }
-  const projectDir = getProjectDir(manifest.path);
-  if (!existsSync(projectDir)) {
-    console.error(`Project directory not found: ${projectDir}`);
-    return;
+  if (!existsSync(project.absolutePath)) {
+    mkdirSync(project.absolutePath, { recursive: true });
   }
-  for (const archetype of (manifest.archetypes || [])) {
-    syncArchetypeFiles(projectDir, archetype);
+  const context = {};
+  for (const archetypeId of (project.archetypes || [])) {
+    syncArchetype(context, project, archetypes[archetypeId]);
+  }
+  for (const path in context) {
+    const [type, node] = context[path];
+    const absolutePath = joinPath(project.absolutePath, path);
+    switch (type) {
+      case 'original':
+        break;
+      case 'copy':
+        copyFileSync(node.absolutePath, absolutePath);
+        break;
+      case 'write':
+        writeJsonSync(absolutePath, node.content);
+        break;
+    }
   }
 }
 
-function syncArchetypeFiles(projectDir, archetype) {
-  const archetypeDir = joinPath(examplesDir, '_archetype', archetype);
-  if (!existsSync(archetypeDir)) {
-    console.error(`Archetype directory not found: ${archetypeDir}`);
-    return;
-  }
-  for (const file of glob.sync('**/*', { cwd: archetypeDir })) {
-    const destFile = joinPath(projectDir, file);
-    mkdirSync(dirname(destFile), { recursive: true });
-    copyFileSync(joinPath(archetypeDir, file), destFile);
+function syncArchetype(context, project, archetype) {
+  for (const asset of archetype.assets) {
+    const destPath = asset.destination || asset.source;
+    let dest = context[destPath];
+    if (!dest) {
+      const destAbsolutePath = joinPath(project.absolutePath, destPath);
+      dest = ['original', { absolutePath: destAbsolutePath, exist: existsSync(destAbsolutePath) }]
+    }
+
+    const action = asset.action;
+    switch (asset.action) {
+      case 'boilerplate':
+        if (dest[1] === 'original' && !dest[1].exist) {
+          dest = context[destPath] = ['copy', asset];
+        }
+        break;
+      case 'overwrite':
+        dest = context[destPath] = ['copy', asset];
+        break;
+      case 'merge-before':
+      case 'merge-after':
+      case 'merge-both':
+        dest[1].content = dest[1].content || readJsonSync(dest[1].absolutePath);
+        asset.content = asset.content || readJsonSync(asset.absolutePath);
+        dest = ['write', { ...dest[1], content: mergeJson(action, dest[1].content, asset.content) }];
+        break;
+    }
+    context[destPath] = dest;
   }
 }
 
 // init //
 function init(path) {
-  const projectDir = getProjectDir(path);
+  const projectDir = joinPath(examplesDir, path);
   if (!existsSync(projectDir)) {
     mkdirSync(projectDir, { recursive: true });
   }
@@ -85,31 +116,90 @@ function init(path) {
     ...getDefaultPackage(path),
     ...readPackageFileSync(projectDir)
   });
-  syncOne(findManifest(path));
+  syncOne(findProject(path));
 }
 
 function getDefaultPackage(path) {
+  // TODO: use base archetype
   // TODO: work on keywords
   return {
     name: `@miso.ai/client-sdk-examples-${path.replaceAll('/', '-')}`,
     version: `1.0.0`,
     description: `Live Demo: Miso SDK`,
     keywords: [
-      'Miso'
+      'Miso AI',
+      'personalization'
     ],
   };
 }
 
 // commons //
-function getProjectDir(path) {
-  return joinPath(examplesDir, path);
+function getProjects(examplesDir) {
+  const projectsPath = joinPath(examplesDir, 'projects.yml');
+  return readYamlMultiDocs(readFileSync(projectsPath, 'utf8'))
+    .map(project => ({ ...project, absolutePath: joinPath(examplesDir, project.path) }));
 }
 
-function findManifest(path) {
-  for (const manifest of manifests) {
-    if (manifest.path === path) {
-      return manifest;
+function findProject(path) {
+  return projects.find(project => project.path === path);
+}
+
+function getArchetypes(examplesDir) {
+  const archetypeRootDir = joinPath(examplesDir, '_archetype');
+  return readdirSync(archetypeRootDir)
+    .reduce((m, id) => {
+      const archetypeDirAbsolutePath = joinPath(archetypeRootDir, id);
+      const manifestFile = joinPath(archetypeDirAbsolutePath, '_manifest.yml');
+      if (!existsSync(manifestFile)) {
+        throw new Error(`File not found: ${manifestFile}`);
+      }
+      const manifest = readYaml(readFileSync(manifestFile, 'utf8'));
+      m[id] = { id, absolutePath: archetypeDirAbsolutePath, ...manifest };
+      return m;
+    }, {});
+}
+
+function validateArchetypes(archetypes) {
+  for (const id in archetypes) {
+    const archetype = archetypes[id];
+    for (const asset of archetype.assets) {
+      // TODO: check for instruction
+      const absolutePath = asset.absolutePath = joinPath(archetype.absolutePath, asset.source);
+      if (!existsSync(absolutePath)) {
+        throw new Error(`File not found: ${absolutePath} (used in archetype ${id})`);
+      }
+      // TODO: make sure source file is mergable for merge-* action types
+    }
+    // TODO: warn for unused archetype files
+  }
+}
+
+function validate(projects, archetypes) {
+  for (const project of projects) {
+    for (const id of (project.archetypes || [])) {
+      if (!archetypes[id]) {
+        throw new Error(`Archetype not found: ${id} (used in project ${project.path})`);
+      }
     }
   }
-  return undefined;
+}
+
+function readJsonSync(file) {
+  return existsSync(file) ? JSON.parse(readFileSync(file)) : undefined;
+}
+
+function writeJsonSync(file, value) {
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, JSON.stringify(value, null, 2));
+}
+
+function mergeJson(action, base, patch) {
+  switch (action) {
+    case 'merge-before':
+      return deepmerge(patch, base, DEEPMERGE_OPTIONS);
+    case 'merge-after':
+      return deepmerge(base, patch, DEEPMERGE_OPTIONS);
+    case 'merge-both':
+      return deepmerge.all([patch, base, patch], DEEPMERGE_OPTIONS);
+  }
 }

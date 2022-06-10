@@ -11,8 +11,8 @@ function createModel() {
     api: 'custom',
     fetch: async ({ client }) => {
       const [ searchResponse, recommendationResponse ] = await Promise.all([
-        client.api.search.search({ q: 'shiba', fl: ['*'], rows: 4 }, { bulk: true }),
-        client.api.recommendation.userToProducts({ fl: ['*'], rows: 4 }, { bulk: true }),
+        client.api.search.search({ q: 'shiba', fl: ['*'], rows: 5 }, { bulk: true }),
+        client.api.recommendation.userToProducts({ fl: ['*'], rows: 5 }, { bulk: true }),
       ]);
       return {
         ...recommendationResponse,

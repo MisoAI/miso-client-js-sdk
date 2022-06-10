@@ -1,0 +1,6 @@
+---
+path: ui/custom-api
+archetypes: [parcel, base, ui]
+---
+path: algolia/all-in-one
+archetypes: [parcel, base, ui, algolia]

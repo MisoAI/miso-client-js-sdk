@@ -1,0 +1,5 @@
+assets:
+- source: .parcelrc
+  action: overwrite
+- source: package.json
+  action: merge-after
