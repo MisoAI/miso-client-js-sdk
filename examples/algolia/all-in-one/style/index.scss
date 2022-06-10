@@ -1,10 +1,10 @@
 @import './algolia.scss';
+@import './ui.scss';
 
 :root {
   --gap-lg: 1.5rem;
   --gap-md: 1rem;
   --gap-sm: 0.75rem;
-  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.09);
   --card-min-width: 200px;
 }
 
@@ -18,30 +18,23 @@
 
 aside {
   grid-area: aside;
-}
 
-aside > .card {
-  padding: var(--gap-md);
-}
+  > .card {
+    padding: var(--gap-md);
+  }
 
-.card {
-  box-shadow: var(--card-shadow);
-  border: 1px solid rgba(0, 0, 0, 0.175) !important;
-  border-radius: 3px !important;
-  overflow: hidden;
+  h5 {
+    text-align: center;
+    margin-bottom: var(--gap-sm);
+  }
+
+  .ais-RefinementList {
+    text-align: center;
+  }
 }
 
 main {
   grid-area: main;
-}
-
-aside h5 {
-  text-align: center;
-  margin-bottom: var(--gap-sm);
-}
-
-.ais-RefinementList {
-  text-align: center;
 }
 
 #hits {
@@ -61,39 +54,6 @@ aside h5 {
   box-shadow: none !important;
   border-radius: 3px !important;
   padding: 0 !important;
-}
-
-.product.card {
-  display: grid;
-  grid-template-rows: max-content 1fr max-content;
-  grid-template-areas: 'image' 'title' 'price';
-  gap: var(--gap-sm);
-  height: 100%;
-  padding-bottom: var(--gap-sm);
-  color: #333;
-}
-
-.product.card .image {
-  grid-area: image;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-}
-
-.product.card .title {
-  grid-area: title;
-  padding: 0 var(--gap-sm);
-}
-
-.product.card .price {
-  grid-area: price;
-  padding: 0 var(--gap-sm);
-  font-size: 1.2em;
-  font-weight: 400;
-}
-
-.product .price::before {
-  content: '$';
 }
 
 button {

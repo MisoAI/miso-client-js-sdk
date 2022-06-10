@@ -1,0 +1,12 @@
+{
+  "name": "@miso.ai/client-sdk-examples",
+  "version": "1.0.0",
+  "description": "Live Demo: Miso SDK",
+  "keywords": [
+    "Miso AI",
+    "personalization"
+  ],
+  "dependencies": {
+    "@miso.ai/client-sdk": "1.3.1"
+  }
+}

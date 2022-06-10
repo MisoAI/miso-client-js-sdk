@@ -1,4 +1,5 @@
 :root {
+  --card-min-width: 200px;
   --card-spacing: 0.75rem;
   --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.09);
 }
@@ -39,4 +40,10 @@
 
 [data-column="price"]::before {
   content: '$';
+}
+
+.miso-list-container {
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr) );
+  gap: var(--gap);
+  display: grid;
 }

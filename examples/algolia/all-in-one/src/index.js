@@ -51,9 +51,9 @@ search.addWidgets([
     templates: {
       item: `
         <div class="product card">
-          <img class="image" src="{{ cover_image }}">
-          <div class="title">{{ title }}</div>
-          <div class="price">{{ sale_price }}</div>
+          <img data-column="cover_image" src="{{ cover_image }}">
+          <div data-column="title">{{ title }}</div>
+          <div data-column="price">{{ sale_price }}</div>
         </div>
       `
     }

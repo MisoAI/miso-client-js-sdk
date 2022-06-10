@@ -66,10 +66,13 @@ function syncOne(project) {
       case 'original':
         break;
       case 'copy':
+        mkdirSync(dirname(absolutePath), { recursive: true });
         copyFileSync(node.absolutePath, absolutePath);
+        //console.log(`[copy] ${node.absolutePath} -> ${absolutePath}`);
         break;
       case 'write':
         writeJsonSync(absolutePath, node.content);
+        //console.log(`[write] ${absolutePath}`);
         break;
     }
   }
@@ -87,7 +90,7 @@ function syncArchetype(context, project, archetype) {
     const action = asset.action;
     switch (asset.action) {
       case 'boilerplate':
-        if (dest[1] === 'original' && !dest[1].exist) {
+        if (dest[0] === 'original' && !dest[1].exist) {
           dest = context[destPath] = ['copy', asset];
         }
         break;
@@ -104,33 +107,6 @@ function syncArchetype(context, project, archetype) {
     }
     context[destPath] = dest;
   }
-}
-
-// init //
-function init(path) {
-  const projectDir = joinPath(examplesDir, path);
-  if (!existsSync(projectDir)) {
-    mkdirSync(projectDir, { recursive: true });
-  }
-  writePackageFileSync(projectDir, {
-    ...getDefaultPackage(path),
-    ...readPackageFileSync(projectDir)
-  });
-  syncOne(findProject(path));
-}
-
-function getDefaultPackage(path) {
-  // TODO: use base archetype
-  // TODO: work on keywords
-  return {
-    name: `@miso.ai/client-sdk-examples-${path.replaceAll('/', '-')}`,
-    version: `1.0.0`,
-    description: `Live Demo: Miso SDK`,
-    keywords: [
-      'Miso AI',
-      'personalization'
-    ],
-  };
 }
 
 // commons //
