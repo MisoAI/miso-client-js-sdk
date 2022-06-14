@@ -213,6 +213,12 @@ table.miso-diagram .arrow.left {
   background-color: var(--color-primary-l8);
 }
 
+.live-demo-link > .icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  margin: 0.2rem -0.1rem 0.3rem 0.25rem;
+}
+
 /* home */
 body.home main {
   padding: 0 !important;
@@ -378,8 +384,8 @@ ul.sidebar-list li.section.active > a {
   background-color: var(--color-primary-l6);
 }
 
-/* region/section TOC */
-.region-toc a, .region-toc .title,
+/* chapter/section TOC */
+.chapter-toc a, .chapter-toc .title,
 .section-toc a,
 .section-toc .title {
   color: var(--color-primary);
