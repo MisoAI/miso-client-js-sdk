@@ -1,0 +1,4 @@
+assets:
+- source: templates.html
+  ref: templates
+  action: overwrite-inline

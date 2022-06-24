@@ -2,8 +2,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join as joinPath } from 'path';
 import { readdirSync, readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from 'fs';
 import { loadAll as readYamlMultiDocs, load as readYaml } from 'js-yaml';
+import glob from 'fast-glob';
 import deepmerge from 'deepmerge';
-import { readPackageFileSync, writePackageFileSync } from './package.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -79,13 +79,10 @@ function syncOne(project) {
 }
 
 function syncArchetype(context, project, archetype) {
+  const inlines = {};
   for (const asset of archetype.assets) {
     const destPath = asset.destination || asset.source;
-    let dest = context[destPath];
-    if (!dest) {
-      const destAbsolutePath = joinPath(project.absolutePath, destPath);
-      dest = ['original', { absolutePath: destAbsolutePath, exist: existsSync(destAbsolutePath) }]
-    }
+    let dest = getDestEntry(context, project, destPath);
 
     const action = asset.action;
     switch (asset.action) {
@@ -104,9 +101,48 @@ function syncArchetype(context, project, archetype) {
         asset.content = asset.content || readJsonSync(asset.absolutePath);
         dest = ['write', { ...dest[1], content: mergeJson(action, dest[1].content, asset.content) }];
         break;
+      case 'overwrite-inline':
+        // TODO: fallback ref by source value
+        asset.content = asset.content || readFileSync(asset.absolutePath);
+        inlines[asset.ref] = asset;
+        break;
     }
     context[destPath] = dest;
   }
+  // scan dest files for inline replacements
+  //syncInlines(context, project, archetype, inlines);
+}
+
+function getDestEntry(context, project, destPath) {
+  return context[destPath] || (context[destPath] = initDestEntry(project, destPath));
+}
+
+function initDestEntry(project, destPath) {
+  const absolutePath = joinPath(project.absolutePath, destPath);
+  return ['original', { absolutePath, exist: existsSync(absolutePath) }]
+}
+
+function syncInlines(context, project, archetype, inlines) {
+  if (!Object.keys(inlines).length) {
+    return;
+  }
+  for (const file of glob.sync('*', { cwd: project.absolutePath })) {
+    if (file === 'package-lock.json') {
+      // TODO: don't be ad-hoc
+      continue;
+    }
+    switch (getExtension(file)) {
+      case 'html':
+      case 'htm':
+        syncHtmlInline(context, file, archetype, inlines);
+        break;
+    }
+  }
+}
+
+function syncHtmlInline(context, file, archetype, inlines) {
+  // TODO
+  console.log(file);
 }
 
 // commons //
@@ -178,4 +214,9 @@ function mergeJson(action, base, patch) {
     case 'merge-both':
       return deepmerge.all([patch, base, patch], DEEPMERGE_OPTIONS);
   }
+}
+
+function getExtension(file) {
+  const i = file.lastIndexOf('.');
+  return i < 0 ? undefined : file.substring(i + 1);
 }
