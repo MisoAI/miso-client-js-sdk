@@ -20,6 +20,11 @@ jobs:
     environment: production
     runs-on: ubuntu-latest
     steps:
+      - name: Get version
+        id: version
+        run: |
+          VERSION=${{ github.event.release.tag_name }}
+          echo "::set-output name=version::$(echo $VERSION | sed -e 's/v//gI')"
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -28,7 +33,7 @@ jobs:
       - run: npm ci
       - run: git config --global user.name "${{ github.actor }}"
       - run: git config --global user.email "github-action-${{ github.actor }}@users.noreply.github.com"
-      - run: npm run version ${{ github.event.release.tag_name }}
+      - run: npm run version ${{ steps.version.outputs.version }}
       - run: npm run build
       - run: npm publish --workspaces
         if: "!github.event.release.prerelease"
