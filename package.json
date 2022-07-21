@@ -7,6 +7,7 @@
     "packages/client-sdk-dev-tool",
     "packages/client-sdk-ui",
     "packages/client-sdk-algolia",
+    "packages/client-sdk-gtm",
     "packages/client-sdk",
     "demo",
     "doc"

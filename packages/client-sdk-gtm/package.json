@@ -1,0 +1,30 @@
+{
+  "name": "@miso.ai/client-sdk-gtm",
+  "description": "An SDK plugin capture user interactions from Google Tag Manager",
+  "main": "dist/es/index.js",
+  "module": "dist/es/index.js",
+  "files": [
+    "dist/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "npx babel src --root-mode upward --out-dir dist/es --watch",
+    "build:clean": "npx rimraf dist",
+    "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
+    "build": "npm run build:clean && npm run build:esm"
+  },
+  "repository": "MisoAI/miso-client-js-sdk",
+  "homepage": "https://misoai.github.io/miso-client-js-sdk/gtm",
+  "license": "MIT",
+  "contributors": [
+    "simonpai <simon.pai@askmiso.com>"
+  ],
+  "bugs": {
+    "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
+  },
+  "dependencies": {
+    "@miso.ai/commons": "file:packages/commons"
+  }
+}
