@@ -4,20 +4,20 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/plugins/algolia/instantsearch-js/" />
-<meta name="description" content="Working with InstantSearch.js." />
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/plugins/gtm/" />
+<meta name="description" content="Capture events from GTM dataLayer and turn them into Miso&#39;s user interactions automatically." />
 
 <meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="Working with InstantSearch.js." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/algolia/instantsearch-js/" />
+<meta property="og:description" content="Capture events from GTM dataLayer and turn them into Miso&#39;s user interactions automatically." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/gtm/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
 <meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="Working with InstantSearch.js.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/algolia/instantsearch-js/">
+<meta name="twitter:description" content="Capture events from GTM dataLayer and turn them into Miso&#39;s user interactions automatically.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/gtm/">
 
 
 
@@ -89,7 +89,7 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
             <a href="/miso-client-js-sdk/plugins/algolia/installation">Installation</a>
-          </li><li class="page active">
+          </li><li class="page">
             <a href="/miso-client-js-sdk/plugins/algolia/instantsearch-js">InstantSearch.js</a>
           </li><li class="page">
             <a href="/miso-client-js-sdk/plugins/algolia/autocomplete">Autocomplete</a>
@@ -99,7 +99,7 @@
             <a href="/miso-client-js-sdk/plugins/algolia/customization">Customization</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3 active">
       <a href="/miso-client-js-sdk/plugins/gtm">Google Tag Manager</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -115,19 +115,26 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Working with InstantSearch.js</h1><hr>
+          <h1>Google Tag Manager plugin</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>With InstantSearch.js properly setup, you can connect it to Miso SDK easily:</p>
-<ol>
-<li><a href="/miso-client-js-sdk/plugins/algolia/installation">Install</a> Miso SDK and its Algolia plugin.</li>
-<li>Substitute algolia's search client with the one generated from Miso SDK client.</li>
-</ol>
-<p>Miso's philosophy promotes a submit-based search paradigm, accomplished with an <a href="/miso-client-js-sdk/plugins/algolia/autocomplete">autocomplete</a> UI pattern.</p>
-<h3 id="example" tabindex="-1">Example</h3>
-<pre class="language-js"><code class="language-js"><span class="token comment">//const searchClient = algoliasearch(...);</span><br><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">const</span> search <span class="token operator">=</span> <span class="token function">instantsearch</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">//searchClient: searchClient,</span><br>  <span class="token literal-property property">searchClient</span><span class="token operator">:</span> client<span class="token punctuation">.</span>algolia<span class="token punctuation">.</span><span class="token function">searchClient</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">indexName</span><span class="token operator">:</span> <span class="token string">''</span> <span class="token comment">// empty string for default Miso engine</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>search<span class="token punctuation">.</span><span class="token function">addWidgets</span><span class="token punctuation">(</span><span class="token punctuation">[</span><br>  instantsearch<span class="token punctuation">.</span>widgets<span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">hitsPerPage</span><span class="token operator">:</span> <span class="token number">8</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  instantsearch<span class="token punctuation">.</span>widgets<span class="token punctuation">.</span><span class="token function">searchBox</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token string">'#search-box'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">autofocus</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">searchAsYouType</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">showSubmit</span><span class="token operator">:</span> <span class="token boolean">true</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  instantsearch<span class="token punctuation">.</span>widgets<span class="token punctuation">.</span><span class="token function">hits</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token string">'#hits'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><br><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>search<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+          <p>Tools to help you capture event from GTM's (Google Tag Manager) <code>dataLayer</code> object.</p>
+<p>Currently it focuses on GTM's <a href="https://developers.google.com/analytics/devguides/collection/ua/gtm/enhanced-ecommerce">Enhanced Ecommerce</a> extension.</p>
+<h3>Table of Content</h3><div class="section-toc">
+    <ul class="page-list list-unstyled"><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/plugins/gtm/installation">Installation</a>
+        </h5><p class="mb-0">
+          How to setup the plugin.
+        </p></li><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/plugins/gtm/ecommerce">Enhanced Ecommerce</a>
+        </h5><p class="mb-0">
+          Working with Enhanced Ecommerce events.
+        </p></li></ul>
+  </div>
 
         </div>
       </main>
