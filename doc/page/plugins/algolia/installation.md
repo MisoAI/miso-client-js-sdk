@@ -17,7 +17,7 @@ import { AlgoliaPlugin } from '@miso.ai/client-sdk-algolia';
 MisoClient.plugins.use(AlgoliaPlugin);
 ```
 
-### Usage
+### Basic Usage
 
 The plugin provides a compatible Algolia search client interface from Miso's SDK client.
 

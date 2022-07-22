@@ -1,5 +1,5 @@
 ---
-title: Algolia plugins
+title: Algolia plugin
 ---
 
 Combine the excellence of Miso's accurate search and Algolia's flexible UI frameworks.

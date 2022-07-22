@@ -7,7 +7,10 @@ components:
   desc: Bootstraping UI elements to render Miso's results.
 - path: /plugins/algolia
   title: Algolia Plugin
-  desc: Integrate Miso SDK with InstantSearch.js and Autocomplete
+  desc: Integrate Miso SDK with InstantSearch.js and Autocomplete.
+- path: /plugins/gtm
+  title: GTM Plugin
+  desc: Capture events from Google Tag Manager dataLayer and turn them into Miso's user interactions.
 externals:
 - title: Home
   url: https://miso.ai

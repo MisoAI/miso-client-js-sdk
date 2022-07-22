@@ -19,3 +19,13 @@ sections:
   - title: Customization
     path: /algolia/customization
     desc: What you can customize with this plugin.
+- title: Google Tag Manager
+  path: /gtm
+  desc: Capture events from GTM dataLayer and turn them into Miso's user interactions automatically.
+  pages:
+  - title: Installation
+    path: /gtm/installation
+    desc: How to setup the plugin.
+  - title: Enhanced Ecommerce
+    path: /gtm/ecommerce
+    desc: Working with Enhanced Ecommerce events.
