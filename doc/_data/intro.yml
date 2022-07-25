@@ -18,5 +18,6 @@ externals:
   url: https://docs.miso.ai
 - title: REST API
   url: https://api.askmiso.com
-- title: Recipes
+- title: Miso Recipes
+  sup: TM
   url: https://docs.miso.ai/recipes

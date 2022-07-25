@@ -1,13 +1,23 @@
-const { EleventyRenderPlugin } = require("@11ty/eleventy");
+const { EleventyRenderPlugin } = require('@11ty/eleventy');
+const syntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight');
 const markdownIt = require('markdown-it');
 const markdownItAnchor = require('markdown-it-anchor');
-const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const mila = require('markdown-it-link-attributes');
 // const toc = require('eleventy-plugin-toc');
 const yaml = require('js-yaml');
 const Data = require('./util/data');
 const Helpers = require('./util/helpers');
 
 const markdown = markdownIt({ html: true }).use(markdownItAnchor);
+
+// add attributes on all external links
+markdown.use(mila, {
+  pattern: /^(?!(https:\/\/misoai\.github\.io|#)).*$/gm,
+  attrs: {
+    target: '_blank',
+    rel: 'noopener',
+  },
+});
 
 module.exports = function(config) {
   config.setLibrary('md', markdown);
