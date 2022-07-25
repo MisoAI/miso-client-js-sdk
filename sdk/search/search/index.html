@@ -75,7 +75,7 @@
       </a>
     </li>
   </ul>
-  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai">Try Miso</a>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
 </div>
 
       </nav>
@@ -168,7 +168,7 @@
     </tr><tr>
       <td><code>user_hash</code></td>
       <td>string</td>
-      <td>The hash of <code>user_id</code> (or <code>anonymous_id</code>) encrypted by your <a href="https://api.askmiso.com/#section/Authentication/Secret%20API%20Key">Secret API Key</a>.
+      <td>The hash of <code>user_id</code> (or <code>anonymous_id</code>) encrypted by your <a href="https://api.askmiso.com/#section/Authentication/Secret%20API%20Key" target="_blank" rel="noopener">Secret API Key</a>.
 </td>
     </tr><tr>
       <td><code>q</code></td>
@@ -224,7 +224,7 @@ Default: <code>false</code>.
 </td>
     </tr></tbody>
 </table>
-<p>See the <a href="/miso-client-js-sdk/sdk/request-options">request options page</a> for more details.</p>
+<p>See the <a href="/miso-client-js-sdk/sdk/request-options" target="_blank" rel="noopener">request options page</a> for more details.</p>
 <h4 id="return-value" tabindex="-1">Return value</h4>
 <p>A <code>Promise</code> of response object with the following properties:</p>
 <table class="table">
@@ -256,7 +256,7 @@ Default: <code>0</code>.
 <h4 id="examples" tabindex="-1">Examples</h4>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">q</span><span class="token operator">:</span> <span class="token string">'doge'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>search<span class="token punctuation">.</span><span class="token function">search</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="learn-more" tabindex="-1">Learn more</h4>
-<p>For advanced usage, see <a href="https://api.askmiso.com/#operation/search_v1_search_search_post">REST API</a>.</p>
+<p>For advanced usage, see <a href="https://api.askmiso.com/#operation/search_v1_search_search_post" target="_blank" rel="noopener">REST API</a>.</p>
 
         </div>
       </main>
@@ -273,23 +273,23 @@ Default: <code>0</code>.
         </svg>
       </div>
       <p>
-        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE">MIT</a>
+        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
         <br>
-        Documentation <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+        Documentation <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
         <br>
-        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>
       </p>
     </div>
     <div class="col-md-8">
       <h5 class="link-group-title mb-3">Learn More</h5>
       <div class="link-list"><div class="link">
-          <a href="https://miso.ai">Home</a>
+          <a href="https://miso.ai" target="_blank" rel="noopener">Home</a>
         </div><div class="link">
-          <a href="https://docs.miso.ai">Documentation</a>
+          <a href="https://docs.miso.ai" target="_blank" rel="noopener">Documentation</a>
         </div><div class="link">
-          <a href="https://api.askmiso.com">REST API</a>
+          <a href="https://api.askmiso.com" target="_blank" rel="noopener">REST API</a>
         </div><div class="link">
-          <a href="https://docs.miso.ai/recipes">Recipes</a>
+          <a href="https://docs.miso.ai/recipes" target="_blank" rel="noopener">Miso Recipes<sup>TM</sup></a>
         </div></div>
     </div>
   </div>

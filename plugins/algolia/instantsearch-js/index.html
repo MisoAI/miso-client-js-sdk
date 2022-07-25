@@ -75,7 +75,7 @@
       </a>
     </li>
   </ul>
-  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai">Try Miso</a>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
 </div>
 
       </nav>
@@ -122,10 +122,10 @@
         <div class="content ps-lg-4">
           <p>With InstantSearch.js properly setup, you can connect it to Miso SDK easily:</p>
 <ol>
-<li><a href="/miso-client-js-sdk/plugins/algolia/installation">Install</a> Miso SDK and its Algolia plugin.</li>
+<li><a href="/miso-client-js-sdk/plugins/algolia/installation" target="_blank" rel="noopener">Install</a> Miso SDK and its Algolia plugin.</li>
 <li>Substitute algolia's search client with the one generated from Miso SDK client.</li>
 </ol>
-<p>Miso's philosophy promotes a submit-based search paradigm, accomplished with an <a href="/miso-client-js-sdk/plugins/algolia/autocomplete">autocomplete</a> UI pattern.</p>
+<p>Miso's philosophy promotes a submit-based search paradigm, accomplished with an <a href="/miso-client-js-sdk/plugins/algolia/autocomplete" target="_blank" rel="noopener">autocomplete</a> UI pattern.</p>
 <h3 id="example" tabindex="-1">Example</h3>
 <pre class="language-js"><code class="language-js"><span class="token comment">//const searchClient = algoliasearch(...);</span><br><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">const</span> search <span class="token operator">=</span> <span class="token function">instantsearch</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">//searchClient: searchClient,</span><br>  <span class="token literal-property property">searchClient</span><span class="token operator">:</span> client<span class="token punctuation">.</span>algolia<span class="token punctuation">.</span><span class="token function">searchClient</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">indexName</span><span class="token operator">:</span> <span class="token string">''</span> <span class="token comment">// empty string for default Miso engine</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>search<span class="token punctuation">.</span><span class="token function">addWidgets</span><span class="token punctuation">(</span><span class="token punctuation">[</span><br>  instantsearch<span class="token punctuation">.</span>widgets<span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">hitsPerPage</span><span class="token operator">:</span> <span class="token number">8</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  instantsearch<span class="token punctuation">.</span>widgets<span class="token punctuation">.</span><span class="token function">searchBox</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token string">'#search-box'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">autofocus</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">searchAsYouType</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">showSubmit</span><span class="token operator">:</span> <span class="token boolean">true</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  instantsearch<span class="token punctuation">.</span>widgets<span class="token punctuation">.</span><span class="token function">hits</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token string">'#hits'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><br><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>search<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
@@ -144,23 +144,23 @@
         </svg>
       </div>
       <p>
-        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE">MIT</a>
+        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
         <br>
-        Documentation <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+        Documentation <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
         <br>
-        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>
       </p>
     </div>
     <div class="col-md-8">
       <h5 class="link-group-title mb-3">Learn More</h5>
       <div class="link-list"><div class="link">
-          <a href="https://miso.ai">Home</a>
+          <a href="https://miso.ai" target="_blank" rel="noopener">Home</a>
         </div><div class="link">
-          <a href="https://docs.miso.ai">Documentation</a>
+          <a href="https://docs.miso.ai" target="_blank" rel="noopener">Documentation</a>
         </div><div class="link">
-          <a href="https://api.askmiso.com">REST API</a>
+          <a href="https://api.askmiso.com" target="_blank" rel="noopener">REST API</a>
         </div><div class="link">
-          <a href="https://docs.miso.ai/recipes">Recipes</a>
+          <a href="https://docs.miso.ai/recipes" target="_blank" rel="noopener">Miso Recipes<sup>TM</sup></a>
         </div></div>
     </div>
   </div>
