@@ -2,7 +2,11 @@
 title: Deduplication
 ---
 
+{%- from 'macros.njk' import code_example_link with context -%}
+
 If you want to deduplicate the results across have multiple recommendation sections in one page, you can achieve it using model’s transform setting.
+
+{{ code_example_link('ui/deduplication') }}
 
 Given 2 `<miso-list>` in the page, each of which shows 4 products:
 ```html

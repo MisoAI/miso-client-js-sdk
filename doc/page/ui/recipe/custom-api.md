@@ -2,7 +2,11 @@
 title: Custom API
 ---
 
+{%- from 'macros.njk' import code_example_link with context -%}
+
 By specifying `api="custom"` you can override the data fetching behavior. In the following example, you can combine the results from two different Miso APIs:
+
+{{ code_example_link('ui/custom-api') }}
 
 ```js
 const model = new MisoClient.ui.models.classes.MisoListModel({
