@@ -213,7 +213,7 @@ table.miso-diagram .arrow.left {
   background-color: var(--color-primary-l8);
 }
 
-.live-demo-link > .icon {
+.btn-with-icon > .icon {
   width: 0.9rem;
   height: 0.9rem;
   margin: 0.2rem -0.1rem 0.3rem 0.25rem;
