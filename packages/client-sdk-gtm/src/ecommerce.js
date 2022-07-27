@@ -1,23 +1,90 @@
-import { trimObj } from '@miso.ai/commons';
+import { trimObj, asArray, Component } from '@miso.ai/commons';
 
-export default class Ecommerce {
+function defaultMapping(eventKey, { products, actionField }) {
+  const product_ids = products && products.map(product => product.id);
+  switch (eventKey) {
+    case 'detail':
+      return products ? [{
+        type: 'product_detail_page_view',
+        product_ids,
+      }] : [];
+    case 'add':
+      return products ? [{
+        type: 'add_to_cart',
+        product_ids,
+        quantities: products.map(product => Number(product.quantity) || 1),
+      }] : [];
+    case 'remove':
+      return products ? [{
+        type: 'remove_from_cart',
+        product_ids,
+      }] : [];
+    case 'checkout':
+      return products ? [trimObj({
+        type: 'checkout',
+        product_ids,
+        quantities: products.map(product => Number(product.quantity) || 1),
+        revenue: actionField.revenue && Number(actionField.revenue) || undefined,
+      })] : [];
+    default:
+      return [{
+        type: 'custom',
+        custom_action_name: `${eventKey}`,
+      }];
+  }
+}
+
+export default class Ecommerce extends Component {
 
   constructor(gtm) {
+    super('ecommerce', gtm);
     this._gtm = gtm;
-    gtm._plugin.on('data', this._handle.bind(this));
+    this.mapping(defaultMapping);
+    this.accept('*');
+    this._handle = this._handle.bind(this);
+    this._active = false;
   }
 
-  _setup({ mapping, events, active } = {}) {
-    this._mappings = normailizeMappings(mapping);
-    this._accept = buildEventPredicate(events);
-    this._active = (active === undefined) || !!active;
+  mapping(value = defaultMapping) {
+    if (typeof value !== 'function') {
+      throw new Error(`Expect mapping to be a function: ${value}`);
+    }
+    this._mapping = value;
   }
 
-  _handle({ ecommerce } = {}) {
+  accept(...values) {
+    this._accept = buildEventPredicate(values);
+  }
+
+  start() {
+    if (this._active) {
+      return;
+    }
+    this._active = true;
+    if (!this._unsubscribe) {
+      this._unsubscribe = this._gtm.stream.on('data', this._handle);
+    }
+  }
+
+  stop() {
+    if (!this._active) {
+      return;
+    }
+    this._active = false;
+  }
+
+  get active() {
+    return !!this._active;
+  }
+
+  _handle(data) {
+    const { ecommerce } = data;
     if (!this._active || !ecommerce) {
       return;
     }
+    this._events.emit('data', data);
     const payloads = this._mapEvents(ecommerce);
+    this._events.emit('payloads', payloads);
     for (const payload of payloads) {
       try {
         this._gtm._client.api.interactions.upload(payload);
@@ -29,78 +96,29 @@ export default class Ecommerce {
   }
 
   _mapEvents(ecommerce) {
-    const payloads = [];
+    let payloads = [];
     for (const eventKey in ecommerce) {
       if (!this._accept(eventKey)) {
         continue;
       }
-      const payload = this._mapEvent(eventKey, ecommerce[eventKey]);
-      payload && payloads.push(trimObj(payload));
+      payloads = [...payloads, ...asArray(this._mapping(eventKey, ecommerce[eventKey]))];
     }
     return payloads;
   }
 
-  _mapEvent(eventKey, { products, actionField }) {
-    const mappings = this._mappings;
-    const product_ids = products && products.map(mappings.productId);
-    const product_group_ids = mappings.productGroupId && products && products.map(mappings.productGroupId);
-  
-    switch (eventKey) {
-      case 'detail':
-        return products && {
-          type: 'product_detail_page_view',
-          product_ids,
-          product_group_ids,
-        };
-      case 'add':
-        return products && {
-          type: 'add_to_cart',
-          product_ids,
-          product_group_ids,
-          quantities: products.map(mappings.quantity),
-        };
-      case 'remove':
-        return products && {
-          type: 'remove_from_cart',
-          product_ids,
-          product_group_ids,
-        };
-      case 'checkout':
-        return products && {
-          type: 'checkout',
-          product_ids,
-          product_group_ids,
-          quantities: products.map(mappings.quantity),
-          revenue: actionField.revenue,
-        };
-      default:
-        return {
-          type: 'custom',
-          custom_action_name: `${eventKey}`,
-        };
-    }
-  }
-
 }
 
-function normailizeMappings(mappings = {}) {
-  return {
-    productId: normalizeMapping(mappings.productId || mappings.product_id) || (obj => obj.id),
-    productGroupId: normalizeMapping(mappings.productGroupId || mappings.product_group_id),
-    quantity: normalizeMapping(mappings.quantity) || (obj => obj.quantity || 1),
-  };
-}
-
-function normalizeMapping(mapping) {
-  return typeof mapping === 'string' ? obj => `${obj[mapping]}` : typeof mapping === 'function' ? obj => `${mapping(obj)}` : undefined;
-}
+Object.defineProperties(Ecommerce.prototype, {
+  helpers: {
+    value: Object.freeze({
+      defaultMapping,
+    }),
+  },
+});
 
 function buildEventPredicate(events) {
-  if (events === undefined) {
+  if (events.length === 1 && events[0] === '*') {
     return () => true;
-  }
-  if (!Array.isArray(events)) {
-    events = [events];
   }
   const inclusion = new Set();
   const exclusion = new Set();
