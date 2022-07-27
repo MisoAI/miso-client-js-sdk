@@ -18,7 +18,7 @@ desc: Miso’s Interaction APIs let you manage your Interaction records stored w
   {%- for event in group.events -%}
     <tr>
       <td></td>
-      <td><code>{{ event.name }}</code></td>
+      <td><code>{{ event.value }}</code></td>
       <td>{{ event.desc | markdown | safe }}</td>
     </tr>
   {%- endfor -%}
