@@ -1,4 +1,4 @@
-import { uuidv4, trimObj, delegateProperties } from '@miso.ai/commons';
+import { uuidv4, trimObj, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
 
 const ID = 'std:user';
 
@@ -41,32 +41,20 @@ export default class UserPlugin {
 
 }
 
-const SESSION_KEY = 'miso-anonymous-id';
-let autoAnonymousId;
-
 function getAutoAnonymousId() {
-  if (!autoAnonymousId) {
-    autoAnonymousId = window.sessionStorage.getItem(SESSION_KEY);
-  }
-  if (!autoAnonymousId) {
-    window.sessionStorage.setItem(SESSION_KEY, (autoAnonymousId = uuidv4()));
-  }
-  return autoAnonymousId;
+  return getOrComputeFromStorage('miso_anonymous_id', uuidv4);
 }
 
 class UserContext {
 
-  constructor() {
-    this._autoAnonymousId = getAutoAnonymousId();
-  }
+  constructor() {}
 
   get anonymous_id() {
-    return this._anonymousId || this._autoAnonymousId;
+    return this._anonymousId || this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId());
   }
 
   set anonymous_id(value) {
-    // TODO: validate value
-    this._anonymousId = value;
+    this._anonymousId = `${value}`;
   }
 
   get user_id() {
@@ -74,8 +62,7 @@ class UserContext {
   }
 
   set user_id(value) {
-    // TODO: validate value
-    this._userId = value;
+    this._userId = `${value}`;
   }
 
   get user_hash() {
@@ -83,7 +70,9 @@ class UserContext {
   }
 
   set user_hash(value) {
-    // TODO: validate value
+    if (typeof value !== 'string' && typeof value !== 'undefined') {
+      throw new Error(`User hash must be a string`);
+    }
     this._userHash = value;
   }
 
