@@ -19,7 +19,7 @@ function defaultMapping(eventKey, { products, actionField }) {
         type: 'remove_from_cart',
         product_ids,
       }] : [];
-    case 'checkout':
+    case 'purchase':
       return products ? [trimObj({
         type: 'checkout',
         product_ids,
