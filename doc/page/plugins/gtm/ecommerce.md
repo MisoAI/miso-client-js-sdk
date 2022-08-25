@@ -75,7 +75,7 @@ client.api.interactions.upload({
       <td>product IDs</td>
     </tr>
     <tr>
-      <td><code>checkout</code></td>
+      <td><code>purchase</code></td>
       <td><code>checkout</code></td>
       <td>product IDs, quantities, revenue (if available)</td>
     </tr>
