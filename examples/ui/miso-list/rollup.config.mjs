@@ -3,12 +3,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
-import dev from 'rollup-plugin-dev'
+import dev from 'rollup-plugin-dev';
 import livereload from 'rollup-plugin-livereload';
 
-const watchMode = process.env.ROLLUP_WATCH;
+const watch = process.env.ROLLUP_WATCH;
 
-const plugins = [
+let plugins = [
   commonjs(),
   nodeResolve(),
   replace({
@@ -18,24 +18,21 @@ const plugins = [
   babel({
     babelHelpers: 'bundled'
   }),
-  dev({
-    dirs: [
-      'dist',
-      'static',
-    ],
-    port: asNumber(process.env.PORT) || 10099,
-    spa: true,
-    force: true,
-  }),
 ];
 
-if (watchMode) {
-  plugins.push(
+if (watch) {
+  plugins = [
+    ...plugins,
+    dev({
+      dirs: ['.', 'dist'],
+      port: asNumber(process.env.PORT) || 5000,
+      force: true,
+    }),
     livereload({
       delay: 500,
       watch: 'dist',
     }),
-  );
+  ];
 }
 
 function asNumber(value) {
@@ -47,9 +44,9 @@ export default {
   input: 'src/index.js',
   output: {
     file: 'dist/js/index.js',
-    format: 'umd',
+    format: 'iife',
     indent: true,
   },
-  watch: true,
+  watch,
   plugins,
 };

@@ -3,9 +3,11 @@ assets:
   action: overwrite
 - source: .stackblitzrc
   action: overwrite
+- source: server.mjs
+  action: overwrite
 - source: package.json
   action: merge-after
-- source: static/index.html
+- source: index.html
   action: boilerplate
 - source: scss/index.scss
   action: boilerplate
