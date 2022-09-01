@@ -139,11 +139,13 @@
         
         <div class="content ps-lg-4">
           <p>This is a quality-of-life module. You can save some shared variables with context API, so they will be passed into other API calls automatically.</p>
+<h2 id="user-context" tabindex="-1">User context</h2>
+<p>To personalize search and recommendation queries, Miso SDK sends user identities (anonymous and/or signed-in) in its API payload. You can set the ids with context API once for all.</p>
 <h3 id="anonymous-id" tabindex="-1">Anonymous ID</h3>
 <p>The SDK takes care of <code>anonymous_id</code> automatically using session storage. It will be managed and passed into API calls automatically.</p>
 <p>You can also set <code>anonymous_id</code> by yourself:</p>
 <pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>anonymous_id <span class="token operator">=</span> <span class="token string">'my_anonymous_id'</span><span class="token punctuation">;</span></code></pre>
-<h3 id="user-id-and-hash" tabindex="-1">User ID and hash</h3>
+<h3 id="user-id-and-user-hash" tabindex="-1">User ID and user hash</h3>
 <p>Set <code>user_id</code> and <code>user_hash</code>:</p>
 <pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id <span class="token operator">=</span> <span class="token string">'user_id'</span><span class="token punctuation">;</span><br>miso<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_hash <span class="token operator">=</span> <span class="token string">'user_hash'</span><span class="token punctuation">;</span></code></pre>
 <p>See <a href="https://api.askmiso.com/#operation/search_v1_search_search_post" target="_blank" rel="noopener">REST API</a> for more details about <code>user_hash</code>.</p>
