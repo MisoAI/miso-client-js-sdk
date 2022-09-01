@@ -3,11 +3,5 @@ assets:
   action: boilerplate
 - source: src/key.js
   action: overwrite
-- source: index.html
-  action: boilerplate
 - source: src/index.js
   action: boilerplate
-- source: style/index.scss
-  action: boilerplate
-- source: style/ui.scss
-  action: overwrite

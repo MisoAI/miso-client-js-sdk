@@ -1,5 +1,13 @@
 assets:
 - source: rollup.config.mjs
   action: overwrite
+- source: .stackblitzrc
+  action: overwrite
 - source: package.json
   action: merge-after
+- source: static/index.html
+  action: boilerplate
+- source: scss/index.scss
+  action: boilerplate
+- source: scss/ui.scss
+  action: overwrite
