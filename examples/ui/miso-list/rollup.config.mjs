@@ -13,6 +13,7 @@ let plugins = [
   nodeResolve(),
   replace({
     preventAssignment: true,
+    'process.env.NODE_ENV': JSON.stringify('production'), // algolia
     __MISO_API_KEY__: process.env.MISO_API_KEY ? JSON.stringify(process.env.MISO_API_KEY) : undefined,
   }),
   babel({

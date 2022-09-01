@@ -1,5 +1,5 @@
 assets:
 - source: package.json
   action: merge-after
-- source: style/algolia.scss
+- source: scss/algolia.scss
   action: overwrite

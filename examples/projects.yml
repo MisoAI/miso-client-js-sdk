@@ -9,4 +9,4 @@ path: ui/deduplication
 archetypes: [base, rollup, ui-es]
 ---
 path: algolia/all-in-one
-archetypes: [base, parcel, algolia]
+archetypes: [base, rollup, algolia]

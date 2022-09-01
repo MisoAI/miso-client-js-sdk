@@ -2,11 +2,11 @@
 title: <miso-list>
 ---
 
-{%- from 'macros.njk' import code_example_link with context -%}
+{%- from 'macros.njk' import stackblitz_link with context -%}
 
 A basic element to render a list of items.
 
-{{ code_example_link('ui/miso-list') }}
+{{ stackblitz_link('ui/miso-list') }}
 
 #### Attribute
 

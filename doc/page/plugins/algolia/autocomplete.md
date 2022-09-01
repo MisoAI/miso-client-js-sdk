@@ -2,7 +2,7 @@
 title: Working with Autocomplete
 ---
 
-{%- from 'macros.njk' import live_demo_link with context -%}
+{%- from 'macros.njk' import stackblitz_link with context -%}
 
 You can combine the power of Miso with InstantSearch.js and Autocomplete.
 
@@ -11,7 +11,7 @@ You can combine the power of Miso with InstantSearch.js and Autocomplete.
 1. Follow the [guide](https://www.algolia.com/doc/ui-libraries/autocomplete/integrations/with-instantsearch/) to integrate InstantSearch.js and Autocomplete.
 1. Use the autocomplete client from Miso in place of Algolia's original search client.
 
-{{ live_demo_link('algolia/all-in-one') }}
+{{ stackblitz_link('algolia/all-in-one') }}
 
 ### Example
 

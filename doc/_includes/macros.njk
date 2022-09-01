@@ -65,9 +65,20 @@
 </table>
 {% endmacro %}
 
-{% macro live_demo_link(path) %}
+{% macro stackblitz_link(path) %}
 <div class="my-4">
-  <a class="btn-with-icon btn btn-outline-primary" href="{{ codesandbox.embed }}{{ path }}" role="button" target="_blank" rel="noopener">
+  <a class="btn-with-icon btn btn-outline-primary" href="{{ tools.stackblitz.embed }}{{ path }}" role="button" target="_blank" rel="noopener">
+    Live Demo
+    <svg xmlns="http://www.w3.org/2000/svg" role="img" viewbox="0 0 16 16" class="bi d-inline-block align-text-top icon" fill="currentColor">
+      <use xlink:href="{{ '/img/bootstrap-icons.svg#box-arrow-up-right' | url }}"/>
+    </svg>
+  </a>
+</div>
+{% endmacro %}
+
+{% macro codesandbox_link(path) %}
+<div class="my-4">
+  <a class="btn-with-icon btn btn-outline-primary" href="{{ tools.codesandbox.embed }}{{ path }}" role="button" target="_blank" rel="noopener">
     Live Demo
     <svg xmlns="http://www.w3.org/2000/svg" role="img" viewbox="0 0 16 16" class="bi d-inline-block align-text-top icon" fill="currentColor">
       <use xlink:href="{{ '/img/bootstrap-icons.svg#box-arrow-up-right' | url }}"/>
