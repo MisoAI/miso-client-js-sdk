@@ -4,6 +4,10 @@ title: Context Variables
 
 This is a quality-of-life module. You can save some shared variables with context API, so they will be passed into other API calls automatically.
 
+## User context
+
+To personalize search and recommendation queries, Miso SDK sends user identities (anonymous and/or signed-in) in its API payload. You can set the ids with context API once for all.
+
 ### Anonymous ID
 
 The SDK takes care of `anonymous_id` automatically using session storage. It will be managed and passed into API calls automatically.
@@ -14,7 +18,7 @@ You can also set `anonymous_id` by yourself:
 miso.context.anonymous_id = 'my_anonymous_id';
 ```
 
-### User ID and hash
+### User ID and user hash
 Set `user_id` and `user_hash`:
 
 ```js
