@@ -1,12 +1,12 @@
 ---
 path: ui/miso-list
-archetypes: [base, parcel, ui-es]
+archetypes: [base, rollup, ui-es]
 ---
 path: ui/custom-api
-archetypes: [base, parcel, ui-es]
+archetypes: [base, rollup, ui-es]
 ---
 path: ui/deduplication
-archetypes: [base, parcel, ui-es]
+archetypes: [base, rollup, ui-es]
 ---
 path: algolia/all-in-one
 archetypes: [base, parcel, algolia]

@@ -1,0 +1,9 @@
+@import './ui.scss';
+
+:root {
+  --gap: 1.5rem;
+}
+
+.body {
+  padding: var(--gap);
+}

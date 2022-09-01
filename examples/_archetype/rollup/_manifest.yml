@@ -1,0 +1,5 @@
+assets:
+- source: rollup.config.mjs
+  action: overwrite
+- source: package.json
+  action: merge-after

@@ -8,25 +8,7 @@
     <link rel="stylesheet" href="style/index.scss" />
   </head>
   <body>
-    <div class="container-xxl body">
-      <miso-list api="user_to_products" on:start="load">
-        <script data-attr="payload" type="application/json">
-          {
-            "fl": ["*"],
-            "rows": 10
-          }
-        </script>
-        <template data-name="container" data-type="string">
-          <div class="miso-list-container"></div>
-        </template>
-        <template data-name="item" data-type="string">
-          <div class="product card">
-            <img data-column="cover_image" src="${ data.cover_image }">
-            <div data-column="title">${ data.title }</div>
-            <div data-column="price">${ data.sale_price }</div>
-          </div>
-        </template>
-      </miso-list>
+    <div class="container-xxl">
     </div>
     <script type="module" src="src/index.js"></script>
   </body>

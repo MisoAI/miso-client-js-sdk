@@ -1,11 +1,4 @@
 {
-  "name": "@miso.ai/client-sdk-examples",
-  "version": "1.0.0",
-  "description": "Live Demo: Miso SDK",
-  "keywords": [
-    "Miso AI",
-    "personalization"
-  ],
   "scripts": {
     "build:sass": "sass scss:dist/css",
     "watch:sass": "sass --watch scss:dist/css",
@@ -13,10 +6,6 @@
     "watch:js": "rollup -wc",
     "start": "npm-run-all build:*",
     "dev": "npm-run-all build:sass --parallel watch:*"
-  },
-  "dependencies": {
-    "@miso.ai/client-sdk": "1.3.1",
-    "@miso.ai/client-sdk-ui": "1.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
