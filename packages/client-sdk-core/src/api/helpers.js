@@ -92,7 +92,19 @@ export default class ApiHelpers {
     }
   }
 
-  applyPayloadPasses(component, apiGroup, apiName, payload) {
+  applyUrlPasses(component, { apiGroup, apiName, url }) {
+    const client = this._client;
+    for (const pass of this._root._urlPasses) {
+      try {
+        url = pass({ client, apiGroup, apiName, url }) || url;
+      } catch(e) {
+        component.error(e);
+      }
+    }
+    return url;
+  }
+
+  applyPayloadPasses(component, { apiGroup, apiName, payload }) {
     const client = this._client;
     for (const pass of this._root._payloadPasses) {
       try {

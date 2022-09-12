@@ -74,6 +74,13 @@ export default class PluginRoot extends Registry {
     this._root._payloadPasses.push(pass);
   }
 
+  addUrlPass(pass) {
+    if (typeof pass !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${pass}`);
+    }
+    this._root._urlPasses.push(pass);
+  }
+
   _tryConfig(instance, options) {
     if (options === undefined) {
       return;
@@ -150,7 +157,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass']);
     defineValues(this, { classes });
   }
 

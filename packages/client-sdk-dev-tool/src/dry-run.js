@@ -1,3 +1,5 @@
+import { addUrlParameter } from '@miso.ai/commons';
+
 const ID = 'std:dry-run';
 
 export default class DryRunPlugin {
@@ -14,23 +16,12 @@ export default class DryRunPlugin {
 
   // TODO: config({ active })
 
-  install(_, context) {
-    const self = this;
-    context.classes.api.ApiBase.prototype._send = async function({ url }) {
-      this._events.emit('dry-run-send', { url });
-      return self._mockResponse();
-    }
+  install(_, { addUrlPass }) {
+    addUrlPass(this._modifyUrl.bind(this));
   }
 
-  _mockResponse() {
-    // TODO: take api type
-    return {
-      data: {
-        products: [],
-        attributes: [],
-        completions: {},
-      }
-    }
+  _modifyUrl({ apiGroup, apiName, url }) {
+    return apiGroup === 'interactions' && apiName === 'upload' ? addUrlParameter(url, 'dry_run', '1') : url;
   }
 
 }

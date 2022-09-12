@@ -13,6 +13,7 @@ class Root extends Component {
     this._pluginRoot = new PluginRoot(this);
     this._clients = [];
     this._payloadPasses = [];
+    this._urlPasses = [];
     this.version = version || 'dev';
   }
 

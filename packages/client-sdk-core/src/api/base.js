@@ -28,11 +28,12 @@ export default class ApiBase extends Component {
   }
 
   _preprocess({ apiGroup, apiName, payload }) {
-    return this.helpers.applyPayloadPasses(this, apiGroup, apiName, payload);
+    return this.helpers.applyPayloadPasses(this, { apiGroup, apiName, payload });
   }
 
   _url({ apiGroup, apiName }) {
-    return this.helpers.url(apiGroup, apiName);
+    const url = this.helpers.url(apiGroup, apiName);
+    return this.helpers.applyUrlPasses(this, { apiGroup, apiName, url });
   }
 
   async _send({ apiGroup, apiName, url, payload, options: { bulk, timeout } = {} }) {
