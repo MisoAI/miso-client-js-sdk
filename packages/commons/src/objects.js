@@ -51,7 +51,7 @@ export function delegateSetters(target, source, propNames) {
 /**
  * Delegate setters from source object to target object.
  */
- export function delegateProperties(target, source, propNames) {
+export function delegateProperties(target, source, propNames) {
   propNames = typeof propNames === 'string' ? [propNames] : propNames;
   Object.defineProperties(target, propNames.reduce((acc, propName) => {
     acc[propName] = {

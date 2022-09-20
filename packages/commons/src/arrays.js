@@ -15,5 +15,5 @@ export function removeItem(array, item) {
  * 3. Otherwise, return a single-item array
  */
 export function asArray(value) {
-  return Array.isArray(value) ? value : (value === undefined) ? []  : [value];
+  return Array.isArray(value) ? value : (value === undefined) ? [] : [value];
 }
