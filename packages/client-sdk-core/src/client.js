@@ -23,14 +23,29 @@ class MisoClient extends Component {
     this.options = Object.freeze(this._normalizeOptions(options));
   }
 
-  _normalizeOptions(options = {}) {
+  _normalizeOptions({ readConfigFromScriptUrl = false, ...options } = {}) {
     if (typeof options === 'string') {
       options = { apiKey: options };
+    }
+    if (readConfigFromScriptUrl) {
+      options = {
+        ...this._readConfigFromScriptUrl(),
+        ...options,
+      };
     }
     if (!options.apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
     return trimObj(options);
+  }
+
+  _readConfigFromScriptUrl() {
+    const me = document.currentScript;
+    const url = me.src || me.href; // might be <link> as well
+    const params = new URL(new Request(url).url).searchParams;
+    return trimObj({
+      apiKey: params.get('api_key') || undefined,
+    });
   }
 
 }
