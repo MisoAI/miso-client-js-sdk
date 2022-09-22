@@ -8,6 +8,7 @@
     "packages/client-sdk-ui",
     "packages/client-sdk-algolia",
     "packages/client-sdk-gtm",
+    "packages/client-sdk-shopify",
     "packages/client-sdk",
     "demo",
     "doc"
@@ -19,6 +20,7 @@
     "start:client-sdk-dev-tool": "npm run start --workspace=packages/client-sdk-dev-tool",
     "start:client-sdk-ui": "npm run start --workspace=packages/client-sdk-ui",
     "start:client-sdk-algolia": "npm run start --workspace=packages/client-sdk-algolia",
+    "start:client-sdk-shopify": "npm run start --workspace=packages/client-sdk-shopify",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
     "test:watch": "npm run build:esm && jest --no-cache --watch",

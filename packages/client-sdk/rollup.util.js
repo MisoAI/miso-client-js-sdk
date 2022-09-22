@@ -1,5 +1,5 @@
-import { join } from 'path';
-import glob from 'fast-glob';
+//import { join } from 'path';
+//import glob from 'fast-glob';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
@@ -7,11 +7,12 @@ import { terser } from 'rollup-plugin-terser';
 import filesize from 'rollup-plugin-filesize';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import manifest from './manifest';
 
-const cwd = join(__dirname, 'src');
-export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3));
+//const cwd = join(__dirname, 'src');
+//export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3));
 
-function _config(name, env = 'prod') {
+function _config({ input, output: { filename: outputFilename, ...output } }, env = 'prod') {
   const prod = env === 'prod';
   let plugins = [
     commonjs(),
@@ -49,12 +50,10 @@ function _config(name, env = 'prod') {
     ];
   }
   return {
-    input: `src/${name}.js`,
+    input,
     output: {
-      file: prod ? `dist/umd/${getOutputFileName(name)}.min.js` : `dist/umd/${getOutputFileName(name)}.js`,
-      format: 'umd',
-      name: 'MisoClient',
-      exports: 'default',
+      file: prod ? `dist/umd/${outputFilename}.min.js` : `dist/umd/${outputFilename}.js`,
+      ...output,
       indent: !prod,
     },
     watch: !prod,
@@ -62,10 +61,6 @@ function _config(name, env = 'prod') {
   };
 }
 
-function getOutputFileName(name) {
-  return name === 'index' ? `miso` : `miso-${name}`;
-}
-
 export function config(prod) {
-  return entries.map(name => _config(name, prod));
+  return manifest.map(entry => _config(entry, prod));
 }
