@@ -78,18 +78,15 @@ export default class ApiHelpers {
     const { apiKey } = this._client.options;
     const apiName = paths.filter(s => s).join('/');
     // TODO: neutralize use of DOM API
-    return `${this.apiBaseUrl}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
+    return `${this.getApiEndpoint(apiName)}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
   }
 
-  get apiBaseUrl() {
-    const { apiHost = 'prod' } = this._client.options;
-    switch (apiHost) {
-      case 'prod':
-        return API.BASE_URL;
-      default:
-        // TODO: normailize URL
-        return apiHost;
-    }
+  getApiEndpoint(apiName) {
+    const {
+      dataEndpoint = API.DATA_ENDPOINT,
+      eventEndpoint = API.EVENT_ENDPOINT,
+    } = this._client.options;
+    return apiName === 'interactions' ? eventEndpoint : dataEndpoint;
   }
 
   applyUrlPasses(component, { apiGroup, apiName, url }) {

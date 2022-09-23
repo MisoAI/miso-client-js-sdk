@@ -23,11 +23,11 @@ class MisoClient extends Component {
     this.options = Object.freeze(this._normalizeOptions(options));
   }
 
-  _normalizeOptions({ readConfigFromScriptUrl = false, ...options } = {}) {
+  _normalizeOptions(options) {
     if (typeof options === 'string') {
       options = { apiKey: options };
     }
-    if (readConfigFromScriptUrl) {
+    if (options.readConfigFromScriptUrl) {
       options = {
         ...this._readConfigFromScriptUrl(),
         ...options,
@@ -36,6 +36,11 @@ class MisoClient extends Component {
     if (!options.apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
+
+    options.dataEndpoint = options.dataEndpoint || options.apiHost;
+    options.eventEndpoint = options.eventEndpoint || options.apiHost;
+    delete options.apiHost;
+
     return trimObj(options);
   }
 
