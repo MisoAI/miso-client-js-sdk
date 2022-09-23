@@ -23,13 +23,14 @@ export class Page extends Component {
     }
   }
 
-  _sync() {
+  async _sync() {
     const url = window.location.href;
     if (this._url && this._url === url) {
       return; // deduplicate
     }
+    this._url = url;
     try {
-      const payloads = this._toInteractions(url);
+      const payloads = await this._toInteractions(url);
       if (payloads.length > 0) {
         this._shopify._client.api.interactions.upload(payloads);
       }
@@ -38,7 +39,7 @@ export class Page extends Component {
     }
   }
 
-  _toInteractions(url) {
+  async _toInteractions(url) {
     return toInteractions(url, this._productInfoCache);
   }
 
@@ -100,7 +101,7 @@ export async function toProductDetailPageView(info, productInfoCache) {
   return payload;
 }
 
-export async function getProductInfo(productInfoCache, handle) {
+export async function getProductInfo(handle, productInfoCache) {
   return productInfoCache ?
     productInfoCache[handle] || (productInfoCache[handle] = await api.product(handle)) :
     api.product(handle);

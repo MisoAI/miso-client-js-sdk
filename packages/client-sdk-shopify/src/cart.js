@@ -31,7 +31,7 @@ export class Cart extends Component {
 
 export function toInteractions({ newState, difference }) {
   if (!difference || !difference.items) {
-    return;
+    return [];
   }
   const cart_token = newState && newState.token;
 
