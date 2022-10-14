@@ -3,7 +3,7 @@ import * as utils from 'shopify-store-utils';
 import { Cart } from './cart';
 import { Page } from './page';
 
-const { getCustomerId, getAnonymousUserToken } = utils;
+const { getCustomerId, getAnonymousUserToken, ajax } = utils;
 
 const PLUGIN_ID = 'std:shopify';
 
@@ -44,6 +44,7 @@ class Shopify extends Component {
     this.syncUser();
     this.capturePageViewEvents();
     this.captureCartEvents();
+    this.captureAjaxSearchEvents();
   }
 
   syncUser() {
@@ -64,6 +65,27 @@ class Shopify extends Component {
 
   captureCartEvents(options) {
     (this._cart || (this._cart = new Cart(this))).start(options);
+  }
+
+  captureAjaxSearchEvents() {
+    ajax.observe(({ type, url }) => {
+      if (type !== 'request') {
+        return;
+      }
+      const path = url.pathname;
+      if (!path.endsWith('/search/suggest')) {
+        return;
+      }
+      const keywords = url.searchParams.get('q');
+      if (!keywords) {
+        return;
+      }
+      this._client.api.interactions.upload([{
+        type: 'search',
+        search: { keywords },
+        context: { custom_context: { channel: 'ajax' } },
+      }]);
+    });
   }
 
 }

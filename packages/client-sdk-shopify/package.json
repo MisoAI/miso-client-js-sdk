@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "@miso.ai/commons": "file:packages/commons",
-    "shopify-store-utils": "^0.9.1-beta.0"
+    "shopify-store-utils": "^0.9.1"
   }
 }

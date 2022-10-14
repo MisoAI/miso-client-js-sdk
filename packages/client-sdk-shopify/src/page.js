@@ -57,6 +57,8 @@ export async function toInteractions(url, productInfoCache) {
       return [toCategoryPageView(info)];
     case 'product':
       return [await toProductDetailPageView(info, productInfoCache)];
+    case 'search':
+      return [toSearchEvent(info)];
   }
   return [];
 }
@@ -105,4 +107,12 @@ export async function getProductInfo(handle, productInfoCache) {
   return productInfoCache ?
     productInfoCache[handle] || (productInfoCache[handle] = await api.product(handle)) :
     api.product(handle);
+}
+
+export function toSearchEvent({ searchTerm: keywords }) {
+  return {
+    type: 'search',
+    search: { keywords },
+    context: { custom_context: { channel: 'search_page' } },
+  };
 }

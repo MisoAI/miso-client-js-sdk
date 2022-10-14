@@ -8,7 +8,7 @@ export class Cart extends Component {
     this._shopify = shopify;
   }
 
-  start(options) {
+  start(options = {}) {
     if (this._observer) {
       return;
     }
