@@ -1,4 +1,11 @@
 /**
+ * Convert value to string, except for undefined and null.
+ */
+export function asString(value) {
+  return value !== undefined && value !== null ? `${value}` : value;
+}
+
+/**
  * Remove object properties with undefined values and return the object itself.
  */
 export function trimObj(obj) {

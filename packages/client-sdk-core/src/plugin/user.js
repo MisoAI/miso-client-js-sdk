@@ -1,4 +1,4 @@
-import { uuidv4, trimObj, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
+import { uuidv4, asString, trimObj, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
 
 const ID = 'std:user';
 
@@ -54,7 +54,7 @@ class UserContext {
   }
 
   set anonymous_id(value) {
-    this._anonymousId = `${value}`;
+    this._anonymousId = asString(value);
   }
 
   get user_id() {
@@ -62,7 +62,7 @@ class UserContext {
   }
 
   set user_id(value) {
-    this._userId = `${value}`;
+    this._userId = asString(value);
   }
 
   get user_hash() {
