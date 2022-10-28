@@ -14,11 +14,14 @@ export function buildFilters(algoliaClient, params) {
   return trimObj({ fq, boost_fq });
 }
 
+const CHAR_DOUBLE_QUOTE = '"'.charCodeAt(0);
 const CHAR_MINUS = '-'.charCodeAt(0);
 const NUMERIC_REGEXP = /(?:\d*\.)?\d+/g; // e.g. 123, .45, 67.89
 const QUOTED_REGEXP = /'\d+'/g;
 const WORD_REGEXP = /\w+/g;
+const WORD_WS_REGEXP = /[\w\s]+/g;
 const LITERAL_REGEXP = new RegExp(`(?:${WORD_REGEXP.source})|(?:${NUMERIC_REGEXP.source})|(?:${QUOTED_REGEXP.source})`, 'g');
+const STRING_VALUE_REGEXP = new RegExp(`(?:${WORD_WS_REGEXP.source})|(?:${NUMERIC_REGEXP.source})|(?:${QUOTED_REGEXP.source})`, 'g');
 const COND_LB_REGEXP = /\b(?:(?:AND|OR|NOT)\s+)|\(\s*|^/g;
 const COND_RB_REGEXP = /(?:\s+(?:AND|OR))\b|\s*\)|$/g;
 
@@ -27,7 +30,7 @@ const NUMERIC_RANGE_REGEXP = new RegExp(`(?<attr>${LITERAL_REGEXP.source}):(?<va
 const NUMERIC_RANGE_SOLR_FORMAT = '$<attr>:[$<valueX> TO $<valueY>]';
 const TAG_REGEXP = new RegExp(`(?<intro>${COND_LB_REGEXP.source})(?:_tags:)?(?<value>${LITERAL_REGEXP.source})(?<outro>${COND_RB_REGEXP.source})`, 'g');
 const TAG_SOLR_FORMAT = '$<intro>tags:$<value>$<outro>';
-const FACET_FILTER_REGEXP = new RegExp(`\\[(?<expr>(?:${LITERAL_REGEXP.source}):(?:${LITERAL_REGEXP.source}))\\]`, 'g');
+const FACET_FILTER_REGEXP = new RegExp(`\\[(?<attr>${LITERAL_REGEXP.source}):(?<value>${STRING_VALUE_REGEXP.source})\\]`, 'g');
 
 // we only take care of "AND|OR NOT attr:value", but that should be enough
 // TODO: we can find AND|OR followed by NOT and then search for pairing ()
@@ -93,7 +96,10 @@ export function translateFiltersExpr(expr) {
     // value       -> tags:value
     .replaceAll(TAG_REGEXP, TAG_SOLR_FORMAT)
     // [attr:value] -> attr:value
-    .replaceAll(FACET_FILTER_REGEXP, (...args) => group(args).expr)
+    .replaceAll(FACET_FILTER_REGEXP, (...args) => {
+      const { attr, value } = group(args);
+      return `${attr}:${quoteIfNecessary(value)}`;
+    })
     // AND|OR NOT attr:value -> AND|OR (NOT attr:value)
     .replaceAll(BARE_NOT_REGEXP, NOT_SOLR_FORMAT)
     .unshadow();
@@ -112,7 +118,7 @@ function translateDisjunctiveFilters(filters, translate = v => v) {
 
 function translateTagFilterExpr(expr) {
   // value -> tags:value
-  return `tags:${expr.trim()}`;
+  return `tags:${quoteIfNecessary(expr.trim())}`;
 }
 
 function translateNumericFilterExpr(expr) {
@@ -135,8 +141,8 @@ function translateFacetFilterExpr(expr) {
   return shadow(expr.trim())
     .map(expr => {
       const [attr, value] = expr.split(':');
-      return value.charCodeAt(0) === CHAR_MINUS ? `(NOT ${attr}:${value.substring(1)})` :
-        value.startsWith('\\-') ? `${attr}:"${value.substring(1)}"` : expr;
+      return value.charCodeAt(0) === CHAR_MINUS ? `(NOT ${attr}:${quoteIfNecessary(value.substring(1))})` :
+        value.startsWith('\\-') ? `${attr}:"${value.substring(1)}"` : `${attr}:${quoteIfNecessary(value)}`;
     })
     .unshadow();
 }
@@ -162,6 +168,10 @@ function buildNumericComparisonSolrExpr({ attr, op, value }) {
 
 function group(args) {
   return args[args.length - 1];
+}
+
+function quoteIfNecessary(str) {
+  return str.charCodeAt(0) !== CHAR_DOUBLE_QUOTE && /\s/.test(str) ? JSON.stringify(str) : str;
 }
 
 function reportError(algoliaClient, field, filters, error) {
