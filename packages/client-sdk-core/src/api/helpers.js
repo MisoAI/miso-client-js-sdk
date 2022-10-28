@@ -74,6 +74,15 @@ export default class ApiHelpers {
     }
   }
 
+  sendBeacon(url, payload, { method } = {}) {
+    if (method && method !== 'POST') {
+      throw new Error(`Non-POST API is not supported in useBeacon mode: ${url}`);
+    }
+    if (!window.navigator.sendBeacon(url, JSON.stringify(payload))) {
+      throw new Error(`Send beacon unsuccessful: ${url}`);
+    }
+  }
+
   url(...paths) {
     const { apiKey } = this._client.options;
     const apiName = paths.filter(s => s).join('/');

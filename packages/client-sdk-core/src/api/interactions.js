@@ -41,4 +41,14 @@ export default class Interactions extends ApiBase {
     return { data: payload };
   }
 
+  async _send({ options: { useBeacon = true, ...options } = {}, ...args }) {
+    if (useBeacon) {
+      const { url, payload } = args;
+      this.helpers.sendBeacon(url, payload, options);
+      return {};
+    } else {
+      return super._send({ ...args, options });
+    }
+  }
+
 }
