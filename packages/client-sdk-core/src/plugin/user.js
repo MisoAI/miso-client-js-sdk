@@ -1,23 +1,25 @@
-import { uuidv4, asString, trimObj, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
+import { uuidv4, asString, trimObj, Component, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
 
-const ID = 'std:user';
+const PLUGIN_ID = 'std:user';
 
-export default class UserPlugin {
+export default class UserPlugin extends Component {
 
   static get id() {
-    return ID;
+    return PLUGIN_ID;
   }
 
   constructor() {
+    super('user');
   }
 
-  install(MisoClient, { addPayloadPass }) {
+  install(MisoClient, context) {
+    context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
-    addPayloadPass(this._modifyPayload.bind(this));
+    context.addPayloadPass(this._modifyPayload.bind(this));
   }
 
   _injectClient(client) {
-    const userContext = client._userContext = new UserContext();
+    const userContext = client._userContext = new UserContext(this);
     delegateProperties(client.context, userContext, ['anonymous_id', 'user_id', 'user_hash']);
   }
 
@@ -47,14 +49,18 @@ function getAutoAnonymousId() {
 
 class UserContext {
 
-  constructor() {}
+  constructor(plugin) {
+    this._plugin = plugin;
+  }
 
   get anonymous_id() {
     return this._anonymousId || this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId());
   }
 
   set anonymous_id(value) {
-    this._anonymousId = asString(value);
+    value = asString(value);
+    this._anonymousId = value;
+    this._plugin._events.emit('set', `anonymous_id = '${value}'`);
   }
 
   get user_id() {
@@ -62,7 +68,9 @@ class UserContext {
   }
 
   set user_id(value) {
-    this._userId = asString(value);
+    value = asString(value);
+    this._userId = value;
+    this._plugin._events.emit('set', `user_id = '${value}'`);
   }
 
   get user_hash() {
@@ -74,6 +82,7 @@ class UserContext {
       throw new Error(`User hash must be a string`);
     }
     this._userHash = value;
+    this._plugin._events.emit('set', `user_hash = '${value}'`);
   }
 
 }

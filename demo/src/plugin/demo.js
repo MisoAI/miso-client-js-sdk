@@ -45,8 +45,10 @@ export default class DemoPlugin {
     // set user id and user hash on create
     MisoClient.on('create', (client) => {
       const { userId, userHash } = selection.value;
-      client.context.user_id = userId;
-      client.context.user_hash = userHash;
+      if (userId) {
+        client.context.user_id = userId;
+        client.context.user_hash = userHash;
+      }
     });
 
     // react on update
