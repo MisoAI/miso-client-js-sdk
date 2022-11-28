@@ -35,11 +35,11 @@ jobs:
       - run: git config --global user.email "github-action-${{ github.actor }}@users.noreply.github.com"
       - run: npm run version ${{ steps.version.outputs.version }}
       - run: npm run build
-      - run: npm publish --workspaces --access public
+      - run: npm publish --workspaces
         if: "!github.event.release.prerelease"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm publish --workspaces --tag beta --access public
+      - run: npm publish --workspaces --tag beta
         if: "github.event.release.prerelease"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
