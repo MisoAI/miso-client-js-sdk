@@ -24,7 +24,7 @@ The SDK is also served by [jsDelivr](https://www.jsdelivr.com/package/npm/@miso.
 You can also include the SDK bundled with UI plugin in your webpage with script tag:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk/dist/umd/miso-with-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk/dist/umd/miso-ui.min.js"></script>
 ```
 
 You don't need to register the plugin in this case, as the bundled version have done this for you.

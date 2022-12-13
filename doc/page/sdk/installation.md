@@ -13,5 +13,5 @@ The SDK is also served by [jsDelivr](https://www.jsdelivr.com/package/npm/@miso.
 
 You can also include the SDK in your webpage with script tag:
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk"></script>
+<script src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/umd/miso.min.js"></script>
 ```

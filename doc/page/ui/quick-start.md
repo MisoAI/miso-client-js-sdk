@@ -6,7 +6,7 @@ We can setup the most basic list element with just few steps.
 
 ### Use the SDK bundled with UI plugin
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk/dist/umd/miso-with-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk/dist/umd/miso-ui.min.js"></script>
 ```
 
 See the [installation](./installation) section for other methods to setup.
