@@ -1,6 +1,7 @@
 # generated
 node_modules/
 dist/
+examples/**/package-lock.json
 
 # env
 .env
@@ -15,5 +16,4 @@ npm-debug.log*
 .eslintcache
 .parcel-cache
 
-# stupid
 .DS_Store

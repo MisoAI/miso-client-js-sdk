@@ -35,8 +35,8 @@
   },
   "dependencies": {
     "@algolia/autocomplete-js": "1.6.3",
-    "@miso.ai/client-sdk": "1.3.1",
-    "@miso.ai/client-sdk-algolia": "1.3.1",
+    "@miso.ai/client-sdk": "1.4.5",
+    "@miso.ai/client-sdk-algolia": "1.4.5",
     "instantsearch.js": "4.40.5"
   }
 }
