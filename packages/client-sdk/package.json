@@ -13,6 +13,7 @@
     "start": "rollup -w -c rollup.config.dev.js",
     "build:clean": "npx rimraf dist",
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
+    "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
     "build:umd": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
     "build": "npm run build:clean && npm run build:esm && npm run build:umd",
     "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"

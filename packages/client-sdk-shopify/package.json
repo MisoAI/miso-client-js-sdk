@@ -13,6 +13,7 @@
     "start": "npx babel src --root-mode upward --out-dir dist/es --watch",
     "build:clean": "npx rimraf dist",
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
+    "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
     "build": "npm run build:clean && npm run build:esm"
   },
   "repository": "MisoAI/miso-client-js-sdk",

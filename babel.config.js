@@ -5,6 +5,11 @@ module.exports = (api) => {
     env: {
       test: {
         plugins: ['@babel/plugin-transform-modules-commonjs']
+      },
+      cjs: {
+        plugins: [
+          '@babel/plugin-transform-modules-commonjs'
+        ]
       }
     },
     ignore: ignore,
@@ -13,6 +18,15 @@ module.exports = (api) => {
         '@babel/preset-env', 
         {
           modules: false
+        }
+      ]
+    ],
+    plugins: [
+      [
+        '@babel/plugin-proposal-object-rest-spread',
+        {
+          loose: true,
+          useBuiltIns: true,
         }
       ]
     ]
