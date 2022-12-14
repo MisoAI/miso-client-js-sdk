@@ -28,9 +28,9 @@ function sdkUmdFileExt(env) {
 function sdkUmdFileName(build) {
   switch (build) {
     case 'ui':
-      return 'miso-with-ui';
+      return 'miso-ui';
     case 'algolia':
-      return 'miso-with-algolia';
+      return 'miso-algolia';
     case 'std':
     case 'standard':
     default:
