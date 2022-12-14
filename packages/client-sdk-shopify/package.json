@@ -1,7 +1,7 @@
 {
   "name": "@miso.ai/client-sdk-shopify",
   "description": "The Shopify plugin for Miso JavaScript SDK",
-  "main": "dist/es/index.js",
+  "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "files": [
     "dist/*"
@@ -14,7 +14,7 @@
     "build:clean": "npx rimraf dist",
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
-    "build": "npm run build:clean && npm run build:esm"
+    "build": "npm run build:clean && npm run build:esm && npm run build:cjs"
   },
   "repository": "MisoAI/miso-client-js-sdk",
   "homepage": "https://misoai.github.io/miso-client-js-sdk/plugins/shopify",

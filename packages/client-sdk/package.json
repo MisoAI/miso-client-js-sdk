@@ -1,7 +1,7 @@
 {
   "name": "@miso.ai/client-sdk",
   "description": "Miso client-side JavaScript SDK",
-  "main": "dist/umd/miso.min.js",
+  "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "files": [
     "dist/*"
@@ -15,7 +15,7 @@
     "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
     "build:umd": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
-    "build": "npm run build:clean && npm run build:esm && npm run build:umd",
+    "build": "npm run build:clean && npm run build:esm && npm run build:cjs && npm run build:umd",
     "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"
   },
   "repository": "MisoAI/miso-client-js-sdk",
