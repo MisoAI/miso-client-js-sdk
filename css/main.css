@@ -219,6 +219,10 @@ table.miso-diagram .arrow.left {
   margin: 0.2rem -0.1rem 0.3rem 0.25rem;
 }
 
+.symbol {
+  color: var(--color-primary);
+}
+
 /* home */
 body.home main {
   padding: 0 !important;

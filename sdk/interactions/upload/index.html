@@ -122,8 +122,12 @@
     </li><li class="section mb-3">
       <a href="/miso-client-js-sdk/sdk/interactions">Interactions</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+            <a href="/miso-client-js-sdk/sdk/interactions/events">Events</a>
+          </li><li class="page active">
             <a href="/miso-client-js-sdk/sdk/interactions/upload">Upload</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/sdk/interactions/performance">Performance</a>
           </li></ul>
       </div>
     </li></ul>
@@ -168,24 +172,26 @@
   #event-props-table[data-event-type="category_page_view"] tr[data-used-by-except~="category_page_view"],
   #event-props-table[data-event-type="search"] tr[data-used-by-except~="search"],
   #event-props-table[data-event-type="impression"] tr[data-used-by-except~="impression"],
+  #event-props-table[data-event-type="viewable_impression"] tr[data-used-by-except~="viewable_impression"],
+  #event-props-table[data-event-type="click"] tr[data-used-by-except~="click"],
   #event-props-table[data-event-type="home_page_view"] tr[data-used-by-except~="home_page_view"],
   #event-props-table[data-event-type="promo_page_view"] tr[data-used-by-except~="promo_page_view"],
   #event-props-table[data-event-type="product_image_view"] tr[data-used-by-except~="product_image_view"],
   #event-props-table[data-event-type="add_to_cart"] tr[data-used-by-except~="add_to_cart"],
-  #event-props-table[data-event-type="remove_from_cart"] tr[data-used-by-except~="remove_from_cart"],
-  #event-props-table[data-event-type="subscribe"] tr[data-used-by-except~="subscribe"],
   #event-props-table[data-event-type="checkout"] tr[data-used-by-except~="checkout"],
+  #event-props-table[data-event-type="remove_from_cart"] tr[data-used-by-except~="remove_from_cart"],
   #event-props-table[data-event-type="refund"] tr[data-used-by-except~="refund"],
+  #event-props-table[data-event-type="subscribe"] tr[data-used-by-except~="subscribe"],
   #event-props-table[data-event-type="read"] tr[data-used-by-except~="read"],
   #event-props-table[data-event-type="watch"] tr[data-used-by-except~="watch"],
   #event-props-table[data-event-type="listen"] tr[data-used-by-except~="listen"],
   #event-props-table[data-event-type="complete"] tr[data-used-by-except~="complete"],
   #event-props-table[data-event-type="add_to_collection"] tr[data-used-by-except~="add_to_collection"],
   #event-props-table[data-event-type="remove_from_collection"] tr[data-used-by-except~="remove_from_collection"],
+  #event-props-table[data-event-type="rate"] tr[data-used-by-except~="rate"],
   #event-props-table[data-event-type="like"] tr[data-used-by-except~="like"],
   #event-props-table[data-event-type="dislike"] tr[data-used-by-except~="dislike"],
   #event-props-table[data-event-type="share"] tr[data-used-by-except~="share"],
-  #event-props-table[data-event-type="rate"] tr[data-used-by-except~="rate"],
   #event-props-table[data-event-type="bookmark"] tr[data-used-by-except~="bookmark"],
   #event-props-table[data-event-type="custom"] tr[data-used-by-except~="custom"],
   #event-props-table tr[data-used-by] {
@@ -195,24 +201,26 @@
   #event-props-table[data-event-type="category_page_view"] tr[data-used-by~="category_page_view"],
   #event-props-table[data-event-type="search"] tr[data-used-by~="search"],
   #event-props-table[data-event-type="impression"] tr[data-used-by~="impression"],
+  #event-props-table[data-event-type="viewable_impression"] tr[data-used-by~="viewable_impression"],
+  #event-props-table[data-event-type="click"] tr[data-used-by~="click"],
   #event-props-table[data-event-type="home_page_view"] tr[data-used-by~="home_page_view"],
   #event-props-table[data-event-type="promo_page_view"] tr[data-used-by~="promo_page_view"],
   #event-props-table[data-event-type="product_image_view"] tr[data-used-by~="product_image_view"],
   #event-props-table[data-event-type="add_to_cart"] tr[data-used-by~="add_to_cart"],
-  #event-props-table[data-event-type="remove_from_cart"] tr[data-used-by~="remove_from_cart"],
-  #event-props-table[data-event-type="subscribe"] tr[data-used-by~="subscribe"],
   #event-props-table[data-event-type="checkout"] tr[data-used-by~="checkout"],
+  #event-props-table[data-event-type="remove_from_cart"] tr[data-used-by~="remove_from_cart"],
   #event-props-table[data-event-type="refund"] tr[data-used-by~="refund"],
+  #event-props-table[data-event-type="subscribe"] tr[data-used-by~="subscribe"],
   #event-props-table[data-event-type="read"] tr[data-used-by~="read"],
   #event-props-table[data-event-type="watch"] tr[data-used-by~="watch"],
   #event-props-table[data-event-type="listen"] tr[data-used-by~="listen"],
   #event-props-table[data-event-type="complete"] tr[data-used-by~="complete"],
   #event-props-table[data-event-type="add_to_collection"] tr[data-used-by~="add_to_collection"],
   #event-props-table[data-event-type="remove_from_collection"] tr[data-used-by~="remove_from_collection"],
+  #event-props-table[data-event-type="rate"] tr[data-used-by~="rate"],
   #event-props-table[data-event-type="like"] tr[data-used-by~="like"],
   #event-props-table[data-event-type="dislike"] tr[data-used-by~="dislike"],
   #event-props-table[data-event-type="share"] tr[data-used-by~="share"],
-  #event-props-table[data-event-type="rate"] tr[data-used-by~="rate"],
   #event-props-table[data-event-type="bookmark"] tr[data-used-by~="bookmark"],
   #event-props-table[data-event-type="custom"] tr[data-used-by~="custom"],
   tr {
@@ -237,6 +245,12 @@
           <input type="radio" class="btn-check" name="event-type" id="event-type-impression" value="impression" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-impression"><code class="raw">impression</code></label>
         </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-viewable_impression" value="viewable_impression" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-viewable_impression"><code class="raw">viewable_impression</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-click" value="click" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-click"><code class="raw">click</code></label>
+        </div><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-home_page_view" value="home_page_view" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-home_page_view"><code class="raw">home_page_view</code></label>
         </div><div class="labeled-input">
@@ -249,17 +263,17 @@
           <input type="radio" class="btn-check" name="event-type" id="event-type-add_to_cart" value="add_to_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-add_to_cart"><code class="raw">add_to_cart</code></label>
         </div><div class="labeled-input">
-          <input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_cart" value="remove_from_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
-          <label class="btn" for="event-type-remove_from_cart"><code class="raw">remove_from_cart</code></label>
-        </div><div class="labeled-input">
-          <input type="radio" class="btn-check" name="event-type" id="event-type-subscribe" value="subscribe" autocomplete="off" onchange="onSelectEventType(this.value)">
-          <label class="btn" for="event-type-subscribe"><code class="raw">subscribe</code></label>
-        </div><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-checkout" value="checkout" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-checkout"><code class="raw">checkout</code></label>
         </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_cart" value="remove_from_cart" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-remove_from_cart"><code class="raw">remove_from_cart</code></label>
+        </div><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-refund" value="refund" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-refund"><code class="raw">refund</code></label>
+        </div><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-subscribe" value="subscribe" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-subscribe"><code class="raw">subscribe</code></label>
         </div></div><div class="btn-group-lite mb-4" role="group" aria-label="Consumption (content media)"><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-read" value="read" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-read"><code class="raw">read</code></label>
@@ -279,6 +293,9 @@
           <input type="radio" class="btn-check" name="event-type" id="event-type-remove_from_collection" value="remove_from_collection" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-remove_from_collection"><code class="raw">remove_from_collection</code></label>
         </div></div><div class="btn-group-lite mb-4" role="group" aria-label="Feedback signals"><div class="labeled-input">
+          <input type="radio" class="btn-check" name="event-type" id="event-type-rate" value="rate" autocomplete="off" onchange="onSelectEventType(this.value)">
+          <label class="btn" for="event-type-rate"><code class="raw">rate</code></label>
+        </div><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-like" value="like" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-like"><code class="raw">like</code></label>
         </div><div class="labeled-input">
@@ -287,9 +304,6 @@
         </div><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-share" value="share" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-share"><code class="raw">share</code></label>
-        </div><div class="labeled-input">
-          <input type="radio" class="btn-check" name="event-type" id="event-type-rate" value="rate" autocomplete="off" onchange="onSelectEventType(this.value)">
-          <label class="btn" for="event-type-rate"><code class="raw">rate</code></label>
         </div><div class="labeled-input">
           <input type="radio" class="btn-check" name="event-type" id="event-type-bookmark" value="bookmark" autocomplete="off" onchange="onSelectEventType(this.value)">
           <label class="btn" for="event-type-bookmark"><code class="raw">bookmark</code></label>
