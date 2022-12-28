@@ -1,0 +1,19 @@
+props:
+- key: viewable_area
+  name: area
+  type: number
+  desc: |
+    The threshold of the portion of content area in viewport to trigger viewable condition. Must be a number between 0 (exclusive) and 1 (inclusive).
+    Default: `0.5` (50%).
+- key: viewable_duration
+  name: duration
+  type: number
+  desc: |
+    The time (in millisecond) required to trigger viewable condition. Can be 0 or positive.
+    Default: `1000` (1 second).
+
+groups:
+- key: viewable
+  props:
+  - viewable_area
+  - viewable_duration

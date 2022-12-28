@@ -52,3 +52,6 @@ sections:
   - title: Upload
     path: /interactions/upload
     desc: Send user interaction events to Miso's data consumer.
+  - title: Performance
+    path: /interactions/performance
+    desc: Track the performance of recommendation units

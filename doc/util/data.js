@@ -71,6 +71,7 @@ function getComparisonGroup(file) {
 
 function computeProps() {
   return Object.freeze({
+    helpers: getPropGroupMap('prop/helpers.yml'), 
     sdk: getPropGroupMap('prop/sdk.yml'), 
     'ui:model': getPropGroupMap('prop/ui.model.yml'),
   });
