@@ -6,6 +6,16 @@ export function asString(value) {
 }
 
 /**
+ * Convert value to element by querying selector, if value is a string. Return value otherwise.
+ */
+export function asElement(value) {
+  if (typeof value === 'string') {
+    return document.querySelector(value);
+  }
+  return value;
+}
+
+/**
  * Remove object properties with undefined values and return the object itself.
  */
 export function trimObj(obj) {

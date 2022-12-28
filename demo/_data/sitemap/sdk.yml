@@ -12,3 +12,8 @@ sections:
     path: /api/recommendation
   - title: Options
     path: /api/options
+- title: Helpers
+  path: /helpers
+  pages:
+  - title: Viewable
+    path: /helpers/viewable

@@ -2,6 +2,7 @@ import { trimObj, Component } from '@miso.ai/commons';
 import { root, register } from './root';
 import Api from './api';
 import Context from './context';
+import * as helpers from './utils';
 
 class MisoClient extends Component {
 
@@ -54,5 +55,7 @@ class MisoClient extends Component {
   }
 
 }
+
+MisoClient.helpers = helpers;
 
 export default MisoClient;
