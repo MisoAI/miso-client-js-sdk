@@ -2,81 +2,87 @@
   events:
   - value: product_detail_page_view
     tier: 1
-    desc: Used when a user views the detail page of a product.
+    desc: A user views a product page.
   - value: category_page_view
     tier: 1
-    desc: Used when a user views a category page for a specific "family" or "group" or products or content.
+    desc: A user views a category page for a specific "family" or "group" or products or content.
   - value: search
     tier: 1
-    desc: Used to record a search event with the keywords and filters the user used.
+    desc: A user submits search keywords and/or filter criteria.
   - value: impression
-    tier: 3
-    desc: Used to record when a user saw or was presented with a product or content asset.
+    tier: 2
+    desc: A product or content asset (usually from recommendation results) is rendered on the page or loaded into the client device.
+  - value: viewable_impression
+    tier: 2
+    desc: A user saw or was presented with a product or content asset. It is usually triggered when 50% of asset area lies in the viewport for 1 second.
+  - value: click
+    tier: 2
+    desc: A user clicks through a product link.
   - value: home_page_view
     tier: 2
-    desc: Used when a user views your home page.
+    desc: A user views your home page.
   - value: promo_page_view
-    tier: 2
-    desc: Used when a user views a specific promotional or curated marketing page about certain products or content.
+    tier: 3
+    desc: A user views a specific promotional or curated marketing page about certain products or content.
   - value: product_image_view
-    tier: 2
-    desc: Used when a user views the image of a product (e.g. to enlarge a product photo).
+    tier: 3
+    desc: A user views the image of a product (e.g. to enlarge a product photo).
 - title: Conversion (eCommerce)
   events:
   - value: add_to_cart
     tier: 1
-    desc: Used when a user adds a product into their shopping cart.
-  - value: remove_from_cart
-    tier: 1
-    desc: Used when a user removes a product from their shopping cart.
-  - value: subscribe
-    tier: 1
-    desc: Used when a user subscribes a product for its information.
+    desc: A user adds a product into their shopping cart.
   - value: checkout
     tier: 1
-    desc: Used when a user enters checks out with a set of products.
+    desc: A user checkouts with a set of products.
+  - value: remove_from_cart
+    tier: 2
+    desc: A user removes a product from their shopping cart.
   - value: refund
-    tier: 1
-    desc: Used when a user requests a refund of products they bought.
+    tier: 2
+    desc: A user requests a refund of products they bought.
+  - value: subscribe
+    tier: 3
+    desc: A user subscribes a product for its information.
 - title: Consumption (content media)
   events:
   - value: read
     tier: 3
-    desc: Used to record when and for how long a user reads a piece of written content.
+    desc: A user reads a piece of written content.
   - value: watch
     tier: 3
-    desc: Used to record when and for how long a user watches content that is of a video format.
+    desc: A user watches content that is of a video format.
   - value: listen
     tier: 3
-    desc: Used to record when and for how long a user listens to content that is of an audio format.
+    desc: A user listens to content that is of an audio format.
   - value: complete
     tier: 3
-    desc: Used when a user "complete" a product (e.g. complete a course or a video).
+    desc: A user finishes consuming a product (e.g. complete a course or a video).
   - value: add_to_collection
     tier: 3
-    desc: Used when a user adds a product to their personal collection.
+    desc: A user adds a product to their personal collection.
   - value: remove_from_collection
     tier: 3
-    desc: Used when a user removes a product from their personal collection.
+    desc: A user removes a product from their personal collection.
 - title: Feedback signals
   events:
-  - value: like
-    tier: 3
-    desc: Used to record when a user indicates a like for a product.
-  - value: dislike
-    tier: 3
-    desc: Used when a user indicates a dislike for a product or indicates they would like to not be recommended content or products like this in the future.
-  - value: share
-    tier: 3
-    desc: Used when a user shares a product or piece of content.
   - value: rate
     tier: 2
-    desc: Used when a user gives a rating to a product or piece of content.
+    desc: A user gives a rating to a product or piece of content.
+  - value: like
+    tier: 3
+    desc: A user indicates a like for a product.
+  - value: dislike
+    tier: 3
+    desc: A user indicates a dislike for a product.
+  - value: share
+    tier: 3
+    desc: A user shares a product or piece of content.
   - value: bookmark
     tier: 3
-    desc: Used when a user bookmarks a product.
+    desc: A user bookmarks a product.
 - title: Custom
   events:
   - value: custom
-    tier: 1
-    desc: Used when you want to record any custom interaction events between users and products.
+    tier: 2
+    desc: You can keep track of any custom event defined by yourself.

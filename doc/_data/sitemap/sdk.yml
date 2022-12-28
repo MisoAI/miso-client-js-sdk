@@ -46,6 +46,9 @@ sections:
   path: /interactions
   desc: Send user interaction events to Miso's data consumer.
   pages:
+  - title: Events
+    path: /interactions/events
+    desc: Definitions of interaction events.
   - title: Upload
     path: /interactions/upload
     desc: Send user interaction events to Miso's data consumer.
