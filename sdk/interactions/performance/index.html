@@ -211,7 +211,7 @@
 </ul>
 <p>These metrics give us a picture of how well a recommendation unit perform. We hence encourage you to track the three key interaction events: <code>impression</code>, <code>viewable_impression</code>, and <code>click</code>, when you integrate Miso recommendation APIs.</p>
 <h3 id="impression" tabindex="-1">Impression</h3>
-<p>An <code>impression</code> event is convensionally defined by:</p>
+<p>An <code>impression</code> event is conventionally defined by:</p>
 <ul>
 <li>In a web page, the content is inserted into the DOM tree (even if it's not in the viewport right away), or</li>
 <li>On a mobile device, the content is downloaded to the device.</li>
@@ -220,7 +220,7 @@
 <p>To send an <code>impression</code> event with SDK:</p>
 <pre class="language-js"><code class="language-js">miso<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'impression'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="viewable-impression" tabindex="-1">Viewable Impression</h3>
-<p>A <code>viewable_impression</code> event is convensionally defined by:</p>
+<p>A <code>viewable_impression</code> event is conventionally defined by:</p>
 <ul>
 <li>50% of the content area lies in viewport for a continuous 1 second.</li>
 </ul>
