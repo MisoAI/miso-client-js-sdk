@@ -8,48 +8,58 @@ Scroll down to trigger viewable event of target element.
   .block {
     margin: 20px;
     width: 400px;
-    height: 1500px;
+    height: 100vh;
     border: 2px dotted #CCC;
   }
-  #target {
+  .target {
     margin: 20px;
     width: 400px;
     height: 200px;
     border: 2px solid #CCC;
-    text-align: center;
-    line-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
   }
 </style>
 <div>
-  <div class="block">
-  </div>
-</div>
-<div>
-  <div id="target">
-    Viewable Target
-  </div>
-</div>
-<div>
-  <div class="block">
-  </div>
-</div>
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <!--
-    <div class="toast-header">
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  <div class="target" data-id="0">
+    <div class="title">
+      Target 0
     </div>
-    -->
-    <div class="toast-body">
-      Viewable triggered!
+    <div>
+      <label for="target-0-checkbox">Viewable</label>
+      <input type="checkbox" id="target-0-checkbox">
+    </div>
+  </div>
+</div>
+<div>
+  <div class="block">
+  </div>
+</div>
+<div>
+  <div class="target" data-id="1">
+    <div>
+      Target 1
+    </div>
+    <div>
+      <label for="target-1-checkbox">Viewable</label>
+      <input type="checkbox" id="target-1-checkbox">
     </div>
   </div>
 </div>
 <script>
 (async () => {
-  const toast = document.querySelector('#toast');
-  await MisoClient.helpers.viewable('#target');
-  (new bootstrap.Toast(toast)).show();
+  for (const target of document.querySelectorAll('.target')) {
+    (async (target) => {
+      const input = target.querySelector('input');
+      input.addEventListener('click', e => e.preventDefault());
+      await MisoClient.helpers.viewable(target, { duration: 0 });
+      input.checked = true;
+      window.helpers.ui.alert(`Viewable: Target ${target.getAttribute('data-id')}`, { autohide: false, color: 'success' });
+    })(target);
+  }
 })();
 </script>
 {% endraw %}

@@ -1,5 +1,8 @@
 import MisoClient from '@miso.ai/client-sdk';
 import { DemoPlugin } from '../plugin';
+import * as helpers from '../helpers';
+
+window.helpers = helpers;
 
 MisoClient.plugins.use(DemoPlugin);
 
