@@ -73,7 +73,7 @@ These metrics give us a picture of how well a recommendation unit perform. We he
 
 ### Impression
 
-An `impression` event is convensionally defined by:
+An `impression` event is conventionally defined by:
 
 * In a web page, the content is inserted into the DOM tree (even if it's not in the viewport right away), or
 * On a mobile device, the content is downloaded to the device.
@@ -91,7 +91,7 @@ miso.api.interactions.upload({
 
 ### Viewable Impression
 
-A `viewable_impression` event is convensionally defined by:
+A `viewable_impression` event is conventionally defined by:
 
 * 50% of the content area lies in viewport for a continuous 1 second.
 
