@@ -22,7 +22,7 @@ export default class AutoEventsPlugin extends Component {
   _injectClient(client) {
     const context = new AutoEventsContext(this);
     this._contexts.set(client, context);
-    client.autoEvents = context.interface();
+    client.autoEvents = context.interface;
   }
 
   _captureApiRequest({ client, apiGroup, apiName, payload }) {
@@ -62,6 +62,9 @@ class AutoEventsContext {
     this._config = {
       search: true,
     };
+    this.interface = Object.freeze({
+      config: this.config.bind(this),
+    });
   }
 
   config(options = {}) {
@@ -81,12 +84,6 @@ class AutoEventsContext {
     }
     return Object.freeze({
       ...this._config,
-    });
-  }
-
-  interface() {
-    return Object.freeze({
-      config: this.config.bind(this),
     });
   }
 
