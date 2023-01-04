@@ -136,12 +136,12 @@ export default class MisoElement extends HTMLElement {
   _trigger(condition) {
     const command = this._triggers[condition];
     if (command) {
-      this._commend(command);
+      this._command(command);
     }
     this._emit('trigger', command ? { condition, command } : { condition });
   }
 
-  _commend(command) {}
+  _command(command) {}
 
   _emit(name, detail) {
     this.dispatchEvent(new CustomEvent(name, { detail }));
