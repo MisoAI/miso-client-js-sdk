@@ -10,6 +10,7 @@ export default class UserPlugin extends Component {
 
   constructor() {
     super('user');
+    this._contexts = new WeakMap();
   }
 
   install(MisoClient, context) {
@@ -19,8 +20,9 @@ export default class UserPlugin extends Component {
   }
 
   _injectClient(client) {
-    const userContext = client._userContext = new UserContext(this);
-    delegateProperties(client.context, userContext, ['anonymous_id', 'user_id', 'user_hash']);
+    const context = new UserContext(this);
+    this._contexts.set(client, context);
+    delegateProperties(client.context, context, ['anonymous_id', 'user_id', 'user_hash']);
   }
 
   _modifyPayload({ client, apiGroup, apiName, payload }) {
