@@ -14,7 +14,7 @@ export default class Search extends ApiBase {
     return this._run('autocomplete', payload, options);
   }
 
-  async mget(payload, options) {
+  async multipleGet(payload, options) {
     return this._run('mget', payload, options);
   }
 
