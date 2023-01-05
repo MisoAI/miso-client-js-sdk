@@ -54,4 +54,11 @@ sections:
     desc: Send user interaction events to Miso's data consumer.
   - title: Performance
     path: /interactions/performance
-    desc: Track the performance of recommendation units
+    desc: Track the performance of recommendation units.
+- title: Advanced Topics
+  path: /advanced
+  desc: Some advanced topics for great adventurers.
+  pages:
+  - title: Recommendation Units
+    path: /advanced/units
+    desc: Manage a recommendation UI block.
