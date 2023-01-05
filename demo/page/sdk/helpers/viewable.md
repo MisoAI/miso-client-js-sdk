@@ -6,13 +6,13 @@ Scroll down to trigger viewable event of target element.
 {% raw %}
 <style>
   .block {
-    margin: 20px;
+    margin: 20px 0;
     width: 400px;
     height: 100vh;
     border: 2px dotted #CCC;
   }
   .target {
-    margin: 20px;
+    margin: 20px 0;
     width: 400px;
     height: 200px;
     border: 2px solid #CCC;
