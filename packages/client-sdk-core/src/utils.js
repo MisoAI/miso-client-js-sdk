@@ -3,6 +3,7 @@ import { ContinuityObserver, asElement } from '@miso.ai/commons';
 export async function viewable(element, {
   area = 0.5,
   duration = 1000,
+  signal,
 } = {}) {
   element = asElement(element);
   // TODO: check element
@@ -22,5 +23,12 @@ export async function viewable(element, {
       threshold: area,
     });
     intersection.observe(element);
+
+    if (signal && signal.addEventListener) {
+      signal.addEventListener('abort', () => {
+        continuity.disconnect();
+        intersection.disconnect();
+      });
+    }
   });
 }
