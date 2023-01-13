@@ -53,6 +53,7 @@
     "fast-glob": "^3.2.11",
     "jest": "^28.1.0",
     "js-yaml": "^4.1.0",
+    "rimraf": "^4.0.4",
     "rollup": "^3.10.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",
