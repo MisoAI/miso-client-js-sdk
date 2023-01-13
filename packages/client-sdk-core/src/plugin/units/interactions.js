@@ -30,6 +30,7 @@ export default class Interactions {
         },
       },
     };
+    // TODO: shall we make this generic for all interactions?
     if (this._payloadPass) {
       // TODO: handle error
       payload = this._payloadPass(payload);
