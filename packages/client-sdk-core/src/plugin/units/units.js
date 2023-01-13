@@ -1,6 +1,7 @@
 import { isElement, delegateGetters } from '@miso.ai/commons';
 import { ATTR_UNIT_ID } from './constants';
 import Unit from './unit';
+import Interactions from './interactions';
 
 export default class UnitsContext {
 
@@ -9,6 +10,7 @@ export default class UnitsContext {
     this._client = client;
     this._units = new Map();
     this._e2u = new WeakMap();
+    this.interactions = new Interactions(this);
     this.interface = new Units(this);
   }
 
@@ -49,7 +51,7 @@ export default class UnitsContext {
 class Units {
 
   constructor(context) {
-    delegateGetters(this, context, ['list', 'has', 'create', 'get']);
+    delegateGetters(this, context, ['list', 'has', 'create', 'get', 'interactions']);
   }
 
 }

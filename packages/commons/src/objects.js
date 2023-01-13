@@ -34,6 +34,18 @@ export function mapValues(obj, fn) {
 }
 
 /**
+ * Get value from a Map if available, compute and set it otherwise.
+ */
+ export function computeIfAbsent(map, key, fn) {
+  if (map.has(key)) {
+    return map.get(key);
+  }
+  const value = fn(key);
+  map.set(key, value);
+  return value;
+}
+
+/**
  * Delegate getters and methods from source object to target object.
  */
 export function delegateGetters(target, source, propNames) {

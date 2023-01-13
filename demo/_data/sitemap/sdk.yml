@@ -22,3 +22,7 @@ sections:
   pages:
   - title: Basic
     path: /units/basic
+  - title: Rescan
+    path: /units/rescan
+  - title: Watch
+    path: /units/watch

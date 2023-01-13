@@ -1,6 +1,6 @@
-import { isElement, trimObj, asArray } from '@miso.ai/commons';
-import { ATTR_PRODUCT_ID } from './constants';
+import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, EventEmitter } from '@miso.ai/commons';
 import { viewable as whenViewable } from '../../utils';
+import { EVENT_TYPE, TRACKING_STATE, validateEventType, validateTrackingState } from './constants';
 
 function mergeOptions(def, opt) {
   // if opt is falsy then return false, merge otherwise
@@ -8,7 +8,7 @@ function mergeOptions(def, opt) {
 }
 
 const DEFAULT_TRACKING_OPTIONS = {
-  watchElements: false,
+  autoScan: true,
   viewable: {
     area: 0.5,
     duration: 1000,
@@ -18,28 +18,20 @@ const DEFAULT_TRACKING_OPTIONS = {
   }
 };
 
-const STATE = {
-  INITIAL: 0,
-  TRACKING: 1,
-  TRIGGERED: 2,
-};
-
 export default class Tracker {
 
   constructor(unit) {
     this._unit = unit;
-    this._eventStates = new Map();
-    this._sentEvents = {
-      impression: new Set(),
-      viewable: new Set(),
-      click: new Set(),
-    };
+    (this._events = new EventEmitter())._injectSubscribeInterface(this);
+    this._viewables = new WeakMap();
     this._handleClick = this._handleClick.bind(this);
+    this._states = new States();
+
+    this._unit.items.on('change', this._handleItemsChange.bind(this));
   }
 
   start(options) {
-    const root = this._unit.element;
-    if (!root) {
+    if (!this._unit.element) {
       throw new Error(`The unit has no bound element. Call unit.bind(element) to associated the unit to an element.`);
     }
     if (this._options) {
@@ -49,37 +41,27 @@ export default class Tracker {
     // settle tracking options
     this._options = this._normalizeOptions(options);
 
-    this._watchElements();
     this._trackClicks();
 
-    this.sync();
-  }
-
-  sync() {
-    const { impression, viewable } = this._options;
-    if (!impression && !viewable) {
-      return;
+    if (this._options.autoScan) {
+      this._unit.items.scan();
     }
-    // scan all descendants for product item elements
-    const elements = this._unit.element.querySelectorAll(`[${ATTR_PRODUCT_ID}]`);
-    this._trackImpressions(elements);
-    this._trackViewables(elements);
-  }
-
-  interceptEventPayload(callback) {
-    this._eventPayloadPass = callback;
   }
 
   impression(productIds) {
-    this._sendEvent('impression', productIds, true);
+    this._trigger(productIds, EVENT_TYPE.IMPRESSION, true);
   }
 
   viewable(productIds) {
-    this._sendEvent('viewable', productIds, true);
+    this._trigger(productIds, EVENT_TYPE.VIEWABLE, true);
   }
 
   click(productIds) {
-    this._sendEvent('click', productIds, true);
+    this._trigger(productIds, EVENT_TYPE.CLICK, true);
+  }
+
+  getState(productId) {
+    return this._states.getFullState(productId);
   }
 
 
@@ -94,115 +76,91 @@ export default class Tracker {
     });
   }
 
-  _watchElements() {
-    const { watchElements, impression, viewable } = this._options;
-    if (!watchElements || (!impression && !viewable)) {
-      return;
-    }
-    const observer = this._mutationObserver = new MutationObserver(mutations => {
-      let hasAddedElements = false;
-      let removedElements = [];
-      for (const { addedNodes, removedNodes } of mutations) {
-        hasAddedElements = hasAddedElements || addedNodes.length > 0;
-        addedElements = [...addedElements, ...addedNodes];
-        removedElements = [...removedElements, ...removedNodes];
-      }
-      if (hasAddedElements) {
-        this.sync();
-      }
-      this._untrackViewables(removedElements);
-    });
-    observer.observe(this._element, { childList: true, subtree: true });
+  _handleItemsChange({ bounds, unbounds }) {
+    this._untrackViewables(unbounds);
+    this._trackImpressions(bounds);
+    this._trackViewables(bounds);
   }
 
-  _unwatchElements() {
-    this._mutationObserver && this._mutationObserver.disconnect();
+  _handleItemsBind(bindings) {
+    this._trackImpressions(bindings);
+    this._trackViewables(bindings);
   }
 
-  _trackImpressions(elements) {
+  _handleItemsUnbind(bindings) {
+    this._untrackViewables(bindings);
+  }
+
+  _trackImpressions(bindings) {
     const options = this._options.impression;
     if (!options) {
       return;
     }
-    const productIds = [];
-    for (const element of elements) {
-      const productId = element.getAttribute(ATTR_PRODUCT_ID);
-      if (!productId) {
-        continue;
-      }
-      const state = this._getEventState(productId);
-      if (state.impression !== STATE.TRIGGERED) {
-        state.impression = STATE.TRIGGERED;
-        productIds.push(productId);
-      }
-    }
-    this._sendEvent('impression', productIds);
+    this._trigger(bindings.map(b => b.productId), EVENT_TYPE.IMPRESSION);
   }
 
-  _trackViewables(elements) {
+  _trackViewables(bindings) {
     const options = this._options.viewable;
     if (!options) {
       return;
     }
-    for (const element of elements) {
-      this._trackViewableOnElement(element);
+    // TODO: option: useUnitElement? TBD
+    for (const binding of bindings) {
+      this._trackViewableOnElement(binding);
     }
   }
 
-  async _trackViewableOnElement(element) {
-    if (!isElement(element)) {
-      return;
-    }
-    const productId = element.getAttribute(ATTR_PRODUCT_ID);
-    if (!productId) {
+  async _trackViewableOnElement({ productId, element }) {
+    if (!productId || !isElement(element) || this._viewables.has(element)) {
       return;
     }
     // TODO: when element is replaced without proper unload...
-    const state = this._getEventState(productId);
-    if (state.viewable !== STATE.INITIAL) {
+    const type = EVENT_TYPE.VIEWABLE;
+    const state = this._states.get(productId, type);
+    if (state !== TRACKING_STATE.UNTRACKED) {
       return;
     }
-    state.viewable = STATE.TRACKING;
+    this._states.set(productId, type, TRACKING_STATE.TRACKING);
+
     const { area, duration } = this._options.viewable;
-    await whenViewable(element, { area, duration });
-    state.viewable = STATE.TRIGGERED;
-    this._sendEvent('viewable', [productId]);
+    // abort signal
+    const ac = new AbortController();
+    const { signal } = ac;
+    this._viewables.set(element, { ac });
+    await whenViewable(element, { area, duration, signal });
+    this._trigger([productId], type);
   }
 
-  _untrackAllViewables() {
-    // TODO
+  _untrackViewableOnElement({ productId, element }) {
+    const viewable = this._viewables.get(element);
+    if (!viewable) {
+      return;
+    }
+    this._states.set(productId, EVENT_TYPE.VIEWABLE, TRACKING_STATE.UNTRACKED);
+    viewable.ac.abort();
+    this._viewables.delete(element);
   }
 
-  _untrackViewables(elements) {
-    // we need to scan through all descendants to scavenge detached product items
-    // TODO
+  _untrackViewables(bindings) {
+    for (const binding of bindings) {
+      this._untrackViewableOnElement(binding);
+    }
   }
 
   _trackClicks() {
+    this._states.setGlobal(EVENT_TYPE.CLICK, TRACKING_STATE.TRACKING);
     this._unit.element.addEventListener('click', this._handleClick);
   }
 
   _untrackClicks() {
+    this._states.setGlobal(EVENT_TYPE.CLICK, TRACKING_STATE.UNTRACKED);
     this._unit.element.removeEventListener('click', this._handleClick);
   }
 
   _destroy() {
-    this._unwatchElements();
+    // assume _unit.items are destroyed later
+    this._untrackViewables(this._unit.items.list());
     this._untrackClicks();
-  }
-
-
-
-  _getEventState(productId) {
-    let state = this._eventStates.get(productId);
-    if (!state) {
-      this._eventStates.set(productId, state = {
-        impression: STATE.INITIAL,
-        viewable: STATE.INITIAL,
-        click: STATE.INITIAL,
-      });
-    }
-    return state;
   }
 
   _handleClick(event) {
@@ -210,17 +168,13 @@ export default class Tracker {
     if (!options) {
       return;
     }
-    let productId;
-    for (let element = event.target; !productId && element && element !== document; element = element.parentElement) {
-      productId = element.getAttribute(ATTR_PRODUCT_ID);
-    }
-    if (!productId) {
+    const items = this._unit.items;
+    const binding = findInAncestors(event.target, element => items.get(element));
+    if (!binding) {
       return;
     }
-    const state = this._getEventState(productId);
-    if (state.click === STATE.TRIGGERED) {
-      return;
-    }
+    const { productId } = binding;
+
     if (!options.lenient) {
       // only left click counts
 
@@ -230,60 +184,80 @@ export default class Tracker {
 
       // TODO
     }
-    state.click = STATE.TRIGGERED;
-    this._sendEvent('click', [productId]);
+    this._trigger([productId], EVENT_TYPE.CLICK);
   }
 
-  _sendEvent(type, productIds, manual) {
-    if (type !== 'impression' && type !== 'viewable' && type !== 'click') {
-      throw new Error(`Unrecognized event type: ${type}`);
-    }
-    productIds = asArray(productIds);
+  _trigger(productIds, type, manual) {
+    validateEventType(type);
 
-    // dedupe
-    const sentEvents = this._sentEvents[type];
-    productIds = productIds.filter(id => {
-      const sent = sentEvents.has(id);
-      if (!sent) {
-        sentEvents.add(id);
-      }
-      return !sent;
-    });
+    // ignore already triggered
+    productIds = this._states.untriggered(asArray(productIds), type);
 
     if (productIds.length === 0) {
       return;
     }
+    this._states.set(productIds, type, TRACKING_STATE.TRIGGERED);
 
-    // TODO: emit
+    this._events.emit('event', {
+      type,
+      productIds,
+      manual,
+    });
+  }
 
-    // we want to queue the event for a while so we can merge them and save requests
-    // TODO
+}
 
-    const client = this._unit._context._client;
-    const payloads = this._buildPayloads(type, productIds, manual);
-    if (payloads.length > 0) {
-      client.api.interactions.upload(payloads);
+class States {
+
+  static NEW = {
+    [EVENT_TYPE.IMPRESSION]: TRACKING_STATE.UNTRACKED,
+    [EVENT_TYPE.VIEWABLE]: TRACKING_STATE.UNTRACKED,
+  };
+
+  static UNTRACKED = Object.freeze({
+    [EVENT_TYPE.IMPRESSION]: TRACKING_STATE.UNTRACKED,
+    [EVENT_TYPE.VIEWABLE]: TRACKING_STATE.UNTRACKED,
+    [EVENT_TYPE.CLICK]: TRACKING_STATE.UNTRACKED,
+  });
+
+  constructor() {
+    this._states = new Map(); // productId -> {impression, viewable, click}
+    this._global = { ...States.UNTRACKED };
+  }
+
+  getFullState(productId) {
+    // when we receive a bind event, impression is trigger, making an entry here
+    // so if the state is not found, the product is not present yet => all untracked
+    const state = this._states.get(productId);
+    return state ? Object.freeze({ ...this._global, ...state }) : States.UNTRACKED;
+  }
+
+  get(productId, type) {
+    const state = this._states.get(productId);
+    return state ? state[type] || this._global[type] : TRACKING_STATE.UNTRACKED;
+  }
+
+  setGlobal(type, state) {
+    validateEventType(type);
+    validateTrackingState(state);
+    this._global[type] = state;
+  }
+
+  set(productIds, type, state) {
+    validateEventType(type);
+    validateTrackingState(state);
+    for (const productId of asArray(productIds)) {
+      this._setOne(productId, type, state);
     }
   }
 
-  _buildPayloads(type, productIds, manual) {
-    const { id, uuid } = this._unit;
-    let payload = {
-      type: type === 'viewable' ? 'viewable_impression' : type,
-      product_ids: productIds,
-      context: {
-        custom_context: {
-          unit_id: id,
-          unit_instance_uuid: uuid,
-          trigger: manual ? 'manual' : 'auto',
-        },
-      },
-    };
-    if (this._eventPayloadPass) {
-      // TODO: handle error
-      payload = this._eventPayloadPass(payload);
-    }
-    return asArray(payload);
+  _setOne(productId, type, state) {
+    // leave click untracked/tracking judged by its global state
+    computeIfAbsent(this._states, productId, () => ({ ...States.NEW }))[type] = state;
+  }
+
+  untriggered(productIds, type) {
+    return productIds.filter(productId => this.get(productId, type) !== TRACKING_STATE.TRIGGERED);
   }
 
 }

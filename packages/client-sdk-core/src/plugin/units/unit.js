@@ -1,13 +1,15 @@
-import { uuidv4 } from '@miso.ai/commons';
+import { uuidv4, defineValues } from '@miso.ai/commons';
+import Items from './items';
 import Tracker from './tracker';
 
 export default class Unit {
 
   constructor(context, id) {
     this._context = context;
-    Object.defineProperties(this, {
-      uuid: { value: uuidv4() },
-      id: { value: id },
+    defineValues(this, {
+      uuid: uuidv4(),
+      id,
+      items: new Items(this),
     });
     context._units.set(id, this);
   }
@@ -17,7 +19,12 @@ export default class Unit {
   }
 
   get tracker() {
-    return this._tracker || (this._tracker = new Tracker(this));
+    if (!this._tracker) {
+      const tracker = this._tracker = new Tracker(this);
+      const { id, uuid } = this;
+      tracker.on('event', event => this._context.interactions._send({ id, uuid }, event));
+    }
+    return this._tracker;
   }
 
   bind(element) {
@@ -33,6 +40,7 @@ export default class Unit {
 
   destroy() {
     this._tracker && this._tracker._destroy();
+    this.items._destroy();
     this._context._e2u.delete(this._element);
     this._context._units.delete(this.id);
     this._element = undefined;

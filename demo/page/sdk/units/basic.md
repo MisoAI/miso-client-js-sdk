@@ -45,18 +45,18 @@ Scroll down to see the recommendation unit.
 </div>
 <div>
   <h3>Recommendation Unit</h3>
-  <ul id="unit" class="unit" data-miso-unit-id="unit-0001">
-    <li id="product-0001" class="item" data-miso-product-id="product-0001">
-      <a href="#product-0001">Product 1</a>
+  <ul id="unit" class="unit" data-miso-unit-id="unit-1">
+    <li id="product-1" class="item" data-miso-product-id="product-1">
+      <a href="#">Product 1</a>
     </li>
-    <li id="product-0002" class="item" data-miso-product-id="product-0002">
-      <a href="#product-0002">Product 2</a>
+    <li id="product-2" class="item" data-miso-product-id="product-2">
+      <a href="#">Product 2</a>
     </li>
-    <li id="product-0003" class="item" data-miso-product-id="product-0003">
-      <a href="#product-0003">Product 3</a>
+    <li id="product-3" class="item" data-miso-product-id="product-3">
+      <a href="#">Product 3</a>
     </li>
-    <li id="product-0004" class="item" data-miso-product-id="product-0004">
-      <a href="#product-0004">Product 4</a>
+    <li id="product-4" class="item" data-miso-product-id="product-4">
+      <a href="#">Product 4</a>
     </li>
   </ul>
 </div>
