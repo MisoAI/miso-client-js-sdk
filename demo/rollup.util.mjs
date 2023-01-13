@@ -1,4 +1,5 @@
-import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import 'dotenv/config';
 import glob from 'fast-glob';
 import commonjs from '@rollup/plugin-commonjs';
@@ -7,6 +8,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const cwd = join(__dirname, 'src/entry');
 export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3));
 

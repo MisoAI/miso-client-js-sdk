@@ -1,5 +1,3 @@
-//import { join } from 'path';
-//import glob from 'fast-glob';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
@@ -7,10 +5,7 @@ import terser from '@rollup/plugin-terser';
 import filesize from 'rollup-plugin-filesize';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
-import manifest from './manifest';
-
-//const cwd = join(__dirname, 'src');
-//export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3));
+import manifest from './manifest.mjs';
 
 function _config({ input, output: { filename: outputFilename, ...output } }, env = 'prod') {
   const prod = env === 'prod';
