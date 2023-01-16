@@ -11,6 +11,9 @@
     "doc:start": "npm-run-all doc:build:sass --parallel doc:watch:*",
     "doc:debug": "DEBUG=* npx eleventy"
   },
+  "dependencies": {
+    "@miso.ai/doc-utils": "^1.0.0"
+  },
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",

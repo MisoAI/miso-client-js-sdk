@@ -25,6 +25,7 @@
   "dependencies": {
     "@miso.ai/client-sdk": "file:packages/client-sdk",
     "@miso.ai/client-sdk-algolia": "file:packages/client-sdk-algolia",
+    "@miso.ai/doc-utils": "^1.0.0",
     "instantsearch.js": "^4.40.4"
   }
 }
