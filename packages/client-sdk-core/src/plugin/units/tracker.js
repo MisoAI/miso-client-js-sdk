@@ -177,12 +177,19 @@ export default class Tracker {
 
     if (!options.lenient) {
       // only left click counts
+      if (event.button !== 0) {
+        return;
+      }
 
       // event isPreventDefault
+      if (event.defaultPrevented) {
+        return;
+      }
 
       // go through a real link
-
-      // TODO
+      if (!findInAncestors(event.target, element => (element.tagName === 'A' && element.href) || undefined)) {
+        return;
+      }
     }
     this._trigger([productId], EVENT_TYPE.CLICK);
   }

@@ -26,3 +26,5 @@ sections:
     path: /units/rescan
   - title: Watch
     path: /units/watch
+  - title: Click
+    path: /units/click
