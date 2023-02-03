@@ -1,6 +1,6 @@
 {
   "name": "@miso.ai/client-sdk-gtm",
-  "description": "An SDK plugin capture user interactions from Google Tag Manager",
+  "description": "An SDK plugin which capture user interactions from Google Tag Manager",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "files": [
