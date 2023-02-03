@@ -1,5 +1,4 @@
-import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, EventEmitter } from '@miso.ai/commons';
-import { viewable as whenViewable } from '../../utils';
+import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, EventEmitter, viewable as whenViewable } from '@miso.ai/commons';
 import { EVENT_TYPE, TRACKING_STATE, validateEventType, validateTrackingState } from './constants';
 
 function mergeOptions(def, opt) {

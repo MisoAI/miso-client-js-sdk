@@ -55,7 +55,7 @@ Scroll down to trigger viewable event of target element.
     (async (target) => {
       const input = target.querySelector('input');
       input.addEventListener('click', e => e.preventDefault());
-      await MisoClient.helpers.viewable(target, { duration: 0 });
+      await MisoClient.helpers.viewable(target, { duration: 1000 });
       input.checked = true;
       window.helpers.ui.alert(`Viewable: Target ${target.getAttribute('data-id')}`, { autohide: false, color: 'success' });
     })(target);
