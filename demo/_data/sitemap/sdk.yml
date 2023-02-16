@@ -17,14 +17,3 @@ sections:
   pages:
   - title: Viewable
     path: /helpers/viewable
-- title: Units
-  path: /units
-  pages:
-  - title: Basic
-    path: /units/basic
-  - title: Rescan
-    path: /units/rescan
-  - title: Watch
-    path: /units/watch
-  - title: Click
-    path: /units/click

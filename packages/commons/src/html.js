@@ -38,6 +38,33 @@ export function isInDocument(element) {
 }
 
 /**
+ * Define a custom element class and update all currently present ones in DOM.
+ */
+export function defineAndUpgrade(elementClass) {
+  const { tagName } = elementClass;
+  customElements.define(tagName, elementClass);
+  for (const element of document.querySelectorAll(tagName)) {
+    customElements.upgrade(element);
+  }
+}
+
+/**
+ * Same as window.requestAnimationFrame(), but as an async function.
+ */
+export async function requestAnimationFrame(callback) {
+  return new Promise((resolve, reject) => {
+    window.requestAnimationFrame(async () => {
+      try {
+        await callback();
+        resolve();
+      } catch(err) {
+        reject(err);
+      }
+    });
+  });
+}
+
+/**
  * Return a promise resolved when the given element reaches viewable condition.
  */
 export async function viewable(element, {

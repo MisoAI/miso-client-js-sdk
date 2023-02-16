@@ -1,5 +1,6 @@
-export const ATTR_UNIT_ID = 'data-miso-unit-id';
-export const ATTR_PRODUCT_ID = 'data-miso-product-id';
+export const ATTR_DATA_MISO_UNIT_ID = `data-miso-unit-id`;
+export const ATTR_DATA_MISO_PRODUCT_ID = `data-miso-product-id`;
+export const DEFAULT_UNIT_ID = 'default';
 
 export const EVENT_TYPE = Object.freeze({
   IMPRESSION: 'impression',
@@ -7,10 +8,17 @@ export const EVENT_TYPE = Object.freeze({
   CLICK: 'click',
 });
 
-export const TRACKING_STATE = Object.freeze({
+export const TRACKING_STATUS = Object.freeze({
   UNTRACKED: 'untracked',
   TRACKING: 'tracking',
   TRIGGERED: 'triggered',
+});
+
+export const VIEW_STATUS = Object.freeze({
+  INITIAL: 'initial',
+  LOADING: 'loading',
+  ERRONEOUS: 'erroneous',
+  READY: 'ready',
 });
 
 export function validateEventType(value) {
@@ -19,8 +27,8 @@ export function validateEventType(value) {
   }
 }
 
-export function validateTrackingState(value) {
-  if (value !== TRACKING_STATE.UNTRACKED && value !== TRACKING_STATE.TRACKING && value !== TRACKING_STATE.TRIGGERED) {
-    throw new Error(`Unrecognized tracking state: ${value}`);
+export function validateTrackingStatus(value) {
+  if (value !== TRACKING_STATUS.UNTRACKED && value !== TRACKING_STATUS.TRACKING && value !== TRACKING_STATUS.TRIGGERED) {
+    throw new Error(`Unrecognized tracking status: ${value}`);
   }
 }

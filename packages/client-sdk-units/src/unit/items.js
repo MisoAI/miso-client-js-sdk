@@ -1,11 +1,10 @@
-import { isElement, isInDocument, EventEmitter } from '@miso.ai/commons';
-import { ATTR_PRODUCT_ID } from './constants';
+import { isElement, isInDocument } from '@miso.ai/commons';
+import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
 
 export default class Items {
 
   constructor(unit) {
     this._unit = unit;
-    (this._events = new EventEmitter())._injectSubscribeInterface(this);
     this._bindings = new Map();
     this._e2b = new WeakMap();
   }
@@ -21,9 +20,12 @@ export default class Items {
     return isElement(ref) ? this._e2b.get(ref) : this._bindings.get(ref);
   }
 
-  scan() {
+  refresh() {
+    if (!this._unit.element) {
+      return this.unbindAll();
+    }
     const unbounds = this._purge();
-    const elements = this._unit.element.querySelectorAll(`[${ATTR_PRODUCT_ID}]`);
+    const elements = this._unit.element.querySelectorAll(`[${ATTR_DATA_MISO_PRODUCT_ID}]`);
     const bounds = [];
     // warn for conflict productIds
     // TODO
@@ -36,19 +38,18 @@ export default class Items {
         unbounds.push(u);
       }
     }
-    this._emitChange({ bounds, unbounds });
+    //this._emitChange({ bounds, unbounds });
+    return { bounds, unbounds };
   }
 
   unbindAll() {
     const unbounds = this.list();
-    if (unbounds.length > 0) {
-      this._bindings.clear();
-      this._e2b.clear();
-      this._emitChange({ unbounds });
-    }
-    return unbounds;
+    this._bindings.clear();
+    //this._emitChange({ unbounds });
+    return { bounds: [], unbounds };
   }
 
+  /*
   bind(productId, element) {
     const [binding, ...unbounds] = this._bind(productId, element);
     this._emitChange({ bounds: [binding], unbounds });
@@ -63,16 +64,20 @@ export default class Items {
     }
     return binding;
   }
+  */
 
+  // TODO: move to trigger
+  /*
   watch() {
-    const observer = this._mutationObserver = new MutationObserver(() => this.scan());
+    const observer = this._mutationObserver = new MutationObserver(() => this.refresh());
     observer.observe(this._unit.element, { childList: true, subtree: true });
-    this.scan();
+    this.refresh();
   }
 
   unwatch() {
     this._mutationObserver && this._mutationObserver.disconnect();
   }
+  */
 
 
 
@@ -82,10 +87,10 @@ export default class Items {
     }
     if (element === undefined && isElement(productId)) {
       element = productId;
-      if (!element.hasAttribute(ATTR_PRODUCT_ID)) {
-        throw new Error(`No attribute "${ATTR_PRODUCT_ID} found on element ${element}"`);
+      if (!element.hasAttribute(ATTR_DATA_MISO_PRODUCT_ID)) {
+        throw new Error(`No attribute "${ATTR_DATA_MISO_PRODUCT_ID} found on element ${element}"`);
       }
-      productId = element.getAttribute(ATTR_PRODUCT_ID);
+      productId = element.getAttribute(ATTR_DATA_MISO_PRODUCT_ID);
     }
 
     // check if binding already exist
@@ -127,15 +132,17 @@ export default class Items {
     return binding;
   }
 
+  /*
   _emitChange({ bounds = [], unbounds = [] }) {
     if (bounds.length === 0 && unbounds.length === 0) {
       return;
     }
-    this._events.emit('change', { bounds, unbounds });
+    this._unit._events.emit('items', { bounds, unbounds });
   }
+  */
 
   _destroy() {
-    this.unwatch();
+    //this.unwatch();
     this.unbindAll();
   }
 

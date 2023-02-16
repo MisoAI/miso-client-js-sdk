@@ -21,6 +21,7 @@ function _config(name, env = 'prod') {
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('production'),
       __DEFAULT_API_KEY__: JSON.stringify(process.env.DEFAULT_API_KEY),
+      __DEFAULT_USER_ID__: JSON.stringify(process.env.DEFAULT_USER_ID),
     }),
     babel({
       babelHelpers: 'bundled'

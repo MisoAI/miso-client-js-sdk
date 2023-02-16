@@ -21,6 +21,10 @@ class Root extends Component {
     return [ ...this._clients]; // write protection
   }
 
+  async any() {
+    return this._clients[0] || this._any || (this._any = (await this._events.once('create')).data);
+  }
+
 }
 
 export const root = new Root();
@@ -28,7 +32,7 @@ export const root = new Root();
 export function init(MisoClient) {
   const pluginRoot = root._pluginRoot;
   root.MisoClient = pluginRoot.MisoClient = MisoClient;
-  delegateGetters(MisoClient, root, ['version', 'instances', 'meta', 'on', 'once']);
+  delegateGetters(MisoClient, root, ['version', 'instances', 'any', 'meta', 'on', 'once']);
   delegateGetters(MisoClient, pluginRoot, ['plugins']);
   return MisoClient;
 }

@@ -27,13 +27,13 @@ export default class Registry extends Component {
 
   _checkKey(key) {
     if (typeof key !== 'string' || !key) {
-      throw new Error(`Expect ${this._libName} ${this._keyName} to be a non-empty string: ${key}`);
+      throw new Error(`Expect lib.${this._keyName} to be a non-empty string: ${key}`);
     }
   }
 
   _checkLib(lib) {
     if (typeof lib !== 'function') {
-      throw new Error(`Expect ${this._libName} to be a constructor or function: ${lib}`);
+      throw new Error(`Expect lib to be a class or function: ${lib}`);
     }
   }
   

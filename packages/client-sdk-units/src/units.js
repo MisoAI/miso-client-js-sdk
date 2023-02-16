@@ -1,5 +1,5 @@
 import { isElement, delegateGetters } from '@miso.ai/commons';
-import { ATTR_UNIT_ID } from './constants';
+import { DEFAULT_UNIT_ID, ATTR_DATA_MISO_UNIT_ID } from './constants';
 import Unit from './unit';
 import Interactions from './interactions';
 
@@ -18,18 +18,18 @@ export default class UnitsContext {
     return [...this._units.values()];
   }
 
-  create(id = 'default') {
+  create(id = DEFAULT_UNIT_ID) {
     if (this._units.has(id)) {
       throw new Error(`Unit already exists: ${id}`);
     }
     return new Unit(this, id);
   }
 
-  has(ref = 'default') {
+  has(ref = DEFAULT_UNIT_ID) {
     return typeof ref === 'string' ? this._units.has(ref) : (isElement(ref) && this._e2u.has(ref));
   }
 
-  get(ref = 'default') {
+  get(ref = DEFAULT_UNIT_ID) {
     if (typeof ref === 'string') {
       return this._units.get(ref) || new Unit(this, ref);
 
@@ -37,8 +37,8 @@ export default class UnitsContext {
       if (this._e2u.has(ref)) {
         return this._e2u.get(ref);
       } else {
-        const id = ref.getAttribute(ATTR_UNIT_ID) || 'default';
-        return new Unit(this, id).bind(ref);
+        const id = ref.unitId || ref.getAttribute(ATTR_DATA_MISO_UNIT_ID) || DEFAULT_UNIT_ID;
+        return this.get(id).bind(ref);
       }
 
     } else {

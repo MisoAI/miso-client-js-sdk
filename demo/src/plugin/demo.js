@@ -2,6 +2,7 @@ import LocalStorageProperty from "../util/local-storage-property";
 
 // inject with .env or process.env
 const DEFAULT_API_KEY = __DEFAULT_API_KEY__;
+//const DEFAULT_USER_ID = __DEFAULT_USER_ID__;
 const ID = 'demo';
 
 export default class DemoPlugin {
@@ -20,7 +21,8 @@ export default class DemoPlugin {
     this._selection = new LocalStorageProperty({
       key: 'miso-sdk-demo::apps-selection',
       createDefaultValue: () => ({
-        apiKey: DEFAULT_API_KEY
+        apiKey: DEFAULT_API_KEY,
+        //userId: DEFAULT_USER_ID,
       }),
     });
   }
@@ -39,7 +41,11 @@ export default class DemoPlugin {
     // inject client options
     const _normalizeOptions = MisoClient.prototype._normalizeOptions;
     MisoClient.prototype._normalizeOptions = function(options) {
-      return _normalizeOptions.call(this, { ...options, apiKey: selection.value.apiKey });
+      return _normalizeOptions.call(this, {
+        ...options,
+        //apiKey: selection.value.apiKey,
+        apiKey: DEFAULT_API_KEY,
+      });
     }
 
     // set user id and user hash on create

@@ -1,0 +1,17 @@
+sections:
+- title: Scenario
+  path: /scenario
+  pages:
+  - title: Vanilla
+    path: /scenario/vanilla
+- title: Tracker
+  path: /tracker
+  pages:
+  - title: Basic
+    path: /tracker/basic
+  - title: Rescan
+    path: /tracker/rescan
+  - title: Watch
+    path: /tracker/watch
+  - title: Click
+    path: /tracker/click

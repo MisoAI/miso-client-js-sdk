@@ -22,6 +22,7 @@ class UiPluginRoot extends Component {
     context.addSubtree(this);
     // bind the first seen client
     (async() => {
+      // TODO: use MisoClient.any()
       const { data: client } = await MisoClient.once('create');
       this._handleClient(client);
     })();
