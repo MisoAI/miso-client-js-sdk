@@ -4,7 +4,7 @@
     "watch:sass": "sass --watch scss:dist/css",
     "build:js": "rollup -c",
     "watch:js": "rollup -wc",
-    "build": "npm build:js && npm build:sass",
+    "build": "npm run build:js && npm run build:sass",
     "serve": "node server.mjs",
     "start": "npm run build && npm run serve",
     "dev": "npm-run-all build:sass --parallel watch:*"
