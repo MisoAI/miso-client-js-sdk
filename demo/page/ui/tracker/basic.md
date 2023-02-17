@@ -1,10 +1,16 @@
 ---
 ---
 
-Click mode: lenient = true
+Scroll down to see the recommendation unit.
 
 {% raw %}
 <style>
+  .block {
+    margin: 20px 0;
+    width: 400px;
+    height: 100vh;
+    border: 2px dotted #CCC;
+  }
   .list {
     list-style: none;
     margin: 20px 0;
@@ -22,7 +28,10 @@ Click mode: lenient = true
     user-select: none;
   }
 </style>
-<hr>
+<section>
+  <div class="block">
+  </div>
+</section>
 <section>
   <h3>Recommendation Units</h3>
   <miso-unit unit-id="unit-1">
@@ -31,25 +40,23 @@ Click mode: lenient = true
         <a href="#">Product 1</a>
       </li>
       <li id="product-2" class="item" data-miso-product-id="product-2">
-        <a href="#">Product 2 (prevents default)</a>
+        <a href="#">Product 2</a>
       </li>
       <li id="product-3" class="item" data-miso-product-id="product-3">
-        <span>Product 3</span>
+        <a href="#">Product 3</a>
+      </li>
+      <li id="product-4" class="item" data-miso-product-id="product-4">
+        <a href="#">Product 4 (prevent default)</a>
       </li>
     </ul>
   </miso-unit>
 </section>
 <script>
-document.querySelector('[data-miso-product-id="product-2"]').addEventListener('click', e => e.preventDefault());
+document.querySelector('[data-miso-product-id="product-4"]').addEventListener('click', e => e.preventDefault());
 </script>
 <script>
-MisoClient.plugins.use('std:units');
+MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-const trackerOptions = {
-  click: {
-    lenient: true,
-  }
-};
-client.units.get('unit-1').useTracker(trackerOptions).startTracker();
+client.units.get('unit-1').startTracker();
 </script>
 {% endraw %}

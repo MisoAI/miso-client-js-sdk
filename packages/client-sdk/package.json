@@ -36,7 +36,6 @@
     "@miso.ai/client-sdk-algolia": "file:packages/client-sdk-algolia",
     "@miso.ai/client-sdk-core": "file:packages/client-sdk-core",
     "@miso.ai/client-sdk-dev-tool": "file:packages/client-sdk-dev-tool",
-    "@miso.ai/client-sdk-units": "file:packages/client-sdk-units",
     "@miso.ai/client-sdk-shopify": "file:packages/client-sdk-shopify",
     "@miso.ai/client-sdk-ui": "file:packages/client-sdk-ui"
   }

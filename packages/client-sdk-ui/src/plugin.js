@@ -1,22 +1,45 @@
-import { delegateGetters } from '@miso.ai/commons';
-import getRoot from './root';
-import MisoListModel from './model/list';
-import MisoListElement from './element/list';
-import { PLUGIN_ID } from './constants';
+import { Component, defineAndUpgrade, delegateGetters } from '@miso.ai/commons';
+import Widgets from './widgets';
+import UnitsContext from './units';
+import * as elements from './element';
+import * as widgets from './widget';
 
-export default class UiPlugin {
+const PLUGIN_ID = 'std:ui';
+
+export default class UiPlugin extends Component {
 
   static get id() {
     return PLUGIN_ID;
   }
 
   constructor() {
-    const root = getRoot();
-    delegateGetters(this, root, ['config', 'install']);
-    
-    // TODO: find a better place to bundle?
-    root.models.register(MisoListModel);
-    root.elements.register(MisoListElement);
+    super('ui');
+    this.widgets = new Widgets(this);
+    this._contexts = new WeakMap();
+  }
+
+  install(MisoClient, context) {
+    context.addSubtree(this);
+    MisoClient.on('create', this._injectClient.bind(this));
+
+    // widgets
+    delegateGetters(MisoClient, this, ['widgets']);
+    for (const WidgetClass of Object.values(widgets)) {
+      if (WidgetClass.type) {
+        this.widgets.register(WidgetClass);
+      }
+    }
+
+    // custom elements
+    for (const elementClass of Object.values(elements)) {
+      defineAndUpgrade(elementClass);
+    }
+  }
+
+  _injectClient(client) {
+    const context = new UnitsContext(this, client);
+    this._contexts.set(client, context);
+    client.units = context.interface;
   }
 
 }

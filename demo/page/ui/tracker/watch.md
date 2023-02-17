@@ -47,7 +47,7 @@ document.querySelector('#clear-btn').addEventListener('click', () => {
 });
 </script>
 <script>
-MisoClient.plugins.use('std:units');
+MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
 client.units.get('unit-1').useTracker({ watch: true }).startTracker();
 </script>

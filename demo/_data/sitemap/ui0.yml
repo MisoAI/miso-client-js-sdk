@@ -1,0 +1,13 @@
+sections:
+- title: Element
+  path: /element
+  pages:
+  - title: <miso-list>
+    path: /element/miso-list
+- title: Recipe
+  path: /recipe
+  pages:
+  - title: Custom API
+    path: /recipe/custom-api
+  - title: Deduplication
+    path: /recipe/deduplication

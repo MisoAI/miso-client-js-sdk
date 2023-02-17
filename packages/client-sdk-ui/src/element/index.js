@@ -1,1 +1,1 @@
-export { default as MisoProductList } from './miso-product-list';
+export { default as MisoUnitElement } from './miso-unit';

@@ -18,15 +18,6 @@ export default [
     },
   },
   {
-    input: 'src/with-ui.js',
-    output: {
-      filename: 'miso-ui',
-      format: 'umd',
-      name: 'MisoClient',
-      exports: 'default',
-    },
-  },
-  {
     input: 'src/shopify.js',
     output: {
       filename: 'miso-shopify',

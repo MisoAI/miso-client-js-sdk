@@ -8,7 +8,7 @@
   </miso-unit>
 </section>
 <script>
-MisoClient.plugins.use('std:units');
+MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
 client.units.get().start();
 </script>

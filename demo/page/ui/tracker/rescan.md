@@ -49,7 +49,7 @@ document.querySelector('#clear-btn').addEventListener('click', () => {
 });
 </script>
 <script>
-MisoClient.plugins.use('std:units');
+MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
 const unit = client.units.get('unit-1');
 unit.startTracker();

@@ -1,13 +1,17 @@
 sections:
-- title: Element
-  path: /element
+- title: Scenario
+  path: /scenario
   pages:
-  - title: <miso-list>
-    path: /element/miso-list
-- title: Recipe
-  path: /recipe
+  - title: Vanilla
+    path: /scenario/vanilla
+- title: Tracker
+  path: /tracker
   pages:
-  - title: Custom API
-    path: /recipe/custom-api
-  - title: Deduplication
-    path: /recipe/deduplication
+  - title: Basic
+    path: /tracker/basic
+  - title: Rescan
+    path: /tracker/rescan
+  - title: Watch
+    path: /tracker/watch
+  - title: Click
+    path: /tracker/click
