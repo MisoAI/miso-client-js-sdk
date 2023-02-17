@@ -11,8 +11,7 @@
     "packages/client-sdk-gtm",
     "packages/client-sdk-shopify",
     "packages/client-sdk",
-    "demo",
-    "doc"
+    "demo"
   ],
   "scripts": {
     "start": "concurrently 'npm:start:*'",
@@ -33,9 +32,7 @@
     "build:esm": "npm run build:esm --workspaces --if-present",
     "build:cjs": "npm run build:cjs --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "purge-cdn": "npm run purge-cdn --workspaces --if-present",
-    "doc:build": "npm run doc:build --workspace=doc",
-    "doc:start": "npm run doc:start --workspace=doc"
+    "purge-cdn": "npm run purge-cdn --workspaces --if-present"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
