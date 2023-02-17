@@ -124,30 +124,6 @@ export default class Tracker {
     this._states = undefined;
   }
 
-  /*
-  _handleBind(element) {
-    this._syncClicks(element);
-    this._refreshItems();
-  }
-
-  _handleUnbind(element) {
-    this._untrackClicks(element);
-    this._refreshItems();
-  }
-  */
-
-  /*
-  _handleRender({ session }) {
-    // if the uuid is new, clear tracking state
-    if (this._states.uuid !== session.uuid) {
-      this._untrackAll();
-      this._items.unbindAll();
-      this._states = new States(session.uuid);
-    }
-    this._items.refresh();
-  }
-  */
-
   _refreshItems() {
     if (!this._states) {
       return;
@@ -334,6 +310,7 @@ class States {
   getFullState(productId) {
     // when we receive a bind event, impression is trigger, making an entry here
     // so if the state is not found, the product is not present yet => all untracked
+    // TODO: global click status
     const state = this._states.get(productId);
     return state ? Object.freeze({ ...this._global, ...state }) : States.UNTRACKED;
   }
@@ -342,19 +319,6 @@ class States {
     const state = this._states.get(productId);
     return state ? state[type] || this._global[type] : TRACKING_STATUS.UNTRACKED;
   }
-
-  /*
-  getGlobal(type) {
-    validateEventType(type);
-    return this._global[type];
-  }
-
-  setGlobal(type, status) {
-    validateEventType(type);
-    validateTrackingStatus(status);
-    this._global[type] = status;
-  }
-  */
 
   set(productIds, type, status) {
     validateEventType(type);

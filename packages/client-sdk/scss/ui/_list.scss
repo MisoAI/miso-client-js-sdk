@@ -1,0 +1,102 @@
+.miso-list {
+  &, * {
+    box-sizing: border-box;
+  }
+
+  ul.miso-list__list {
+    list-style: none;
+    padding: 0;
+  }
+
+  li.miso-list__item {
+    margin: 1rem 0;
+    border: 1px solid #e3e5e8;
+    border-radius: .5rem;
+    background-color: #fff;
+
+    &:hover {
+      border-color: #8f96a3;
+    }
+  }
+
+  .miso-list__item-body {
+    display: flex;
+    justify-content: space-between;
+    height: 11rem;
+    padding: 1rem;
+    user-select: none;
+  }
+  a.miso-list__item-body {
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .miso-list__item-cover-image-container {
+    position: relative;
+    height: 9rem;
+    width: 9rem;
+    border-radius: .4rem 0 0 .4rem;
+    overflow: hidden;
+
+    &::before {
+      content: " ";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: radial-gradient(50% 50% at 50% 50%, transparent 0, rgba(0, 0, 0, .004) 82.81%, rgba(0, 0, 0, .016) 100%);
+      background-blend-mode: normal, luminosity;
+    }
+  }
+  img.miso-list__item-cover-image {
+    //border-radius: .5rem 0 0 .5rem;
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    border-style: none;
+  }
+
+  .miso-list__item-info-container {
+    display: flex;
+    flex-direction: column;
+    //justify-content: center;
+    margin-left: 1rem;
+    width: 100%;
+    color: #5c6370;
+  }
+
+  .miso-list__item-title,
+  .miso-list__item-desc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .miso-list__item-title {
+    -webkit-line-clamp: 1;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: .25rem;
+    color: #23262b;
+  }
+
+  .miso-list__item-desc {
+    -webkit-line-clamp: 3;
+    font-weight: 400;
+    font-size: .75rem;
+    line-height: 1.35;
+    margin-bottom: .5rem;
+  }
+
+  .miso-list__item-price {
+    color: #23262b;
+
+    &::before {
+      content: "$";
+    }
+  }
+}

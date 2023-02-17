@@ -2,6 +2,33 @@
 ---
 
 {% raw %}
+<style>
+  .btn-group * {
+    box-shadow: none !important;
+  }
+</style>
+<section>
+  <div id="widget-radio-group" class="btn-group" role="group">
+    <input type="radio" class="btn-check" name="widget" value="list" id="widget-radio-list" autocomplete="off" checked>
+    <label class="btn btn-outline-primary" for="widget-radio-list">List</label>
+    <input type="radio" class="btn-check" name="widget" value="cards" id="widget-radio-cards" autocomplete="off">
+    <label class="btn btn-outline-primary" for="widget-radio-cards">Cards</label>
+  </div>
+</section>
+<script>
+  const radioGroup = document.querySelector('#widget-radio-group');
+  radioGroup.addEventListener('change', event => {
+    const value = window.selectedWidget = event.target.value;
+    window.onSelectWidget && window.onSelectWidget(value);
+  });
+  for (const radio of radioGroup.querySelectorAll('input[type="radio"]')) {
+    if (radio.checked) {
+      window.selectedWidget = radio.value;
+      break;
+    }
+  }
+</script>
+<hr>
 <section style="margin-right: 300px;">
   <h3>Recommendation Units</h3>
   <miso-unit>
@@ -10,6 +37,9 @@
 <script>
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-client.units.get().start();
+const unit = client.units.get();
+unit.useWidget(window.selectedWidget);
+window.onSelectWidget = value => unit.useWidget(value);
+unit.start();
 </script>
 {% endraw %}

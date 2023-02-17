@@ -1,7 +1,6 @@
 import CollectionWidget from './collection';
 
-
-function product(widget, state, { url, cover_image, title, description, sale_price, original_price, ...product }) {
+function renderProduct(widget, state, { url, cover_image, title, description, sale_price, original_price, ...product }) {
   const { className } = widget;
   const openTag = url ? `<a class="${className}__item-body" href="${url}" target="_blank" rel="noopener">` : `<div class="${className}__item-body">`;
   const clostTag = url ? `</a>` : `</div>`;
@@ -18,7 +17,7 @@ function product(widget, state, { url, cover_image, title, description, sale_pri
   }
   const price = sale_price || original_price;
   if (price) {
-    infoContent += `<div class="${className}__item-price">${price}</div>`;
+    infoContent += `<hr><div class="${className}__item-price">${price}</div>`;
     // TODO: enhance this
   }
   const infoBox = `<div class="${className}__item-info-container">${infoContent}</div>`;
@@ -26,11 +25,11 @@ function product(widget, state, { url, cover_image, title, description, sale_pri
   return `${openTag}${imgBox}${infoBox}${clostTag}`;
 }
 
-const TYPE = 'list';
-const DEFAULT_CLASSNAME = 'miso-list';
+const TYPE = 'cards';
+const DEFAULT_CLASSNAME = 'miso-cards';
 
 const DEFAULT_TEMPLATES = Object.freeze({
-  product,
+  product: renderProduct,
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
@@ -38,7 +37,7 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
   DEFAULT_TEMPLATES,
 });
 
-export default class ListWidget extends CollectionWidget {
+export default class CardsWidget extends CollectionWidget {
 
   static get type() {
     return TYPE;

@@ -13,7 +13,7 @@
     "demo"
   ],
   "scripts": {
-    "start": "concurrently 'npm:start:*'",
+    "start": "npm run build:clean && concurrently 'npm:start:*'",
     "start:commons": "npm run start --workspace=packages/commons",
     "start:client-sdk-core": "npm run start --workspace=packages/client-sdk-core",
     "start:client-sdk-dev-tool": "npm run start --workspace=packages/client-sdk-dev-tool",

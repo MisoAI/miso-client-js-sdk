@@ -53,10 +53,10 @@ export default class ViewReactor {
     }
 
     // in case the data is already there
-    this.refresh();
+    this.refresh({ force: true });
   }
 
-  async refresh() {
+  async refresh({ force } = {}) {
     if (!this._widget) {
       return;
     }
@@ -69,7 +69,7 @@ export default class ViewReactor {
 
     const oldState = this._state;
     const state = getState(unit);
-    if (equalStates(state, oldState)) {
+    if (!force && equalStates(state, oldState)) {
       return;
     }
     this._state = state;
