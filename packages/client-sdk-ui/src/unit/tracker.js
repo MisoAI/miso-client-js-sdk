@@ -2,6 +2,9 @@ import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, viewable
 import { EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
 import Items from './items';
 
+const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
+const { UNTRACKED, TRACKING, TRIGGERED } = TRACKING_STATUS;
+
 function mergeOptions(def, opt) {
   // if opt is falsy then return false, merge otherwise
   return !!opt && { ...def, ...opt };
@@ -81,17 +84,17 @@ export default class Tracker {
 
   impression(productIds) {
     this._assertViewReady();
-    this._trigger(productIds, EVENT_TYPE.IMPRESSION, true);
+    this._trigger(productIds, IMPRESSION, true);
   }
 
   viewable(productIds) {
     this._assertViewReady();
-    this._trigger(productIds, EVENT_TYPE.VIEWABLE, true);
+    this._trigger(productIds, VIEWABLE, true);
   }
 
   click(productIds) {
     this._assertViewReady();
-    this._trigger(productIds, EVENT_TYPE.CLICK, true);
+    this._trigger(productIds, CLICK, true);
   }
 
   _assertViewReady() {
@@ -113,7 +116,10 @@ export default class Tracker {
   }
 
   getState(productId) {
-    return this._states.getFullState(productId);
+    return Object.freeze({
+      [CLICK]: this._unit.element ? TRACKING : UNTRACKED,
+      ...this._states.getFullState(productId),
+    });
   }
 
 
@@ -142,7 +148,7 @@ export default class Tracker {
     if (!options) {
       return;
     }
-    this._trigger(bindings.map(b => b.productId), EVENT_TYPE.IMPRESSION);
+    this._trigger(bindings.map(b => b.productId), IMPRESSION);
   }
 
 
@@ -164,12 +170,12 @@ export default class Tracker {
       return;
     }
     // TODO: when element is replaced without proper unload...
-    const type = EVENT_TYPE.VIEWABLE;
+    const type = VIEWABLE;
     const state = this._states.get(productId, type);
-    if (state !== TRACKING_STATUS.UNTRACKED) {
+    if (state !== UNTRACKED) {
       return;
     }
-    this._states.set(productId, type, TRACKING_STATUS.TRACKING);
+    this._states.set(productId, type, TRACKING);
 
     const { area, duration } = this._options.viewable;
     // abort signal
@@ -177,6 +183,7 @@ export default class Tracker {
     const { signal } = ac;
     this._viewables.set(element, { ac });
     await whenViewable(element, { area, duration, signal });
+    this._viewables.delete(element);
     this._trigger([productId], type);
   }
 
@@ -185,9 +192,12 @@ export default class Tracker {
     if (!viewable) {
       return;
     }
-    this._states.set(productId, EVENT_TYPE.VIEWABLE, TRACKING_STATUS.UNTRACKED);
     viewable.ac.abort();
     this._viewables.delete(element);
+    const type = VIEWABLE;
+    if (this._states.get(productId, type) === TRACKING) {
+      this._states.set(productId, type, UNTRACKED);
+    }
   }
 
   _untrackViewables(bindings) {
@@ -210,7 +220,6 @@ export default class Tracker {
     // add listener and observer on new element
     if (element) {
       element.addEventListener('click', this._handleClick);
-      //this._states.setGlobal(EVENT_TYPE.CLICK, TRACKING_STATUS.TRACKING);
       if (this._options.watch) {
         this._mutationObserver = new MutationObserver(() => this.refresh());
         this._mutationObserver.observe(element, { childList: true, subtree: true });
@@ -224,7 +233,6 @@ export default class Tracker {
       return;
     }
     this._element.removeEventListener('click', this._handleClick);
-    //this._states.setGlobal(EVENT_TYPE.CLICK, TRACKING_STATUS.UNTRACKED);
     if (this._mutationObserver) {
       this._mutationObserver.disconnect();
       this._mutationObserver = undefined;
@@ -257,7 +265,7 @@ export default class Tracker {
         return;
       }
     }
-    this._trigger([productId], EVENT_TYPE.CLICK);
+    this._trigger([productId], CLICK);
   }
 
 
@@ -275,7 +283,7 @@ export default class Tracker {
     if (productIds.length === 0) {
       return;
     }
-    this._states.set(productIds, type, TRACKING_STATUS.TRIGGERED);
+    this._states.set(productIds, type, TRIGGERED);
 
     this._unit._triggerEvent({ type, productIds, manual });
   }
@@ -288,36 +296,39 @@ export default class Tracker {
 
 }
 
+/**
+ * Tracking states for a session to keep track of the tracking status of each product.
+ * For each entry there are status of impression, viewable, and click events. 
+ * The actual click tracking status depends on the presence of unit.element, which is not respected in this object.
+ */
 class States {
 
   static NEW = {
-    [EVENT_TYPE.IMPRESSION]: TRACKING_STATUS.UNTRACKED,
-    [EVENT_TYPE.VIEWABLE]: TRACKING_STATUS.UNTRACKED,
+    [IMPRESSION]: UNTRACKED,
+    [VIEWABLE]: UNTRACKED,
   };
 
   static UNTRACKED = Object.freeze({
-    [EVENT_TYPE.IMPRESSION]: TRACKING_STATUS.UNTRACKED,
-    [EVENT_TYPE.VIEWABLE]: TRACKING_STATUS.UNTRACKED,
-    [EVENT_TYPE.CLICK]: TRACKING_STATUS.UNTRACKED,
+    [IMPRESSION]: UNTRACKED,
+    [VIEWABLE]: UNTRACKED,
+    [CLICK]: UNTRACKED,
   });
 
   constructor(uuid) {
     this.uuid = uuid;
     this._states = new Map(); // productId -> {impression, viewable, click}
-    this._global = { ...States.UNTRACKED };
   }
 
   getFullState(productId) {
     // when we receive a bind event, impression is trigger, making an entry here
     // so if the state is not found, the product is not present yet => all untracked
-    // TODO: global click status
     const state = this._states.get(productId);
-    return state ? Object.freeze({ ...this._global, ...state }) : States.UNTRACKED;
+    return state ? { ...state } : States.UNTRACKED;
   }
 
   get(productId, type) {
     const state = this._states.get(productId);
-    return state ? state[type] || this._global[type] : TRACKING_STATUS.UNTRACKED;
+    return state && state[type] || UNTRACKED;
   }
 
   set(productIds, type, status) {
@@ -334,7 +345,7 @@ class States {
   }
 
   untriggered(productIds, type) {
-    return productIds.filter(productId => this.get(productId, type) !== TRACKING_STATUS.TRIGGERED);
+    return productIds.filter(productId => this.get(productId, type) !== TRIGGERED);
   }
 
 }

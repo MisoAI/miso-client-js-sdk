@@ -38,46 +38,14 @@ export default class Items {
         unbounds.push(u);
       }
     }
-    //this._emitChange({ bounds, unbounds });
     return { bounds, unbounds };
   }
 
   unbindAll() {
     const unbounds = this.list();
     this._bindings.clear();
-    //this._emitChange({ unbounds });
     return { bounds: [], unbounds };
   }
-
-  /*
-  bind(productId, element) {
-    const [binding, ...unbounds] = this._bind(productId, element);
-    this._emitChange({ bounds: [binding], unbounds });
-    return binding;
-  }
-
-  unbind(ref) {
-    const binding = this.get(ref);
-    if (binding) {
-      this._unbind(binding);
-      this._emitChange({ bounds: [binding] });
-    }
-    return binding;
-  }
-  */
-
-  // TODO: move to trigger
-  /*
-  watch() {
-    const observer = this._mutationObserver = new MutationObserver(() => this.refresh());
-    observer.observe(this._unit.element, { childList: true, subtree: true });
-    this.refresh();
-  }
-
-  unwatch() {
-    this._mutationObserver && this._mutationObserver.disconnect();
-  }
-  */
 
 
 
@@ -132,17 +100,7 @@ export default class Items {
     return binding;
   }
 
-  /*
-  _emitChange({ bounds = [], unbounds = [] }) {
-    if (bounds.length === 0 && unbounds.length === 0) {
-      return;
-    }
-    this._unit._events.emit('items', { bounds, unbounds });
-  }
-  */
-
   _destroy() {
-    //this.unwatch();
     this.unbindAll();
   }
 

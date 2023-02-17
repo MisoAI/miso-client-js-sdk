@@ -29,7 +29,7 @@
   }
 </script>
 <hr>
-<section style="margin-right: 300px;">
+<section style="margin-right: 100px;">
   <h3>Recommendation Units</h3>
   <miso-unit>
   </miso-unit>
@@ -38,6 +38,7 @@
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
 const unit = client.units.get();
+unit.useApi('user_to_products', { rows: 6 });
 unit.useWidget(window.selectedWidget);
 window.onSelectWidget = value => unit.useWidget(value);
 unit.start();

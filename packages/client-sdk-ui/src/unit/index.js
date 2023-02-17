@@ -24,7 +24,7 @@ export default class Unit {
     this._tracker = new Tracker(this);
 
     this._dataReactor.source = this._apiDataSource;
-    this.useApi(DEFAULT_API_NAME, DEFAULT_API_PAYLOAD);
+    this.useApi(DEFAULT_API_NAME);
     this.useWidget();
 
     this._reset();
@@ -138,7 +138,6 @@ export default class Unit {
   }
 
   notifyViewUpdate(state) {
-    //this._assertActive();
     this._viewState = Object.freeze(trimObj({
       session: this.session,
       status: VIEW_STATUS.READY,
@@ -151,7 +150,7 @@ export default class Unit {
   // source //
   useApi(name, payload) {
     this._assertInactive();
-    this._apiDataSource.setParameters(name, payload);
+    this._apiDataSource.setParameters(name, { ...DEFAULT_API_PAYLOAD, ...payload });
     return this;
   }
 
@@ -228,7 +227,6 @@ export default class Unit {
     this._viewReactor._destroy();
     this._tracker._destroy();
     this.unbind();
-    // TODO
     return this;
   }
 

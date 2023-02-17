@@ -61,10 +61,4 @@ export default class MisoUnitElement extends HTMLElement {
     }
   }
 
-  /*
-  _emit(name, detail) {
-    this.dispatchEvent(new CustomEvent(name, { detail }));
-  }
-  */
-
 }
