@@ -41,6 +41,10 @@ const unit = client.units.get();
 unit.useApi('user_to_products', { rows: 6 });
 unit.useWidget(window.selectedWidget);
 window.onSelectWidget = value => unit.useWidget(value);
+unit.on('event', ({ type, productIds }) => {
+  const color = type === 'impression' ? 'primary' : type === 'viewable' ? 'success' : type === 'click' ? 'danger' : 'secondary';
+  window.helpers.ui.alert(`[${type}] ${productIds.join(', ')}`, { color });
+});
 unit.start();
 </script>
 {% endraw %}

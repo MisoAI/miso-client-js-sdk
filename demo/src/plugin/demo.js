@@ -1,4 +1,5 @@
 import LocalStorageProperty from "../util/local-storage-property";
+import * as helpers from './helpers';
 
 // inject with .env or process.env
 const DEFAULT_API_KEY = __DEFAULT_API_KEY__;
@@ -36,6 +37,8 @@ export default class DemoPlugin {
   }
 
   install(MisoClient) {
+    window.helpers = helpers;
+
     const selection = this._selection;
 
     // inject client options

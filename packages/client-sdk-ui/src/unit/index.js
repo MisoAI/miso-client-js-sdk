@@ -217,7 +217,7 @@ export default class Unit {
     const { session, id } = this;
     const { uuid } = session;
     this._context.interactions._send({ uuid, id }, event);
-    this._events.emit('event', Object.freeze({ ...event, session }));
+    this._events.emit('event', Object.freeze(trimObj({ ...event, session })));
   }
 
   // destroy //

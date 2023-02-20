@@ -15,9 +15,11 @@ module.exports = function(config) {
   config.addPassthroughCopy({
     'asset': '/'
   });
-  config.setBrowserSyncConfig({
-		files: ['./dist/css/**/*.css', './dist/js/**/*.js']
-	});
+  config.addWatchTarget('./scss/');
+  config.addWatchTarget('./src/');
+  config.setServerOptions({
+    domDiff: false
+  });
 
   config.addNunjucksFilter('markdown', value => markdown.renderInline(value));
 
