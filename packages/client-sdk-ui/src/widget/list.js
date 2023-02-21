@@ -1,6 +1,5 @@
 import CollectionWidget from './collection';
 
-
 function product(widget, state, { url, cover_image, title, description, sale_price, original_price, ...product }) {
   const { className } = widget;
   const openTag = url ? `<a class="${className}__item-body" href="${url}" target="_blank" rel="noopener">` : `<div class="${className}__item-body">`;
@@ -52,8 +51,8 @@ export default class ListWidget extends CollectionWidget {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates });
+  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
   }
 
 }

@@ -57,8 +57,8 @@ export default class CollectionWidget extends TemplateBasedWidget {
     return INHERITED_DEFAULT_TEMPLATES;
   }
 
-  constructor(className, templates) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates });
+  constructor(className, templates, options) {
+    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
   }
 
 }

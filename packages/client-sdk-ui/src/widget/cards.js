@@ -51,8 +51,8 @@ export default class CardsWidget extends CollectionWidget {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates });
+  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
   }
 
 }

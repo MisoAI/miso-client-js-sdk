@@ -1,0 +1,31 @@
+.miso {
+  --miso-color: #1a4ce3;
+  --miso-banner-text: 'Powered by ';
+  --miso-banner-text-color: #666;
+
+  .miso__banner {
+    text-align: right;
+  }
+
+  .miso__logo {
+    display: inline-block;
+    color: var(--miso-color);
+    user-select: none;
+
+    &::before {
+      content: var(--miso-banner-text);
+      margin-right: 5px;
+      float: left;
+      line-height: 30px;
+      font-size: 18px;
+      color: var(--miso-banner-text-color);
+    }
+    svg {
+      display: block;
+      float: left;
+      width: 75px;
+      height: 30px;
+      fill: currentColor;
+    }
+  }
+}
