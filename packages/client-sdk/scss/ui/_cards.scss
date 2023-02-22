@@ -3,6 +3,11 @@
     box-sizing: border-box;
   }
 
+  // how many lines to show for title text
+  --miso-list-title-lines: 2;
+  // how many lines to show for description text
+  --miso-list-description-lines: 4;
+
   ul.miso-cards__list {
     display: flex;
     flex-wrap: wrap;
@@ -85,7 +90,7 @@
   }
 
   .miso-cards__item-title {
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: var(--miso-list-title-lines);
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.5;
@@ -94,7 +99,7 @@
   }
 
   .miso-cards__item-desc {
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: var(--miso-list-description-lines);
     font-weight: 400;
     font-size: .75rem;
     line-height: 1.35;
@@ -105,7 +110,7 @@
     color: #23262b;
 
     &::before {
-      content: "$";
+      content: var(--miso-currency-symbol);
     }
   }
 }

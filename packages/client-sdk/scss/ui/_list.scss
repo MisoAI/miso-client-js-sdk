@@ -3,13 +3,24 @@
     box-sizing: border-box;
   }
 
+  // the height of a list item
+  --miso-list-item-height: 11rem;
+  // the gap between list items
+  --miso-list-item-gap: 1rem;
+  // the aspect ratio of cover image
+  --miso-list-image-aspect-ratio: 1;
+  // how many lines to show for title text
+  --miso-list-title-lines: 1;
+  // how many lines to show for description text
+  --miso-list-description-lines: 3;
+
   ul.miso-list__list {
     list-style: none;
     padding: 0;
   }
 
   li.miso-list__item {
-    margin: 1rem 0;
+    margin: var(--miso-list-item-gap) 0;
     border: 1px solid #e3e5e8;
     border-radius: .5rem;
     background-color: #fff;
@@ -23,7 +34,7 @@
   .miso-list__item-body {
     display: flex;
     justify-content: space-between;
-    height: 11rem;
+    height: var(--miso-list-item-height);
     padding: 1rem;
     user-select: none;
   }
@@ -34,8 +45,9 @@
 
   .miso-list__item-cover-image-container {
     position: relative;
-    height: 9rem;
-    width: 9rem;
+    height: 100%;
+    aspect-ratio: var(--miso-list-image-aspect-ratio);
+    flex-shrink: 0;
     border-radius: .4rem 0 0 .4rem;
     overflow: hidden;
 
@@ -76,7 +88,7 @@
   }
 
   .miso-list__item-title {
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: var(--miso-list-title-lines);
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.5;
@@ -85,7 +97,7 @@
   }
 
   .miso-list__item-desc {
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: var(--miso-list-description-lines);
     font-weight: 400;
     font-size: .75rem;
     line-height: 1.35;
@@ -96,7 +108,7 @@
     color: #23262b;
 
     &::before {
-      content: "$";
+      content: var(--miso-currency-symbol);
     }
   }
 }
