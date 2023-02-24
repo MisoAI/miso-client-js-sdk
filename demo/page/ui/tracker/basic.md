@@ -57,6 +57,8 @@ document.querySelector('[data-miso-product-id="product-4"]').addEventListener('c
 <script>
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-client.units.get('unit-1').startTracker();
+const unit = client.units.get('unit-1');
+window.helpers.unit.monitorEvents(unit);
+unit.startTracker();
 </script>
 {% endraw %}

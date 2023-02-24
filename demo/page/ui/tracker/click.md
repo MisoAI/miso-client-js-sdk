@@ -50,6 +50,8 @@ const trackerOptions = {
     lenient: true,
   }
 };
-client.units.get('unit-1').useTracker(trackerOptions).startTracker();
+const unit = client.units.get('unit-1');
+window.helpers.unit.monitorEvents(unit);
+unit.useTracker(trackerOptions).startTracker();
 </script>
 {% endraw %}

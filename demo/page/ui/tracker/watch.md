@@ -49,6 +49,8 @@ document.querySelector('#clear-btn').addEventListener('click', () => {
 <script>
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-client.units.get('unit-1').useTracker({ watch: true }).startTracker();
+const unit = client.units.get('unit-1');
+window.helpers.unit.monitorEvents(unit);
+unit.useTracker({ watch: true }).startTracker();
 </script>
 {% endraw %}

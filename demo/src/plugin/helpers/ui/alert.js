@@ -1,12 +1,14 @@
 import { toElement, main } from './misc';
+import getBootstrap from './bootstrap';
 
-export default function alert(message, options) {
+export default async function alert(message, options) {
   if (typeof message === 'string') {
     message = { body: message };
   }
   const toastElement = toElement(renderToast(message, options));
   getToastContainer().appendChild(toastElement);
-  const toast = new window.bootstrap.Toast(toastElement, options);
+  const bootstrap = await getBootstrap();
+  const toast = new bootstrap.Toast(toastElement, options);
   toast.show();
   return toast;
 }
