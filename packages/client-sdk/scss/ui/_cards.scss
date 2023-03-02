@@ -3,24 +3,30 @@
     box-sizing: border-box;
   }
 
+  // the minimum width of a card item
+  --miso-cards-item-min-width: 12rem;
+  // the gap between card items
+  --miso-cards-item-gap: 1rem;
+  // the aspect ratio of cover image
+  --miso-cards-image-aspect-ratio: 1;
   // how many lines to show for title text
-  --miso-list-title-lines: 2;
+  --miso-cards-title-lines: 2;
   // how many lines to show for description text
-  --miso-list-description-lines: 4;
+  --miso-cards-description-lines: 4;
 
   ul.miso-cards__list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
     list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--miso-cards-item-min-width), 1fr));
+    gap: var(--miso-cards-item-gap);
     padding: 0;
   }
 
   li.miso-cards__item {
+    place-self: stretch;
     border: 1px solid #e3e5e8;
     border-radius: .5rem;
     background-color: #fff;
-    max-width: 20rem;
 
     &:hover {
       border-color: #8f96a3;
@@ -43,8 +49,7 @@
 
   .miso-cards__item-cover-image-container {
     position: relative;
-    height: 15rem;
-    width: 15rem;
+    aspect-ratio: var(--miso-cards-image-aspect-ratio);
     border-radius: .4rem .4rem 0 0;
     overflow: hidden;
 
@@ -72,7 +77,7 @@
     flex-direction: column;
     flex-grow: 1;
     margin-top: 1rem;
-    width: 15rem;
+    width: 100%;
     color: #5c6370;
 
     > hr {
@@ -90,7 +95,7 @@
   }
 
   .miso-cards__item-title {
-    -webkit-line-clamp: var(--miso-list-title-lines);
+    -webkit-line-clamp: var(--miso-cards-title-lines);
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.5;
@@ -99,7 +104,7 @@
   }
 
   .miso-cards__item-desc {
-    -webkit-line-clamp: var(--miso-list-description-lines);
+    -webkit-line-clamp: var(--miso-cards-description-lines);
     font-weight: 400;
     font-size: .75rem;
     line-height: 1.35;
