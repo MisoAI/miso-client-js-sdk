@@ -1,5 +1,5 @@
-export function product(widget, state, { url, cover_image, title, description, sale_price, original_price, ...product }) {
-  const { className } = widget;
+export function product(layout, state, { url, cover_image, title, description, sale_price, original_price, ...product }) {
+  const { className } = layout;
   const openTag = url ? `<a class="${className}__item-body" href="${url}" target="_blank" rel="noopener">` : `<div class="${className}__item-body">`;
   const clostTag = url ? `</a>` : `</div>`;
 

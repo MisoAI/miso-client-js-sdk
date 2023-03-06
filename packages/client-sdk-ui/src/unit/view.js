@@ -20,7 +20,7 @@ export default class ViewReactor {
     this._unit = unit;
 
     this._unsubscribes = [
-      unit.on('unbind', element => this._widget.unrender(element)),
+      unit.on('unbind', element => this._layout.unrender(element)),
       unit.on('bind', () => this.refresh()),
       unit.on('reset', () => this.refresh()),
       unit.on('start', () => this.refresh()),
@@ -28,28 +28,28 @@ export default class ViewReactor {
     ];
   }
 
-  get widget() {
-    return this._widget;
+  get layout() {
+    return this._layout;
   }
 
-  set widget(widget) {
-    if (widget === this._widget) {
+  set layout(layout) {
+    if (layout === this._layout) {
       return;
     }
-    if (widget && typeof widget.render !== 'function') {
-      throw new Error(`Render function is mandatory in a widget.`);
+    if (layout && typeof layout.render !== 'function') {
+      throw new Error(`Render function is mandatory in a layout.`);
     }
 
-    // clean up old widget
+    // clean up old layout
     const { element } = this._unit;
     element && this._safeApplySync('unrender', element);
     this._safeApplySync('destroy');
 
-    // initialize new widget
-    this._widget = widget;
+    // initialize new layout
+    this._layout = layout;
 
-    if (widget && typeof widget.initialize === 'function') {
-      widget.initialize(this._unit);
+    if (layout && typeof layout.initialize === 'function') {
+      layout.initialize(this._unit);
     }
 
     // in case the data is already there
@@ -57,7 +57,7 @@ export default class ViewReactor {
   }
 
   async refresh({ force } = {}) {
-    if (!this._widget) {
+    if (!this._layout) {
       return;
     }
 
@@ -80,7 +80,7 @@ export default class ViewReactor {
       aborted = true;
     }
     try {
-      await this._widget.render(element, state, { abort, oldState });
+      await this._layout.render(element, state, { abort, oldState });
     } catch(e) {
       this._error(e);
       erroneous = true;
@@ -95,11 +95,11 @@ export default class ViewReactor {
   }
 
   _safeApplySync(method, ...args) {
-    if (!this._widget || typeof this._widget[method] !== 'function') {
+    if (!this._layout || typeof this._layout[method] !== 'function') {
       return;
     }
     try {
-      this._widget[method](...args);
+      this._layout[method](...args);
     } catch(e) {
       this._error(e);
     }
@@ -111,9 +111,9 @@ export default class ViewReactor {
   }
 
   _destroy() {
-    if (typeof this._widget.destroy === 'function') {
+    if (typeof this._layout.destroy === 'function') {
       try {
-        this._widget.destroy();
+        this._layout.destroy();
       } catch(e) {
         // TODO
         console.error(e);

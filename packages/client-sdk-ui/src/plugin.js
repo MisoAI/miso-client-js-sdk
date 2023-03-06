@@ -1,8 +1,8 @@
 import { Component, defineAndUpgrade, delegateGetters } from '@miso.ai/commons';
-import Widgets from './widgets';
+import Layouts from './layouts';
 import UnitsContext from './units';
 import * as elements from './element';
-import * as widgets from './widget';
+import * as layouts from './layout';
 
 const PLUGIN_ID = 'std:ui';
 
@@ -14,7 +14,7 @@ export default class UiPlugin extends Component {
 
   constructor() {
     super('ui');
-    this.widgets = new Widgets(this);
+    this.layouts = new Layouts(this);
     this._contexts = new WeakMap();
   }
 
@@ -22,11 +22,11 @@ export default class UiPlugin extends Component {
     context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
 
-    // widgets
-    delegateGetters(MisoClient, this, ['widgets']);
-    for (const WidgetClass of Object.values(widgets)) {
-      if (WidgetClass.type) {
-        this.widgets.register(WidgetClass);
+    // layouts
+    delegateGetters(MisoClient, this, ['layouts']);
+    for (const LayoutClass of Object.values(layouts)) {
+      if (LayoutClass.type) {
+        this.layouts.register(LayoutClass);
       }
     }
 

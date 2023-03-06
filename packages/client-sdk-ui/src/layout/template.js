@@ -2,14 +2,14 @@ import { defineValues, requestAnimationFrame as raf } from '@miso.ai/commons';
 import { VIEW_STATUS } from '../constants';
 import LOGO from './logo';
 
-function root(widget, state) {
-  const { className, templates } = widget;
+function root(layout, state) {
+  const { className, templates } = layout;
   const { status } = state;
-  return `<div class="miso ${className} ${status}">${templates[status](widget, state)}${templates.banner(widget, state)}</div>`;
+  return `<div class="miso ${className} ${status}">${templates[status](layout, state)}${templates.banner(layout, state)}</div>`;
 }
 
-function banner(widget, state) {
-  const { options = {} } = widget;
+function banner(layout, state) {
+  const { options = {} } = layout;
   const { logo } = options;
   return logo ? `<div class="miso__banner"><div class="miso__logo">${LOGO}</div></div>` : '';
 }
@@ -23,7 +23,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
   [VIEW_STATUS.ERRONEOUS]: () => ``,
 });
 
-export default class TemplateBasedWidget {
+export default class TemplateBasedLayout {
 
   static get defaultTemplates() {
     return DEFAULT_TEMPLATES;

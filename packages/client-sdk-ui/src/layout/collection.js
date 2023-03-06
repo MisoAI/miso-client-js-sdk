@@ -1,15 +1,15 @@
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
-import TemplateBasedWidget from './template';
+import TemplateBasedLayout from './template';
 
-function ready(widget, state) {
-  const { templates } = widget;
+function ready(layout, state) {
+  const { templates } = layout;
   const { data } = state;
   const { products } = data;
   let html = '';
   let empty = true;
 
   if (products) {
-    html += templates.list(widget, state, 'product', products);
+    html += templates.list(layout, state, 'product', products);
     if (products.length > 0) {
       empty = false;
     }
@@ -17,22 +17,22 @@ function ready(widget, state) {
   // TODO: handle categories, attributes, etc.
 
   if (empty) {
-    html = templates.empty(widget, state);
+    html = templates.empty(layout, state);
   }
 
   return html;
 }
 
-function list(widget, state, type, items) {
-  const { className, templates } = widget;
+function list(layout, state, type, items) {
+  const { className, templates } = layout;
   // TODO: support separator
-  return `<ul class="${className}__list" data-item-type="${type}">${items.map(item => templates.item(widget, state, type, item)).join('')}</ul>`;
+  return `<ul class="${className}__list" data-item-type="${type}">${items.map(item => templates.item(layout, state, type, item)).join('')}</ul>`;
 }
 
-function item(widget, state, type, item) {
-  const { className, templates } = widget;
+function item(layout, state, type, item) {
+  const { className, templates } = layout;
   const { product_id } = item;
-  const body = templates[type](widget, state, item);
+  const body = templates[type](layout, state, item);
   return `<li class="${className}__item" ${type === 'product' && product_id ? `${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}"` : ''}>${body}</li>`;
 }
 
@@ -47,11 +47,11 @@ const DEFAULT_TEMPLATES = Object.freeze({
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
-  ...TemplateBasedWidget.defaultTemplates,
+  ...TemplateBasedLayout.defaultTemplates,
   DEFAULT_TEMPLATES,
 });
 
-export default class CollectionWidget extends TemplateBasedWidget {
+export default class CollectionLayout extends TemplateBasedLayout {
 
   static get defaultTemplates() {
     return INHERITED_DEFAULT_TEMPLATES;

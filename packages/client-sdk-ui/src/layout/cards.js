@@ -1,19 +1,19 @@
-import CollectionWidget from './collection';
+import CollectionLayout from './collection';
 import { product } from './renderers';
 
-const TYPE = 'list';
-const DEFAULT_CLASSNAME = 'miso-list';
+const TYPE = 'cards';
+const DEFAULT_CLASSNAME = 'miso-cards';
 
 const DEFAULT_TEMPLATES = Object.freeze({
   product,
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
-  ...CollectionWidget.defaultTemplates,
+  ...CollectionLayout.defaultTemplates,
   DEFAULT_TEMPLATES,
 });
 
-export default class ListWidget extends CollectionWidget {
+export default class CardsLayout extends CollectionLayout {
 
   static get type() {
     return TYPE;

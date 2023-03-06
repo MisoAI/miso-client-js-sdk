@@ -3,10 +3,10 @@ import DataReactor from './data';
 import ViewReactor from './view';
 import Tracker from './tracker';
 import { ApiDataSource } from '../source';
-import { ListWidget } from '../widget';
+import { ListLayout } from '../layout';
 import { VIEW_STATUS } from '../constants';
 
-const DEFAULT_WIDGET_TYPE = ListWidget.type;
+const DEFAULT_LAYOUT = ListLayout.type;
 const DEFAULT_API_NAME = 'user_to_products';
 const DEFAULT_API_PAYLOAD = Object.freeze({ fl: ['*'] });
 
@@ -25,7 +25,7 @@ export default class Unit {
 
     this._dataReactor.source = this._apiDataSource;
     this.useApi(DEFAULT_API_NAME);
-    this.useWidget();
+    this.useLayout();
 
     this._reset();
 
@@ -78,7 +78,7 @@ export default class Unit {
 
   startTracker() {
     this.useSource(false);
-    this.useWidget(false);
+    this.useLayout(false);
     this.start();
     this.notifyViewUpdate();
     return this;
@@ -175,35 +175,31 @@ export default class Unit {
     throw new Error(`Source must be 'api', a supply function, or a boolean value: ${source}`);
   }
 
-  // widget //
-  useWidget(widget, options) {
-    this._viewReactor.widget = this._normalizeWidget(widget, options);
+  // layout //
+  useLayout(layout, options) {
+    this._viewReactor.layout = this._normalizeLayout(layout, options);
     return this;
   }
 
-  _normalizeWidget(widget = DEFAULT_WIDGET_TYPE, options) {
-    switch (typeof widget) {
+  _normalizeLayout(layout = DEFAULT_LAYOUT, options) {
+    switch (typeof layout) {
       case 'boolean':
-        return widget ? this._createWidgetFromLibs(DEFAULT_WIDGET_TYPE) : undefined;
+        return layout ? this._createLayoutFromLibs(DEFAULT_LAYOUT) : undefined;
       case 'string':
-        return this._createWidgetFromLibs(widget, options);
+        return this._createLayoutFromLibs(layout, options);
       case 'function':
-        return { render: widget };
+        return { render: layout };
       default:
-        throw new Error(`Widget must be a string, a render function, or a boolean value: ${widget}`);
+        throw new Error(`Layout must be a string, a render function, or a boolean value: ${layout}`);
     }
   }
 
-  _createWidgetFromLibs(type, options) {
-    const widgetClass = this._context._plugin.widgets.get(type);
-    if (!widgetClass) {
-      throw new Error(`Widget of name '${type}' not found.`);
+  _createLayoutFromLibs(type, options) {
+    const LayoutClass = this._context._plugin.layouts.get(type);
+    if (!LayoutClass) {
+      throw new Error(`Layout of name '${type}' not found.`);
     }
-    return new widgetClass(options);
-  }
-
-  get widget() {
-    return this._widget;
+    return new LayoutClass(options);
   }
 
   // tracker //
