@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Overview</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/" />
-<meta name="description" content="UI plugin overview" />
+<title>Miso SDK for JavaScript - UI - Layouts</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/layout/" />
+<meta name="description" content="Built-in layouts" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Overview" />
-<meta property="og:description" content="UI plugin overview" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Layouts" />
+<meta property="og:description" content="Built-in layouts" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/layout/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Overview">
-<meta name="twitter:description" content="UI plugin overview">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Layouts">
+<meta name="twitter:description" content="Built-in layouts">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/layout/">
 
 
 
@@ -89,7 +89,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -107,7 +107,7 @@
             <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
           </li><li class="page">
             <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
-          </li><li class="page">
+          </li><li class="page active">
             <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
           </li><li class="page">
             <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
@@ -120,30 +120,54 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>UI extension for Miso client SDK</h1><hr>
+          <h1>Layouts</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso client SDK comes with a built-in UI extension to let you quickly integrate Miso API results into your site.</p>
-<h3>Table of Content</h3>
-<div class="chapter-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4"><h5 class="title mb-2">
-        Overview
-      </h5>
-      <div>
-        <ul class="page-list list-unstyled ps-3"><li class="page">
-            <div>
-              <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
-            </div><p class="mb-0 ps-3">
-              How to setup the UI plugin.
-            </p></li></ul>
-      </div></li><li class="section mb-4"><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
-      </h5><p class="mb-0">
-        Recommendation UI
-      </p></li></ul>
-</div>
+          <p>Select a layout to display the recommendation result:</p>
+<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useLayout</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Available built-in layouts are:</p>
+<ul>
+<li><code>list</code> (default)</li>
+<li><code>cards</code></li>
+</ul>
+<h3 id="customization" tabindex="-1">Customization</h3>
+<h4 id="styles" tabindex="-1">Styles</h4>
+<p>You can customize the look-and-feel of any layouts by adding additional CSS rules. The built-in layouts have the following base class names:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Layout</th>
+      <th scope="col">CSS class name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>List</td>
+      <td><code>miso-list</code></td>
+    </tr>
+    <tr>
+      <td>Cards</td>
+      <td><code>miso-cards</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>If you want to change the base class name of the elements, specify it in the options:</p>
+<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useLayout</span><span class="token punctuation">(</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'my-miso-list'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="dom-structure" tabindex="-1">DOM structure</h4>
+<p>In addition, to customize product item DOM structure, you can override the template function:</p>
+<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useLayout</span><span class="token punctuation">(</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">product</span><span class="token operator">:</span> renderProduct<br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">function</span> <span class="token function">renderProduct</span><span class="token punctuation">(</span><span class="token parameter">layout<span class="token punctuation">,</span> state<span class="token punctuation">,</span> product</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> html <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> html<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<p>The render function takes the following arguments and should return an HTML string.</p>
+<ul>
+<li><code>layout</code>: the layout implementation widget</li>
+<li><code>state</code>: the whole data state in this rendering process</li>
+<li><code>product</code>: the product record to display</li>
+</ul>
+<p>See also: the <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/templates.js" target="_blank" rel="noopener">default templates</a>.</p>
+<h4 id="logo" tabindex="-1">Logo</h4>
+<p>You can hide Miso logo:</p>
+<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useLayout</span><span class="token punctuation">(</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

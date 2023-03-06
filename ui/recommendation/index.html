@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Element</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/element/" />
-<meta name="description" content="Introduce built-in elements." />
+<title>Miso SDK for JavaScript - UI - Recommendation</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/" />
+<meta name="description" content="Recommendation UI" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Element" />
-<meta property="og:description" content="Introduce built-in elements." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Recommendation" />
+<meta property="og:description" content="Recommendation UI" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Element">
-<meta name="twitter:description" content="Introduce built-in elements.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Recommendation">
+<meta name="twitter:description" content="Recommendation UI">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/">
 
 
 
@@ -93,34 +93,24 @@
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/quick-start/">Quick Start</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/installation/">Installation</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/concept/">Concept</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/model/">Data Model</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/model/list-model/">MisoListModel</a>
+            <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
           </li></ul>
       </div>
     </li><li class="section mb-3 active">
-      <a href="/miso-client-js-sdk/ui/element/">Element</a>
+      <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/element/miso-list/">&lt;miso-list&gt;</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/recipe/">Recipes</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/recipe/custom-api/">Custom API</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
           </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recipe/deduplication/">Deduplication</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
           </li></ul>
       </div>
     </li></ul>
@@ -130,17 +120,48 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso UI&#39;s custom elements</h1><hr>
+          <h1>Recommendation UI</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <h3>Table of Content</h3><div class="section-toc">
+          <p>The UI plugin provides tools to display Miso recommendation results in your webpage. You can:</p>
+<ul>
+<li>Configure API parameters</li>
+<li>Select from a set of built-in layouts to display the result</li>
+<li>Track <a href="/miso-client-js-sdk/sdk/interactions/performance/" target="_blank" rel="noopener">performance events</a> automatically</li>
+</ul>
+<h3>Table of Content</h3><div class="section-toc">
     <ul class="page-list list-unstyled"><li class="page mb-4">
         <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/ui/element/miso-list/">&lt;miso-list&gt;</a>
+          <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
         </h5><p class="mb-0">
-          A customizable list element to display search, autocomplete, recommendation results.
+          The shortest path to kick off recommendation UI
+        </p></li><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
+        </h5><p class="mb-0">
+          The JavaScript API to manage a recommendation UI section
+        </p></li><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
+        </h5><p class="mb-0">
+          UI section placement
+        </p></li><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
+        </h5><p class="mb-0">
+          Configure recommendation API
+        </p></li><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
+        </h5><p class="mb-0">
+          Built-in layouts
+        </p></li><li class="page mb-4">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
+        </h5><p class="mb-0">
+          Tracking performance events
         </p></li></ul>
   </div>
 

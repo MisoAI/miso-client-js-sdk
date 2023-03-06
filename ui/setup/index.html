@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Concept</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/concept/" />
-<meta name="description" content="Explain how UI plugin works." />
+<title>Miso SDK for JavaScript - UI - Setup</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/setup/" />
+<meta name="description" content="How to setup the UI plugin." />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Concept" />
-<meta property="og:description" content="Explain how UI plugin works." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/concept/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Setup" />
+<meta property="og:description" content="How to setup the UI plugin." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/setup/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Concept">
-<meta name="twitter:description" content="Explain how UI plugin works.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/concept/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Setup">
+<meta name="twitter:description" content="How to setup the UI plugin.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/setup/">
 
 
 
@@ -92,35 +92,25 @@
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active">
+            <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3">
+      <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
+      <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/quick-start/">Quick Start</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
           </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/installation/">Installation</a>
-          </li><li class="page active">
-            <a href="/miso-client-js-sdk/ui/concept/">Concept</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/model/">Data Model</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/model/list-model/">MisoListModel</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/element/">Element</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/element/miso-list/">&lt;miso-list&gt;</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/recipe/">Recipes</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/recipe/custom-api/">Custom API</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
           </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recipe/deduplication/">Deduplication</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
           </li></ul>
       </div>
     </li></ul>
@@ -130,59 +120,30 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso UI&#39;s core concept</h1><hr>
+          <h1>Setup</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>The UI plugin follows a simple data model driven paradigm.</p>
+          <p>The UI plugin is shipped with the SDK and requires no extra dependency. To use the plugin, simply:</p>
+<ol>
+<li>Install the SDK</li>
+<li>Turn on the plugin in JavaScript</li>
+<li>Add a stylesheet in your webpage</li>
+</ol>
+<h3 id="install-the-sdk" tabindex="-1">Install the SDK</h3>
+<p>See SDK <a href="/miso-client-js-sdk/sdk/installation/" target="_blank" rel="noopener">Installation</a> section for details.</p>
+<h3 id="turn-on-the-plugin" tabindex="-1">Turn on the plugin</h3>
+<p>In your application, turn on the UI plugin before creating an SDK client.</p>
+<pre class="language-js"><code class="language-js">MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'std:ui'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="add-a-stylesheet-in-your-webpage" tabindex="-1">Add a stylesheet in your webpage</h3>
+<p>Add the following stylesheet in your webpage:</p>
+<p>The <code>version</code> parameter can be one of the following:</p>
 <ul>
-<li>Data models keep track of state and its transition.</li>
-<li>Elements trigger actions on the models and listen to their data events to update themselves.</li>
+<li>A specific version. For example: <code>1.6.0</code>. (recommended)</li>
+<li>A tag: either <code>latest</code> or <code>beta</code>.</li>
 </ul>
-<table class="miso-diagram">
-  <tr>
-    <td>
-      <div class="box">
-        Element
-      </div>
-    </td>
-    <td>
-      <div style="min-width: 36px;"></div>
-      <span class="line hor"></span>
-      <span class="arrow right"></span>
-    </td>
-    <td>
-      <div class="box">
-        Data Model
-      </div>
-    </td>
-    <td>
-      <div style="min-width: 36px;"></div>
-      <span class="line hor"></span>
-      <span class="arrow right"></span>
-    </td>
-    <td>
-      <div class="box">
-        SDK Client
-      </div>
-    </td>
-  </tr>
-</table>
-<h3 id="element" tabindex="-1">Element</h3>
-<p>A custom element is responsible for the following:</p>
-<ul>
-<li>Take various attributes.</li>
-<li>Create a data model if necessary and attach to it.</li>
-<li>Trigger data model's action via its API.</li>
-<li>Subscribe and respond to data model's events.</li>
-</ul>
-<h3 id="data-model" tabindex="-1">Data Model</h3>
-<p>A data model manages the following:</p>
-<ul>
-<li>Find or wait for the first SDK client instance and connects to it.</li>
-<li>Accept action calls, request data from the client, keep responses in order, then emit data events.</li>
-</ul>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span><br>  ...<br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@{{version}}/dist/css/ui.css<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></code></pre>
 
         </div>
       </main>

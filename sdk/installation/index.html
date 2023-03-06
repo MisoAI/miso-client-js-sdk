@@ -157,10 +157,19 @@
           <h3 id="as-npm-module" tabindex="-1">As NPM Module</h3>
 <p>To use SDK as an npm module, run in your project directory:</p>
 <pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">--save</span> @miso.ai/client-sdk</code></pre>
+<p>The <code>MisoClient</code> class is the default export of the module:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> MisoClient <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@miso.ai/client-sdk'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="using-script-tag" tabindex="-1">Using Script Tag</h3>
 <p>The SDK is also served by <a href="https://www.jsdelivr.com/package/npm/@miso.ai/client-sdk" target="_blank" rel="noopener">jsDelivr</a>.</p>
 <p>You can also include the SDK in your webpage with script tag:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>The <code>version</code> parameter can be one of the following:</p>
+<ul>
+<li>A specific version. For example: <code>1.6.0</code>. (recommended)</li>
+<li>A tag: either <code>latest</code> or <code>beta</code>.</li>
+</ul>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@{{version}}/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>The <code>MisoClient</code> class is exposed as a global property:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Data Model</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/model/" />
-<meta name="description" content="Introduce built-in data models." />
+<title>Miso SDK for JavaScript - UI - API parameters</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/api/" />
+<meta name="description" content="Configure recommendation API" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Data Model" />
-<meta property="og:description" content="Introduce built-in data models." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/model/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - API parameters" />
+<meta property="og:description" content="Configure recommendation API" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/api/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Data Model">
-<meta name="twitter:description" content="Introduce built-in data models.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/model/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - API parameters">
+<meta name="twitter:description" content="Configure recommendation API">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/api/">
 
 
 
@@ -93,34 +93,24 @@
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/quick-start/">Quick Start</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/installation/">Installation</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/concept/">Concept</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3 active">
-      <a href="/miso-client-js-sdk/ui/model/">Data Model</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/model/list-model/">MisoListModel</a>
+            <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
           </li></ul>
       </div>
     </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/element/">Element</a>
+      <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/element/miso-list/">&lt;miso-list&gt;</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3">
-      <a href="/miso-client-js-sdk/ui/recipe/">Recipes</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
-            <a href="/miso-client-js-sdk/ui/recipe/custom-api/">Custom API</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
           </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recipe/deduplication/">Deduplication</a>
+            <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
+          </li><li class="page active">
+            <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
+          </li><li class="page">
+            <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
           </li></ul>
       </div>
     </li></ul>
@@ -130,19 +120,37 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Miso UI&#39;s data models</h1><hr>
+          <h1>Configure API payload</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <h3>Table of Content</h3><div class="section-toc">
-    <ul class="page-list list-unstyled"><li class="page mb-4">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/ui/model/list-model/">MisoListModel</a>
-        </h5><p class="mb-0">
-          A list model to represent search, autocomplete, recommendation results.
-        </p></li></ul>
-  </div>
+          <p>Configure your API payload as the following:</p>
+<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>apiName<span class="token punctuation">,</span> payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Available <code>apiName</code> values are:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Value</th>
+      <th scope="col">API</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>user_to_products</code></td>
+      <td>
+        <a href="/miso-client-js-sdk/sdk/recommendation/user_to_products/">User to Products</a>
+      </td>
+    </tr>
+    <tr>
+      <td><code>product_to_products</code></td>
+      <td>
+        <a href="/miso-client-js-sdk/sdk/recommendation/product_to_products/">Product to Products</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>See the API reference for payload options.</p>
 
         </div>
       </main>

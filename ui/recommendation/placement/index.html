@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Overview</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/" />
-<meta name="description" content="UI plugin overview" />
+<title>Miso SDK for JavaScript - UI - UI Placement</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/placement/" />
+<meta name="description" content="UI section placement" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Overview" />
-<meta property="og:description" content="UI plugin overview" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - UI Placement" />
+<meta property="og:description" content="UI section placement" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/placement/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Overview">
-<meta name="twitter:description" content="UI plugin overview">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - UI Placement">
+<meta name="twitter:description" content="UI section placement">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/placement/">
 
 
 
@@ -89,7 +89,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -103,7 +103,7 @@
             <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
           </li><li class="page">
             <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
-          </li><li class="page">
+          </li><li class="page active">
             <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
           </li><li class="page">
             <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
@@ -120,30 +120,23 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>UI extension for Miso client SDK</h1><hr>
+          <h1>UI section placement</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso client SDK comes with a built-in UI extension to let you quickly integrate Miso API results into your site.</p>
-<h3>Table of Content</h3>
-<div class="chapter-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4"><h5 class="title mb-2">
-        Overview
-      </h5>
-      <div>
-        <ul class="page-list list-unstyled ps-3"><li class="page">
-            <div>
-              <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
-            </div><p class="mb-0 ps-3">
-              How to setup the UI plugin.
-            </p></li></ul>
-      </div></li><li class="section mb-4"><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
-      </h5><p class="mb-0">
-        Recommendation UI
-      </p></li></ul>
-</div>
+          <h3 id="using-built-in-custom-element" tabindex="-1">Using built-in custom element</h3>
+<p>Place a custom element <code>&lt;miso-unit&gt;</code> in the webpage where you want to display your recommendation result:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-unit</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>default<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-unit</span><span class="token punctuation">></span></span></code></pre>
+<p>You can have multiple units in a page, as long as they have distinct unit IDs:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-unit</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>unit-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-unit</span><span class="token punctuation">></span></span><br>...<br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-unit</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>unit-2<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-unit</span><span class="token punctuation">></span></span></code></pre>
+<p>If omitted, the default unit ID value is <code>default</code>:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-unit</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-unit</span><span class="token punctuation">></span></span><br><span class="token comment">&lt;!--<br>  equlivalent to <br>  &lt;miso-unit unit-id="default">&lt;/miso-unit><br>--></span></code></pre>
+<h3 id="using-regular-element-with-data-attribute" tabindex="-1">Using regular element with data attribute</h3>
+<p>You can also use any other element:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>my-div<span class="token punctuation">"</span></span> <span class="token attr-name">data-miso-unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>default<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
+<p>Then you need to manually bind the element to recommendation unit object:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> myDiv <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'my-div'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> unit <span class="token operator">=</span> client<span class="token punctuation">.</span>units<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token function">unit</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>myDiv<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>
