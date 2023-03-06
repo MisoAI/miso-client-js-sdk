@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Plugins - Google Tag Manager</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/plugins/gtm/" />
-<meta name="description" content="Capture events from GTM dataLayer and turn them into Miso&#39;s user interactions automatically." />
+<title>Miso SDK for JavaScript - Plugins - Shopify</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/plugins/shopify/" />
+<meta name="description" content="Integrate with a Shopify store" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Plugins - Google Tag Manager" />
-<meta property="og:description" content="Capture events from GTM dataLayer and turn them into Miso&#39;s user interactions automatically." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/gtm/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Plugins - Shopify" />
+<meta property="og:description" content="Integrate with a Shopify store" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/shopify/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Plugins - Google Tag Manager">
-<meta name="twitter:description" content="Capture events from GTM dataLayer and turn them into Miso&#39;s user interactions automatically.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/gtm/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Plugins - Shopify">
+<meta name="twitter:description" content="Integrate with a Shopify store">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/plugins/shopify/">
 
 
 
@@ -104,12 +104,12 @@
             <a href="/miso-client-js-sdk/plugins/algolia/customization/">Customization</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3 active">
       <a href="/miso-client-js-sdk/plugins/shopify/">Shopify</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"></ul>
       </div>
-    </li><li class="section mb-3 active">
+    </li><li class="section mb-3">
       <a href="/miso-client-js-sdk/plugins/gtm/">Google Tag Manager</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
@@ -125,26 +125,33 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Google Tag Manager plugin</h1><hr>
+          <h1>Shopify</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Tools to help you capture event from GTM's (Google Tag Manager) <code>dataLayer</code> object.</p>
-<p>Currently it focuses on GTM's <a href="https://developers.google.com/analytics/devguides/collection/ua/gtm/enhanced-ecommerce" target="_blank" rel="noopener">Enhanced Ecommerce</a> extension.</p>
-<h3>Table of Content</h3><div class="section-toc">
-    <ul class="page-list list-unstyled"><li class="page mb-4">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/plugins/gtm/installation/">Installation</a>
-        </h5><p class="mb-0">
-          How to setup the plugin.
-        </p></li><li class="page mb-4">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/plugins/gtm/ecommerce/">Enhanced Ecommerce</a>
-        </h5><p class="mb-0">
-          Working with Enhanced Ecommerce events.
-        </p></li></ul>
-  </div>
+          <p>The Miso Shopify App adds a script in your Shopify store page, which consists of the standard SDK and a Shopify plugin. The script does the following:</p>
+<ul>
+<li>Create a MisoClient instance, as <code>window.miso</code></li>
+<li>Set <code>anonymous_id</code> and <code>user_id</code> in context</li>
+<li>Capture some user interactions events automatically</li>
+</ul>
+<h4 id="misoclient-instance" tabindex="-1">MisoClient instance</h4>
+<p>Access the predefined MisoClient instance:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> window<span class="token punctuation">.</span>miso<span class="token punctuation">;</span></code></pre>
+<h4 id="events" tabindex="-1">Events</h4>
+<p>Events captured by the script are:</p>
+<ul>
+<li><code>home_page_view</code></li>
+<li><code>category_page_view</code></li>
+<li><code>product_detail_page_view</code></li>
+<li><code>search</code></li>
+<li><code>add_to_cart</code></li>
+<li><code>remove_from_cart</code></li>
+</ul>
+<p>Note that <code>checkout</code> events are covered by Shopify webhooks.</p>
+<h3 id="display-recommendation-results" tabindex="-1">Display recommendation results</h3>
+<p>See the <a href="/miso-client-js-sdk/ui/" target="_blank" rel="noopener">UI</a> chapters for details.</p>
 
         </div>
       </main>
