@@ -1,5 +1,5 @@
 import CollectionLayout from './collection';
-import { product } from './renderers';
+import { product } from './templates';
 
 const TYPE = 'list';
 const DEFAULT_CLASSNAME = 'miso-list';
