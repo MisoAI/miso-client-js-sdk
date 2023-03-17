@@ -5,7 +5,7 @@ import LOGO from './logo';
 function root(layout, state) {
   const { className, templates } = layout;
   const { status } = state;
-  return `<div class="miso ${className} ${status}">${templates[status](layout, state)}${templates.banner(layout, state)}</div>`;
+  return `<div class="miso__root ${status}"><div class="${className}">${templates[status](layout, state)}</div>${templates.banner(layout, state)}</div>`;
 }
 
 function banner(layout, state) {

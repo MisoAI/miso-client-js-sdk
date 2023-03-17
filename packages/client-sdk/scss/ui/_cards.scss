@@ -20,6 +20,7 @@
     grid-template-columns: repeat(auto-fill, minmax(var(--miso-cards-item-min-width), 1fr));
     gap: var(--miso-cards-item-gap);
     padding: 0;
+    margin: 0;
   }
 
   li.miso-cards__item {

@@ -12,7 +12,9 @@
 </style>
 <section>
   <div id="layout-radio-group" class="btn-group" role="group">
-    <input type="radio" class="btn-check" name="layout" value="list" id="layout-radio-list" autocomplete="off" checked>
+    <input type="radio" class="btn-check" name="layout" value="carousel" id="layout-radio-carousel" autocomplete="off" checked>
+    <label class="btn btn-outline-primary" for="layout-radio-carousel">Carousel</label>
+    <input type="radio" class="btn-check" name="layout" value="list" id="layout-radio-list" autocomplete="off">
     <label class="btn btn-outline-primary" for="layout-radio-list">List</label>
     <input type="radio" class="btn-check" name="layout" value="cards" id="layout-radio-cards" autocomplete="off">
     <label class="btn btn-outline-primary" for="layout-radio-cards">Cards</label>

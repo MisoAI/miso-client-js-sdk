@@ -10,7 +10,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
   ...CollectionLayout.defaultTemplates,
-  DEFAULT_TEMPLATES,
+  ...DEFAULT_TEMPLATES,
 });
 
 export default class ListLayout extends CollectionLayout {

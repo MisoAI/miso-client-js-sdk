@@ -2,6 +2,7 @@ import { uuidv4, trimObj, defineValues, EventEmitter } from '@miso.ai/commons';
 import DataReactor from './data';
 import ViewReactor from './view';
 import Tracker from './tracker';
+import ProxyElement from './proxy';
 import { ApiDataSource } from '../source';
 import { ListLayout } from '../layout';
 import { VIEW_STATUS } from '../constants';
@@ -22,6 +23,7 @@ export default class Unit {
     this._dataReactor = new DataReactor(this);
     this._viewReactor = new ViewReactor(this);
     this._tracker = new Tracker(this);
+    this._proxyElement = new ProxyElement(this);
 
     this._dataReactor.source = this._apiDataSource;
     this.useApi(DEFAULT_API_NAME);
@@ -87,6 +89,10 @@ export default class Unit {
   // element //
   get element() {
     return this._element;
+  }
+
+  get proxyElement() {
+    return this._proxyElement;
   }
 
   bind(element) {

@@ -26,6 +26,9 @@ export default class ViewReactor {
       unit.on('start', () => this.refresh()),
       unit.on('data', () => this.refresh()),
     ];
+
+    this._trySyncSize = this._onWindowResize.bind(this);
+    window.addEventListener('resize', this._onWindowResize);
   }
 
   get layout() {
@@ -105,6 +108,10 @@ export default class ViewReactor {
     }
   }
 
+  _onWindowResize() {
+    this._unit.element && this._layout && (typeof this._layout.syncSize === 'function') && this._layout.syncSize(this._unit.element);
+  }
+
   _error(e) {
     // TODO
     console.error(e);
@@ -122,6 +129,8 @@ export default class ViewReactor {
     for (const unsubscribe of this._unsubscribes) {
       unsubscribe();
     }
+    this._unsubscribes = [];
+    window.removeEventListener('resize', this._onWindowResize);
   }
 
 }

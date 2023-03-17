@@ -1,4 +1,4 @@
-.miso {
+.miso__root {
   // the currency symbol used for price display
   --miso-currency-symbol: "$";
   // the color of Miso logo SVG image
@@ -7,9 +7,12 @@
   --miso-banner-text: 'Powered by ';
   --miso-banner-text-color: #666;
   --miso-banner-height: 1.7rem;
+  // margin top of the banner
+  --miso-banner-gap: 1rem;
 
   .miso__banner {
     text-align: right;
+    margin-top: var(--miso-banner-gap);
   }
 
   .miso__logo {
