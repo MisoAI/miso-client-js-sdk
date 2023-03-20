@@ -48,6 +48,7 @@
   }
 
   .miso-carousel__viewport {
+    flex-grow: 1;
     position: relative;
     overflow: hidden;
     margin: 0 var(--miso-carousel-item-gap);
