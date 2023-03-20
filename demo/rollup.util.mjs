@@ -7,6 +7,7 @@ import replace from '@rollup/plugin-replace';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
+import yaml from '@rollup/plugin-yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cwd = join(__dirname, 'src/entry');
@@ -17,6 +18,7 @@ function _config(name, env = 'prod') {
   let plugins = [
     commonjs(),
     nodeResolve(),
+    yaml(),
     replace({
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('production'),

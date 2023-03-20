@@ -4,6 +4,8 @@ sections:
   pages:
   - title: Vanilla
     path: /scenario/vanilla
+  - title: Dummy
+    path: /scenario/dummy
 - title: Tracker
   path: /tracker
   pages:
