@@ -37,14 +37,12 @@
 </script>
 <hr>
 <section style="margin-right: 100px;">
-  <h3>Recommendation Units</h3>
-  <miso-unit>
-  </miso-unit>
+  <miso-recommendation></miso-recommendation>
 </section>
 <script>
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-const unit = client.units.get();
+const unit = client.ui.recommendation.get();
 unit.useApi('user_to_products', { rows: 6 });
 unit.useLayout(window.selectedLayout);
 window.onReload = () => unit.reset().start();

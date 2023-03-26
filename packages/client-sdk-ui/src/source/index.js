@@ -1,1 +1,1 @@
-export { default as ApiDataSource } from './api';
+export { default as api } from './api';

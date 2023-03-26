@@ -1,11 +1,16 @@
 sections:
-- title: Scenario
-  path: /scenario
+- title: Search
+  path: /search
   pages:
-  - title: Vanilla
-    path: /scenario/vanilla
-  - title: Dummy
-    path: /scenario/dummy
+  - title: Basic
+    path: /search/basic
+- title: Recommendation
+  path: /recommendation
+  pages:
+  - title: Basic
+    path: /recommendation/basic
+  - title: Dummy Data
+    path: /recommendation/dummy
 - title: Tracker
   path: /tracker
   pages:

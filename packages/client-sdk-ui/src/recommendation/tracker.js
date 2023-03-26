@@ -25,23 +25,24 @@ const DEFAULT_TRACKING_OPTIONS = Object.freeze({
 
 export default class Tracker {
 
-  constructor(unit) {
-    this._unit = unit;
-    this._items = new Items(unit);
+  constructor(saga) {
+    this._saga = saga;
+    this._items = new Items(saga);
     this._viewables = new WeakMap();
     this._options = DEFAULT_TRACKING_OPTIONS;
 
-    this._handleClick = this._handleClick.bind(this);
-
-    unit.on('bind', () => this.refresh());
-    unit.on('unbind', () => this.refresh());
-    unit.on('render', () => this.refresh());
+    this._unsubscribes = [
+      saga.elements.proxy('results').on('click', event => this._handleClick(event)),
+      saga.elements.on('results', () => this.refresh()),
+      saga.on('view', () => this.refresh()),
+    ];
 
     this.refresh();
   }
 
   config(options) {
-    if (this._unit.active) {
+    const { active } = this._saga;
+    if (active) {
       throw new Error(`Cannot change configuration after unit starts.`);
     }
     this._options = this._normalizeOptions(options);
@@ -66,7 +67,7 @@ export default class Tracker {
     this._syncElement();
 
     // refresh against view state
-    const { viewState } = this._unit;
+    const { view: viewState } = this._saga.states;
     if (!viewState) {
       return;
     }
@@ -98,26 +99,23 @@ export default class Tracker {
   }
 
   _assertViewReady() {
-    const { active, viewState } = this._unit;
-    if (!active || !viewState || viewState.status !== 'ready') {
-      return;
-    }
-    if (!active) {
+    const { view: viewState } = this._saga.states;
+    if (!this._saga.active) {
       throw new Error(`Unit is not active. Call unit.start() to activate it.`);
     }
-    if (!!viewState || viewState.status !== 'ready') {
+    if (!viewState || viewState.status !== 'ready') {
       throw new Error(`Unit is not rendered yet. If you handle rendering by yourself, call unit.notifyViewUpdate() when DOM is ready.`);
     }
   }
 
   _isViewReady() {
-    const { active, viewState } = this._unit;
-    return active && viewState && viewState.status === 'ready' && !viewState.erroneous;
+    const { view: viewState } = this._saga.states;
+    return this._saga.active && viewState && viewState.status === 'ready';
   }
 
   getState(productId) {
     return Object.freeze({
-      [CLICK]: this._unit.element ? TRACKING : UNTRACKED,
+      [CLICK]: this._saga.elements.get('results') ? TRACKING : UNTRACKED,
       ...this._states.getFullState(productId),
     });
   }
@@ -210,29 +208,28 @@ export default class Tracker {
 
   // click //
   _syncElement() {
-    const { element } = this._unit;
+    const element = this._saga.elements.get('results');
     if (this._element === element) {
       return;
     }
-    // remove listener and observer from old element
+    // remove observer from old element
     this._retireElement();
 
-    // add listener and observer on new element
+    // add observer on new element
     if (element) {
-      element.addEventListener('click', this._handleClick);
       if (this._options.watch) {
+        // TODO: use proxy element
         this._mutationObserver = new MutationObserver(() => this.refresh());
         this._mutationObserver.observe(element, { childList: true, subtree: true });
       }
-      this._element = element;
     }
+    this._element = element;
   }
 
   _retireElement() {
     if (!this._element) {
       return;
     }
-    this._element.removeEventListener('click', this._handleClick);
     if (this._mutationObserver) {
       this._mutationObserver.disconnect();
       this._mutationObserver = undefined;
@@ -284,14 +281,17 @@ export default class Tracker {
       return;
     }
     this._states.set(productIds, type, TRIGGERED);
-
-    this._unit._triggerEvent({ type, productIds, manual });
+    this._saga.trigger('event', { type, productIds, manual });
   }
 
   _destroy() {
     this._retireElement();
     this._retireStates();
     this._items._destroy();
+    for (const unsubscribe of this._unsubscribes) {
+      unsubscribe();
+    }
+    this._unsubscribes = [];
   }
 
 }
@@ -299,7 +299,7 @@ export default class Tracker {
 /**
  * Tracking states for a session to keep track of the tracking status of each product.
  * For each entry there are status of impression, viewable, and click events. 
- * The actual click tracking status depends on the presence of unit.element, which is not respected in this object.
+ * The actual click tracking status depends on the presence of root element, which is not respected in this object.
  */
 class States {
 

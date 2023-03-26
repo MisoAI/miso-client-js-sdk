@@ -1,9 +1,16 @@
-import TemplateBasedLayout from './template';
+import { ROLE, STATUS } from '../../constants';
+import TemplateBasedLayout from '../template';
+import { requiresImplementation } from '../templates';
+
+function root(layout, state) {
+  const { className, templates } = layout;
+  const { status } = state;
+  return `<div class="miso__root ${status}"><div class="${className}">${templates[status](layout, state)}</div>${templates.banner(layout, state)}</div>`;
+}
 
 function ready(layout, state) {
   const { templates } = layout;
-  const { data } = state;
-  const { products } = data;
+  const { products } = state.value;
 
   // TODO: handle categories, attributes, etc.
   if (products && products.length > 0) {
@@ -26,13 +33,15 @@ function item(layout, state, type, item) {
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
+  ...requiresImplementation('product'),
+  root,
+  [STATUS.INITIAL]: () => ``,
+  [STATUS.LOADING]: () => ``,
+  [STATUS.ERRONEOUS]: () => ``,
+  [STATUS.READY]: ready,
   empty: () => ``,
-  ready,
   list,
   item,
-  product: () => {
-    throw new Error(`Template "product" is absent.`);
-  },
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
@@ -41,6 +50,10 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {
+
+  static get role() {
+    return ROLE.RESULTS;
+  }
 
   static get defaultTemplates() {
     return INHERITED_DEFAULT_TEMPLATES;

@@ -1,10 +1,16 @@
+import { ROLE } from '../constants';
 import { getMisoClient } from './utils';
 
 const ATTR_UNIT_ID = 'unit-id';
-const TAG_NAME = 'miso-unit';
+const TAG_NAME = 'miso-recommendation';
+
 const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_UNIT_ID]);
 
-export default class MisoUnitElement extends HTMLElement {
+export default class MisoRecommendationElement extends HTMLElement {
+
+  static get role() {
+    return ROLE.RESULTS;
+  }
 
   static get tagName() {
     return TAG_NAME;
@@ -37,7 +43,7 @@ export default class MisoUnitElement extends HTMLElement {
     // find client & auto bind
     const MisoClient = await getMisoClient();
     const client = this._client = await MisoClient.any();
-    client.units.get(this.unitId).bind(this);
+    client.ui.recommendation.get(this.unitId).bind(this);
   }
 
   attributeChangedCallback(attr, oldValue, newValue) {
@@ -52,12 +58,12 @@ export default class MisoUnitElement extends HTMLElement {
     if (oldValue === newValue || !this._client) {
       return;
     }
-    const units = this._client.units;
-    if (oldValue && units.has(oldValue)) {
-      units.get(oldValue).unbind();
+    const { recommendation } = this._client.ui;
+    if (oldValue && recommendation.has(oldValue)) {
+      recommendation.get(oldValue).unbind();
     }
     if (newValue) {
-      units.get(newValue).bind(this);
+      recommendation.get(newValue).bind(this);
     }
   }
 

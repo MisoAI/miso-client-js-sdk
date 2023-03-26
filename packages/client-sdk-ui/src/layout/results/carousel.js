@@ -1,5 +1,5 @@
 import CollectionLayout from './collection';
-import { product } from './templates';
+import { product } from '../templates';
 
 const TYPE = 'carousel';
 const DEFAULT_CLASSNAME = 'miso-carousel';
@@ -19,8 +19,7 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 
 function ready(layout, state) {
   const { templates } = layout;
-  const { data } = state;
-  const { products } = data;
+  const { products } = state.value;
   const nonEmpty = products && products.length > 0;
   const html = CollectionLayout.defaultTemplates.ready(layout, state);
   return nonEmpty ? templates.carousel(layout, state, html) : html;
@@ -37,6 +36,10 @@ function chevron(layout) {
 }
 
 export default class CarouselLayout extends CollectionLayout {
+
+  static get role() {
+    return CollectionLayout.role;
+  }
 
   static get type() {
     return TYPE;
@@ -57,14 +60,16 @@ export default class CarouselLayout extends CollectionLayout {
     this._unsubscribes = [];
   }
 
-  initialize(unit) {
-    this._unit = unit;
-    this._unsubscribes.push(unit.proxyElement.on('click', this._onClick.bind(this)));
+  initialize(saga) {
+    this._saga = saga;
+    const proxyElement = saga.elements.proxy('results');
+    this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
   async render(element, state) {
     this._dataState = state;
-    this._itemCount = state.data && state.data.products && state.data.products.length;
+    const products = state.value && state.value.products;
+    this._itemCount = products ? products.length : undefined;
     await super.render(element, state);
     this.syncSize();
   }
@@ -86,6 +91,9 @@ export default class CarouselLayout extends CollectionLayout {
   }
 
   syncSize() {
+    if (this._itemCount === undefined) {
+      return; // data not ready yet
+    }
     const grid = this._findGridElement();
     if (!grid) {
       return;
@@ -115,7 +123,7 @@ export default class CarouselLayout extends CollectionLayout {
   }
 
   _findGridElement() {
-    const { element } = this._unit;
+    const element = this._saga.elements.get('results');
     return element && element.querySelector(`.${this.className}__list`);
   }
 
@@ -133,8 +141,7 @@ export default class CarouselLayout extends CollectionLayout {
 
   destroy() {
     window.removeEventListener('resize', this.syncSize);
-    this._unit = undefined;
-    super.destroy();
+    this._saga = undefined;
   }
 
 }

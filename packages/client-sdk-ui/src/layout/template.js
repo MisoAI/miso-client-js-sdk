@@ -1,26 +1,16 @@
 import { defineValues, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { VIEW_STATUS } from '../constants';
+import { requiresImplementation } from './templates';
 import LOGO from './logo';
 
-function root(layout, state) {
-  const { className, templates } = layout;
-  const { status } = state;
-  return `<div class="miso__root ${status}"><div class="${className}">${templates[status](layout, state)}</div>${templates.banner(layout, state)}</div>`;
-}
-
-function banner(layout, state) {
+function banner(layout) {
   const { options = {} } = layout;
   const { logo } = options;
   return logo ? `<div class="miso__banner"><div class="miso__logo">${LOGO}</div></div>` : '';
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
-  root,
+  ...requiresImplementation('root'),
   banner,
-  [VIEW_STATUS.INITIAL]: () => ``,
-  [VIEW_STATUS.LOADING]: () => ``,
-  [VIEW_STATUS.READY]: () => ``,
-  [VIEW_STATUS.ERRONEOUS]: () => ``,
 });
 
 export default class TemplateBasedLayout {
@@ -29,7 +19,7 @@ export default class TemplateBasedLayout {
     return DEFAULT_TEMPLATES;
   }
 
-  constructor(className, templates, { logo = true } = {}) {
+  constructor(className, templates, { logo = true, ...options } = {}) {
     defineValues(this, {
       className,
       templates: {
@@ -37,6 +27,7 @@ export default class TemplateBasedLayout {
         ...templates,
       },
       options: {
+        ...options,
         logo,
       },
     });
@@ -48,7 +39,7 @@ export default class TemplateBasedLayout {
     // only render the last update request
     await raf(() => {
       if (this._html) {
-        element.innerHTML = html;
+        element.innerHTML = this._html;
       }
       this._html = undefined;
     });

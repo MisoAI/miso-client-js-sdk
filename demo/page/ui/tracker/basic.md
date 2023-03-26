@@ -34,7 +34,7 @@ Scroll down to see the recommendation unit.
 </section>
 <section>
   <h3>Recommendation Units</h3>
-  <miso-unit unit-id="unit-1">
+  <miso-recommendation unit-id="unit-1">
     <ul class="list">
       <li id="product-1" class="item" data-miso-product-id="product-1">
         <a href="#">Product 1</a>
@@ -49,7 +49,7 @@ Scroll down to see the recommendation unit.
         <a href="#">Product 4 (prevent default)</a>
       </li>
     </ul>
-  </miso-unit>
+  </miso-recommendation>
 </section>
 <script>
 document.querySelector('[data-miso-product-id="product-4"]').addEventListener('click', e => e.preventDefault());
@@ -57,7 +57,7 @@ document.querySelector('[data-miso-product-id="product-4"]').addEventListener('c
 <script>
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-const unit = client.units.get('unit-1');
+const unit = client.ui.recommendation.get('unit-1');
 window.helpers.unit.monitorEvents(unit);
 unit.startTracker();
 </script>

@@ -1,16 +1,21 @@
 export default class ProxyElement {
 
-  constructor(unit) {
-    this._unit = unit;
+  constructor(saga, role) {
+    this._saga = saga;
+    this._role = role;
     this._handlers = [];
     this._unsubscribes = [
-      unit.on('bind', element => this._onBind(element)),
-      unit.on('unbind', element => this._onUnbind(element)),
+      saga.elements.on(role, () => this._sync()),
     ];
+    this._sync();
+  }
+
+  _get() {
+    return this._saga.elements.get(this._role);
   }
 
   on(event, handler) {
-    const { element } = this._unit;
+    const element = this._get();
     if (element) {
       element.addEventListener(event, handler);
     }
@@ -19,7 +24,7 @@ export default class ProxyElement {
   }
 
   _off(event, handler) {
-    const { element } = this._unit;
+    const { element } = this._get();
     if (element) {
       element.removeEventListener(event, handler);
     }
@@ -31,16 +36,22 @@ export default class ProxyElement {
     }
   }
 
-  _onBind(element) {
-    for (const { event, handler } of this._handlers) {
-      element.addEventListener(event, handler);
+  _sync() {
+    const element = this._get();
+    if (this._element === element) {
+      return;
     }
-  }
-
-  _onUnbind(element) {
-    for (const { event, handler } of this._handlers) {
-      element.removeEventListener(event, handler);
+    if (this._element) {
+      for (const { event, handler } of this._handlers) {
+        this._element.removeEventListener(event, handler);
+      }
     }
+    if (element) {
+      for (const { event, handler } of this._handlers) {
+        element.addEventListener(event, handler);
+      }
+    }
+    this._element = element;
   }
 
   _destroy() {

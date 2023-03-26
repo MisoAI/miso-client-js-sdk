@@ -25,7 +25,7 @@ Click mode: lenient = true
 <hr>
 <section>
   <h3>Recommendation Units</h3>
-  <miso-unit unit-id="unit-1">
+  <miso-recommendation unit-id="unit-1">
     <ul class="list">
       <li id="product-1" class="item" data-miso-product-id="product-1">
         <a href="#">Product 1</a>
@@ -37,7 +37,7 @@ Click mode: lenient = true
         <span>Product 3</span>
       </li>
     </ul>
-  </miso-unit>
+  </miso-recommendation>
 </section>
 <script>
 document.querySelector('[data-miso-product-id="product-2"]').addEventListener('click', e => e.preventDefault());
@@ -50,7 +50,7 @@ const trackerOptions = {
     lenient: true,
   }
 };
-const unit = client.units.get('unit-1');
+const unit = client.ui.recommendation.get('unit-1');
 window.helpers.unit.monitorEvents(unit);
 unit.useTracker(trackerOptions).startTracker();
 </script>

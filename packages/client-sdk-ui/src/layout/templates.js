@@ -1,5 +1,18 @@
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
 
+export function requiresImplementation(...names) {
+  return names.reduce((acc, name) => {
+    acc[name] = unimplemented(name);
+    return acc;
+  }, {});
+}
+
+export function unimplemented(name) {
+  return () => {
+    throw new Error(`Template '${name}' is not implemented.`);
+  }
+}
+
 export function product(layout, state, { product_id, url, cover_image, title, description, sale_price, original_price, ...product }) {
   const { className } = layout;
   const openTag = url ? `<a class="${className}__item-body" ${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}" href="${url}" target="_blank" rel="noopener">` : `<div class="${className}__item-body">`;

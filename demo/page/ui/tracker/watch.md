@@ -27,9 +27,9 @@
 <hr>
 <section>
   <h3>Recommendation Units</h3>
-  <miso-unit unit-id="unit-1">
+  <miso-recommendation unit-id="unit-1">
     <ul id="list" class="list"></ul>
-  </miso-unit>
+  </miso-recommendation>
 </section>
 <script>
 let index = 1;
@@ -49,7 +49,7 @@ document.querySelector('#clear-btn').addEventListener('click', () => {
 <script>
 MisoClient.plugins.use('std:ui');
 const client = new MisoClient('...');
-const unit = client.units.get('unit-1');
+const unit = client.ui.recommendation.get('unit-1');
 window.helpers.unit.monitorEvents(unit);
 unit.useTracker({ watch: true }).startTracker();
 </script>

@@ -3,8 +3,8 @@ import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
 
 export default class Items {
 
-  constructor(unit) {
-    this._unit = unit;
+  constructor(saga) {
+    this._saga = saga;
     this._bindings = new Map();
     this._e2b = new WeakMap();
   }
@@ -21,11 +21,12 @@ export default class Items {
   }
 
   refresh() {
-    if (!this._unit.element) {
+    const element = this._saga.elements.get('results');
+    if (!element) {
       return this.unbindAll();
     }
     const unbounds = this._purge();
-    const elements = this._unit.element.querySelectorAll(`[${ATTR_DATA_MISO_PRODUCT_ID}]`);
+    const elements = element.querySelectorAll(`[${ATTR_DATA_MISO_PRODUCT_ID}]`);
     const bounds = [];
     // warn for conflict productIds
     // TODO

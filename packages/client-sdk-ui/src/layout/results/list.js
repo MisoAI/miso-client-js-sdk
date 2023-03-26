@@ -1,8 +1,8 @@
 import CollectionLayout from './collection';
-import { product } from './templates';
+import { product } from '../templates';
 
-const TYPE = 'cards';
-const DEFAULT_CLASSNAME = 'miso-cards';
+const TYPE = 'list';
+const DEFAULT_CLASSNAME = 'miso-list';
 
 const DEFAULT_TEMPLATES = Object.freeze({
   product,
@@ -13,7 +13,11 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
   ...DEFAULT_TEMPLATES,
 });
 
-export default class CardsLayout extends CollectionLayout {
+export default class ListLayout extends CollectionLayout {
+
+  static get role() {
+    return CollectionLayout.role;
+  }
 
   static get type() {
     return TYPE;
