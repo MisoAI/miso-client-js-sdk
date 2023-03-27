@@ -38,7 +38,6 @@ export default class RecommendationUnit {
     this.useSource('api');
     this.useApi(DEFAULT_API_NAME);
     this.useLayout(DEFAULT_LAYOUT);
-    this.reset();
   }
 
   get uuid() {
