@@ -35,15 +35,14 @@ export default class MisoSearchInputElement extends HTMLElement {
     }
     // find elements
     const input = this.querySelector('input');
+    const button = this.querySelector('button[type="submit"]') || this.querySelector('button');
     this._elements = {
       input,
+      button,
     };
     // bind events
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        this._onEnter();
-      }
-    });
+    input && input.addEventListener('keydown', (e) => (e.key === 'Enter') && this._submit());
+    button && button.addEventListener('click', () => this._submit());
   }
 
   async _bindClient() {
@@ -59,8 +58,15 @@ export default class MisoSearchInputElement extends HTMLElement {
     return DEFAULT_HTML;
   }
 
-  async _onEnter() {
-    const { value } = this._elements.input;
+  async _submit() {
+    const { input } = this._elements;
+    if (!input) {
+      return;
+    }
+    const { value } = input;
+    if (!value) {
+      return;
+    }
     const client = await this._client();
     client.ui.search.query({ q: value });
   }
