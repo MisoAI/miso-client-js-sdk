@@ -38,14 +38,20 @@ export default class DataSupplier {
     try {
       // TODO: abort signal
       value = await this._source({ session, ...event }, {});
+      this._emitData({ session, value });
     } catch(e) {
       error = e;
+      this._emitData({ session, error });
     }
+  }
+
+  _emitData(data) {
     const { session: latestSession } = this._saga.states;
-    if (latestSession && latestSession.index === session.index) {
-      // drop the result if the session has changed
-      this._saga.update('data', trimObj({ session, value, error }));
+    const { session } = data;
+    if (!latestSession || latestSession.index !== session.index) {
+      return;
     }
+    this._saga.update('data', data);
   }
 
   destroy() {
