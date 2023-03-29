@@ -43,15 +43,18 @@ Click mode: lenient = true
 document.querySelector('[data-miso-product-id="product-2"]').addEventListener('click', e => e.preventDefault());
 </script>
 <script>
-MisoClient.plugins.use('std:ui');
-const client = new MisoClient('...');
-const trackerOptions = {
-  click: {
-    lenient: true,
-  }
-};
-const unit = client.ui.recommendation.get('unit-1');
-window.helpers.unit.monitorEvents(unit);
-unit.useTracker(trackerOptions).startTracker();
+const misocmd = window.misocmd || (window.misocmd = []);
+misocmd.push(() => {
+  MisoClient.plugins.use('std:ui');
+  const client = new MisoClient('...');
+  const trackerOptions = {
+    click: {
+      lenient: true,
+    }
+  };
+  const unit = client.ui.recommendation.get('unit-1');
+  window.helpers.unit.monitorEvents(unit);
+  unit.useTracker(trackerOptions).startTracker();
+});
 </script>
 {% endraw %}

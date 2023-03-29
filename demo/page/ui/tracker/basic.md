@@ -55,10 +55,13 @@ Scroll down to see the recommendation unit.
 document.querySelector('[data-miso-product-id="product-4"]').addEventListener('click', e => e.preventDefault());
 </script>
 <script>
-MisoClient.plugins.use('std:ui');
-const client = new MisoClient('...');
-const unit = client.ui.recommendation.get('unit-1');
-window.helpers.unit.monitorEvents(unit);
-unit.startTracker();
+const misocmd = window.misocmd || (window.misocmd = []);
+misocmd.push(() => {
+  MisoClient.plugins.use('std:ui');
+  const client = new MisoClient('...');
+  const unit = client.ui.recommendation.get('unit-1');
+  window.helpers.unit.monitorEvents(unit);
+  unit.startTracker();
+});
 </script>
 {% endraw %}

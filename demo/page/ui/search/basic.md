@@ -42,11 +42,14 @@
   <miso-search-results></miso-search-results>
 </section>
 <script>
-MisoClient.plugins.use('std:ui');
-const client = new MisoClient('...');
-const search = client.ui.search;
-search.useApi({ rows: 10 });
-search.useLayout(window.selectedLayout);
-window.onSelectLayout = value => search.useLayout(value);
+const misocmd = window.misocmd || (window.misocmd = []);
+misocmd.push(() => {
+  MisoClient.plugins.use('std:ui');
+  const client = new MisoClient('...');
+  const search = client.ui.search;
+  search.useApi({ rows: 10 });
+  search.useLayout(window.selectedLayout);
+  window.onSelectLayout = value => search.useLayout(value);
+});
 </script>
 {% endraw %}
