@@ -11,23 +11,24 @@
   }
 </style>
 <section>
-  <miso-search-input>
-  </miso-search-input>
+  <miso-ask-input>
+  </miso-ask-input>
 </section>
 <script>
 </script>
 <hr>
 <section>
-  <miso-search-results></miso-search-results>
+  <miso-ask-answer></miso-ask-answer>
 </section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const search = client.ui.search;
-  search.useApi({ rows: 10 });
-  search.useLayout('list');
+  const ask = client.ui.ask;
+  ask.useSource(window.helpers.api);
+  //ask.useApi('ask');
+  //search.useLayout('list');
 });
 </script>
 {% endraw %}

@@ -15,8 +15,8 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 
 export default class ListLayout extends CollectionLayout {
 
-  static get role() {
-    return CollectionLayout.role;
+  static get category() {
+    return CollectionLayout.category;
   }
 
   static get type() {

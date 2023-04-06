@@ -1,12 +1,12 @@
 import { ROLE } from '../constants';
 import { getClient } from './utils';
 
-const TAG_NAME = 'miso-search-results';
+const TAG_NAME = 'miso-ask-answer';
 
-export default class MisoSearchResultsElement extends HTMLElement {
+export default class MisoAskAnswerElement extends HTMLElement {
 
   static get role() {
-    return ROLE.RESULTS;
+    return ROLE.ANSWER;
   }
 
   static get tagName() {
@@ -17,7 +17,7 @@ export default class MisoSearchResultsElement extends HTMLElement {
   async connectedCallback() {
     // find client & auto bind
     const client = await getClient();
-    client.ui.search.bind(this.constructor.role, this);
+    client.ui.ask.bind(this.constructor.role, this);
   }
 
 }

@@ -1,4 +1,9 @@
 sections:
+- title: Ask
+  path: /ask
+  pages:
+  - title: PoC
+    path: /ask/poc
 - title: Search
   path: /search
   pages:

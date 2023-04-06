@@ -1,6 +1,7 @@
-import { ROLE } from '../constants';
+import { LAYOUT_CATEGORY } from '../constants';
 import TemplateBasedLayout from './template';
 
+const TYPE = 'search-box';
 const DEFAULT_CLASSNAME = 'miso-search-box';
 
 function root(layout) {
@@ -28,8 +29,12 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 
 export default class SearchBoxLayout extends TemplateBasedLayout {
 
-  static get role() {
-    return ROLE.SEARCH_INPUT;
+  static get category() {
+    return LAYOUT_CATEGORY.INPUT;
+  }
+
+  static get type() {
+    return TYPE;
   }
 
   static get defaultTemplates() {

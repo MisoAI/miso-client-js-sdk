@@ -3,8 +3,9 @@ import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
 
 export default class Items {
 
-  constructor(saga) {
+  constructor(saga, role) {
     this._saga = saga;
+    this._role = role;
     this._bindings = new Map();
     this._e2b = new WeakMap();
   }
@@ -21,7 +22,7 @@ export default class Items {
   }
 
   refresh() {
-    const element = this._saga.elements.get('results');
+    const element = this._saga.elements.get(this._role);
     if (!element) {
       return this.unbindAll();
     }

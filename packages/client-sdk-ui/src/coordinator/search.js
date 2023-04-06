@@ -1,39 +1,53 @@
-import { defineValues, delegateGetters } from '@miso.ai/commons';
-import { ROLE } from '../constants';
-import { Saga, ElementsBinder, SessionMaker, DataSupplier, ResultsViewReactor, Logger } from '../saga';
-
-import Tracker from './tracker';
+import { delegateGetters, isElement, asArray } from '@miso.ai/commons';
+import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, Logger, fields } from '../saga';
 import * as source from '../source';
 import { ListLayout } from '../layout';
-import { STATUS } from '../constants';
+import { STATUS, ROLE } from '../constants';
 
 const DEFAULT_LAYOUT = ListLayout.type;
-const DEFAULT_API_GROUP = 'recommendation';
-const DEFAULT_API_NAME = 'user_to_products';
-const DEFAULT_API_PAYLOAD = Object.freeze({ fl: ['*'] });
 
-export default class RecommendationUnit {
+const DEFAULT_API_NAME = 'search';
+const DEFAULT_API_PARAMS = Object.freeze({
+  group: 'search',
+  name: DEFAULT_API_NAME,
+  payload: {
+    fl: ['*'],
+  },
+});
 
-  constructor(context, id) {
-    defineValues(this, { id });
-    this._context = context;
+function mergeApiParams(base, overrides = {}) {
+  return Object.freeze({
+    ...base,
+    ...overrides,
+    payload: Object.freeze({
+      ...base.payload,
+      ...overrides.payload,
+    })
+  });
+}
+
+export default class Search {
+
+  constructor(plugin, client) {
+    this._plugin = plugin;
+    this._client = client;
 
     const saga = this._saga = new Saga();
-    //this._logger = new Logger(saga);
+    this._logger = new Logger(saga);
     this._elements = new ElementsBinder(saga);
     this._sessions = new SessionMaker(saga);
     this._data = new DataSupplier(saga);
-    this._view = new ResultsViewReactor(saga);
-    this._tracker = new Tracker(saga);
-    this._apiSource = source.api(context._client);
+    this._views = new ViewsReactor(saga, [ROLE.RESULTS]);
+    //this._tracker = new Tracker(saga);
+    this._apiSource = source.api(client);
 
+    /*
     this._unsubscribe = [
       saga.on('event', event => this._handleEvent(event)),
     ];
+    */
 
     delegateGetters(this, saga, ['states', 'on']);
-
-    context._units.set(id, this);
 
     this.useSource('api');
     this.useApi(DEFAULT_API_NAME);
@@ -63,38 +77,40 @@ export default class RecommendationUnit {
 
   // element //
   get element() {
-    return this._saga.elements.get('results');
+    return this._saga.elements.get(ROLE.RESULTS);
   }
 
-  bind(element) {
-    this._elements.bind('results', element);
+  bind(role, element) {
+    if (element === undefined && isElement(role)) {
+      element = role;
+      role = ROLE.RESULTS;
+    }
+    this._elements.bind(role, element);
     return this;
   }
 
-  unbind() {
-    this._elements.unbind('results');
+  unbind(role = ROLE.RESULTS) {
+    this._elements.unbind(role);
     return this;
   }
 
   // lifecycle //
-  reset() {
+  query(payload) {
     this._sessions.new();
-    return this;
-  }
-
-  start() {
     this._sessions.start();
-    this._saga.update('input', this._apiParams);
+    this._saga.update('input', mergeApiParams(this._apiParams, { payload }));
     return this;
   }
 
+  /*
   startTracker() {
     this.useSource(false);
     this.useLayout(false);
-    this._sessions.start();
+    this.start();
     this.notifyViewUpdate();
     return this;
   }
+  */
 
   // states //
   updateData(data) {
@@ -118,20 +134,11 @@ export default class RecommendationUnit {
 
   // source //
   useApi(name, payload) {
-    this._assertInactive();
-    this._apiParams = Object.freeze({
-      group: DEFAULT_API_GROUP,
-      name,
-      payload: {
-        ...DEFAULT_API_PAYLOAD,
-        ...payload
-      },
-    });
+    this._apiParams = mergeApiParams(DEFAULT_API_PARAMS, { name, payload });
     return this;
   }
 
   useSource(source) {
-    this._assertInactive();
     this._data.source = this._normalizeSource(source);
     return this;
   }
@@ -147,12 +154,21 @@ export default class RecommendationUnit {
 
   // layout //
   useLayout(layout, options) {
-    const { layouts } = this._context._plugin;
-    this._view.layout = layouts.create(ROLE.RESULTS, layout, options);
+    this.useLayouts({
+      [ROLE.RESULTS]: [layout, options],
+    });
+    return this;
+  }
+
+  useLayouts(layouts) {
+    for (let [role, args] of Object.entries(layouts)) {
+      this._views.get(role).layout = this._plugin.layouts.create(...asArray(args));
+    }
     return this;
   }
 
   // tracker //
+  /*
   useTracker(options) {
     this._tracker.config(options);
     return this;
@@ -164,19 +180,19 @@ export default class RecommendationUnit {
     const { uuid, id } = this;
     this._context.interactions._send({ uuid, id }, event);
   }
+  */
 
   // destroy //
   destroy() {
     this._events.emit('destroy');
-    this._context._units.delete(this.id);
 
     for (const unsubscribe of this._unsubscribes) {
       unsubscribe();
     }
     this._unsubscribes = [];
 
-    this._tracker._destroy();
-    this._view.destroy();
+    //this._tracker._destroy();
+    this._views.destroy();
     this._data.destroy();
     this.unbind();
     this._elements.destroy();

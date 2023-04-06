@@ -1,9 +1,9 @@
 import { delegateGetters } from '@miso.ai/commons';
 import { DEFAULT_UNIT_ID } from '../constants';
-import RecommendationUnit from './unit';
+import RecommendationUnit from './recommendation-unit';
 import Interactions from '../interactions';
 
-export default class UnitsContext {
+export default class RecommendationContext {
 
   constructor(plugin, client) {
     this._plugin = plugin;

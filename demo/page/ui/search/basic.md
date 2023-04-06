@@ -47,7 +47,7 @@ misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
   const search = client.ui.search;
-  search.useApi({ rows: 10 });
+  search.useApi('search', { rows: 10 });
   search.useLayout(window.selectedLayout);
   window.onSelectLayout = value => search.useLayout(value);
 });

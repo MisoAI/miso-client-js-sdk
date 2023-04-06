@@ -74,7 +74,8 @@ export default class EventEmitter {
       try {
         callback(data, meta);
       } catch(e) {
-        self._error(new Error(`Error in callback of event '${meta.name}': ${e.message}`, { cause: e }));
+        //self._error(new Error(`Error in callback of event '${meta.name}'`));
+        self._error(e);
       }
     };
   }

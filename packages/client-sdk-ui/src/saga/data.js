@@ -1,12 +1,12 @@
-import { trimObj } from '@miso.ai/commons';
+import * as fields from './fields';
 
 export default class DataSupplier {
 
   constructor(saga) {
     this._saga = saga;
     this._unsubscribes = [
-      saga.on('session', session => this._handleSession(session)),
-      saga.on('input', event => this._handleInput(event)),
+      saga.on(fields.session(), session => this._handleSession(session)),
+      saga.on(fields.input(), event => this._handleInput(event)),
     ];
   }
 
@@ -23,35 +23,58 @@ export default class DataSupplier {
   }
 
   _handleSession(session) {
+    // protocol: no source, no reaction
     if (!this._source) {
       return;
     }
-    this._saga.update('data', trimObj({ session }));
+    // TODO: abort ongoing data fetch if any
+
+    // reflect session update
+    this._emitData({ session });
   }
 
   async _handleInput(event) {
+    // protocol: no source, no reaction
     if (!this._source) {
       return;
     }
     const { session } = this._saga.states;
-    let value, error;
     try {
       // TODO: abort signal
-      value = await this._source({ session, ...event }, {});
-      this._emitData({ session, value });
-    } catch(e) {
-      error = e;
-      this._emitData({ session, error });
+      const value = await this._source({ session, ...event }, {});
+      // takes either iterator or iterable, sync or async
+      const iterator = value && (typeof value.next === 'function' ? value : value[Symbol.asyncIterator]);
+      if (iterator) {
+        for await (const value of iterator) {
+          // A new session invalidates ongoing data fetch for the old session, terminating the loop
+          if (!this._isCurrentSession(session)) {
+            break;
+          }
+          this._emitData({ session, value });
+        }
+      } else {
+        this._emitDataWithSessionCheck({ session, value });
+      }
+    } catch(error) {
+      this._emitDataWithSessionCheck({ session, error });
     }
   }
 
-  _emitData(data) {
-    const { session: latestSession } = this._saga.states;
-    const { session } = data;
-    if (!latestSession || latestSession.index !== session.index) {
-      return;
+  _emitDataWithSessionCheck(data) {
+    // A new session invalidates ongoing data fetch
+    this._isCurrentSession(data.session) && this._emitData(data);
+  }
+
+  _isCurrentSession(session) {
+    if (!session) {
+      return false;
     }
-    this._saga.update('data', data);
+    const { session: currentSession } = this._saga.states;
+    return currentSession && currentSession.index === session.index;
+  }
+
+  _emitData(data) {
+    this._saga.update(fields.data(), data);
   }
 
   destroy() {

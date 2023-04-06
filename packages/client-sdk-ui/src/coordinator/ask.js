@@ -1,16 +1,12 @@
-import { delegateGetters } from '@miso.ai/commons';
-import { ROLE } from '../constants';
-import { Saga, ElementsBinder, SessionMaker, DataSupplier, ResultsViewReactor, Logger } from '../saga';
-
+import { delegateGetters, asArray } from '@miso.ai/commons';
+import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, Logger } from '../saga';
 import * as source from '../source';
-import { ListLayout } from '../layout';
-import { STATUS } from '../constants';
+import { STATUS, ROLE } from '../constants';
 
-const DEFAULT_LAYOUT = ListLayout.type;
-
+const DEFAULT_API_NAME = 'ask';
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'search',
-  name: 'search',
+  name: DEFAULT_API_NAME,
   payload: {
     fl: ['*'],
   },
@@ -27,7 +23,7 @@ function mergeApiParams(base, overrides = {}) {
   });
 }
 
-export default class Search {
+export default class Ask {
 
   constructor(plugin, client) {
     this._plugin = plugin;
@@ -38,7 +34,7 @@ export default class Search {
     this._elements = new ElementsBinder(saga);
     this._sessions = new SessionMaker(saga);
     this._data = new DataSupplier(saga);
-    this._view = new ResultsViewReactor(saga);
+    this._views = new ViewsReactor(saga, [ROLE.ANSWER]);
     //this._tracker = new Tracker(saga);
     this._apiSource = source.api(client);
 
@@ -50,12 +46,11 @@ export default class Search {
 
     delegateGetters(this, saga, ['states', 'on']);
 
-    //context._units.set(id, this);
-
     this.useSource('api');
-    this.useApi();
-    this.useLayout(DEFAULT_LAYOUT);
-    //this.reset();
+    this.useApi(DEFAULT_API_NAME);
+    this.useLayouts({
+      [ROLE.ANSWER]: 'plaintext',
+    });
   }
 
   get uuid() {
@@ -80,10 +75,6 @@ export default class Search {
   }
 
   // element //
-  get element() {
-    return this._saga.elements.get('results');
-  }
-
   bind(role, element) {
     this._elements.bind(role, element);
     return this;
@@ -133,14 +124,12 @@ export default class Search {
   }
 
   // source //
-  useApi(payload) {
-    //this._assertInactive();
-    this._apiParams = mergeApiParams(DEFAULT_API_PARAMS, { payload });
+  useApi(name, payload) {
+    this._apiParams = mergeApiParams(DEFAULT_API_PARAMS, { name, payload });
     return this;
   }
 
   useSource(source) {
-    //this._assertInactive();
     this._data.source = this._normalizeSource(source);
     return this;
   }
@@ -155,19 +144,20 @@ export default class Search {
   }
 
   // layout //
-  useLayout(layout, options) {
-    const { layouts } = this._plugin;
-    this._view.layout = layouts.create(ROLE.RESULTS, layout, options);
+  useLayouts(layouts) {
+    for (let [role, args] of Object.entries(layouts)) {
+      this._views.get(role).layout = this._plugin.layouts.create(...asArray(args));
+    }
     return this;
   }
 
   // tracker //
+  /*
   useTracker(options) {
     this._tracker.config(options);
     return this;
   }
 
-  /*
   // TODO: make interactions a saga component?
   _handleEvent(event) {
     this._assertActive();
@@ -186,7 +176,7 @@ export default class Search {
     this._unsubscribes = [];
 
     //this._tracker._destroy();
-    this._view.destroy();
+    this._views.destroy();
     this._data.destroy();
     this.unbind();
     this._elements.destroy();

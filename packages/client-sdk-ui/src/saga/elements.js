@@ -1,4 +1,5 @@
 import { defineValues } from '@miso.ai/commons';
+import * as fields from './fields';
 import ProxyElement from './proxy';
 
 export default class ElementsBinder {
@@ -11,7 +12,7 @@ export default class ElementsBinder {
   }
 
   get(role) {
-    return this._saga.states[`element_${role}`];
+    return this._saga.states[fields.element(role)];
   }
 
   bind(role, element) {
@@ -23,7 +24,7 @@ export default class ElementsBinder {
     if (current) {
       throw new Error(`There is already an element bound to the role: '${role}'`);
     }
-    this._saga.update(`element_${role}`, element);
+    this._emit(role, element);
   }
 
   unbind(role) {
@@ -31,7 +32,12 @@ export default class ElementsBinder {
     if (!element) {
       return;
     }
-    this._saga.update(`element_${role}`, undefined);
+    this._emit(role, undefined);
+  }
+
+  _emit(role, element) {
+    this._saga.update(fields.element(role), element);
+    this._saga.trigger(fields.element(), { role, element });
   }
 
   destroy() {
@@ -48,7 +54,7 @@ class Elements {
   }
 
   get(role) {
-    return this._saga.states[`element_${role}`];
+    return this._saga.states[fields.element(role)];
   }
 
   proxy(role) {
@@ -56,7 +62,7 @@ class Elements {
   }
 
   on(role, callback) {
-    return this._saga.on(`element_${role}`, callback);
+    return this._saga.on(fields.element(role), callback);
   }
 
   _destroy() {

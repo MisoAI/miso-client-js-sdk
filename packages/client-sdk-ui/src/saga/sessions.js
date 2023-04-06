@@ -1,4 +1,5 @@
 import { uuidv4, delegateGetters } from '@miso.ai/commons';
+import * as fields from './fields';
 
 export default class SessionMaker {
 
@@ -19,7 +20,7 @@ export default class SessionMaker {
       return;
     }
     const session = this._create();
-    this._saga.update('session', session);
+    this._saga.update(fields.session(), session);
   }
 
   start() {
@@ -27,7 +28,7 @@ export default class SessionMaker {
     if (session && session.active) {
       return;
     }
-    this._saga.update('session', { ...session, active: true });
+    this._saga.update(fields.session(), { ...session, active: true });
   }
 
   restart() {

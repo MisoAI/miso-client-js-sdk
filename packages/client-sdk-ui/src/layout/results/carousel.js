@@ -1,5 +1,6 @@
 import CollectionLayout from './collection';
 import { product } from '../templates';
+import { ROLE } from '../../constants';
 
 const TYPE = 'carousel';
 const DEFAULT_CLASSNAME = 'miso-carousel';
@@ -41,6 +42,10 @@ export default class CarouselLayout extends CollectionLayout {
     return CollectionLayout.role;
   }
 
+  static get category() {
+    return CollectionLayout.category;
+  }
+
   static get type() {
     return TYPE;
   }
@@ -62,7 +67,7 @@ export default class CarouselLayout extends CollectionLayout {
 
   initialize(saga) {
     this._saga = saga;
-    const proxyElement = saga.elements.proxy('results');
+    const proxyElement = saga.elements.proxy(ROLE.RESULTS);
     this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
@@ -123,7 +128,7 @@ export default class CarouselLayout extends CollectionLayout {
   }
 
   _findGridElement() {
-    const element = this._saga.elements.get('results');
+    const element = this._saga.elements.get(ROLE.RESULTS);
     return element && element.querySelector(`.${this.className}__list`);
   }
 

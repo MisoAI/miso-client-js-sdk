@@ -1,43 +1,34 @@
 import { Registry } from '@miso.ai/commons';
 
-function getKey(role, name) {
-  return `${role}${name ? `:${name}` : ''}`;
-}
-
 export default class Layouts extends Registry {
 
   constructor(plugin) {
     super('layouts', plugin, {
       libName: 'layout',
-      keyName: lib => getKey(lib.role, lib.type),
+      keyName: lib => lib.type,
     });
     this._plugin = plugin;
   }
 
-  get(role, name) {
-    return this._libraries[getKey(role, name)];
+  get(name) {
+    return this._libraries[name];
   }
 
-  create(role, name, options) {
-    if (role === false) {
+  create(name, options) {
+    if (name === false) {
       return undefined;
     }
-    if (typeof name === 'object') {
-      options = name;
-      name = undefined;
-    }
-    switch (typeof role) {
+    switch (typeof name) {
       case 'function':
         return { render: name };
       case 'string':
-        const key = getKey(role, name);
-        const LayoutClass = this.get(key);
+        const LayoutClass = this.get(name);
         if (!LayoutClass) {
-          throw new Error(`Layout of role/name '${key}' not found.`);
+          throw new Error(`Layout of name '${name}' not found.`);
         }
         return new LayoutClass(options);
       default:
-        throw new Error(`Expect a string, a render function, or boolean value false: ${role}`);
+        throw new Error(`Expect a string, a render function, or boolean value false: ${name}`);
     }
   }
 

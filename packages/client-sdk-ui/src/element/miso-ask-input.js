@@ -1,8 +1,8 @@
 import MisoInputElement from './miso-input';
 
-const TAG_NAME = 'miso-search-input';
+const TAG_NAME = 'miso-ask-input';
 
-export default class MisoSearchInputElement extends MisoInputElement {
+export default class MisoAskInputElement extends MisoInputElement {
 
   static get role() {
     return MisoInputElement.role;
@@ -13,7 +13,7 @@ export default class MisoSearchInputElement extends MisoInputElement {
   }
 
   _query(client, { value }) {
-    client.ui.search.query({ q: value });
+    client.ui.ask.query({ q: value });
   }
 
 }

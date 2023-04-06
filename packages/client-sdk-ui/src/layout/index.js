@@ -4,3 +4,4 @@ export { default as CarouselLayout } from './results/carousel';
 export { default as CollectionLayout } from './results/collection';
 export { default as TemplateBasedLayout } from './template';
 export { default as SearchBoxLayout } from './search-box';
+export { default as PlaintextLayout } from './answer/plaintext';

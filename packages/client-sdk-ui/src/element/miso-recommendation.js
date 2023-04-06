@@ -1,5 +1,5 @@
 import { ROLE } from '../constants';
-import { getMisoClient } from './utils';
+import { getClient } from './utils';
 
 const ATTR_UNIT_ID = 'unit-id';
 const TAG_NAME = 'miso-recommendation';
@@ -20,10 +20,6 @@ export default class MisoRecommendationElement extends HTMLElement {
     return OBSERVED_ATTRIBUTES;
   }
 
-  constructor() {
-    super();
-  }
-
   // properties //
   get unitId() {
     return this.getAttribute(ATTR_UNIT_ID) || undefined;
@@ -41,8 +37,7 @@ export default class MisoRecommendationElement extends HTMLElement {
   // lifecycle //
   async connectedCallback() {
     // find client & auto bind
-    const MisoClient = await getMisoClient();
-    const client = this._client = await MisoClient.any();
+    const client = await getClient();
     client.ui.recommendation.get(this.unitId).bind(this);
   }
 

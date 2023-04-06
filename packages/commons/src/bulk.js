@@ -1,4 +1,4 @@
-import Resolution from "./resolution";
+import Resolution from './resolution';
 
 export default class Bulk {
 

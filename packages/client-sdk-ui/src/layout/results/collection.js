@@ -1,4 +1,4 @@
-import { ROLE, STATUS } from '../../constants';
+import { STATUS, LAYOUT_CATEGORY } from '../../constants';
 import TemplateBasedLayout from '../template';
 import { requiresImplementation } from '../templates';
 
@@ -10,7 +10,7 @@ function root(layout, state) {
 
 function ready(layout, state) {
   const { templates } = layout;
-  const { products } = state.value;
+  const products = state.value;
 
   // TODO: handle categories, attributes, etc.
   if (products && products.length > 0) {
@@ -51,8 +51,8 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 
 export default class CollectionLayout extends TemplateBasedLayout {
 
-  static get role() {
-    return ROLE.RESULTS;
+  static get category() {
+    return LAYOUT_CATEGORY.LIST;
   }
 
   static get defaultTemplates() {

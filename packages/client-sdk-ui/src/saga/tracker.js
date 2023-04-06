@@ -1,6 +1,7 @@
 import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, viewable as whenViewable } from '@miso.ai/commons';
-import { EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
+import { ROLE, EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
 import Items from './items';
+import * as fields from './fields';
 
 const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
 const { UNTRACKED, TRACKING, TRIGGERED } = TRACKING_STATUS;
@@ -25,16 +26,17 @@ const DEFAULT_TRACKING_OPTIONS = Object.freeze({
 
 export default class Tracker {
 
-  constructor(saga) {
+  constructor(saga, role = ROLE.RESULTS) {
     this._saga = saga;
-    this._items = new Items(saga);
+    this._role = role;
+    this._items = new Items(saga, role);
     this._viewables = new WeakMap();
     this._options = DEFAULT_TRACKING_OPTIONS;
 
     this._unsubscribes = [
-      saga.elements.proxy('results').on('click', event => this._handleClick(event)),
-      saga.elements.on('results', () => this.refresh()),
-      saga.on('view', () => this.refresh()),
+      saga.elements.proxy(role).on('click', event => this._handleClick(event)),
+      saga.elements.on(role, () => this.refresh()),
+      saga.on(fields.view(role), () => this.refresh()),
     ];
 
     this.refresh();
@@ -67,7 +69,7 @@ export default class Tracker {
     this._syncElement();
 
     // refresh against view state
-    const { view: viewState } = this._saga.states;
+    const viewState = this._getViewState();
     if (!viewState) {
       return;
     }
@@ -98,8 +100,12 @@ export default class Tracker {
     this._trigger(productIds, CLICK, true);
   }
 
+  _getViewState() {
+    return this._saga.states[fields.view(this._role)];
+  }
+
   _assertViewReady() {
-    const { view: viewState } = this._saga.states;
+    const viewState = this._getViewState();
     if (!this._saga.active) {
       throw new Error(`Unit is not active. Call unit.start() to activate it.`);
     }
@@ -109,13 +115,14 @@ export default class Tracker {
   }
 
   _isViewReady() {
-    const { view: viewState } = this._saga.states;
+    const viewState = this._getViewState();
     return this._saga.active && viewState && viewState.status === 'ready';
   }
 
   getState(productId) {
+    // TODO: do we have to be so precise?
     return Object.freeze({
-      [CLICK]: this._saga.elements.get('results') ? TRACKING : UNTRACKED,
+      [CLICK]: this._saga.elements.get(this._role) ? TRACKING : UNTRACKED,
       ...this._states.getFullState(productId),
     });
   }
@@ -208,7 +215,7 @@ export default class Tracker {
 
   // click //
   _syncElement() {
-    const element = this._saga.elements.get('results');
+    const element = this._saga.elements.get(this._role);
     if (this._element === element) {
       return;
     }
