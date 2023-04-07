@@ -23,6 +23,8 @@ function mergeApiParams(base, overrides = {}) {
   });
 }
 
+const ROLES = [ROLE.ANSWER, ROLE.SOURCES, ROLE.FURTHER_READS];
+
 export default class Ask {
 
   constructor(plugin, client) {
@@ -34,7 +36,7 @@ export default class Ask {
     this._elements = new ElementsBinder(saga);
     this._sessions = new SessionMaker(saga);
     this._data = new DataSupplier(saga);
-    this._views = new ViewsReactor(saga, [ROLE.ANSWER]);
+    this._views = new ViewsReactor(saga, ROLES);
     //this._tracker = new Tracker(saga);
     this._apiSource = source.api(client);
 
@@ -50,6 +52,8 @@ export default class Ask {
     this.useApi(DEFAULT_API_NAME);
     this.useLayouts({
       [ROLE.ANSWER]: 'plaintext',
+      [ROLE.SOURCES]: 'list',
+      [ROLE.FURTHER_READS]: 'list',
     });
   }
 

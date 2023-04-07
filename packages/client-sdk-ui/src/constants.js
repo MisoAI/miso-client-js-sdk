@@ -6,6 +6,8 @@ export const ROLE = Object.freeze({
   RESULTS: 'results',
   INPUT: 'input',
   ANSWER: 'answer',
+  SOURCES: 'sources',
+  FURTHER_READS: 'further-reads',
 });
 
 export const LAYOUT_CATEGORY = Object.freeze({

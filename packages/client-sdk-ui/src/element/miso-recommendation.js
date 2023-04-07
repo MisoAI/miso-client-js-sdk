@@ -1,9 +1,9 @@
 import { ROLE } from '../constants';
 import { getClient } from './utils';
 
-const ATTR_UNIT_ID = 'unit-id';
 const TAG_NAME = 'miso-recommendation';
 
+const ATTR_UNIT_ID = 'unit-id';
 const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_UNIT_ID]);
 
 export default class MisoRecommendationElement extends HTMLElement {

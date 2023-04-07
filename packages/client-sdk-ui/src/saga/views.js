@@ -25,6 +25,15 @@ export default class ViewsReactor {
     ];
   }
 
+  /*
+  addRole(role) {
+    if (this._views[role]) {
+      return;
+    }
+    this._views[role] = new ViewReactor(this, role);
+  }
+  */
+
   get(role) {
     return this._views[role] || (this._views[role] = new ViewReactor(this, role));
   }

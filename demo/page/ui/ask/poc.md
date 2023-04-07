@@ -19,6 +19,8 @@
 <hr>
 <section>
   <miso-ask-answer></miso-ask-answer>
+  <hr>
+  <miso-custom workflow="ask" role="sources"></miso-custom>
 </section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
@@ -27,8 +29,6 @@ misocmd.push(() => {
   const client = new MisoClient('...');
   const ask = client.ui.ask;
   ask.useSource(window.helpers.api);
-  //ask.useApi('ask');
-  //search.useLayout('list');
 });
 </script>
 {% endraw %}
