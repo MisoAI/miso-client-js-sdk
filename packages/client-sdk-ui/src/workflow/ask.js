@@ -15,6 +15,7 @@ export default class Ask extends Workflow {
 
   constructor(plugin, client) {
     super(plugin, client, {
+      name: 'ask',
       roles: [ROLE.ANSWER, ROLE.SOURCES, ROLE.FURTHER_READS],
       defaultApiParams: DEFAULT_API_PARAMS,
     });

@@ -1,29 +1,29 @@
 import { delegateGetters, asArray } from '@miso.ai/commons';
-import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, Logger, fields } from '../saga';
+import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, fields } from '../saga';
 import * as sources from '../source';
 import { STATUS } from '../constants';
-import { mergeApiParams } from './utils';
+import { mergeApiParams, injectLogger } from './utils';
 
 export default class Workflow {
 
   // TODO: define fields?
   constructor(plugin, client, {
+    name = '(anonymous)',
     roles,
     defaultApiParams,
   }) {
     this._plugin = plugin;
     this._client = client;
+    this._name = name;
     this._roles = roles;
 
     this._apiParams = this._defaultApiParams = defaultApiParams;
 
-    const saga = this._saga = new Saga();
-    this._logger = new Logger(saga);
+    const saga = this._saga = injectLogger(new Saga(), (...args) => this._log(...args));
     this._elements = new ElementsBinder(saga);
     this._sessions = new SessionMaker(saga);
     this._data = new DataSupplier(saga);
     this._views = new ViewsReactor(saga, roles);
-    //this._tracker = new Tracker(saga);
 
     this._unsubscribes = [];
 
@@ -112,21 +112,6 @@ export default class Workflow {
     return this;
   }
 
-  // tracker //
-  /*
-  useTracker(options) {
-    this._tracker.config(options);
-    return this;
-  }
-
-  // TODO: make interactions a saga component?
-  _handleEvent(event) {
-    this._assertActive();
-    const { uuid, id } = this;
-    this._context.interactions._send({ uuid, id }, event);
-  }
-  */
-
   // destroy //
   destroy() {
     this._events.emit('destroy');
@@ -139,7 +124,6 @@ export default class Workflow {
     }
     this._unsubscribes = [];
 
-    //this._tracker._destroy();
     this._views.destroy();
     this._data.destroy();
     this.unbind(); // TODO
@@ -147,6 +131,11 @@ export default class Workflow {
   }
 
   // helper //
+  _log(...args) {
+    // TODO
+    this._plugin._events.emit('workflow', [this._name, ...args]);
+  }
+
   _assertActive() {
     if (!this.active) {
       throw new Error(`Unit is not active yet. Call unit.start() to activate it.`)

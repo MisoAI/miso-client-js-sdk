@@ -17,6 +17,7 @@ export default class RecommendationUnit extends Workflow {
 
   constructor(context, id) {
     super(context._plugin, context._client, {
+      name: 'recommendation',
       roles: [ROLE.RESULTS],
       defaultApiParams: DEFAULT_API_PARAMS,
     })

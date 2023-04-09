@@ -19,6 +19,7 @@ export default class Search extends Workflow {
 
   constructor(plugin, client) {
     super(plugin, client, {
+      name: 'search',
       roles: [ROLE.RESULTS],
       defaultApiParams: DEFAULT_API_PARAMS,
     });
