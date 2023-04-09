@@ -2,6 +2,8 @@ import { defineValues } from '@miso.ai/commons';
 import * as fields from './fields';
 import ProxyElement from './proxy';
 
+// TODO: merge with views reactor?
+
 export default class ElementsBinder {
 
   constructor(saga) {
@@ -42,6 +44,7 @@ export default class ElementsBinder {
 
   destroy() {
     this._saga.elements._destroy();
+    // TODO: unbind all
   }
 
 }
@@ -67,6 +70,7 @@ class Elements {
 
   _destroy() {
     const proxies = this._proxies;
+    // TODO: use values
     for (const key of Object.keys(proxies)) {
       proxies[key]._destroy();
     }

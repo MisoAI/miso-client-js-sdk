@@ -25,6 +25,7 @@ export default class ViewsReactor {
     ];
   }
 
+  // TODO: should we require explicit declaration of roles?
   /*
   addRole(role) {
     if (this._views[role]) {
@@ -34,13 +35,19 @@ export default class ViewsReactor {
   }
   */
 
+  set layouts(layouts) {
+    for (let [role, layout] of Object.entries(layouts)) {
+      this.get(role).layout = layout;
+    }
+  }
+
   get(role) {
     return this._views[role] || (this._views[role] = new ViewReactor(this, role));
   }
 
   syncSize() {
     for (const view of Object.values(this._views)) {
-      view.syncSize();
+      view._syncSize();
     }
   }
 

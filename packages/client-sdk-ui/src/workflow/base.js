@@ -1,60 +1,35 @@
 import { delegateGetters, asArray } from '@miso.ai/commons';
-import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, Logger } from '../saga';
-import * as source from '../source';
-import { STATUS, ROLE } from '../constants';
+import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, Logger, fields } from '../saga';
+import * as sources from '../source';
+import { STATUS } from '../constants';
+import { mergeApiParams } from './utils';
 
-const DEFAULT_API_NAME = 'ask';
-const DEFAULT_API_PARAMS = Object.freeze({
-  group: 'search',
-  name: DEFAULT_API_NAME,
-  payload: {
-    fl: ['*'],
-  },
-});
+export default class Workflow {
 
-function mergeApiParams(base, overrides = {}) {
-  return Object.freeze({
-    ...base,
-    ...overrides,
-    payload: Object.freeze({
-      ...base.payload,
-      ...overrides.payload,
-    })
-  });
-}
-
-const ROLES = [ROLE.ANSWER, ROLE.SOURCES, ROLE.FURTHER_READS];
-
-export default class Ask {
-
-  constructor(plugin, client) {
+  // TODO: define fields?
+  constructor(plugin, client, {
+    roles,
+    defaultApiParams,
+  }) {
     this._plugin = plugin;
     this._client = client;
+    this._roles = roles;
+
+    this._apiParams = this._defaultApiParams = defaultApiParams;
 
     const saga = this._saga = new Saga();
     this._logger = new Logger(saga);
     this._elements = new ElementsBinder(saga);
     this._sessions = new SessionMaker(saga);
     this._data = new DataSupplier(saga);
-    this._views = new ViewsReactor(saga, ROLES);
+    this._views = new ViewsReactor(saga, roles);
     //this._tracker = new Tracker(saga);
-    this._apiSource = source.api(client);
 
-    /*
-    this._unsubscribe = [
-      saga.on('event', event => this._handleEvent(event)),
-    ];
-    */
+    this._unsubscribes = [];
 
     delegateGetters(this, saga, ['states', 'on']);
 
     this.useSource('api');
-    this.useApi(DEFAULT_API_NAME);
-    this.useLayouts({
-      [ROLE.ANSWER]: 'plaintext',
-      [ROLE.SOURCES]: 'list',
-      [ROLE.FURTHER_READS]: 'list',
-    });
   }
 
   get uuid() {
@@ -68,10 +43,6 @@ export default class Ask {
   get active() {
     const { session } = this;
     return !!session && session.active;
-  }
-
-  get tracker() {
-    return this._tracker;
   }
 
   get states() {
@@ -89,47 +60,31 @@ export default class Ask {
     return this;
   }
 
-  // lifecycle //
-  query(payload) {
-    this._sessions.new();
-    this._sessions.start();
-    this._saga.update('input', mergeApiParams(this._apiParams, { payload }));
-    return this;
-  }
-
-  /*
-  startTracker() {
-    this.useSource(false);
-    this.useLayout(false);
-    this.start();
-    this.notifyViewUpdate();
-    return this;
-  }
-  */
-
   // states //
   updateData(data) {
     this._assertActive();
-    this._saga.update('data', {
+    this._saga.update(fields.data(), {
       session: this.session,
       ...data,
     });
     return this;
   }
 
-  notifyViewUpdate(state) {
+  notifyViewUpdate(role, state) {
     this._assertActive();
-    this._saga.update('view', {
+    state = {
       status: STATUS.READY,
       session: this.session,
       ...state,
-    });
+    };
+    this._saga.update(fields.view(role), state);
+    this._saga.trigger(fields.view(), { role, state });
     return this;
   }
 
   // source //
   useApi(name, payload) {
-    this._apiParams = mergeApiParams(DEFAULT_API_PARAMS, { name, payload });
+    this._apiParams = mergeApiParams(this._defaultApiParams, { name, payload });
     return this;
   }
 
@@ -140,18 +95,20 @@ export default class Ask {
 
   _normalizeSource(source) {
     if (source === 'api') {
-      return this._apiSource;
+      return sources.api(this._client);
     } else if (source === false || typeof source === 'function') {
       return source;
     }
-    throw new Error(`Source must be 'api', an async function, or a boolean value: ${source}`);
+    throw new Error(`Source must be 'api', an async function, or false: ${source}`);
   }
 
   // layout //
-  useLayouts(layouts) {
-    for (let [role, args] of Object.entries(layouts)) {
-      this._views.get(role).layout = this._plugin.layouts.create(...asArray(args));
+  useLayouts(config) {
+    const layouts = {};
+    for (const [role, args] of Object.entries(config)) {
+      layouts[role] = this._plugin.layouts.create(...asArray(args));
     }
+    this._views.layouts = layouts;
     return this;
   }
 
@@ -173,8 +130,11 @@ export default class Ask {
   // destroy //
   destroy() {
     this._events.emit('destroy');
+    this._destroy();
+  }
 
-    for (const unsubscribe of this._unsubscribes) {
+  _destroy() {
+    for (const unsubscribe of this._unsubscribes || []) {
       unsubscribe();
     }
     this._unsubscribes = [];
@@ -182,9 +142,8 @@ export default class Ask {
     //this._tracker._destroy();
     this._views.destroy();
     this._data.destroy();
-    this.unbind();
+    this.unbind(); // TODO
     this._elements.destroy();
-    return this;
   }
 
   // helper //

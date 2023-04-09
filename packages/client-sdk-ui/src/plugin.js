@@ -1,8 +1,9 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Ask, Search, RecommendationContext } from './coordinator';
+import { Ask, Search, RecommendationContext } from './workflow';
 import Layouts from './layouts';
 import * as elements from './element';
 import * as layouts from './layout';
+import * as sources from './source';
 
 const PLUGIN_ID = 'std:ui';
 
@@ -53,6 +54,9 @@ class Ui {
       recommendation: context.interface,
       search: new Search(plugin, client),
       ask: new Ask(plugin, client),
+      sources: {
+        api: sources.api(client),
+      }
     });
   }
 
