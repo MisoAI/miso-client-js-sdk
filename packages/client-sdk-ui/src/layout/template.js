@@ -34,8 +34,7 @@ export default class TemplateBasedLayout {
   }
 
   async render(element, state) {
-    const html = this.templates.root(this, state);
-    this._html = html;
+    this._html = this.templates.root(this, state);
     // only render the last update request
     await raf(() => {
       if (this._html) {

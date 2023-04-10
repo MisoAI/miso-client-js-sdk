@@ -46,7 +46,7 @@ export default class PlaintextLayout extends TemplateBasedLayout {
   }
 
   async render(element, state) {
-    console.log(state);
+    //console.log(state);
     // only render the last update request
     await raf(() => {
       if (element.children.length === 0) {

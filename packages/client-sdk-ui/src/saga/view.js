@@ -60,7 +60,7 @@ export default class ViewReactor {
     // initialize new layout
     // don't use _safeApplyOnLayout for any error should be thrown
     if (layout && typeof layout.initialize === 'function') {
-      layout.initialize(this.saga); // TODO: pass this
+      layout.initialize(this);
     }
 
     // in case the data is already there

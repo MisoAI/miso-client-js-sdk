@@ -1,6 +1,5 @@
 import CollectionLayout from './collection';
 import { product } from '../templates';
-import { ROLE } from '../../constants';
 
 const TYPE = 'carousel';
 const DEFAULT_CLASSNAME = 'miso-carousel';
@@ -64,9 +63,8 @@ export default class CarouselLayout extends CollectionLayout {
     this._unsubscribes = [];
   }
 
-  initialize(saga) {
-    this._saga = saga;
-    const proxyElement = saga.elements.proxy(ROLE.RESULTS);
+  initialize(view) {
+    const { proxyElement } = this._view = view;
     this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
@@ -126,7 +124,7 @@ export default class CarouselLayout extends CollectionLayout {
   }
 
   _findGridElement() {
-    const element = this._saga.elements.get(ROLE.RESULTS);
+    const { element } = this._view;
     return element && element.querySelector(`.${this.className}__list`);
   }
 
@@ -144,7 +142,7 @@ export default class CarouselLayout extends CollectionLayout {
 
   destroy() {
     window.removeEventListener('resize', this.syncSize);
-    this._saga = undefined;
+    this._view = undefined;
   }
 
 }

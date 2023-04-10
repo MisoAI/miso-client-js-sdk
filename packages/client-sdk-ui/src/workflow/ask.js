@@ -22,8 +22,12 @@ export default class Ask extends Workflow {
 
     this.useLayouts({
       [ROLE.ANSWER]: 'plaintext',
-      [ROLE.SOURCES]: 'list',
-      [ROLE.FURTHER_READS]: 'list',
+      [ROLE.SOURCES]: ['list', {
+        incremental: true,
+      }],
+      [ROLE.FURTHER_READS]: ['list', {
+        incremental: true,
+      }],
     });
   }
 
