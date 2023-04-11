@@ -1,5 +1,5 @@
 import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, viewable as whenViewable } from '@miso.ai/commons';
-import { ROLE, EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
+import { ROLE, STATUS, EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
 import Items from './items';
 import * as fields from './fields';
 
@@ -9,6 +9,10 @@ const { UNTRACKED, TRACKING, TRIGGERED } = TRACKING_STATUS;
 function mergeOptions(def, opt) {
   // if opt is falsy then return false, merge otherwise
   return !!opt && { ...def, ...opt };
+}
+
+function isReady(viewState) {
+  return viewState && viewState.status === STATUS.READY;
 }
 
 const DEFAULT_TRACKING_OPTIONS = Object.freeze({
@@ -105,18 +109,16 @@ export default class Tracker {
   }
 
   _assertViewReady() {
-    const viewState = this._getViewState();
     if (!this._saga.active) {
       throw new Error(`Unit is not active. Call unit.start() to activate it.`);
     }
-    if (!viewState || viewState.status !== 'ready') {
+    if (!isReady(this._getViewState())) {
       throw new Error(`Unit is not rendered yet. If you handle rendering by yourself, call unit.notifyViewUpdate() when DOM is ready.`);
     }
   }
 
   _isViewReady() {
-    const viewState = this._getViewState();
-    return this._saga.active && viewState && viewState.status === 'ready';
+    return this._saga.active && isReady(this._getViewState());
   }
 
   getState(productId) {

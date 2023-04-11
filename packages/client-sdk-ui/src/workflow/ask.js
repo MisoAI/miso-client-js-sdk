@@ -21,7 +21,8 @@ export default class Ask extends Workflow {
     });
 
     this.useLayouts({
-      [ROLE.ANSWER]: 'plaintext',
+      [ROLE.QUESTION]: ['plaintext', { tag: 'h3' }],
+      [ROLE.ANSWER]: 'typewriter',
       [ROLE.SOURCES]: ['list', {
         incremental: true,
       }],

@@ -11,12 +11,12 @@ export default class MisoInputElement extends HTMLElement {
   // lifecycle //
   connectedCallback() {
     this._setupElements();
-    //this._bindClient();
   }
 
   async _setupElements() {
     if (this.childElementCount === 0) {
-      const layout = new SearchBoxLayout();
+      const { role } = this.constructor;
+      const layout = new SearchBoxLayout({ role });
       await layout.render(this);
     }
     // find elements
@@ -30,16 +30,6 @@ export default class MisoInputElement extends HTMLElement {
     input && input.addEventListener('keydown', (e) => (e.key === 'Enter') && this._submit());
     button && button.addEventListener('click', () => this._submit());
   }
-
-  /*
-  async _bindClient() {
-    this._clientPromise = getClient();
-  }
-
-  async _client() {
-    return this._clientPromise;
-  }
-  */
 
   async _submit() {
     const { input } = this._elements;

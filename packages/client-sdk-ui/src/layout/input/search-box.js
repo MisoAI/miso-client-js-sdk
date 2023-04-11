@@ -1,15 +1,16 @@
-import { LAYOUT_CATEGORY } from '../constants';
-import TemplateBasedLayout from './template';
+import { LAYOUT_CATEGORY } from '../../constants';
+import TemplateBasedLayout from '../template';
 
 const TYPE = 'search-box';
 const DEFAULT_CLASSNAME = 'miso-search-box';
 
 function root(layout) {
-  const { className, templates, options } = layout;
+  const { className, role, templates, options } = layout;
   const { placeholder, buttonText = 'Search' } = options;
+  const roleAttr = role ? `data-role="${role}"` : '';
   // TODO: button icon
   return `
-<div class="${className}">
+<div class="${className}" ${roleAttr}>
   <div class="${className}__input-group">
     <input class="${className}__input" type="text">
     <button class="${className}__button" type="submit">${buttonText}</button>

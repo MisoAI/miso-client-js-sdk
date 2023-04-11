@@ -4,9 +4,10 @@ import TemplateBasedLayout from '../template';
 import { requiresImplementation } from '../templates';
 
 function root(layout, state) {
-  const { className, templates } = layout;
+  const { className, role, templates } = layout;
   const { status } = state;
-  return `<div class="miso__root ${status}"><div class="${className}">${templates[status](layout, state)}</div>${templates.banner(layout, state)}</div>`;
+  const roleAttr = role ? `data-role="${role}"` : '';
+  return `<div class="miso__root ${status}"><div class="${className}" ${roleAttr}>${templates[status](layout, state)}</div>${templates.banner(layout, state)}</div>`;
 }
 
 function ready(layout, state) {
@@ -14,7 +15,7 @@ function ready(layout, state) {
   const items = state.value;
 
   // TODO: handle categories, attributes, etc. by introducing sublayout
-  if (items && items.length > 0) {
+  if ((items && items.length > 0) || state.ongoing) {
     return templates.list(layout, state, 'product', items);
   } else {
     return templates.empty(layout, state);
@@ -70,10 +71,15 @@ export default class CollectionLayout extends TemplateBasedLayout {
     super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
   }
 
-  async render(element, state) {
+  initialize(view) {
+    this._view = view;
+  }
+
+  async render(element, state, { silence }) {
     // keep track of incoming state
     this._html = this.templates.root(this, state);
     this._state = state;
+    silence();
 
     // TODO: move incremental logic here
 
@@ -84,17 +90,22 @@ export default class CollectionLayout extends TemplateBasedLayout {
       }
       // if rendering current state with updated data, do so by appending new elements to the list
       const state = this._state;
+      const { session } = state;
       const incremental = this._shallRenderIncrementally(state);
       const listElement = incremental && this._getListElement(element);
       if (listElement) {
         const items = state.value.slice(this._rendered.value.length);
-        listElement.insertAdjacentHTML('beforeend', this.templates.items(this, state, 'product', items));
+        if (items.length > 0) {
+          listElement.insertAdjacentHTML('beforeend', this.templates.items(this, state, 'product', items));
+          this._view.updateState({ session });
+        }
       } else {
         element.innerHTML = this._html;
+        this._view.updateState({ session });
       }
 
       this._html = undefined;
-      this._rendered = this._state;
+      this._rendered = state;
     });
   }
 

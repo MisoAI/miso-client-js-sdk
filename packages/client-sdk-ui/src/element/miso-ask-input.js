@@ -5,7 +5,7 @@ const TAG_NAME = 'miso-ask-input';
 export default class MisoAskInputElement extends MisoInputElement {
 
   static get role() {
-    return MisoInputElement.role;
+    return super.role;
   }
 
   static get tagName() {

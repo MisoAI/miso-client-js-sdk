@@ -1,17 +1,13 @@
-import { requestAnimationFrame as raf } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY } from '../../constants';
 import TemplateBasedLayout from '../template';
 
 const TYPE = 'plaintext';
 const DEFAULT_CLASSNAME = 'miso-plaintext';
 
-function root(layout) {
-  const { className, templates, options } = layout;
-  return `
-<div class="${className}">
-  <p class="${className}__content"></p>
-</div>
-`;
+function root(layout, state) {
+  const { className, role, options: { tag } } = layout;
+  const roleAttr = role ? `data-role="${role}"` : '';
+  return `<${tag} class="${className}" ${roleAttr}>${state.value || ''}</${tag}>`;
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
@@ -41,19 +37,8 @@ export default class PlaintextLayout extends TemplateBasedLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
-  }
-
-  async render(element, state) {
-    //console.log(state);
-    // only render the last update request
-    await raf(() => {
-      if (element.children.length === 0) {
-        element.innerHTML = this.templates.root(this);
-      }
-      element.querySelector(`.${this.className}__content`).innerHTML = state.value || '';
-    });
+  constructor({ className = DEFAULT_CLASSNAME, templates, tag = 'p', ...options } = {}) {
+    super(className, { ...DEFAULT_TEMPLATES, ...templates }, { tag, ...options });
   }
 
 }

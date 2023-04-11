@@ -72,7 +72,7 @@ export default class RecommendationUnit extends Workflow {
     this.useSource(false);
     this.useLayout(false);
     this._sessions.start();
-    this.notifyViewUpdate();
+    this.notifyViewUpdate(ROLE.RESULTS);
     return this;
   }
 

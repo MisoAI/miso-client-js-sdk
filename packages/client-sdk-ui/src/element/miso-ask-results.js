@@ -12,7 +12,7 @@ export default class MisoAskResultsElement extends HTMLElement {
   async connectedCallback() {
     // find client & auto bind
     const client = await getClient();
-    //client.ui.search.bind(this.constructor.role, this);
+    // TODO
   }
 
 }

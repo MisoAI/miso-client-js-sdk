@@ -58,6 +58,7 @@ export default class MisoCustomElement extends HTMLElement {
         client.ui.ask.bind(role, this);
         break;
       default:
+        // TODO: custom workflow
         concole.error(`Unsupported group: "${workflow}".`);
     }
   }

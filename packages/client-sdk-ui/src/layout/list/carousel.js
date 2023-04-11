@@ -36,10 +36,6 @@ function chevron(layout) {
 
 export default class CarouselLayout extends CollectionLayout {
 
-  static get role() {
-    return CollectionLayout.role;
-  }
-
   static get category() {
     return CollectionLayout.category;
   }
@@ -68,10 +64,10 @@ export default class CarouselLayout extends CollectionLayout {
     this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
-  async render(element, state) {
+  async render(element, state, options) {
     this._dataState = state;
     this._itemCount = state.value ? state.value.length : undefined;
-    await super.render(element, state);
+    await super.render(element, state, options);
     this.syncSize();
   }
 

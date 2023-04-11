@@ -36,7 +36,7 @@
     display: flex;
     justify-content: space-between;
     height: var(--miso-list-item-height);
-    padding: 1rem;
+    padding: var(--miso-list-item-gap);
     user-select: none;
   }
   a.miso-list__item-body {

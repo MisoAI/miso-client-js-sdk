@@ -5,6 +5,7 @@ export const DEFAULT_UNIT_ID = 'default';
 export const ROLE = Object.freeze({
   RESULTS: 'results',
   INPUT: 'input',
+  QUESTION: 'question',
   ANSWER: 'answer',
   SOURCES: 'sources',
   FURTHER_READS: 'further-reads',

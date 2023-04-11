@@ -1,0 +1,19 @@
+.miso-typewriter {
+  &, * {
+    box-sizing: border-box;
+  }
+
+  &::after {
+    // TODO: check char availability in common fonts
+    content: '┃';
+    animation: blink-caret 0.75s step-end infinite;
+  }
+  &.done::after {
+    display: none;
+  }
+
+  @keyframes blink-caret {
+    from, to { color: transparent }
+    50% { color: inherit }
+  }
+}

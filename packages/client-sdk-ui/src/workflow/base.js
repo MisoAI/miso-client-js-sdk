@@ -1,17 +1,18 @@
-import { delegateGetters, asArray } from '@miso.ai/commons';
+import { Component, asArray } from '@miso.ai/commons';
 import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, fields } from '../saga';
 import * as sources from '../source';
 import { STATUS } from '../constants';
 import { mergeApiParams, injectLogger } from './utils';
 
-export default class Workflow {
+export default class Workflow extends Component {
 
   // TODO: define fields?
   constructor(plugin, client, {
-    name = '(anonymous)',
+    name,
     roles,
     defaultApiParams,
   }) {
+    super(name || 'workflow', plugin);
     this._plugin = plugin;
     this._client = client;
     this._name = name;
@@ -27,7 +28,7 @@ export default class Workflow {
 
     this._unsubscribes = [];
 
-    delegateGetters(this, saga, ['states', 'on']);
+    //delegateGetters(this, saga, ['states']);
 
     this.useSource('api');
   }
@@ -104,9 +105,11 @@ export default class Workflow {
 
   // layout //
   useLayouts(config) {
+    // TODO: merge config with default values
     const layouts = {};
     for (const [role, args] of Object.entries(config)) {
-      layouts[role] = this._plugin.layouts.create(...asArray(args));
+      const [ name, options ] = asArray(args);
+      layouts[role] = this._plugin.layouts.create(name, { role, ...options });
     }
     this._views.layouts = layouts;
     return this;
@@ -131,9 +134,8 @@ export default class Workflow {
   }
 
   // helper //
-  _log(...args) {
-    // TODO
-    this._plugin._events.emit('workflow', [this._name, ...args]);
+  _log(action, name, data) {
+    this._events.emit(action, [name, data]);
   }
 
   _assertActive() {

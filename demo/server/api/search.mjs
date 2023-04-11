@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import { v4 as uuid } from 'uuid';
-import { lorem, products, utils } from '../util/index.mjs';
+import { lorem, products, articles, utils } from '../util/index.mjs';
 
 const router = new Router();
 
@@ -9,11 +9,11 @@ const ITEMS_LOADING_TIME = 3;
 const STAGES = [
   {
     duration: 1.5,
-    text: `Fetching results ...`,
+    text: `Fetching results...`,
   },
   {
     duration: 1.5,
-    text: `Generating answer ...`,
+    text: `Generating answer...`,
   }
 ];
 
@@ -39,8 +39,8 @@ class Answer {
       decorates: ['description'],
       output: 'array',
     });
-    this.furtherItems = [...products({ rows: utils.randomInt(3, 8) })];
-    this.sources = [...products({ rows: utils.randomInt(2, 6) })];
+    this.furtherItems = [...articles({ rows: utils.randomInt(6, 8) })];
+    this.sources = [...articles({ rows: utils.randomInt(4, 6) })];
 
     this.in_response_to = previous_answer_id && answers.get(previous_answer_id) || undefined;
     answers.set(this.uuid, this);

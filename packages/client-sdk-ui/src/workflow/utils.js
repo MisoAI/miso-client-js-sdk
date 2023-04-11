@@ -11,9 +11,11 @@ export function mergeApiParams(base = {}, overrides = {}) {
 
 export function injectLogger(saga, callback) {
   const { update, trigger } = saga;
-  saga.update = (...args) => {
-    callback('update', ...args);
-    return update.apply(saga, args);
+  saga.update = (name, state, options) => {
+    if (!options || !options.silent) {
+      callback('update', name, state, options);
+    }
+    return update.call(saga, name, state, options);
   }
   saga.trigger = (...args) => {
     callback('trigger', ...args);

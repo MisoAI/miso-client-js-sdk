@@ -7,6 +7,7 @@ function statesEqual(a, b) {
     a.status === b.status &&
     a.error === b.error &&
     a.value === b.value && // skip deep equals
+    a.ongoing === b.ongoing &&
     sessionEquals(a.session, b.session));
 }
 
@@ -98,25 +99,28 @@ export default class ViewReactor {
     }
 
     // render
-    let omitted = false;
+    let silent = false;
     let error;
-    function omit() {
-      omitted = true;
+    function silence() {
+      silent = true;
     }
     try {
-      await this._layout.render(element, data, { omit, previous: previousData });
+      await this._layout.render(element, data, { silence, previous: previousData });
     } catch(e) {
       this._error(e);
       error = e;
     }
 
     // update view state
+    this.updateState({ session, error }, { silent });
+  }
+
+  updateState({ session, error }, { silent = false } = {}) {
     const status = error ? STATUS.ERRONEOUS : STATUS.READY;
     const state = this._state = Object.freeze(trimObj({ session, status, error }));
-
-    if (!omitted) {
-      const { role } = this;
-      this.saga.update(fields.view(role), state);
+    const { role } = this;
+    this.saga.update(fields.view(role), state, { silent });
+    if (!silent) {
       this.saga.trigger(fields.view(), { role, state });
     }
   }

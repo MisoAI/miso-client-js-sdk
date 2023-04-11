@@ -45,13 +45,16 @@ export default class DataSupplier {
       // takes either iterator or iterable, sync or async
       const iterator = value && (typeof value.next === 'function' ? value : value[Symbol.asyncIterator]);
       if (iterator) {
-        for await (const value of iterator) {
+        let value;
+        for await (value of iterator) {
           // A new session invalidates ongoing data fetch for the old session, terminating the loop
           if (!this._isCurrentSession(session)) {
             break;
           }
-          this._emitData({ session, value });
+          this._emitData({ session, value, ongoing: true });
         }
+        // TODO: find a way to emit the last value without the ongoing flag
+        this._emitData({ session, value });
       } else {
         this._emitDataWithSessionCheck({ session, value });
       }

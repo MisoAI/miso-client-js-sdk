@@ -19,9 +19,10 @@ export default class TemplateBasedLayout {
     return DEFAULT_TEMPLATES;
   }
 
-  constructor(className, templates, { logo = true, ...options } = {}) {
+  constructor(className, templates, { role, logo = true, ...options } = {}) {
     defineValues(this, {
       className,
+      role,
       templates: {
         ...DEFAULT_TEMPLATES,
         ...templates,
