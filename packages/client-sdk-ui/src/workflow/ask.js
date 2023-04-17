@@ -1,5 +1,5 @@
 import Workflow from './base';
-import { fields } from '../saga';
+import { fields } from '../actor';
 import { ROLE } from '../constants';
 import { SearchBoxLayout, ListLayout, TextLayout, TypewriterLayout } from '../layout';
 import { mergeApiParams } from './utils';
@@ -30,7 +30,7 @@ export default class Ask extends Workflow {
       defaultApiParams: DEFAULT_API_PARAMS,
     });
 
-    this._unsubscribes.push(this._hub.on('query', payload => this.query(payload)));
+    this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
   }
 
   // lifecycle //

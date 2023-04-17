@@ -8,7 +8,7 @@ export default class MisoBannerElement extends HTMLElement {
 
   // lifecycle //
   async connectedCallback() {
-    window.MisoClient.layouts.create('banner').render(this);
+    window.MisoClient.ui.layouts.create('banner').render(this);
   }
 
 }

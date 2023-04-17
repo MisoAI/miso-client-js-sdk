@@ -23,8 +23,11 @@ export default class UiPlugin extends Component {
     context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
 
+    const ui = {};
+    delegateGetters(ui, this, ['layouts']);
+    defineValues(MisoClient, { ui });
+
     // layouts
-    delegateGetters(MisoClient, this, ['layouts']);
     for (const LayoutClass of Object.values(layouts)) {
       if (LayoutClass.type) {
         this.layouts.register(LayoutClass);
@@ -33,38 +36,55 @@ export default class UiPlugin extends Component {
 
     // custom elements
     const { containers, roles, ...others } = elements;
-    for (const elementClass of Object.values(containers)) {
-      defineAndUpgrade(elementClass);
-    }
-    for (const elementClass of Object.values(roles)) {
-      defineAndUpgrade(elementClass);
-    }
-    for (const elementClass of Object.values(others)) {
+    // containers must go first, so their APIs will be ready before children are defined
+    for (const elementClass of [
+      ...Object.values(containers),
+      ...Object.values(roles),
+      ...Object.values(others),
+    ]) {
       defineAndUpgrade(elementClass);
     }
   }
 
   _injectClient(client) {
-    const context = new RecommendationContext(this, client);
-    this._recommendationContexts.set(client, context);
     defineValues(client, {
-      ui: new Ui(this, client, context),
+      ui: new Ui(this, client),
     });
+  }
+
+  _getRecommendationContext(client) {
+    let context = this._recommendationContexts.get(client);
+    if (!context) {
+      this._recommendationContexts.set(client, context = new RecommendationContext(this, client));
+    }
+    return context;
   }
 
 }
 
 class Ui {
 
-  constructor(plugin, client, context) {
+  constructor(plugin, client) {
+    this._plugin = plugin;
+    this._client = client;
+
     defineValues(this, {
-      recommendation: context.interface,
-      search: new Search(plugin, client),
-      ask: new Ask(plugin, client),
       sources: {
         api: sources.api(client),
       }
     });
+  }
+
+  get recommendation() {
+    return this._recommendation || (this._recommendation = this._plugin._getRecommendationContext(this._client).interface);
+  }
+
+  get search() {
+    return this._search || (this._search = new Search(this._plugin, this._client));
+  }
+
+  get ask() {
+    return this._ask || (this._ask = new Ask(this._plugin, this._client));
   }
 
 }

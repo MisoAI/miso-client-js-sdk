@@ -1,9 +1,9 @@
 import { defineValues, delegateGetters } from '@miso.ai/commons';
 import { STATUS, ROLE } from '../constants';
 import * as fields from './fields';
-import ViewReactor from './view';
+import ViewActor from './view';
 
-export default class ViewsReactor {
+export default class ViewsActor {
 
   constructor(hub, {
     roles = [],
@@ -14,7 +14,7 @@ export default class ViewsReactor {
     this._views = {};
 
     for (const role of roles) {
-      this._views[role] = new ViewReactor(this, role);
+      this._views[role] = new ViewActor(this, role);
     }
 
     this._layoutFns = new Map();
@@ -38,7 +38,7 @@ export default class ViewsReactor {
     if (this._containers.has(element)) {
       return;
     }
-    const view = new ViewReactor(this, ROLE.CONTAINER);
+    const view = new ViewActor(this, ROLE.CONTAINER);
     // TODO: layout options overrides
     view.layout = this._layoutFns.get(ROLE.CONTAINER)();
     view.element = element;
@@ -98,7 +98,7 @@ export default class ViewsReactor {
   }
 
   get(role) {
-    return this._views[role] || (this._views[role] = new ViewReactor(this, role));
+    return this._views[role] || (this._views[role] = new ViewActor(this, role));
   }
 
   get views() {
@@ -139,7 +139,7 @@ export default class ViewsReactor {
   }
 
   _error(e) {
-    // TODO: saga trigger error event
+    // TODO: hub trigger error event
     console.error(e);
   }
 

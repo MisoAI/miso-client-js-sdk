@@ -1,6 +1,6 @@
 import { defineValues, EventEmitter } from '@miso.ai/commons';
 
-export default class Saga {
+export default class Hub {
 
   constructor() {
     (this._events = new EventEmitter())._injectSubscribeInterface(this);

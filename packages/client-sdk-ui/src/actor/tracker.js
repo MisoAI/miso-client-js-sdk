@@ -39,7 +39,7 @@ export default class Tracker {
     this._options = DEFAULT_TRACKING_OPTIONS;
 
     this._unsubscribes = [
-      // TODO: generalize, eliminate uses of view
+      // TODO: generalize, eliminate uses of view?
       view.proxyElement.on('click', event => this._handleClick(event)),
       view.on('element', () => this.refresh()),
       hub.on(fields.view(role), () => this.refresh()),

@@ -16,7 +16,7 @@ function sessionEquals(a, b) {
   return a === b || (a && b && a.uuid === b.uuid);
 }
 
-export default class ViewReactor {
+export default class ViewActor {
 
   constructor(views, role) {
     this._events = new EventEmitter({ target: this });
@@ -45,7 +45,6 @@ export default class ViewReactor {
     }
     this._element = element;
     this._events.emit('element', element);
-    // TODO: emit on hub as well
     this.refresh({ force: true });
   }
 

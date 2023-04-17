@@ -1,6 +1,6 @@
 import { defineValues } from '@miso.ai/commons';
 import Workflow from './base';
-import { Tracker, fields } from '../saga';
+import { Tracker, fields } from '../actor';
 import { ListLayout } from '../layout';
 import { ROLE } from '../constants';
 
@@ -32,39 +32,13 @@ export default class RecommendationUnit extends Workflow {
     this._context = context;
 
     this._unsubscribes.push(this._hub.on('event', event => this._handleEvent(event)));
-    /*
-    this._unsubscribe = [
-      this._saga.on('event', event => this._handleEvent(event)),
-    ];
-    */
 
     context._units.set(id, this);
-
-    //this.useLayout(DEFAULT_LAYOUT);
   }
 
   get tracker() {
     return this._tracker;
   }
-
-  /*
-  // element //
-  get element() {
-    return this._saga.elements.get(ROLE.RESULTS);
-  }
-
-  bind(role, element) {
-    if (element === undefined && isElement(role)) {
-      element = role;
-      role = ROLE.RESULTS;
-    }
-    return super.bind(role, element);
-  }
-
-  unbind(role = ROLE.RESULTS) {
-    return super.unbind(role);
-  }
-  */
 
   // lifecycle //
   reset() {

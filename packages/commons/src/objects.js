@@ -51,7 +51,12 @@ export function mapValues(obj, fn) {
 export function delegateGetters(target, source, propNames) {
   propNames = typeof propNames === 'string' ? [propNames] : propNames;
   Object.defineProperties(target, propNames.reduce((acc, propName) => {
-    acc[propName] = typeof source[propName] === 'function' ? { value: source[propName].bind(source) } : { get: () => source[propName] };
+    acc[propName] = {
+      get: () => {
+        const value = source[propName];
+        return typeof value === 'function' ? value.bind(source) : value;
+      },
+    };
     return acc;
   }, {}));
 }

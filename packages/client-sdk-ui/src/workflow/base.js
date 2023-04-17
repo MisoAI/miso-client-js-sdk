@@ -1,5 +1,5 @@
 import { Component, asArray } from '@miso.ai/commons';
-import { Saga, SessionMaker, DataSupplier, ViewsReactor, fields } from '../saga';
+import { Hub, SessionMaker, DataActor, ViewsActor, fields } from '../actor';
 import * as sources from '../source';
 import { STATUS, ROLE } from '../constants';
 import { ContainerLayout } from '../layout';
@@ -21,10 +21,10 @@ export default class Workflow extends Component {
 
     this._apiParams = this._defaultApiParams = defaultApiParams;
 
-    const hub = this._hub = injectLogger(new Saga(), (...args) => this._log(...args));
+    const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
     this._sessions = new SessionMaker(hub);
-    this._data = new DataSupplier(hub);
-    this._views = new ViewsReactor(hub, {
+    this._data = new DataActor(hub);
+    this._views = new ViewsActor(hub, {
       roles,
       layouts: this._generateLayoutFactoryFunctions({
         [ROLE.CONTAINER]: ContainerLayout.type,
@@ -34,7 +34,7 @@ export default class Workflow extends Component {
 
     this._unsubscribes = [];
 
-    //delegateGetters(this, saga, ['states']);
+    //delegateGetters(this, hub, ['states']);
 
     this.useSource('api');
   }

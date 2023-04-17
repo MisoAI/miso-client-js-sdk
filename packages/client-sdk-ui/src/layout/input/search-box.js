@@ -1,4 +1,5 @@
 import { LAYOUT_CATEGORY } from '../../constants';
+import { fields } from '../../actor';
 import TemplateBasedLayout from '../template';
 
 const TYPE = 'search-box';
@@ -91,7 +92,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (!value) {
       return;
     }
-    view.hub.trigger('query', { q: value });
+    view.hub.trigger(fields.query(), { q: value });
   }
 
 }

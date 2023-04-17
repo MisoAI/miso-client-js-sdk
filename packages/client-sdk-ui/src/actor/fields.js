@@ -2,6 +2,10 @@ export function session() {
   return 'session';
 }
 
+export function query() {
+  return 'query';
+}
+
 export function input() {
   return 'input';
 }
@@ -10,12 +14,8 @@ export function data() {
   return 'data';
 }
 
-export function element(role) {
-  return role ? `element_${role}` : 'element';
-}
-
 export function view(role) {
-  return role ? `view_${role}` : 'view';
+  return role ? `view:${role}` : 'view';
 }
 
 export function event() {

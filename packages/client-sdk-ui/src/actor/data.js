@@ -1,12 +1,12 @@
 import * as fields from './fields';
 
-export default class DataSupplier {
+export default class DataActor {
 
-  constructor(saga) {
-    this._saga = saga;
+  constructor(hub) {
+    this._hub = hub;
     this._unsubscribes = [
-      saga.on(fields.session(), session => this._handleSession(session)),
-      saga.on(fields.input(), event => this._handleInput(event)),
+      hub.on(fields.session(), session => this._handleSession(session)),
+      hub.on(fields.input(), event => this._handleInput(event)),
     ];
   }
 
@@ -38,7 +38,7 @@ export default class DataSupplier {
     if (!this._source) {
       return;
     }
-    const { session } = this._saga.states;
+    const { session } = this._hub.states;
     try {
       // TODO: abort signal
       const value = await this._source({ session, ...event }, {});
@@ -72,12 +72,12 @@ export default class DataSupplier {
     if (!session) {
       return false;
     }
-    const { session: currentSession } = this._saga.states;
+    const { session: currentSession } = this._hub.states;
     return currentSession && currentSession.index === session.index;
   }
 
   _emitData(data) {
-    this._saga.update(fields.data(), data);
+    this._hub.update(fields.data(), data);
   }
 
   destroy() {

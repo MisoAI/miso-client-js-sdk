@@ -3,32 +3,32 @@ import * as fields from './fields';
 
 export default class SessionMaker {
 
-  constructor(saga) {
-    this._saga = saga;
+  constructor(hub) {
+    this._hub = hub;
     this._sessionIndex = 0;
-    delegateGetters(saga, this, ['active']);
+    delegateGetters(hub, this, ['active']);
   }
 
   get active() {
-    const { session } = this._saga.states;
+    const { session } = this._hub.states;
     return !!(session && session.active);
   }
 
   new({ force = false } = {}) {
-    const currentSession = this._saga.states.session;
+    const currentSession = this._hub.states.session;
     if (currentSession && !currentSession.active && !force) {
       return;
     }
     const session = this._create();
-    this._saga.update(fields.session(), session);
+    this._hub.update(fields.session(), session);
   }
 
   start() {
-    const { session } = this._saga.states;
+    const { session } = this._hub.states;
     if (session && session.active) {
       return;
     }
-    this._saga.update(fields.session(), { ...session, active: true });
+    this._hub.update(fields.session(), { ...session, active: true });
   }
 
   restart() {

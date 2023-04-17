@@ -9,17 +9,17 @@ export function mergeApiParams(base = {}, overrides = {}) {
   });
 }
 
-export function injectLogger(saga, callback) {
-  const { update, trigger } = saga;
-  saga.update = (name, state, options) => {
+export function injectLogger(hub, callback) {
+  const { update, trigger } = hub;
+  hub.update = (name, state, options) => {
     if (!options || !options.silent) {
       callback('update', name, state, options);
     }
-    return update.call(saga, name, state, options);
+    return update.call(hub, name, state, options);
   }
-  saga.trigger = (...args) => {
+  hub.trigger = (...args) => {
     callback('trigger', ...args);
-    return trigger.apply(saga, args);
+    return trigger.apply(hub, args);
   }
-  return saga;
+  return hub;
 }
