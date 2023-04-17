@@ -35,20 +35,22 @@ Scroll down to see the recommendation unit.
 <section>
   <h3>Recommendation Units</h3>
   <miso-recommendation unit-id="unit-1">
-    <ul class="list">
-      <li id="product-1" class="item" data-miso-product-id="product-1">
-        <a href="#">Product 1</a>
-      </li>
-      <li id="product-2" class="item" data-miso-product-id="product-2">
-        <a href="#">Product 2</a>
-      </li>
-      <li id="product-3" class="item" data-miso-product-id="product-3">
-        <a href="#">Product 3</a>
-      </li>
-      <li id="product-4" class="item" data-miso-product-id="product-4">
-        <a href="#">Product 4 (prevent default)</a>
-      </li>
-    </ul>
+    <miso-results>
+      <ul class="list">
+        <li id="product-1" class="item" data-miso-product-id="product-1">
+          <a href="#">Product 1</a>
+        </li>
+        <li id="product-2" class="item" data-miso-product-id="product-2">
+          <a href="#">Product 2</a>
+        </li>
+        <li id="product-3" class="item" data-miso-product-id="product-3">
+          <a href="#">Product 3</a>
+        </li>
+        <li id="product-4" class="item" data-miso-product-id="product-4">
+          <a href="#">Product 4 (prevent default)</a>
+        </li>
+      </ul>
+    </miso-results>
   </miso-recommendation>
 </section>
 <script>

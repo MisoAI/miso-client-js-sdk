@@ -3,7 +3,7 @@ import { removeItem } from "./arrays";
 
 export default class EventEmitter {
 
-  constructor({ error, replays = [] } = {}) {
+  constructor({ target, error, replays = [] } = {}) {
     this._error = error || (e => console.error(e));
     if (!Array.isArray(replays)) {
       throw new Error(`Replays option must be an array of strings: ${replays}`);
@@ -12,6 +12,7 @@ export default class EventEmitter {
     this._namedCallbacks = {};
     this._unnamedCallbacks = [];
     this._pastEvents = {};
+    target && this._injectSubscribeInterface(target);
   }
 
   emit(name, data) {
@@ -107,6 +108,7 @@ export default class EventEmitter {
     }
   }
 
+  // TODO: use constructor options
   _injectSubscribeInterface(target) {
     delegateGetters(target, this, ['on', 'once']);
   }

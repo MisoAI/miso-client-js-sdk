@@ -1,5 +1,5 @@
 import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, viewable as whenViewable } from '@miso.ai/commons';
-import { ROLE, STATUS, EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
+import { STATUS, EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
 import Items from './items';
 import * as fields from './fields';
 
@@ -30,24 +30,26 @@ const DEFAULT_TRACKING_OPTIONS = Object.freeze({
 
 export default class Tracker {
 
-  constructor(saga, role = ROLE.RESULTS) {
-    this._saga = saga;
-    this._role = role;
-    this._items = new Items(saga, role);
+  constructor(hub, view) {
+    this._hub = hub;
+    this._view = view;
+    const role = this._role = view.role;
+    this._items = new Items(hub, view);
     this._viewables = new WeakMap();
     this._options = DEFAULT_TRACKING_OPTIONS;
 
     this._unsubscribes = [
-      saga.elements.proxy(role).on('click', event => this._handleClick(event)),
-      saga.elements.on(role, () => this.refresh()),
-      saga.on(fields.view(role), () => this.refresh()),
+      // TODO: generalize, eliminate uses of view
+      view.proxyElement.on('click', event => this._handleClick(event)),
+      view.on('element', () => this.refresh()),
+      hub.on(fields.view(role), () => this.refresh()),
     ];
 
     this.refresh();
   }
 
   config(options) {
-    const { active } = this._saga;
+    const { active } = this._hub;
     if (active) {
       throw new Error(`Cannot change configuration after unit starts.`);
     }
@@ -105,11 +107,11 @@ export default class Tracker {
   }
 
   _getViewState() {
-    return this._saga.states[fields.view(this._role)];
+    return this._hub.states[fields.view(this._role)];
   }
 
   _assertViewReady() {
-    if (!this._saga.active) {
+    if (!this._hub.active) {
       throw new Error(`Unit is not active. Call unit.start() to activate it.`);
     }
     if (!isReady(this._getViewState())) {
@@ -118,13 +120,13 @@ export default class Tracker {
   }
 
   _isViewReady() {
-    return this._saga.active && isReady(this._getViewState());
+    return this._hub.active && isReady(this._getViewState());
   }
 
   getState(productId) {
     // TODO: do we have to be so precise?
     return Object.freeze({
-      [CLICK]: this._saga.elements.get(this._role) ? TRACKING : UNTRACKED,
+      [CLICK]: this._view.element ? TRACKING : UNTRACKED,
       ...this._states.getFullState(productId),
     });
   }
@@ -217,7 +219,7 @@ export default class Tracker {
 
   // click //
   _syncElement() {
-    const element = this._saga.elements.get(this._role);
+    const { element } = this._view;
     if (this._element === element) {
       return;
     }
@@ -290,7 +292,7 @@ export default class Tracker {
       return;
     }
     this._states.set(productIds, type, TRIGGERED);
-    this._saga.trigger('event', { type, productIds, manual });
+    this._hub.trigger('event', { type, productIds, manual });
   }
 
   _destroy() {

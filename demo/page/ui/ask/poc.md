@@ -22,17 +22,19 @@
   }
 </style>
 <section>
-  <miso-ask-input></miso-ask-input>
+  <miso-ask>
+    <miso-query></miso-query>
+  </miso-ask>
 </section>
 <section>
-  <miso-ask-results>
+  <miso-ask visible-when="ready">
     <div class="phrase">You asked about...</div>
-    <miso-ask-question></miso-ask-question>
-    <miso-ask-answer></miso-ask-answer>
+    <miso-question></miso-question>
+    <miso-answer></miso-answer>
     <hr>
     <div class="phrase">My reply is based on the following:</div>
-    <miso-ask-sources></miso-ask-sources>
-  </miso-ask-results>
+    <miso-sources></miso-sources>
+  </miso-ask>
 </section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);

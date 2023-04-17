@@ -37,7 +37,9 @@
 </script>
 <hr>
 <section style="margin-right: 100px;">
-  <miso-recommendation></miso-recommendation>
+  <miso-recommendation>
+    <miso-results></miso-results>
+  </miso-recommendation>
 </section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);

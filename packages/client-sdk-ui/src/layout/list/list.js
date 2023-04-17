@@ -4,19 +4,10 @@ import { product } from '../templates';
 const TYPE = 'list';
 const DEFAULT_CLASSNAME = 'miso-list';
 
-const DEFAULT_TEMPLATES = Object.freeze({
-  product,
-});
-
-const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
-  ...CollectionLayout.defaultTemplates,
-  ...DEFAULT_TEMPLATES,
-});
-
 export default class ListLayout extends CollectionLayout {
 
   static get category() {
-    return CollectionLayout.category;
+    return super.category;
   }
 
   static get type() {
@@ -24,15 +15,15 @@ export default class ListLayout extends CollectionLayout {
   }
 
   static get defaultTemplates() {
-    return INHERITED_DEFAULT_TEMPLATES;
+    return super.defaultTemplates;
   }
 
   static get defaultClassName() {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
+  constructor({ className = DEFAULT_CLASSNAME, ...options } = {}) {
+    super({ className, ...options });
   }
 
 }

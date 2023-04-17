@@ -1,16 +1,11 @@
-import { ROLE } from '../constants';
-import { getClient } from './utils';
+import MisoContainerElement from './miso-container.js';
 
 const TAG_NAME = 'miso-recommendation';
 
 const ATTR_UNIT_ID = 'unit-id';
 const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_UNIT_ID]);
 
-export default class MisoRecommendationElement extends HTMLElement {
-
-  static get role() {
-    return ROLE.RESULTS;
-  }
+export default class MisoRecommendationElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -18,6 +13,14 @@ export default class MisoRecommendationElement extends HTMLElement {
 
   static get observedAttributes() {
     return OBSERVED_ATTRIBUTES;
+  }
+
+  _getWorkflow(client) {
+    return this._getWorkflowByUnitId(client, this.unitId);
+  }
+
+  _getWorkflowByUnitId(client, unitId) {
+    return client.ui.recommendation.get(unitId);
   }
 
   // properties //
@@ -35,12 +38,6 @@ export default class MisoRecommendationElement extends HTMLElement {
   }
 
   // lifecycle //
-  async connectedCallback() {
-    // find client & auto bind
-    const client = await getClient();
-    client.ui.recommendation.get(this.unitId).bind(this);
-  }
-
   attributeChangedCallback(attr, oldValue, newValue) {
     switch (attr) {
       case ATTR_UNIT_ID:
@@ -49,17 +46,11 @@ export default class MisoRecommendationElement extends HTMLElement {
     }
   }
 
-  _handleUnitIdUpdate(oldValue, newValue) {
-    if (oldValue === newValue || !this._client) {
+  _handleUnitIdUpdate(oldUnitId, newUnitId) {
+    if (oldUnitId === newUnitId || !this._client) {
       return;
     }
-    const { recommendation } = this._client.ui;
-    if (oldValue && recommendation.has(oldValue)) {
-      recommendation.get(oldValue).unbind();
-    }
-    if (newValue) {
-      recommendation.get(newValue).bind(this);
-    }
+    this._setWorkflow(this._getWorkflowByUnitId(this._client, newUnitId));
   }
 
 }

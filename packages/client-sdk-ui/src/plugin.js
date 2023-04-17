@@ -32,7 +32,14 @@ export default class UiPlugin extends Component {
     }
 
     // custom elements
-    for (const elementClass of Object.values(elements)) {
+    const { containers, roles, ...others } = elements;
+    for (const elementClass of Object.values(containers)) {
+      defineAndUpgrade(elementClass);
+    }
+    for (const elementClass of Object.values(roles)) {
+      defineAndUpgrade(elementClass);
+    }
+    for (const elementClass of Object.values(others)) {
       defineAndUpgrade(elementClass);
     }
   }

@@ -1,6 +1,7 @@
-import { trimObj, defineValues } from '@miso.ai/commons';
+import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/commons';
 import { STATUS } from '../constants';
 import * as fields from './fields';
+import ProxyElement from './proxy';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&
@@ -18,25 +19,38 @@ function sessionEquals(a, b) {
 export default class ViewReactor {
 
   constructor(views, role) {
+    this._events = new EventEmitter({ target: this });
     this._views = views;
+
     defineValues(this, {
       role,
+      interface: new View(this),
     });
-    this._unsubscribes = [
-      this.saga.elements.on(role, () => this.refresh()),
-    ];
   }
 
-  get saga() {
-    return this._views._saga;
+  get hub() {
+    return this._views._hub;
   }
 
   get element() {
     return this._element;
   }
 
+  set element(element) {
+    if (element === this._element) {
+      return;
+    }
+    if (this._element) {
+      this._safeApplyOnLayout('unrender', this._element);
+    }
+    this._element = element;
+    this._events.emit('element', element);
+    // TODO: emit on hub as well
+    this.refresh({ force: true });
+  }
+
   get proxyElement() {
-    return this.saga.elements.proxy(this.role);
+    return this._proxyElement || (this._proxyElement = new ProxyElement(this));
   }
 
   get layout() {
@@ -52,14 +66,14 @@ export default class ViewReactor {
     }
 
     // clean up old layout
-    const element = this._getElement();
+    const { element } = this;
     element && this._safeApplyOnLayout('unrender', element);
     this._safeApplyOnLayout('destroy');
 
     this._layout = layout;
 
     // initialize new layout
-    // don't use _safeApplyOnLayout for any error should be thrown
+    // don't use _safeApplyOnLayout, for any error should be thrown
     if (layout && typeof layout.initialize === 'function') {
       layout.initialize(this);
     }
@@ -74,8 +88,6 @@ export default class ViewReactor {
       return;
     }
 
-    this._syncElement();
-
     // nothing to do when element is absent
     const { element } = this;
     if (!element) {
@@ -89,7 +101,7 @@ export default class ViewReactor {
     // protocol: no reaction until session starts
     const { session } = data;
     const active = session && session.active;
-    if (!active) {
+    if (!force && !active) {
       return;
     }
 
@@ -119,10 +131,7 @@ export default class ViewReactor {
     const status = error ? STATUS.ERRONEOUS : STATUS.READY;
     const state = this._state = Object.freeze(trimObj({ session, status, error }));
     const { role } = this;
-    this.saga.update(fields.view(role), state, { silent });
-    if (!silent) {
-      this.saga.trigger(fields.view(), { role, state });
-    }
+    this.hub.update(fields.view(role), state, { silent });
   }
 
   _sliceData(data) {
@@ -130,21 +139,8 @@ export default class ViewReactor {
     return trimObj({ value: value && value[this.role], ...rest });
   }
 
-  _getElement() {
-    return this.saga.elements.get(this.role);
-  }
-
-  _syncElement() {
-    const element = this._getElement();
-    if (this._element && this._element !== element) {
-      this._safeApplyOnLayout('unrender', this._element);
-    }
-    this._element = element;
-  }
-
   _syncSize() {
-    const element = this._getElement();
-    element && this._safeApplyOnLayout('syncSize', element);
+    this._element && this._safeApplyOnLayout('syncSize', this._element);
   }
 
   _safeApplyOnLayout(method, ...args) {
@@ -163,11 +159,16 @@ export default class ViewReactor {
   }
 
   _destroy() {
-    for (const unsubscribe of this._unsubscribes) {
-      unsubscribe();
-    }
-    this._unsubscribes = [];
     this._safeApplyOnLayout('destroy');
+    this._proxyElement && this._proxyElement._destroy();
+  }
+
+}
+
+class View {
+
+  constructor(actor) {
+    delegateGetters(this, actor, ['role', 'layout', 'element', 'proxyElement', 'refresh', 'on']);
   }
 
 }

@@ -1,10 +1,10 @@
-import { defineValues, isElement } from '@miso.ai/commons';
+import { defineValues } from '@miso.ai/commons';
 import Workflow from './base';
 import { Tracker, fields } from '../saga';
 import { ListLayout } from '../layout';
 import { ROLE } from '../constants';
 
-const DEFAULT_LAYOUT = ListLayout.type;
+//const DEFAULT_LAYOUT = ListLayout.type;
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'recommendation',
   name: 'user_to_products',
@@ -13,32 +13,41 @@ const DEFAULT_API_PARAMS = Object.freeze({
   },
 });
 
+const DEFAULT_LAYOUTS = Object.freeze({
+  [ROLE.RESULTS]: ListLayout.type,
+});
+
 export default class RecommendationUnit extends Workflow {
 
   constructor(context, id) {
     super(context._plugin, context._client, {
       name: 'recommendation',
-      roles: [ROLE.RESULTS],
+      roles: Object.keys(DEFAULT_LAYOUTS),
+      layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,
-    })
+    });
+    this._tracker = new Tracker(this._hub, this._views.get(ROLE.RESULTS));
 
     defineValues(this, { id });
     this._context = context;
-    this._tracker = new Tracker(this._saga);
 
+    this._unsubscribes.push(this._hub.on('event', event => this._handleEvent(event)));
+    /*
     this._unsubscribe = [
       this._saga.on('event', event => this._handleEvent(event)),
     ];
+    */
 
     context._units.set(id, this);
 
-    this.useLayout(DEFAULT_LAYOUT);
+    //this.useLayout(DEFAULT_LAYOUT);
   }
 
   get tracker() {
     return this._tracker;
   }
 
+  /*
   // element //
   get element() {
     return this._saga.elements.get(ROLE.RESULTS);
@@ -55,6 +64,7 @@ export default class RecommendationUnit extends Workflow {
   unbind(role = ROLE.RESULTS) {
     return super.unbind(role);
   }
+  */
 
   // lifecycle //
   reset() {
@@ -64,7 +74,7 @@ export default class RecommendationUnit extends Workflow {
 
   start() {
     this._sessions.start();
-    this._saga.update(fields.input(), this._apiParams);
+    this._hub.update(fields.input(), this._apiParams);
     return this;
   }
 
@@ -73,6 +83,11 @@ export default class RecommendationUnit extends Workflow {
     this.useLayout(false);
     this._sessions.start();
     this.notifyViewUpdate(ROLE.RESULTS);
+    return this;
+  }
+
+  notifyViewUpdate(role = ROLE.RESULTS, ...args) {
+    super.notifyViewUpdate(role, ...args);
     return this;
   }
 
@@ -90,7 +105,7 @@ export default class RecommendationUnit extends Workflow {
     return this;
   }
 
-  // TODO: make interactions a saga component?
+  // TODO: make interactions an actor?
   _handleEvent(event) {
     this._assertActive();
     const { uuid, id } = this;

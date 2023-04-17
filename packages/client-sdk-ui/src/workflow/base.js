@@ -1,15 +1,16 @@
 import { Component, asArray } from '@miso.ai/commons';
-import { Saga, ElementsBinder, SessionMaker, DataSupplier, ViewsReactor, fields } from '../saga';
+import { Saga, SessionMaker, DataSupplier, ViewsReactor, fields } from '../saga';
 import * as sources from '../source';
-import { STATUS } from '../constants';
+import { STATUS, ROLE } from '../constants';
+import { ContainerLayout } from '../layout';
 import { mergeApiParams, injectLogger } from './utils';
 
 export default class Workflow extends Component {
 
-  // TODO: define fields?
   constructor(plugin, client, {
     name,
     roles,
+    layouts = {},
     defaultApiParams,
   }) {
     super(name || 'workflow', plugin);
@@ -20,11 +21,16 @@ export default class Workflow extends Component {
 
     this._apiParams = this._defaultApiParams = defaultApiParams;
 
-    const saga = this._saga = injectLogger(new Saga(), (...args) => this._log(...args));
-    this._elements = new ElementsBinder(saga);
-    this._sessions = new SessionMaker(saga);
-    this._data = new DataSupplier(saga);
-    this._views = new ViewsReactor(saga, roles);
+    const hub = this._hub = injectLogger(new Saga(), (...args) => this._log(...args));
+    this._sessions = new SessionMaker(hub);
+    this._data = new DataSupplier(hub);
+    this._views = new ViewsReactor(hub, {
+      roles,
+      layouts: this._generateLayoutFactoryFunctions({
+        [ROLE.CONTAINER]: ContainerLayout.type,
+        ...layouts,
+      }),
+    });
 
     this._unsubscribes = [];
 
@@ -38,7 +44,7 @@ export default class Workflow extends Component {
   }
 
   get session() {
-    return this._saga.states.session;
+    return this._hub.states.session;
   }
 
   get active() {
@@ -47,24 +53,13 @@ export default class Workflow extends Component {
   }
 
   get states() {
-    return this._saga.states;
-  }
-
-  // element //
-  bind(role, element) {
-    this._elements.bind(role, element);
-    return this;
-  }
-
-  unbind(role) {
-    this._elements.unbind(role);
-    return this;
+    return this._hub.states;
   }
 
   // states //
   updateData(data) {
     this._assertActive();
-    this._saga.update(fields.data(), {
+    this._hub.update(fields.data(), {
       session: this.session,
       ...data,
     });
@@ -78,8 +73,7 @@ export default class Workflow extends Component {
       session: this.session,
       ...state,
     };
-    this._saga.update(fields.view(role), state);
-    this._saga.trigger(fields.view(), { role, state });
+    this._hub.update(fields.view(role), state);
     return this;
   }
 
@@ -104,15 +98,19 @@ export default class Workflow extends Component {
   }
 
   // layout //
-  useLayouts(config) {
+  useLayouts(layouts) {
+    this._views.layouts = this._generateLayoutFactoryFunctions(layouts);
+    return this;
+  }
+
+  _generateLayoutFactoryFunctions(config) {
     // TODO: merge config with default values
-    const layouts = {};
+    const fns = {};
     for (const [role, args] of Object.entries(config)) {
       const [ name, options ] = asArray(args);
-      layouts[role] = this._plugin.layouts.create(name, { role, ...options });
+      fns[role] = (overrides) => this._plugin.layouts.create(name, { ...options, ...overrides, role });
     }
-    this._views.layouts = layouts;
-    return this;
+    return fns;
   }
 
   // destroy //
@@ -129,13 +127,11 @@ export default class Workflow extends Component {
 
     this._views.destroy();
     this._data.destroy();
-    this.unbind(); // TODO
-    this._elements.destroy();
   }
 
   // helper //
   _log(action, name, data) {
-    this._events.emit(action, [name, data]);
+    this._events.emit(name, { _action: action, ...data });
   }
 
   _assertActive() {

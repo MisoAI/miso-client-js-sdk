@@ -15,11 +15,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
   root,
 });
 
-const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
-  ...TemplateBasedLayout.defaultTemplates,
-  ...DEFAULT_TEMPLATES,
-});
-
 function sameSession(a, b) {
   return a && b && a.session && b.session && a.session.id === b.session.id;
 }
@@ -35,15 +30,27 @@ export default class TypewriterLayout extends TemplateBasedLayout {
   }
 
   static get defaultTemplates() {
-    return INHERITED_DEFAULT_TEMPLATES;
+    return DEFAULT_TEMPLATES;
   }
 
   static get defaultClassName() {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, cps = 75, tag = 'p', ...options } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates }, { cps, tag, ...options });
+  constructor({
+    className = DEFAULT_CLASSNAME,
+    templates,
+    cps = 75,
+    tag = 'p',
+    ...options
+  } = {}) {
+    super({
+      className,
+      templates: { ...DEFAULT_TEMPLATES, ...templates },
+      cps,
+      tag,
+      ...options,
+    });
   }
 
   initialize(view) {
@@ -64,12 +71,14 @@ export default class TypewriterLayout extends TemplateBasedLayout {
     if (element.children.length === 0) {
       element.innerHTML = this.templates.root(this);
     }
-    return element.children[0];
+    const content = element.children[0];
+    content.setAttribute('data-status', this._input.status || STATUS.INITIAL);
+    return content;
   }
 
   _updateInput(state) {
     const prev = this._input;
-    const { value: text = '', session } = state;
+    const { value: text = '', session, status } = state;
     const incremental = sameSession(prev, state) && text && text.startsWith(prev.text);
     const streak = !prev ? { index: 0 } : incremental ? prev.streak : { index: prev.streak.index + 1 };
     const doneAt = (prev && prev.done) || (state.status === STATUS.READY && !state.ongoing ? Date.now() : undefined);
@@ -77,6 +86,7 @@ export default class TypewriterLayout extends TemplateBasedLayout {
 
     this._input = trimObj({
       session,
+      status,
       text,
       streak,
       doneAt,

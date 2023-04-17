@@ -1,9 +1,4 @@
-export { default as MisoRecommendationElement } from './miso-recommendation';
-export { default as MisoSearchInputElement } from './miso-search-input';
-export { default as MisoSearchResultsElement } from './miso-search-results';
-export { default as MisoAskInputElement } from './miso-ask-input';
-export { default as MisoAskQuestionElement } from './miso-ask-question';
-export { default as MisoAskAnswerElement } from './miso-ask-answer';
-export { default as MisoAskSourcesElement } from './miso-ask-sources';
-//export { default as MisoAskResultsElement } from './miso-ask-results';
-export { default as MisoCustomElement } from './miso-custom';
+export { default as MisoBannerElement } from './miso-banner';
+
+export * as containers from './container';
+export * as roles from './role';

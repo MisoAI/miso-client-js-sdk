@@ -1,5 +1,4 @@
 import CollectionLayout from './collection';
-import { product } from '../templates';
 
 const TYPE = 'carousel';
 const DEFAULT_CLASSNAME = 'miso-carousel';
@@ -9,7 +8,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
   carousel,
   previous: chevron,
   next: chevron,
-  product,
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
@@ -20,7 +18,7 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 function ready(layout, state) {
   const { templates } = layout;
   const nonEmpty = state.value && state.value.length > 0;
-  const html = CollectionLayout.defaultTemplates.ready(layout, state);
+  const html = Object.getPrototypeOf(layout.constructor).defaultTemplates.ready(layout, state);
   return nonEmpty ? templates.carousel(layout, state, html) : html;
 }
 
@@ -37,7 +35,7 @@ function chevron(layout) {
 export default class CarouselLayout extends CollectionLayout {
 
   static get category() {
-    return CollectionLayout.category;
+    return super.category;
   }
 
   static get type() {
@@ -53,7 +51,7 @@ export default class CarouselLayout extends CollectionLayout {
   }
 
   constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
+    super({ className, templates: { ...DEFAULT_TEMPLATES, ...templates }, ...options });
     window.addEventListener('resize', this.syncSize = this.syncSize.bind(this));
     this._page = 0;
     this._unsubscribes = [];

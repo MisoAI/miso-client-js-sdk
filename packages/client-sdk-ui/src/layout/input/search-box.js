@@ -23,15 +23,10 @@ const DEFAULT_TEMPLATES = Object.freeze({
   root,
 });
 
-const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
-  ...TemplateBasedLayout.defaultTemplates,
-  ...DEFAULT_TEMPLATES,
-});
-
 export default class SearchBoxLayout extends TemplateBasedLayout {
 
   static get category() {
-    return LAYOUT_CATEGORY.INPUT;
+    return LAYOUT_CATEGORY.QUERY;
   }
 
   static get type() {
@@ -39,7 +34,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   static get defaultTemplates() {
-    return INHERITED_DEFAULT_TEMPLATES;
+    return DEFAULT_TEMPLATES;
   }
 
   static get defaultClassName() {
@@ -47,7 +42,56 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
+    super({
+      className,
+      templates: { ...DEFAULT_TEMPLATES, ...templates },
+      ...options,
+    });
+  }
+
+  initialize(view) {
+    this._view = view;
+    const { proxyElement } = view;
+    this._unsubscribes = [
+      ...this._unsubscribes,
+      proxyElement.on('keydown', (e) => this._handleKeyDown(e)),
+      proxyElement.on('click', (e) => this._handleClick(e)),
+    ];
+  }
+
+  async render(element, state, options = {}) {
+    const { silence } = options;
+    if (element.childElementCount > 0) {
+      // only render once, and also skip if there are children already to allow customized DOM
+      silence();
+      return;
+    }
+    await super.render(element, state, options);
+  }
+
+  _handleKeyDown({ key, target }) {
+    if (key === 'Enter' && target.matches('input')) {
+      this._submit();
+    }
+  }
+
+  _handleClick({ target }) {
+    if (target.matches('[type="submit"]')) {
+      this._submit();
+    }
+  }
+
+  async _submit() {
+    const view = this._view;
+    const input = this._input || (this._input = view.element && view.element.querySelector('input'));
+    if (!input) {
+      return;
+    }
+    const { value } = input;
+    if (!value) {
+      return;
+    }
+    view.hub.trigger('query', { q: value });
   }
 
 }

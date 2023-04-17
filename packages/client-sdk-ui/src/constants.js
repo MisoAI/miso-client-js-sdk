@@ -3,17 +3,22 @@ export const ATTR_DATA_MISO_PRODUCT_ID = `data-miso-product-id`;
 export const DEFAULT_UNIT_ID = 'default';
 
 export const ROLE = Object.freeze({
+  CONTAINER: 'container',
+  BANNER: 'banner',
+  QUERY: 'query',
   RESULTS: 'results',
-  INPUT: 'input',
+  ITEMS: 'items',
   QUESTION: 'question',
   ANSWER: 'answer',
   SOURCES: 'sources',
-  FURTHER_READS: 'further-reads',
+  RELATED_RESOURCES: 'further-reads', // TODO
 });
 
 export const LAYOUT_CATEGORY = Object.freeze({
+  CONTAINER: 'container',
+  BANNER: 'banner',
   LIST: 'list',
-  INPUT: 'input',
+  QUERY: 'query',
   TEXT: 'text',
 });
 
@@ -36,9 +41,11 @@ export const STATUS = Object.freeze({
   READY: 'ready',
 });
 
+// TODO: per workflow
+/*
 const ROLE_TO_LAYOUT_CATEGORY = Object.freeze({
   [ROLE.RESULTS]: LAYOUT_CATEGORY.LIST,
-  [ROLE.INPUT]: LAYOUT_CATEGORY.INPUT,
+  [ROLE.QUERY]: LAYOUT_CATEGORY.QUERY,
   [ROLE.ANSWER]: LAYOUT_CATEGORY.TEXT,
 });
 
@@ -49,6 +56,7 @@ export function getLayoutCategoryByRole(role) {
   }
   return category;
 }
+*/
 
 export function validateEventType(value) {
   if (value !== EVENT_TYPE.IMPRESSION && value !== EVENT_TYPE.VIEWABLE && value !== EVENT_TYPE.CLICK) {

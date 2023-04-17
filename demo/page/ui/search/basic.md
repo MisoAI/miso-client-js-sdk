@@ -12,8 +12,9 @@
 </style>
 <section>
   <div style="display: flex; gap: 1rem;">
-    <miso-search-input style="flex-grow: 1;">
-    </miso-search-input>
+    <miso-search style="flex-grow: 1;">
+      <miso-query></miso-query>
+    </miso-search>
     <div id="layout-radio-group" class="btn-group" role="group">
       <input type="radio" class="btn-check" name="layout" value="list" id="layout-radio-list" autocomplete="off" checked>
       <label class="btn btn-outline-primary" for="layout-radio-list">List</label>
@@ -39,7 +40,9 @@
 </script>
 <hr>
 <section>
-  <miso-search-results></miso-search-results>
+  <miso-search>
+    <miso-results></miso-results>
+  </miso-search>
 </section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);

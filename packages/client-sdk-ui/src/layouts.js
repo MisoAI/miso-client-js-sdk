@@ -10,6 +10,8 @@ export default class Layouts extends Registry {
     this._plugin = plugin;
   }
 
+  // TODO: API to override default options per layout
+
   get(name) {
     return this._libraries[name];
   }

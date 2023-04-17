@@ -1,17 +1,16 @@
 export default class ProxyElement {
 
-  constructor(saga, role) {
-    this._saga = saga;
-    this._role = role;
+  constructor(view) {
+    this._view = view;
     this._handlers = [];
     this._unsubscribes = [
-      saga.elements.on(role, () => this._sync()),
+      view.on('element', () => this._sync()),
     ];
     this._sync();
   }
 
   _get() {
-    return this._saga.elements.get(this._role);
+    return this._view.element;
   }
 
   on(event, handler) {

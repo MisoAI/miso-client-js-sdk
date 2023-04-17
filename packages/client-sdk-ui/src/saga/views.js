@@ -1,19 +1,27 @@
-import { defineValues } from '@miso.ai/commons';
-import { STATUS } from '../constants';
+import { defineValues, delegateGetters } from '@miso.ai/commons';
+import { STATUS, ROLE } from '../constants';
 import * as fields from './fields';
 import ViewReactor from './view';
 
 export default class ViewsReactor {
 
-  constructor(saga, roles = []) {
-    this._saga = saga;
+  constructor(hub, {
+    roles = [],
+    layouts = {},
+  }) {
+    this._hub = hub;
+    this._containers = new Map();
     this._views = {};
+
     for (const role of roles) {
       this._views[role] = new ViewReactor(this, role);
     }
 
-    defineValues(saga, {
-      views: new Views(this),
+    this._layoutFns = new Map();
+    this.layouts = layouts;
+
+    defineValues(this, {
+      interface: new Views(this),
     });
 
     const syncSize = () => this.syncSize();
@@ -21,28 +29,90 @@ export default class ViewsReactor {
 
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
-      saga.on(fields.data(), () => this.refresh()),
+      hub.on(fields.data(), () => this.refresh()),
     ];
   }
 
-  // TODO: should we require explicit declaration of roles?
-  /*
-  addRole(role) {
-    if (this._views[role]) {
+  // elements //
+  addContainer(element) {
+    if (this._containers.has(element)) {
       return;
     }
-    this._views[role] = new ViewReactor(this, role);
+    const view = new ViewReactor(this, ROLE.CONTAINER);
+    // TODO: layout options overrides
+    view.layout = this._layoutFns.get(ROLE.CONTAINER)();
+    view.element = element;
+    this._containers.set(element, view);
+
+    const { components } = element;
+    for (const component of components) {
+      this.addComponent(component);
+    }
   }
-  */
+
+  removeContainer(element) {
+    const view = this._containers.get(element);
+    if (!view) {
+      return;
+    }
+    const { components } = element;
+    for (const component of components) {
+      this.removeComponent(component);
+    }
+    view._destroy();
+    this._containers.delete(element);
+  }
+
+  addComponent(element) {
+    this._getViewByElement(element).element = element;
+  }
+
+  removeComponent(element) {
+    this._getViewByElement(element).element = undefined;
+  }
+
+  updateComponentRole(element, oldRole, newRole) {
+    // TODO
+  }
+
+  _getViewByElement(element) {
+    let { role } = element;
+    if (!role) {
+      throw new Error('Component must have a role');
+    }
+    return this.get(role);
+  }
 
   set layouts(layouts) {
-    for (let [role, layout] of Object.entries(layouts)) {
-      this.get(role).layout = layout;
+    for (let [role, fn] of Object.entries(layouts)) {
+      this._layoutFns.set(role, fn);
+      if (role === ROLE.CONTAINER) {
+        for (const view of this._containers.values()) {
+          // TODO: layout options overrides
+          view.layout = fn();
+        }
+      } else {
+        this.get(role).layout = fn();
+      }
     }
   }
 
   get(role) {
     return this._views[role] || (this._views[role] = new ViewReactor(this, role));
+  }
+
+  get views() {
+    return this._getViews(true);
+  }
+
+  _getViews(containerFirst = true) {
+    return containerFirst ? [
+      ...this._containers.values(),
+      ...Object.values(this._views),
+    ] : [
+      ...Object.values(this._views),
+      ...this._containers.values(),
+    ];
   }
 
   syncSize() {
@@ -53,11 +123,12 @@ export default class ViewsReactor {
 
   async refresh({ force } = {}) {
     const data = this._getData();
-    await Promise.all(Object.values(this._views).map(view => view.refresh({ force, data })));
+    // container first
+    await Promise.all(this._getViews(true).map(view => view.refresh({ force, data })));
   }
 
   _getData() {
-    const { data } = this._saga.states;
+    const { data } = this._hub.states;
     // compare to cached
     if (!this._data || this._data.data !== data) {
       const status = (!data || !data.session || !data.session.active) ? STATUS.INITIAL :
@@ -73,7 +144,8 @@ export default class ViewsReactor {
   }
 
   destroy() {
-    for (const view of Object.values(this._views)) {
+    // destroy components, and then containers
+    for (const view of this._getViews(false)) {
       view._destroy();
     }
     for (const unsubscribe of this._unsubscribes) {
@@ -86,10 +158,17 @@ export default class ViewsReactor {
 
 class Views {
 
-  constructor(reactor) {
-    this._reactor = reactor;
+  constructor(actor) {
+    this._actor = actor;
+    delegateGetters(this, actor, ['syncSize', 'refresh']);
   }
 
-  // TODO
+  get(role) {
+    return this._actor.get(role).interface;
+  }
+
+  get views() {
+    return this._actor.views.map(view => view.interface);
+  }
 
 }

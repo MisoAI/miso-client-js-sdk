@@ -1,40 +1,23 @@
 import { defineValues, requestAnimationFrame as raf } from '@miso.ai/commons';
 import { requiresImplementation } from './templates';
-import LOGO from './logo';
-
-function banner(layout) {
-  const { options = {} } = layout;
-  const { logo } = options;
-  return logo ? `<div class="miso__banner"><div class="miso__logo">${LOGO}</div></div>` : '';
-}
-
-const DEFAULT_TEMPLATES = Object.freeze({
-  ...requiresImplementation('root'),
-  banner,
-});
 
 export default class TemplateBasedLayout {
 
-  static get defaultTemplates() {
-    return DEFAULT_TEMPLATES;
-  }
-
-  constructor(className, templates, { role, logo = true, ...options } = {}) {
+  constructor({ role, className, templates, ...options } = {}) {
     defineValues(this, {
-      className,
       role,
+      className,
       templates: {
-        ...DEFAULT_TEMPLATES,
+        ...requiresImplementation('root'),
         ...templates,
       },
-      options: {
-        ...options,
-        logo,
-      },
+      options,
     });
+    this._unsubscribes = [];
   }
 
-  async render(element, state) {
+  async render(element, state, { silence }) {
+    // TODO: notify update manually
     this._html = this.templates.root(this, state);
     // only render the last update request
     await raf(() => {
@@ -43,6 +26,13 @@ export default class TemplateBasedLayout {
       }
       this._html = undefined;
     });
+  }
+
+  destroy() {
+    for (const unsubscribe of this._unsubscribes) {
+      unsubscribe();
+    }
+    this._unsubscribes = [];
   }
 
 }

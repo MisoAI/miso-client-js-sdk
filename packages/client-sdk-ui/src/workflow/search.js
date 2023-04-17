@@ -1,11 +1,8 @@
-import { isElement } from '@miso.ai/commons';
 import Workflow from './base';
 import { fields } from '../saga';
-import { ListLayout } from '../layout';
 import { ROLE } from '../constants';
+import { ListLayout, SearchBoxLayout } from '../layout';
 import { mergeApiParams } from './utils';
-
-const DEFAULT_LAYOUT = ListLayout.type;
 
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'search',
@@ -15,40 +12,34 @@ const DEFAULT_API_PARAMS = Object.freeze({
   },
 });
 
+const DEFAULT_LAYOUTS = Object.freeze({
+  [ROLE.QUERY]: SearchBoxLayout.type,
+  [ROLE.RESULTS]: ListLayout.type,
+});
+
 export default class Search extends Workflow {
 
   constructor(plugin, client) {
     super(plugin, client, {
       name: 'search',
-      roles: [ROLE.RESULTS],
+      roles: Object.keys(DEFAULT_LAYOUTS),
+      layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,
     });
 
-    this.useLayout(DEFAULT_LAYOUT);
-  }
-
-  // element //
-  get element() {
-    return this._saga.elements.get(ROLE.RESULTS);
-  }
-
-  bind(role, element) {
-    if (element === undefined && isElement(role)) {
-      element = role;
-      role = ROLE.RESULTS;
-    }
-    return super.bind(role, element);
-  }
-
-  unbind(role = ROLE.RESULTS) {
-    return super.unbind(role);
+    this._unsubscribes.push(this._hub.on('query', payload => this.query(payload)));
   }
 
   // lifecycle //
   query(payload) {
     this._sessions.new();
     this._sessions.start();
-    this._saga.update(fields.input(), mergeApiParams(this._apiParams, { payload }));
+    this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload }));
+    return this;
+  }
+
+  notifyViewUpdate(role = ROLE.RESULTS, ...args) {
+    super.notifyViewUpdate(role, ...args);
     return this;
   }
 

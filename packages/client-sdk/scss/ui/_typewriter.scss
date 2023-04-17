@@ -8,6 +8,7 @@
     content: '┃';
     animation: blink-caret 0.75s step-end infinite;
   }
+  &[data-status="initial"]::after,
   &.done::after {
     display: none;
   }

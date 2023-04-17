@@ -1,13 +1,13 @@
 import { requestAnimationFrame as raf } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY } from '../../constants';
 import TemplateBasedLayout from '../template';
-import { requiresImplementation } from '../templates';
+import { product } from '../templates';
 
 function root(layout, state) {
   const { className, role, templates } = layout;
   const { status } = state;
   const roleAttr = role ? `data-role="${role}"` : '';
-  return `<div class="miso__root ${status}"><div class="${className}" ${roleAttr}>${templates[status](layout, state)}</div>${templates.banner(layout, state)}</div>`;
+  return `<div class="${className} ${status}" ${roleAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}</div>`;
 }
 
 function ready(layout, state) {
@@ -24,7 +24,7 @@ function ready(layout, state) {
 
 function list(layout, state, type, items) {
   const { className, templates } = layout;
-  // TODO: support separator
+  // TODO: support separator?
   return `<ul class="${className}__list" data-item-type="${type}">${templates.items(layout, state, type, items)}</ul>`;
 }
 
@@ -40,21 +40,13 @@ function item(layout, state, type, item) {
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
-  ...requiresImplementation('product'),
+  product,
   root,
-  [STATUS.INITIAL]: () => ``,
-  [STATUS.LOADING]: () => ``,
-  [STATUS.ERRONEOUS]: () => ``,
   [STATUS.READY]: ready,
   empty: () => ``,
   list,
   items,
   item,
-});
-
-const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
-  ...TemplateBasedLayout.defaultTemplates,
-  ...DEFAULT_TEMPLATES,
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {
@@ -64,11 +56,14 @@ export default class CollectionLayout extends TemplateBasedLayout {
   }
 
   static get defaultTemplates() {
-    return INHERITED_DEFAULT_TEMPLATES;
+    return DEFAULT_TEMPLATES;
   }
 
-  constructor(className, templates, options) {
-    super(className, { ...DEFAULT_TEMPLATES, ...templates }, options);
+  constructor({ templates, ...options }) {
+    super({
+      templates: { ...DEFAULT_TEMPLATES, ...templates },
+      ...options,
+    });
   }
 
   initialize(view) {
