@@ -29,13 +29,13 @@ async function* ask(payload) {
     body: JSON.stringify(payload),
   })).json();
   yield response;
-  const { answer_id, finished } = response;
+  const { question_id, finished } = response;
   if (finished) {
     return;
   }
   const buffer = new ValueBuffer();
   const intervalId = setInterval(async () => {
-    const response = await (await window.fetch(buildUrl('search', `answers/${answer_id}`), {
+    const response = await (await window.fetch(buildUrl('search', `questions/${question_id}/answer`), {
       method: 'GET',
     })).json();
     const { finished } = response;

@@ -26,12 +26,12 @@ const answers = new Map();
 
 class Answer {
 
-  constructor(question, previous_answer_id) {
+  constructor(question, previous_question_id) {
+    this.question_id = uuid();
     this.question = question;
-    this.previous_answer_id = previous_answer_id;
+    this.previous_answer_id = previous_question_id;
     this.timestamp = Date.now();
     this.datetime = formatDatetime(this.timestamp);
-    this.uuid = uuid();
 
     this.answer = lorem.lorem({
       min: 50,
@@ -39,11 +39,11 @@ class Answer {
       decorates: ['description'],
       output: 'array',
     });
-    this.furtherItems = [...articles({ rows: utils.randomInt(6, 8) })];
+    this.relatedResources = [...articles({ rows: utils.randomInt(6, 8) })];
     this.sources = [...articles({ rows: utils.randomInt(4, 6) })];
 
-    this.in_response_to = previous_answer_id && answers.get(previous_answer_id) || undefined;
-    answers.set(this.uuid, this);
+    this.previous_question_id = previous_question_id && answers.get(previous_question_id) || undefined;
+    answers.set(this.question_id, this);
   }
 
   get() {
@@ -51,21 +51,19 @@ class Answer {
     const elapsed = (now - this.timestamp) / 1000;
     const [answer, finished] = this._answer(elapsed);
     const sources = this._sources(elapsed);
-    const further_items = this._furtherItems(elapsed);
-    const { uuid, question, datetime, in_response_to } = this;
+    const related_resources = this._relatedResources(elapsed);
+    const { question_id, question, datetime, previous_question_id } = this;
 
     return {
       affiliation: undefined,
       answer,
-      answer_id: uuid,
       datetime,
       finished,
-      further_items,
-      further_total: 0,
-      in_response_to: in_response_to && in_response_to.get(),
+      previous_question_id,
       question,
+      question_id,
+      related_resources,
       sources,
-      uuid,
     };
   }
 
@@ -89,11 +87,11 @@ class Answer {
     return sources.slice(0, loaded);
   }
 
-  _furtherItems(elapsed) {
-    const { furtherItems } = this;
-    const { length } = furtherItems;
+  _relatedResources(elapsed) {
+    const { relatedResources } = this;
+    const { length } = relatedResources;
     const loaded = Math.floor(length * elapsed / ITEMS_LOADING_TIME);
-    return furtherItems.slice(0, loaded);
+    return relatedResources.slice(0, loaded);
   }
 
 }
@@ -104,7 +102,7 @@ router.post('/questions', (ctx) => {
   ctx.body = JSON.stringify(answer.get());
 });
 
-router.get('/answers/:id', (ctx) => {
+router.get('/questions/:id/answer', (ctx) => {
   const { id } = ctx.params;
   const answer = answers.get(id);
   if (!answer) {

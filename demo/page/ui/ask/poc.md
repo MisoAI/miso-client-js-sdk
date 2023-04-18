@@ -31,6 +31,7 @@
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
     <miso-answer></miso-answer>
+    <miso-feedback></miso-feedback>
     <hr>
     <div class="phrase">My reply is based on the following:</div>
     <miso-sources></miso-sources>

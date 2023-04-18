@@ -292,7 +292,19 @@ export default class Tracker {
       return;
     }
     this._states.set(productIds, type, TRIGGERED);
-    this._hub.trigger('event', { type, productIds, manual });
+    this._hub.trigger(fields.interaction(), this._buildInteraction({ type, productIds, manual }));
+  }
+
+  _buildInteraction({ type, productIds, manual }) {
+    return {
+      type: type === 'viewable' ? 'viewable_impression' : type,
+      product_ids: productIds,
+      context: {
+        custom_context: {
+          trigger: manual ? 'manual' : 'auto',
+        },
+      },
+    };
   }
 
   _destroy() {

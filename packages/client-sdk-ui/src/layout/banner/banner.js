@@ -1,6 +1,6 @@
 import { LAYOUT_CATEGORY } from '../../constants';
 import TemplateBasedLayout from '../template';
-import LOGO from './logo';
+import { LOGO } from '../svgs';
 
 const TYPE = 'banner';
 const DEFAULT_CLASSNAME = 'miso-banner';

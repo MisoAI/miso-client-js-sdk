@@ -21,3 +21,11 @@ export function view(role) {
 export function event() {
   return 'event';
 }
+
+export function interaction() {
+  return 'interaction';
+}
+
+export function feedback() {
+  return 'feedback';
+}

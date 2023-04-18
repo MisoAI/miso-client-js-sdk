@@ -6,12 +6,13 @@ export const ROLE = Object.freeze({
   CONTAINER: 'container',
   BANNER: 'banner',
   QUERY: 'query',
+  FEEDBACK: 'feedback',
   RESULTS: 'results',
   ITEMS: 'items',
   QUESTION: 'question',
   ANSWER: 'answer',
   SOURCES: 'sources',
-  RELATED_RESOURCES: 'further-reads', // TODO
+  RELATED_RESOURCES: 'related-resources',
 });
 
 export const LAYOUT_CATEGORY = Object.freeze({
@@ -19,6 +20,7 @@ export const LAYOUT_CATEGORY = Object.freeze({
   BANNER: 'banner',
   LIST: 'list',
   QUERY: 'query',
+  RADIO: 'radio',
   TEXT: 'text',
 });
 

@@ -1,9 +1,9 @@
 import { Component, asArray } from '@miso.ai/commons';
-import { Hub, SessionMaker, DataActor, ViewsActor, fields } from '../actor';
+import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor';
 import * as sources from '../source';
 import { STATUS, ROLE } from '../constants';
 import { ContainerLayout } from '../layout';
-import { mergeApiParams, injectLogger } from './utils';
+import { mergeApiParams, mergeInteractionsOptions, injectLogger } from './utils';
 
 export default class Workflow extends Component {
 
@@ -12,6 +12,7 @@ export default class Workflow extends Component {
     roles,
     layouts = {},
     defaultApiParams,
+    interactionsOptions,
   }) {
     super(name || 'workflow', plugin);
     this._plugin = plugin;
@@ -20,6 +21,9 @@ export default class Workflow extends Component {
     this._roles = roles;
 
     this._apiParams = this._defaultApiParams = defaultApiParams;
+    this._defaultInteractionsOptions = interactionsOptions = mergeInteractionsOptions({
+      preprocess: payload => this._preprocessInteraction(payload),
+    }, interactionsOptions);
 
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
     this._sessions = new SessionMaker(hub);
@@ -31,10 +35,9 @@ export default class Workflow extends Component {
         ...layouts,
       }),
     });
+    this._interactions = new InteractionsActor(hub, client, interactionsOptions);
 
     this._unsubscribes = [];
-
-    //delegateGetters(this, hub, ['states']);
 
     this.useSource('api');
   }
@@ -111,6 +114,16 @@ export default class Workflow extends Component {
       fns[role] = (overrides) => this._plugin.layouts.create(name, { ...options, ...overrides, role });
     }
     return fns;
+  }
+
+  // interactions //
+  useInteractions(options) {
+    this._interactions.config(mergeInteractionsOptions(this._defaultInteractionsOptions, options));
+    return this;
+  }
+
+  _preprocessInteraction(payload) {
+    return payload;
   }
 
   // destroy //

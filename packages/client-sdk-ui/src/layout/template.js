@@ -16,6 +16,7 @@ export default class TemplateBasedLayout {
     this._unsubscribes = [];
   }
 
+  // TODO: generalize RAF mechanism
   async render(element, state, { silence }) {
     // TODO: notify update manually
     this._html = this.templates.root(this, state);

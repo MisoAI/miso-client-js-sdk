@@ -128,7 +128,7 @@ export default class ViewsActor {
   }
 
   _getData() {
-    const { data } = this._hub.states;
+    const { [fields.data()]: data } = this._hub.states;
     // compare to cached
     if (!this._data || this._data.data !== data) {
       const status = (!data || !data.session || !data.session.active) ? STATUS.INITIAL :

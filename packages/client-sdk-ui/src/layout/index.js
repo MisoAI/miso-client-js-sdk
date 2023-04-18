@@ -6,5 +6,6 @@ export { default as ListLayout } from './list/list';
 export { default as CardsLayout } from './list/cards';
 export { default as CarouselLayout } from './list/carousel';
 export { default as SearchBoxLayout } from './input/search-box';
+export { default as FeedbackLayout } from './radio/feedback';
 export { default as TextLayout } from './text/text';
 export { default as TypewriterLayout } from './text/typewriter';

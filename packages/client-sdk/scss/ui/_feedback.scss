@@ -1,0 +1,63 @@
+
+.miso-feedback {
+  $values: "helpful", "unhelpful";
+  $helpful_color: #1a4ce3;
+  $unhelpful_color: #ec5974;
+
+  --miso-feedback-color: #a0a8be;
+  --miso-feedback-color-helpful: #{$helpful_color};
+  --miso-feedback-color-unhelpful: #{$unhelpful_color};
+  --miso-feedback-color-helpful-hover: #{rgba($helpful_color, 0.7)};
+  --miso-feedback-color-unhelpful-hover: #{rgba($unhelpful_color, 0.7)};
+  --miso-feedback-background-helpful-hover: rgba(44, 141, 237, .1);
+  --miso-feedback-background-unhelpful-hover: rgba(236, 89, 116, .1);
+
+  display: flex;
+  align-items: center;
+
+  .miso-feedback__option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.25;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.25rem;
+    color: var(--miso-feedback-color);
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .miso-feedback__option[data-value="unhelpful"] {
+    svg {
+      transform: scaleY(-1);
+    }
+  }
+
+  @each $value in $values {
+    &[data-selected="#{$value}"] .miso-feedback__option[data-value="#{$value}"] {
+      //background: var(--miso-feedback-background-#{$value}) !important;
+      color: var(--miso-feedback-color-#{$value}) !important;
+    }
+    .miso-feedback__option[data-value="#{$value}"]:hover {
+      background: var(--miso-feedback-background-#{$value}-hover);
+      color: var(--miso-feedback-color-#{$value}-hover);
+    }
+  }
+
+  .miso-feedback__icon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.375rem;
+
+    svg {
+      display: block;
+      width: 100%;
+      fill: currentColor;
+    }
+  }
+
+  .miso-feedback__text {
+    font-weight: 700;
+    font-size: .75rem;
+  }
+}

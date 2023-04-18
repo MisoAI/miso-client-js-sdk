@@ -9,6 +9,17 @@ export function mergeApiParams(base = {}, overrides = {}) {
   });
 }
 
+export function mergeInteractionsOptions(base = {}, overrides = {}) {
+  if (overrides === false) {
+    return false;
+  }
+  return Object.freeze({
+    ...base,
+    ...overrides,
+    preprocess: concatFunctions(base.preprocess, overrides.preprocess),
+  });
+}
+
 export function injectLogger(hub, callback) {
   const { update, trigger } = hub;
   hub.update = (name, state, options) => {
@@ -22,4 +33,8 @@ export function injectLogger(hub, callback) {
     return trigger.apply(hub, args);
   }
   return hub;
+}
+
+function concatFunctions(fn0, fn1) {
+  return fn0 ? fn1 ? (...args) => fn1(fn0(...args)) : fn0 : fn1;
 }

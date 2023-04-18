@@ -1,10 +1,9 @@
 import { defineValues } from '@miso.ai/commons';
 import Workflow from './base';
-import { Tracker, fields } from '../actor';
+import { fields, Tracker } from '../actor';
 import { ListLayout } from '../layout';
 import { ROLE } from '../constants';
 
-//const DEFAULT_LAYOUT = ListLayout.type;
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'recommendation',
   name: 'user_to_products',
@@ -31,7 +30,7 @@ export default class RecommendationUnit extends Workflow {
     defineValues(this, { id });
     this._context = context;
 
-    this._unsubscribes.push(this._hub.on('event', event => this._handleEvent(event)));
+    //this._unsubscribes.push(this._hub.on('event', event => this._handleEvent(event)));
 
     context._units.set(id, this);
   }
@@ -79,12 +78,30 @@ export default class RecommendationUnit extends Workflow {
     return this;
   }
 
+  // interactions //
+  _preprocessInteraction({ context : { custom_context, ...context } = {}, ...payload } = {}) {
+    const { uuid, id } = this;
+    return {
+      ...payload,
+      context: {
+        ...context,
+        custom_context: {
+          unit_id: id,
+          unit_instance_uuid: uuid,
+          ...custom_context,
+        },
+      },
+    };
+  }
+
+  /*
   // TODO: make interactions an actor?
   _handleEvent(event) {
     this._assertActive();
     const { uuid, id } = this;
     this._context.interactions._send({ uuid, id }, event);
   }
+  */
 
   // destroy //
   _destroy() {
