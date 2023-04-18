@@ -35,6 +35,8 @@
     <hr>
     <div class="phrase">My reply is based on the following:</div>
     <miso-sources></miso-sources>
+    <div class="phrase" style="margin-top: 4rem;">Go beyond, and learn more about this topic:</div>
+    <miso-related-resources></miso-related-resources>
   </miso-ask>
 </section>
 <script>

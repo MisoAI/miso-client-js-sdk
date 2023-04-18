@@ -12,7 +12,7 @@ export const ROLE = Object.freeze({
   QUESTION: 'question',
   ANSWER: 'answer',
   SOURCES: 'sources',
-  RELATED_RESOURCES: 'related-resources',
+  RELATED_RESOURCES: 'related_resources',
 });
 
 export const LAYOUT_CATEGORY = Object.freeze({
