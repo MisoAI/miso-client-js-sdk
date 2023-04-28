@@ -45,15 +45,17 @@
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
-  const client = new MisoClient('...');
-  const unit = client.ui.recommendation.get();
-  unit.useSource(window.helpers.api);
-  unit.useApi('user_to_products', { rows: 6 });
-  unit.useLayout(window.selectedLayout);
-  window.onReload = () => unit.reset().start();
-  window.onSelectLayout = value => unit.useLayout(value);
-  //window.helpers.unit.monitorEvents(unit);
-  unit.start();
+  const client = new MisoClient({
+    apiKey: '...',
+    apiHost: 'http://localhost:9901/api',
+  });
+  const workflow = client.ui.recommendation.get();
+  //workflow.useSource(window.helpers.api);
+  workflow.useApi('user_to_products', { rows: 6 });
+  window.onReload = () => workflow.reset().start();
+  window.onSelectLayout = value => workflow.useLayouts({ results: value });
+  window.onSelectLayout(window.selectedLayout);
+  workflow.start();
 });
 </script>
 {% endraw %}

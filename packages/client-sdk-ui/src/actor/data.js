@@ -59,6 +59,7 @@ export default class DataActor {
         this._emitDataWithSessionCheck({ session, value });
       }
     } catch(error) {
+      this._error(error);
       this._emitDataWithSessionCheck({ session, error });
     }
   }
@@ -78,6 +79,10 @@ export default class DataActor {
 
   _emitData(data) {
     this._hub.update(fields.data(), data);
+  }
+
+  _error(error) {
+    console.error(error);
   }
 
   destroy() {

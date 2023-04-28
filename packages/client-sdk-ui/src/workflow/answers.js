@@ -5,8 +5,8 @@ import { SearchBoxLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayo
 import { mergeApiParams } from './utils';
 
 const DEFAULT_API_PARAMS = Object.freeze({
-  group: 'search',
-  name: 'ask',
+  group: 'answers',
+  name: 'answer',
   payload: {
     fl: ['*'],
   },
@@ -21,11 +21,11 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, }],
 });
 
-export default class Ask extends Workflow {
+export default class Answers extends Workflow {
 
   constructor(plugin, client) {
     super(plugin, client, {
-      name: 'ask',
+      name: 'answers',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,

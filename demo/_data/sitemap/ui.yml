@@ -1,20 +1,22 @@
 sections:
-- title: Ask
-  path: /ask
+- title: Answers
+  path: /answers
   pages:
-  - title: PoC
-    path: /ask/poc
+  - title: Dummy
+    path: /answers/dummy
 - title: Search
   path: /search
   pages:
   - title: Basic
     path: /search/basic
+  - title: Dummy
+    path: /search/dummy
 - title: Recommendation
   path: /recommendation
   pages:
   - title: Basic
     path: /recommendation/basic
-  - title: Dummy Data
+  - title: Dummy
     path: /recommendation/dummy
 - title: Tracker
   path: /tracker

@@ -13,7 +13,6 @@ export default class ApiBase extends Component {
   }
 
   async _run(apiName, payload, options = {}) {
-    this.helpers.assertReady();
     const { bulk } = options;
     const bulkInfo = bulk ? { bulk: this.helpers.bulkInfo } : undefined;
     const apiGroup = this._apiPath;
@@ -36,8 +35,8 @@ export default class ApiBase extends Component {
     return this.helpers.applyUrlPasses(this, { apiGroup, apiName, url });
   }
 
-  async _send({ apiGroup, apiName, url, payload, options: { bulk, timeout } = {} }) {
-    return bulk ? this.helpers.fetchForBulk(apiGroup, apiName, payload) : this.helpers.fetch(url, payload, { timeout });
+  async _send({ apiGroup, apiName, url, payload, options: { bulk, ...options } = {} }) {
+    return bulk ? this.helpers.fetchForBulk(apiGroup, apiName, payload) : this.helpers.fetch(url, payload, options);
   }
 
   _postprocess({ response }) {

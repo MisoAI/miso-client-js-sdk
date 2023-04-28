@@ -46,13 +46,13 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const unit = client.ui.recommendation.get();
-  unit.useApi('user_to_products', { rows: 6 });
-  unit.useLayout(window.selectedLayout);
-  window.onReload = () => unit.reset().start();
-  window.onSelectLayout = value => unit.useLayout(value);
-  window.helpers.unit.monitorEvents(unit);
-  unit.start();
+  const workflow = client.ui.recommendation.get();
+  workflow.useApi('user_to_products', { rows: 6 });
+  window.onReload = () => workflow.reset().start();
+  window.onSelectLayout = value => workflow.useLayouts({ results: value });
+  window.onSelectLayout(window.selectedLayout);
+  window.helpers.unit.monitorEvents(workflow);
+  workflow.start();
 });
 </script>
 {% endraw %}

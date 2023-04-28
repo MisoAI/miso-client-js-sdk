@@ -22,12 +22,12 @@
   }
 </style>
 <section>
-  <miso-ask>
+  <miso-answers>
     <miso-query></miso-query>
-  </miso-ask>
+  </miso-answers>
 </section>
 <section>
-  <miso-ask visible-when="ready">
+  <miso-answers visible-when="ready">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
     <miso-answer></miso-answer>
@@ -37,15 +37,16 @@
     <miso-sources></miso-sources>
     <div class="phrase" style="margin-top: 4rem;">Go beyond, and learn more about this topic:</div>
     <miso-related-resources></miso-related-resources>
-  </miso-ask>
+  </miso-answers>
 </section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
-  const client = new MisoClient('...');
-  const ask = client.ui.ask;
-  ask.useSource(window.helpers.api);
+  const client = new MisoClient({
+    apiKey: '...',
+    apiHost: 'http://localhost:9901/api',
+  });
 });
 </script>
 {% endraw %}

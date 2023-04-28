@@ -12,3 +12,4 @@ export { default as EventEmitter } from './events';
 export { default as Component } from './component';
 export { default as Registry } from './registry';
 export { default as ContinuityObserver } from './continuity';
+export { default as ValueBuffer } from './value-buffer';

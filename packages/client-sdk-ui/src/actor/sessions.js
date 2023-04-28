@@ -24,8 +24,8 @@ export default class SessionMaker {
   }
 
   start() {
-    const { session } = this._hub.states;
-    if (session && session.active) {
+    const session = this._hub.states.session || this._create();
+    if (session.active) {
       return;
     }
     this._hub.update(fields.session(), { ...session, active: true });

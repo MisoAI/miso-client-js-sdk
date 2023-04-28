@@ -1,4 +1,4 @@
-import { Bulk } from '@miso.ai/commons';
+import { Bulk, trimObj } from '@miso.ai/commons';
 import { API } from '../constants';
 
 export default class ApiHelpers {
@@ -9,27 +9,24 @@ export default class ApiHelpers {
     this._bulk = new Bulk(this._runBulkFetch.bind(this), client._error.bind(client));
   }
 
-  assertReady() {
-  }
-
   async fetch(url, payload, {
     method = 'POST',
     timeout,
   } = {}) {
     // TODO: organize arguments
-    const body = JSON.stringify(payload);
+    const body = method !== 'GET' && payload != undefined ? JSON.stringify(payload) : undefined;
 
     const controller = timeout && new AbortController();
     const signal = controller && controller.signal;
     const timeoutId = controller && setTimeout(() => controller.abort(), timeout);
 
-    const res = await window.fetch(url, {
+    const res = await window.fetch(url, trimObj({
       method,
       body,
       cache: 'no-cache',
       mode: 'cors',
       signal,
-    });
+    }));
 
     timeoutId && clearTimeout(timeoutId);
 

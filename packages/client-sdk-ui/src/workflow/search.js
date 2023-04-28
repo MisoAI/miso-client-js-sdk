@@ -44,11 +44,13 @@ export default class Search extends Workflow {
   }
 
   // layout //
+  /*
   useLayout(layout, options) {
     this.useLayouts({
       [ROLE.RESULTS]: [layout, options],
     });
     return this;
   }
+  */
 
 }

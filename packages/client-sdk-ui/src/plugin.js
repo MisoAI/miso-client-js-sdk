@@ -1,5 +1,5 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Ask, Search, RecommendationContext } from './workflow';
+import { Answers, Search, RecommendationContext } from './workflow';
 import Layouts from './layouts';
 import * as elements from './element';
 import * as layouts from './layout';
@@ -83,8 +83,8 @@ class Ui {
     return this._search || (this._search = new Search(this._plugin, this._client));
   }
 
-  get ask() {
-    return this._ask || (this._ask = new Ask(this._plugin, this._client));
+  get answers() {
+    return this._answers || (this._answers = new Answers(this._plugin, this._client));
   }
 
 }

@@ -5,6 +5,15 @@ import { STATUS, ROLE } from '../constants';
 import { ContainerLayout } from '../layout';
 import { mergeApiParams, mergeInteractionsOptions, injectLogger } from './utils';
 
+function normalizeLayoutOptions(args) {
+  let [name, options] = asArray(args);
+  if (typeof name === 'object') {
+    options = name;
+    name = undefined;
+  }
+  return [name, options];
+}
+
 export default class Workflow extends Component {
 
   constructor(plugin, client, {
@@ -20,6 +29,10 @@ export default class Workflow extends Component {
     this._name = name;
     this._roles = roles;
 
+    this._defaultLayouts = {
+      [ROLE.CONTAINER]: ContainerLayout.type,
+      ...layouts,
+    };
     this._apiParams = this._defaultApiParams = defaultApiParams;
     this._defaultInteractionsOptions = interactionsOptions = mergeInteractionsOptions({
       preprocess: payload => this._preprocessInteraction(payload),
@@ -30,10 +43,7 @@ export default class Workflow extends Component {
     this._data = new DataActor(hub);
     this._views = new ViewsActor(hub, {
       roles,
-      layouts: this._generateLayoutFactoryFunctions({
-        [ROLE.CONTAINER]: ContainerLayout.type,
-        ...layouts,
-      }),
+      layouts: this._generateLayoutFactoryFunctions(this._defaultLayouts),
     });
     this._interactions = new InteractionsActor(hub, client, interactionsOptions);
 
@@ -107,10 +117,19 @@ export default class Workflow extends Component {
   }
 
   _generateLayoutFactoryFunctions(config) {
-    // TODO: merge config with default values
     const fns = {};
     for (const [role, args] of Object.entries(config)) {
-      const [ name, options ] = asArray(args);
+      if (args === false) {
+        fns[role] = () => false;
+        continue;
+      }
+      let [ defaultName, defaultOptions ] = normalizeLayoutOptions(this._defaultLayouts[role]);
+      let [ name, options ] = normalizeLayoutOptions(args);
+      name = name || defaultName;
+      options = { ...defaultOptions, ...options };
+      if (!name) {
+        throw new Error(`Layout name is required for role ${role}`);
+      }
       fns[role] = (overrides) => this._plugin.layouts.create(name, { ...options, ...overrides, role });
     }
     return fns;

@@ -48,7 +48,10 @@
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
-  const client = new MisoClient('...');
+  const client = new MisoClient({
+    apiKey: '...',
+    apiHost: 'http://localhost:9901/api',
+  });
   const workflow = client.ui.search;
   workflow.useApi('search', { rows: 10 });
   window.onSelectLayout = value => workflow.useLayouts({ results: value });

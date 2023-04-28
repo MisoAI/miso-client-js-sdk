@@ -30,8 +30,6 @@ export default class RecommendationUnit extends Workflow {
     defineValues(this, { id });
     this._context = context;
 
-    //this._unsubscribes.push(this._hub.on('event', event => this._handleEvent(event)));
-
     context._units.set(id, this);
   }
 
@@ -53,7 +51,9 @@ export default class RecommendationUnit extends Workflow {
 
   startTracker() {
     this.useSource(false);
-    this.useLayout(false);
+    this.useLayouts({
+      [ROLE.RESULTS]: false,
+    });
     this._sessions.start();
     this.notifyViewUpdate(ROLE.RESULTS);
     return this;
@@ -65,12 +65,14 @@ export default class RecommendationUnit extends Workflow {
   }
 
   // layout //
+  /*
   useLayout(layout, options) {
     this.useLayouts({
       [ROLE.RESULTS]: [layout, options],
     });
     return this;
   }
+  */
 
   // tracker //
   useTracker(options) {
@@ -94,17 +96,9 @@ export default class RecommendationUnit extends Workflow {
     };
   }
 
-  /*
-  // TODO: make interactions an actor?
-  _handleEvent(event) {
-    this._assertActive();
-    const { uuid, id } = this;
-    this._context.interactions._send({ uuid, id }, event);
-  }
-  */
-
   // destroy //
   _destroy() {
+    this._context._units.delete(this.id);
     this._tracker._destroy();
     super._destroy();
   }
