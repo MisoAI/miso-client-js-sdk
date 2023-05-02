@@ -9,7 +9,7 @@
     "start:sass": "npx sass --watch scss:dist/css",
     "build:js": "rollup -c",
     "start:js": "rollup -w -c rollup.config.dev.mjs",
-    "start:service": "[[ -n $(command -v doggomon) ]] && (doggomon) || (npx -p @miso.ai/doggoganger doggoganger)",
+    "start:service": "[[ -n $(command -v doggoganger) ]] && (doggoganger -w) || (npx -p @miso.ai/doggoganger doggoganger)",
     "build": "npm-run-all build:*",
     "start": "npm-run-all build:sass --parallel start:*",
     "debug": "DEBUG=* npx eleventy"

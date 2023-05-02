@@ -8,6 +8,7 @@ export default class Answers extends ApiBase {
   }
 
   async answer(payload, { iterable = false, ...options } = {}) {
+    // TODO: it's possible to merge _iterable and _answer
     return typeof payload === 'string' ? this._get(payload, options) : iterable ? this._iterable(payload, options) : this._answer(payload, options);
   }
 
