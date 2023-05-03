@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - API parameters</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/api/" />
-<meta name="description" content="Configure recommendation API" />
+<title>Miso SDK for JavaScript - UI - Workflow</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/element/workflow/" />
+<meta name="description" content="Workflow containers" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - API parameters" />
-<meta property="og:description" content="Configure recommendation API" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/api/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Workflow" />
+<meta property="og:description" content="Workflow containers" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/workflow/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - API parameters">
-<meta name="twitter:description" content="Configure recommendation API">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/api/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Workflow">
+<meta name="twitter:description" content="Workflow containers">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/workflow/">
 
 
 
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
 
   </head>
-  <body class="base">
+  <body class="base ">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
@@ -89,28 +89,55 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3  __preview__">
+      <a href="/miso-client-js-sdk/ui/answers/">Answers</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
-          </li><li class="page active">
-            <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/tracking/">Performance tracking</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/search/">Search</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/element/">Elements</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active ">
+            <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
           </li></ul>
       </div>
     </li></ul>
@@ -120,37 +147,66 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Configure API payload</h1><hr>
+          <h1>Elements - workflow containers</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Configure your API payload as the following:</p>
-<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>apiName<span class="token punctuation">,</span> payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>Available <code>apiName</code> values are:</p>
+          <p>The following elements serve as containers for corresponding workflows:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Element tag name</th>
+      <th scope="col">Workflow</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="__preview__">
+      <td><code>&lt;miso-answers&gt;</code></td>
+      <td><a href="/miso-client-js-sdk/ui/answers/elements/">Answers</a></td>
+    </tr>
+    <tr>
+      <td><code>&lt;miso-search&gt;</code></td>
+      <td><a href="/miso-client-js-sdk/ui/search/elements/">Search</a></td>
+    </tr>
+    <tr>
+      <td><code>&lt;miso-recommendation&gt;</code></td>
+      <td><a href="/miso-client-js-sdk/ui/recommendation/elements/">Recommendation</a></td>
+    </tr>
+  </tbody>
+</table>
+<h3 id="layouts" tabindex="-1">Layouts</h3>
+<p>You can configure the layout options for the workflow elements:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">setLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token comment">//...</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="logo" tabindex="-1">Logo</h4>
+<p>Configure the logo display:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">setLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <table class="table">
   <thead>
     <tr>
       <th scope="col">Value</th>
-      <th scope="col">API</th>
+      <th scope="col">Default</th>
+      <th scope="col">Behavior</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>user_to_products</code></td>
-      <td>
-        <a href="/miso-client-js-sdk/sdk/recommendation/user_to_products/">User to Products</a>
-      </td>
+      <td><code>true</code></td>
+      <td></td>
+      <td>Append Miso logo at the end of container visible when data ready.</td>
     </tr>
     <tr>
-      <td><code>product_to_products</code></td>
-      <td>
-        <a href="/miso-client-js-sdk/sdk/recommendation/product_to_products/">Product to Products</a>
-      </td>
+      <td><code>false</code></td>
+      <td></td>
+      <td>Does not append Miso logo.</td>
+    </tr>
+    <tr>
+      <td><code>"auto"</code></td>
+      <td style="text-align: center">✓</td>
+      <td>Append Miso logo at the end of container visible when data ready only if it contains <code>&lt;miso-results&gt;</code> or <code>&lt;miso-answer&gt;</code>.</td>
     </tr>
   </tbody>
 </table>
-<p>See the API reference for payload options.</p>
 
         </div>
       </main>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miso SDK for JavaScript - UI - Collections</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/element/collections/" />
+<meta name="description" content="Elements to represent a list of items" />
+
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Collections" />
+<meta property="og:description" content="Elements to represent a list of items" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/collections/" />
+<meta property="og:type" content="documentation" />
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@askmiso">
+<meta name="twitter:creator" content="@askmiso">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Collections">
+<meta name="twitter:description" content="Elements to represent a list of items">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/collections/">
+
+
+
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-16x16.png" sizes="16x16">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-32x32.png" sizes="32x32">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon.ico" sizes="48x48">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-512x512.png" sizes="192x192">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-192x192.png" sizes="512x512">
+<link rel="apple-touch-icon" href="/miso-client-js-sdk/favicon/apple-touch-icon.png" sizes="180x180">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/variables.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
+
+  </head>
+  <body class="base ">
+    <header class="navbar navbar-expand-md navbar-dark">
+      <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    height="28" viewbox="0 0 327 132"
+    class="bi d-block my-1" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+  </svg>
+</a>
+<button type="button" class="navbar-toggler"
+  data-bs-toggle="collapse" data-bs-target="#navbar"
+  aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    width="32" height="32" viewbox="0 0 16 16"
+    class="bi" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#list"/>
+  </svg>
+</button>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/sdk/">SDK</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/ui/">UI</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/">Plugins</a>
+    </li>
+  
+  </ul>
+  <hr class="d-md-none text-white-50">
+  <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="https://github.com/MisoAI/miso-client-js-sdk" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          viewbox="0 0 16 16"
+          class="bi navbar-nav-svg d-inline-block align-text-top" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#github"/>
+        </svg>
+        <small class="d-md-none ms-2">GitHub</small>
+      </a>
+    </li>
+  </ul>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
+</div>
+
+      </nav>
+    </header>
+    <div class="container-xxl my-md-4 miso-body-container">
+      <aside>
+        <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
+          <div>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/">Overview</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  __preview__">
+      <a href="/miso-client-js-sdk/ui/answers/">Answers</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/tracking/">Performance tracking</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/search/">Search</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/element/">Elements</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
+          </li></ul>
+      </div>
+    </li></ul>
+</div>
+
+        </nav>
+      </aside>
+      <main class="order-1">
+        <div class="intro ps-lg-4">
+          <h1>Elements - collection elements</h1><hr>
+          
+        </div>
+        
+        <div class="content ps-lg-4">
+          <p>The following elements are classified as collection elements:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Element tag name</th>
+      <th scope="col">Used in</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;miso-results&gt;</code></td>
+      <td>
+        <a href="/miso-client-js-sdk/ui/search/elements/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/ui/recommendation/elements/">Recommendation</a>
+      </td>
+    </tr>
+    <tr class="__preview__">
+      <td><code>&lt;miso-sources&gt;</code></td>
+      <td><a href="/miso-client-js-sdk/ui/answers/elements/">Answers</a></td>
+    </tr>
+    <tr class="__preview__">
+      <td><code>&lt;miso-related-resources&gt;</code></td>
+      <td><a href="/miso-client-js-sdk/ui/answers/elements/">Answers</a></td>
+    </tr>
+  </tbody>
+</table>
+<p>They are bound to different parts of API response data, but they share the same layout options.</p>
+<h3 id="layouts" tabindex="-1">Layouts</h3>
+<p>To choose a layout for specified element:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token string">'carousel'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Available built-in layouts are:</p>
+<ul>
+<li><code>list</code> (default)</li>
+<li><code>cards</code></li>
+<li><code>carousel</code></li>
+</ul>
+<h5 id="customize-styles" tabindex="-1">Customize styles</h5>
+<p>You can customize the look-and-feel of any layouts by adding additional CSS rules. The built-in layouts have the following base class names:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Layout</th>
+      <th scope="col">CSS class name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>List</td>
+      <td><code>miso-list</code></td>
+    </tr>
+    <tr>
+      <td>Cards</td>
+      <td><code>miso-cards</code></td>
+    </tr>
+    <tr>
+      <td>Carousel</td>
+      <td><code>miso-carousel</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>If you want to change the base class name of the elements, specify it in the options:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'my-miso-list'</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h5 id="customize-dom-structure" tabindex="-1">Customize DOM structure</h5>
+<p>In addition, to customize product item DOM structure, you can override the template function:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">product</span><span class="token operator">:</span> renderProduct<br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">function</span> <span class="token function">renderProduct</span><span class="token punctuation">(</span><span class="token parameter">layout<span class="token punctuation">,</span> state<span class="token punctuation">,</span> product</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> html <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> html<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<p>The render function takes the following arguments and should return an HTML string.</p>
+<ul>
+<li><code>layout</code>: the layout implementation widget</li>
+<li><code>state</code>: the whole data state in this rendering process</li>
+<li><code>product</code>: the product record to display</li>
+</ul>
+<p>See also: <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/templates.js" target="_blank" rel="noopener">default templates</a>.</p>
+
+        </div>
+      </main>
+    </div>
+    <footer class="py-5 mt-5 bg-light">
+      <div class="container-lg">
+  <div class="row gx-4">
+    <div id="footer-notes" class="col-md-4">
+      <div class="brand mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          height="28" viewbox="0 0 327 132"
+          class="bi d-block my-1" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+        </svg>
+      </div>
+      <p>
+        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
+        <br>
+        Documentation <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+        <br>
+        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>
+      </p>
+    </div>
+    <div class="col-md-8">
+      <h5 class="link-group-title mb-3">Learn More</h5>
+      <div class="link-list"><div class="link">
+          <a href="https://miso.ai" target="_blank" rel="noopener">Home</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai" target="_blank" rel="noopener">Documentation</a>
+        </div><div class="link">
+          <a href="https://api.askmiso.com" target="_blank" rel="noopener">REST API</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai/recipes" target="_blank" rel="noopener">Miso Recipes<sup>TM</sup></a>
+        </div></div>
+    </div>
+  </div>
+</div>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

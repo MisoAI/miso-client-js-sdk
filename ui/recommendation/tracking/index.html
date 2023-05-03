@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Tracking performance</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/tracker/" />
+<title>Miso SDK for JavaScript - UI - Performance tracking</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/tracking/" />
 <meta name="description" content="Tracking performance events" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Tracking performance" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Performance tracking" />
 <meta property="og:description" content="Tracking performance events" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/tracker/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/tracking/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Tracking performance">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Performance tracking">
 <meta name="twitter:description" content="Tracking performance events">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/tracker/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/recommendation/tracking/">
 
 
 
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
 
   </head>
-  <body class="base">
+  <body class="base ">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
@@ -89,28 +89,55 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3  __preview__">
+      <a href="/miso-client-js-sdk/ui/answers/">Answers</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/answers/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/ui/recommendation/quick-start/">Quick start</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/unit/">Recommendation Unit</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/placement/">UI Placement</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/api/">API parameters</a>
-          </li><li class="page">
-            <a href="/miso-client-js-sdk/ui/recommendation/layout/">Layouts</a>
-          </li><li class="page active">
-            <a href="/miso-client-js-sdk/ui/recommendation/tracker/">Tracking performance</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/recommendation/elements/">Elements</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/ui/recommendation/tracking/">Performance tracking</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/search/">Search</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/search/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/ui/element/">Elements</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
           </li></ul>
       </div>
     </li></ul>
@@ -120,19 +147,19 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Tracking performance</h1><hr>
+          <h1>Recommendation UI - performance tracking</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso recommendation unit tracks performance events (<code>impression</code>, <code>viewable_impression</code>, <code>click</code>) automatically.</p>
+          <p>Miso recommendation workflow tracks performance events (<code>impression</code>, <code>viewable_impression</code>, <code>click</code>) automatically.</p>
 <h3 id="manual-tracking" tabindex="-1">Manual tracking</h3>
 <p>You can turn off auto-tracking for each type of events individually:</p>
-<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useTracker</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">impression</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">viewable</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">click</span><span class="token operator">:</span> <span class="token boolean">false</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useTracker</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">impression</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">viewable</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">click</span><span class="token operator">:</span> <span class="token boolean">false</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>Or turn off auto-tracking for all events:</p>
-<pre class="language-js"><code class="language-js">unit<span class="token punctuation">.</span><span class="token function">useTracker</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useTracker</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>To trigger an event manually:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> productIds <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'product_id_0'</span><span class="token punctuation">,</span> <span class="token string">'product_id_1'</span><span class="token punctuation">]</span><span class="token punctuation">;</span><br><br><span class="token comment">// impression</span><br>unit<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">impression</span><span class="token punctuation">(</span>productIds<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// viewable_impression</span><br>unit<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">viewable</span><span class="token punctuation">(</span>productIds<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// click</span><br>unit<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">click</span><span class="token punctuation">(</span>productIds<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> productIds <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'product_id_0'</span><span class="token punctuation">,</span> <span class="token string">'product_id_1'</span><span class="token punctuation">]</span><span class="token punctuation">;</span><br><br><span class="token comment">// impression</span><br>workflow<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">impression</span><span class="token punctuation">(</span>productIds<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// viewable_impression</span><br>workflow<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">viewable</span><span class="token punctuation">(</span>productIds<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// click</span><br>workflow<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">click</span><span class="token punctuation">(</span>productIds<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

@@ -248,6 +248,10 @@ body.home main #components ul .card > .title > span {
   padding: 0 5px;
 }
 
+body:not(.__preview__) .__preview__ {
+  display: none;
+}
+
 /* layout */
 @media (min-width: 768px) {
   body.base .miso-body-container {

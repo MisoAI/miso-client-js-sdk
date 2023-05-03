@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
 
   </head>
-  <body class="base">
+  <body class="base ">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
@@ -89,49 +89,56 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/sdk/">Overview</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active ">
             <a href="/miso-client-js-sdk/sdk/installation/">Installation</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/configuration/">Configuration</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/context/">Context</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/request-options/">Request Options</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3  __preview__">
+      <a href="/miso-client-js-sdk/sdk/answers/">Answers</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/sdk/answers/answer/">Answer</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/sdk/search/">Search</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/search/search/">Search</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/search/autocomplete/">Autocomplete</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/sdk/recommendation/">Recommendation</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/user_to_products/">User to Products</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/user_to_attributes/">User to Attributes</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/user_to_trending/">User to Trending</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/product_to_products/">Product to Products</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3">
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/sdk/interactions/">Interactions</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page">
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/interactions/events/">Events</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/interactions/upload/">Upload</a>
-          </li><li class="page">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/interactions/performance/">Performance</a>
           </li></ul>
       </div>
@@ -157,12 +164,14 @@
 <p>You can also include the SDK in your webpage with script tag:</p>
 <p>The <code>version</code> parameter can be one of the following:</p>
 <ul>
-<li>A specific version. For example: <code>1.6.0</code>. (recommended)</li>
+<li>A specific version. For example: <code>1.7.0</code>. (recommended)</li>
 <li>A tag: either <code>latest</code> or <code>beta</code>.</li>
 </ul>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@{{version}}/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
 <p>The <code>MisoClient</code> class is exposed as a global property:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span></code></pre>
+<p>Note that when the script is loaded asynchronously, <code>MisoClient</code> may not be available immediately. You can use the following pattern to access the class:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// MisoClient is available here</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre>
 
         </div>
       </main>
