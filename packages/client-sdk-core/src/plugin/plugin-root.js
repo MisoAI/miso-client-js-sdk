@@ -1,4 +1,4 @@
-import { delegateGetters, defineValues, Registry } from '@miso.ai/commons';
+import { delegateGetters, defineValues, Registry, Resolution } from '@miso.ai/commons';
 import classes from '../classes';
 import AnonymousPlugin from './anonymous';
 
@@ -10,8 +10,10 @@ export default class PluginRoot extends Registry {
       keyName: 'id',
     });
     this._root = root;
+    this._currentScript = document.currentScript;
     this._events._replays.add('install').add('subtree');
     this._installed = {};
+    this._installedResolutions = {};
     this._useRequests = {};
     this._subtrees = [];
     this.context = new PluginContext(this, classes);
@@ -60,7 +62,21 @@ export default class PluginRoot extends Registry {
     this._install(instance);
   }
 
-  // TODO: unuse()
+  async install(plugin, options) {
+    this.use(plugin, options);
+    if (typeof plugin === 'string' && !this.isRegistered(plugin)) {
+      await this._tryRegisterRemotely(plugin);
+    }
+    return this.whenInstalled(plugin);
+  }
+
+  async whenInstalled(id) {
+    if (this.isInstalled(id)) {
+      return this.get(id);
+    }
+    const { promise } = this._installedResolutions[id] || (this._installedResolutions[id] = new Resolution());
+    return promise;
+  }
 
   addSubtree(component) {
     this._subtrees.push(component);
@@ -126,6 +142,10 @@ export default class PluginRoot extends Registry {
     if (instance.id) {
       // we don't track anonymous plugins
       this._installed[instance.id] = instance;
+      if (this._installedResolutions[instance.id]) {
+        this._installedResolutions[instance.id].resolve(instance);
+        delete this._installedResolutions[instance.id];
+      }
     }
     this._events.emit('install', instance);
   }
@@ -149,6 +169,37 @@ export default class PluginRoot extends Registry {
     }
   }
 
+  async _tryRegisterRemotely(id) {
+    if (id.startsWith('std:')) {
+      try {
+        await this._registerStdRemotely(id);
+        return;
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    // TODO: try as URL
+    throw new Error(`Cannot register plugin remotely: ${id}`);
+  }
+
+  async _registerStdRemotely(id) {
+    // TODO: look up by manifest
+    const pkgName = id.slice(4);
+    const src = this._currentScript.src;
+    const searchIndex = src.indexOf('?');
+    const k = searchIndex < 0 ? src.length : searchIndex;
+    const i = src.lastIndexOf('/', k) + 1;
+    const j = src.indexOf('.', i);
+    const ext = j < 0 ? '' : src.slice(j, k);
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `${src.slice(0, i)}plugins/${pkgName}${ext}`;
+    document.head.appendChild(script);
+
+    await this.whenRegistered(id);
+  }
+
 }
 
 /**
@@ -157,7 +208,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'whenInstalled', 'whenRegistered']);
     defineValues(this, { classes });
   }
 
@@ -169,7 +220,7 @@ class PluginContext {
  class Plugins {
 
   constructor(root) {
-    delegateGetters(this, root, ['installed', 'registered', 'isInstalled', 'isRegistered', 'get', 'register', 'use']);
+    delegateGetters(this, root, ['installed', 'registered', 'isInstalled', 'isRegistered', 'whenInstalled', 'whenRegistered', 'get', 'register', 'use', 'install']);
   }
 
 }

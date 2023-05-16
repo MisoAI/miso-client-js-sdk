@@ -1,4 +1,5 @@
 import Component from './component';
+import Resolution from './resolution';
 
 export default class Registry extends Component {
 
@@ -6,6 +7,7 @@ export default class Registry extends Component {
     super(name, parent);
     this._events._replays.add('register'); // hacky but least tedious
     this._libraries = {}; // TODO: use Map so key can be any type
+    this._libResolutions = {};
     this._libName = libName;
     switch (typeof keyName) {
       case 'string':
@@ -26,6 +28,14 @@ export default class Registry extends Component {
 
   get registered() {
     return Object.values(this._libraries);
+  }
+
+  async whenRegistered(key) {
+    if (this.isRegistered(key)) {
+      return this._libraries[key];
+    }
+    const { promise } = this._libResolutions[key] || (this._libResolutions[key] = new Resolution());
+    return promise;
   }
 
   register(...libs) {
@@ -55,6 +65,7 @@ export default class Registry extends Component {
       // TODO: warn and overwrite?
     }
     libs[key] = lib;
+    this._libResolutions[key] && this._libResolutions[key].resolve(lib);
     this._events.emit('register', lib);
   }
 

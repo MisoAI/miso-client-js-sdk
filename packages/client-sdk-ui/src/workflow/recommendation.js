@@ -1,7 +1,7 @@
 import { delegateGetters } from '@miso.ai/commons';
 import { DEFAULT_UNIT_ID } from '../constants';
 import RecommendationUnit from './recommendation-unit';
-import Interactions from '../interactions';
+//import Interactions from '../interactions';
 
 export default class RecommendationContext {
 
@@ -9,7 +9,7 @@ export default class RecommendationContext {
     this._plugin = plugin;
     this._client = client;
     this._units = new Map();
-    this.interactions = new Interactions(this);
+    //this.interactions = new Interactions(this);
     this.interface = new Recommendation(this);
   }
 
@@ -40,7 +40,7 @@ export default class RecommendationContext {
 class Recommendation {
 
   constructor(context) {
-    delegateGetters(this, context, ['units', 'has', 'create', 'get', 'interactions']);
+    delegateGetters(this, context, ['units', 'has', 'create', 'get'/*, 'interactions'*/]);
   }
 
 }

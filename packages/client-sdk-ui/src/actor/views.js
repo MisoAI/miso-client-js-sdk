@@ -5,11 +5,12 @@ import ViewActor from './view';
 
 export default class ViewsActor {
 
-  constructor(hub, {
+  constructor(hub, extensions, {
     roles = [],
     layouts = {},
   }) {
     this._hub = hub;
+    this._extensions = extensions;
     this._containers = new Map();
     this._views = {};
 

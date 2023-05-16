@@ -135,7 +135,11 @@ export default class ViewActor {
 
   _sliceData(data) {
     const { value, ...rest } = data;
-    return trimObj({ value: value && value[this.role], ...rest });
+    return trimObj({
+      value: value && value[this.role],
+      meta: value && value._meta,
+      ...rest,
+    });
   }
 
   _syncSize() {

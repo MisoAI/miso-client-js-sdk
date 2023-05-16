@@ -1,5 +1,7 @@
-import MisoClient from '@miso.ai/client-sdk';
 import { DemoPlugin } from '../plugin';
 
-MisoClient.plugins.use(DemoPlugin);
-MisoClient.plugins.use('std:ui');
+const misocmd = window.misocmd || (window.misocmd = []);
+misocmd.push(() => {
+  MisoClient.plugins.use(DemoPlugin);
+  MisoClient.plugins.use('std:ui');
+});

@@ -3,16 +3,19 @@
     box-sizing: border-box;
   }
 
-  &::after {
-    // TODO: check char availability in common fonts
-    content: '┃';
-    animation: blink-caret 0.75s step-end infinite;
-  }
   &[data-status="initial"]::after,
   &.done::after {
     display: none;
   }
+}
 
+.miso-typewriter__cursor {
+  &::after {
+    // TODO: check char availability in common fonts
+    content: '┃';
+    margin-left: -0.4em;
+    animation: blink-caret 0.75s step-end infinite;
+  }
   @keyframes blink-caret {
     from, to { color: transparent }
     50% { color: inherit }

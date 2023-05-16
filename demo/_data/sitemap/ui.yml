@@ -1,9 +1,11 @@
 sections:
-- title: Answers
-  path: /answers
+- title: Ask
+  path: /ask
   pages:
-  - title: Dummy
-    path: /answers/dummy
+  - title: Markdown
+    path: /ask/markdown
+  - title: Plaintext
+    path: /ask/plaintext
 - title: Search
   path: /search
   pages:

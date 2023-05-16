@@ -3,9 +3,11 @@
   "private": true,
   "workspaces": [
     "packages/commons",
+    "packages/progressive-markdown",
     "packages/client-sdk-core",
     "packages/client-sdk-dev-tool",
     "packages/client-sdk-ui",
+    "packages/client-sdk-ui-markdown",
     "packages/client-sdk-algolia",
     "packages/client-sdk-gtm",
     "packages/client-sdk-shopify",
@@ -13,11 +15,12 @@
     "demo"
   ],
   "scripts": {
-    "start": "npm run build:clean && concurrently 'npm:start:*'",
+    "start": "concurrently 'npm:start:*'",
     "start:commons": "npm run start --workspace=packages/commons",
     "start:client-sdk-core": "npm run start --workspace=packages/client-sdk-core",
     "start:client-sdk-dev-tool": "npm run start --workspace=packages/client-sdk-dev-tool",
     "start:client-sdk-ui": "npm run start --workspace=packages/client-sdk-ui",
+    "start:client-sdk-ui-markdown": "npm run start --workspace=packages/client-sdk-ui-markdown",
     "start:client-sdk-algolia": "npm run start --workspace=packages/client-sdk-algolia",
     "start:client-sdk-shopify": "npm run start --workspace=packages/client-sdk-shopify",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
@@ -54,6 +57,7 @@
     "rollup": "^3.10.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-serve": "^2.0.2",
     "sass": "^1.49.8",
     "uuid": "^8.3.2"

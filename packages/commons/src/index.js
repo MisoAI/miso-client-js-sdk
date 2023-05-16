@@ -1,5 +1,6 @@
 export * from './arrays';
 export * from './objects';
+export * from './iterables';
 export * from './html';
 export * from './uuid';
 export * from './validation';

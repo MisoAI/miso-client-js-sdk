@@ -1,0 +1,33 @@
+{
+  "name": "@miso.ai/progressive-markdown",
+  "description": "Utilities for Markdown progressive rendering",
+  "type": "module",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "npx uvu test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git"
+  },
+  "homepage": "https://misoai.github.io/miso-client-js-sdk/",
+  "license": "MIT",
+  "contributors": [
+    "simonpai <simon.pai@askmiso.com>"
+  ],
+  "bugs": {
+    "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
+  },
+  "dependencies": {
+    "hast-util-to-html": "^8.0.4",
+    "rehype-minify-whitespace": "^5.0.1",
+    "remark-gfm": "^3.0.1",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.1.0",
+    "unified": "^10.1.2"
+  }
+}

@@ -29,6 +29,8 @@ export default class Workflow extends Component {
     this._name = name;
     this._roles = roles;
 
+    const extensions = plugin._getExtensions(client);
+
     this._defaultLayouts = {
       [ROLE.CONTAINER]: ContainerLayout.type,
       ...layouts,
@@ -41,7 +43,7 @@ export default class Workflow extends Component {
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub);
-    this._views = new ViewsActor(hub, {
+    this._views = new ViewsActor(hub, extensions, {
       roles,
       layouts: this._generateLayoutFactoryFunctions(this._defaultLayouts),
     });

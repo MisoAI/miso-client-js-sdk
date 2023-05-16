@@ -24,4 +24,11 @@ export default [
       format: 'iife',
     },
   },
+  {
+    input: 'src/plugins/ui-markdown.js',
+    output: {
+      filename: 'plugins/ui-markdown',
+      format: 'iife',
+    },
+  },
 ]; 

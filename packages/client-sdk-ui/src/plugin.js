@@ -1,5 +1,5 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Answers, Search, RecommendationContext } from './workflow';
+import { Ask, Search, RecommendationContext } from './workflow';
 import Layouts from './layouts';
 import * as elements from './element';
 import * as layouts from './layout';
@@ -17,6 +17,7 @@ export default class UiPlugin extends Component {
     super('ui');
     this.layouts = new Layouts(this);
     this._recommendationContexts = new WeakMap();
+    this._extensions = new WeakMap();
   }
 
   install(MisoClient, context) {
@@ -46,10 +47,28 @@ export default class UiPlugin extends Component {
     }
   }
 
+  async requireExtension(name) {
+    switch (name) {
+      case 'markdown':
+        return await MisoClient.plugins.install('std:ui-markdown');
+      default:
+        throw new Error(`Unknown extension: ${name}`);
+    }
+  }
+
   _injectClient(client) {
     defineValues(client, {
       ui: new Ui(this, client),
     });
+  }
+
+  _getExtensions(client) {
+    if (this._extensions.has(client)) {
+      return this._extensions.get(client);
+    }
+    const extensions = new Extensions(this, client);
+    this._extensions.set(client, extensions);
+    return extensions;
   }
 
   _getRecommendationContext(client) {
@@ -57,6 +76,25 @@ export default class UiPlugin extends Component {
     if (!context) {
       this._recommendationContexts.set(client, context = new RecommendationContext(this, client));
     }
+    return context;
+  }
+
+}
+
+class Extensions {
+
+  constructor(plugin, client) {
+    this._plugin = plugin;
+    this._client = client;
+    this._contexts = {};
+  }
+
+  async require(name) {
+    if (this._contexts[name]) {
+      return this._contexts[name];
+    }
+    const plugin = await this._plugin.requireExtension(name);
+    const context = this._contexts[name] = plugin.getContext(this._client);
     return context;
   }
 
@@ -83,8 +121,8 @@ class Ui {
     return this._search || (this._search = new Search(this._plugin, this._client));
   }
 
-  get answers() {
-    return this._answers || (this._answers = new Answers(this._plugin, this._client));
+  get ask() {
+    return this._ask || (this._ask = new Ask(this._plugin, this._client));
   }
 
 }
