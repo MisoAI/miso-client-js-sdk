@@ -96,9 +96,11 @@ export default class TypewriterLayout extends TemplateBasedLayout {
       onDone: (element) => {
         element.classList.add('done');
       },
+      /*
       onDebug: ({ index, ref, operation, cursors, conflict, tree }) => {
         console.log(`[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`, ref, `${operation}`, conflict);
       },
+      */
     });
     // TODO: we may want to put readiness resolution here
   }
