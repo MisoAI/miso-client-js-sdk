@@ -12,13 +12,13 @@ function cursorClassName(className) {
 }
 
 function root(layout) {
-  let { className, role, options: { tag, format, themed = true } } = layout;
+  let { className, role, options: { tag, format, builtInStyles = true } } = layout;
   if (tag === 'auto') {
     tag = format === 'markdown' ? 'div' : 'p';
   }
   const roleAttr = role ? `data-role="${role}"` : '';
   const classNames = [className, cursorClassName(className)];
-  if (themed && format === 'markdown') {
+  if (builtInStyles && format === 'markdown') {
     classNames.push('miso-markdown');
   }
   return `<${tag} class="${classNames.join(' ')}" ${roleAttr} data-format="${format}"></${tag}>`;

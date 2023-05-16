@@ -43,14 +43,6 @@
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
-  // TODO: better timing management
-  window.helpers.fetch.intercept({
-    request: (request) => {
-      // add header to force markdown response
-      request.headers.append('x-answer-format', 'markdown');
-      return request;
-    }
-  });
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient({
     apiKey: '...',
