@@ -7,9 +7,7 @@ import { mergeApiParams } from './utils';
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'ask',
   name: 'questions',
-  payload: {
-    fl: ['*'],
-  },
+  payload: {},
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({

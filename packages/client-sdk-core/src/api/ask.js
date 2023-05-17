@@ -7,7 +7,7 @@ export default class Ask extends ApiBase {
     super(api, 'ask');
   }
 
-  async questions(payload, { iterable = false, ...options } = {}) {
+  async questions(payload, options = {}) {
     const response = await this._run('questions', payload, options);
     return new Answer(this, response);
   }
