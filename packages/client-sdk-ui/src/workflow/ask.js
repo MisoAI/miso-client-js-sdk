@@ -14,7 +14,7 @@ const DEFAULT_API_PARAMS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.QUERY]: SearchBoxLayout.type,
-  [ROLE.QUESTION]: [TextLayout.type, { tag: 'h3' }],
+  [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
   [ROLE.ANSWER]: TypewriterLayout.type,
   [ROLE.FEEDBACK]: FeedbackLayout.type,
   [ROLE.SOURCES]: [ListLayout.type, { incremental: true, }],
