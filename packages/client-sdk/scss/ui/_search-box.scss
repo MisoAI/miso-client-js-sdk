@@ -44,6 +44,10 @@
     border: 1px solid var(--miso-search-box-border-color);
     border-radius: var(--miso-search-box-border-radius);
     outline: none;
+
+    &::placeholder {
+      color: #b0b0b0;
+    }
   }
 
   .miso-search-box__button {

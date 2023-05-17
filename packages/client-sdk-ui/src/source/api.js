@@ -8,7 +8,7 @@ export default function(client) {
       case 'ask':
         switch (name) {
           case 'questions':
-            return mapAsyncIterator(client.api[group][name](payload, { iterable: true }), postProcessQuestions);
+            return mapAsyncIterator(await client.api[group][name](payload), postProcessQuestions);
         }
     }
     return postProcess(await client.api[group]._run(name, payload));

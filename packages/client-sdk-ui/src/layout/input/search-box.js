@@ -13,7 +13,7 @@ function root(layout) {
   return `
 <div class="${className}" ${roleAttr}>
   <div class="${className}__input-group">
-    <input class="${className}__input" type="text">
+    <input class="${className}__input" type="text" ${placeholder ? `placeholder="${placeholder}"` : ''}>
     <button class="${className}__button" type="submit">${buttonText}</button>
   </div>
 </div>

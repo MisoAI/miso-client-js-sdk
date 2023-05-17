@@ -36,7 +36,8 @@ export default class Ask extends Workflow {
   }
 
   // lifecycle //
-  query(payload) {
+  query({ q: question, ...payload } = {}) {
+    payload = { ...payload, question };
     // TODO: abort previous ongoing query
     this._sessions.new();
     this._sessions.start();

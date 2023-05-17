@@ -7,32 +7,27 @@ export default class Ask extends ApiBase {
     super(api, 'ask');
   }
 
-  questions(payload, { iterable = false, ...options } = {}) {
-    // TODO: it's possible to merge _iterator and _answer
-    return typeof payload === 'string' ? this._get(payload, options) : iterable ? this._iterator(payload, options) : this._questions(payload, options);
+  async questions(payload, { iterable = false, ...options } = {}) {
+    const response = await this._run('questions', payload, options);
+    return new Answer(this, response);
   }
 
   async _questions(payload, options) {
     return this._run('questions', payload, options);
   }
 
-  async _get(answerId, options) {
-    return this._run(`questions/${answerId}/answer`, undefined, { ...options, method: 'GET' });
+  async _get(questionId, options) {
+    return this._run(`questions/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
-  async * _iterator(payload, { pollingInternal = 500, ...options } = {}) {
-    const response = await this._questions(payload, options);
-    yield response;
-    const { question_id, finished } = response;
-    if (finished) {
-      return;
-    }
+  _iterable(questionId, { pollingInternal = 500, ...options } = {}) {
+    // TODO: abort signal
     let apiErrorCount = 0;
     const buffer = new ValueBuffer();
     const intervalId = setInterval(async () => {
       let response;
       try {
-        response = await this._get(question_id, options);
+        response = await this._get(questionId, options);
       } catch(error) {
         apiErrorCount++;
         if (apiErrorCount > 10) {
@@ -49,7 +44,30 @@ export default class Ask extends ApiBase {
       }
     }, pollingInternal);
 
-    yield* buffer;
+    return buffer;
+  }
+
+}
+
+class Answer {
+
+  constructor(api, { question_id }, options = {}) {
+    this._api = api;
+    this._id = question_id;
+    this._options = options;
+  }
+
+  get id() {
+    return this._id;
+  }
+
+  async get(options) {
+    options = { ...this._options, ...options };
+    return this._api._get(this._id, options);
+  }
+
+  [Symbol.asyncIterator]() {
+    return this._api._iterable(this._id, this._options)[Symbol.asyncIterator]();
   }
 
 }
