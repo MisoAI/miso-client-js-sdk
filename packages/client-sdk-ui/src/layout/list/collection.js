@@ -30,12 +30,13 @@ function list(layout, state, type, items) {
 
 function items(layout, state, type, items) {
   const { templates } = layout;
-  return items.map(item => templates.item(layout, state, type, item)).join('');
+  let index = 0;
+  return items.map(item => templates.item(layout, state, type, item, index++)).join('');
 }
 
-function item(layout, state, type, item) {
+function item(layout, state, type, item, index) {
   const { className, templates } = layout;
-  const body = templates[type](layout, state, item);
+  const body = templates[type](layout, state, item, { index });
   return `<li class="${className}__item">${body}</li>`;
 }
 
