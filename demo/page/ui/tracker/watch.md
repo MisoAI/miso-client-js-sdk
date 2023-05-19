@@ -53,7 +53,7 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const unit = client.ui.recommendation.get('unit-1');
+  const unit = client.ui.recommendations.get('unit-1');
   window.helpers.unit.monitorEvents(unit);
   unit.useTracker({ watch: true }).startTracker();
 });

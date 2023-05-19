@@ -49,7 +49,7 @@ misocmd.push(() => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
-  const workflow = client.ui.recommendation.get();
+  const workflow = client.ui.recommendations.get();
   //workflow.useSource(window.helpers.api);
   workflow.useApi('user_to_products', { rows: 6 });
   window.onReload = () => workflow.reset().start();

@@ -1,46 +1,96 @@
-import { delegateGetters } from '@miso.ai/commons';
-import { DEFAULT_UNIT_ID } from '../constants';
-import RecommendationUnit from './recommendation-unit';
-//import Interactions from '../interactions';
+import { defineValues } from '@miso.ai/commons';
+import Workflow from './base';
+import { fields, Tracker } from '../actor';
+import { ListLayout } from '../layout';
+import { ROLE } from '../constants';
 
-export default class RecommendationContext {
+const DEFAULT_API_PARAMS = Object.freeze({
+  group: 'recommendation',
+  name: 'user_to_products',
+  payload: {
+    fl: ['*'],
+  },
+});
 
-  constructor(plugin, client) {
-    this._plugin = plugin;
-    this._client = client;
-    this._units = new Map();
-    //this.interactions = new Interactions(this);
-    this.interface = new Recommendation(this);
+const DEFAULT_LAYOUTS = Object.freeze({
+  [ROLE.RESULTS]: ListLayout.type,
+});
+
+export default class Recommendation extends Workflow {
+
+  constructor(context, id) {
+    super(context._plugin, context._client, {
+      name: 'recommendation',
+      roles: Object.keys(DEFAULT_LAYOUTS),
+      layouts: DEFAULT_LAYOUTS,
+      defaultApiParams: DEFAULT_API_PARAMS,
+    });
+    this._tracker = new Tracker(this._hub, this._views.get(ROLE.RESULTS));
+
+    defineValues(this, { id });
+    this._context = context;
+
+    context._members.set(id, this);
   }
 
-  units() {
-    return [...this._units.values()];
+  get tracker() {
+    return this._tracker;
   }
 
-  create(unitId = DEFAULT_UNIT_ID) {
-    if (this._units.has(unitId)) {
-      throw new Error(`Unit already exists: ${unitId}`);
-    }
-    return new RecommendationUnit(this, unitId);
+  // lifecycle //
+  reset() {
+    this._sessions.new();
+    return this;
   }
 
-  has(unitId = DEFAULT_UNIT_ID) {
-    return this._units.has(unitId);
+  start() {
+    this._sessions.start();
+    this._hub.update(fields.input(), this._apiParams);
+    return this;
   }
 
-  get(unitId = DEFAULT_UNIT_ID) {
-    if (typeof unitId !== 'string') {
-      throw new Error(`Required unit ID to be a string: ${unitId}`);
-    }
-    return this._units.get(unitId) || new RecommendationUnit(this, unitId);
+  startTracker() {
+    this.useSource(false);
+    this.useLayouts({
+      [ROLE.RESULTS]: false,
+    });
+    this._sessions.start();
+    this.notifyViewUpdate(ROLE.RESULTS);
+    return this;
   }
 
-}
+  notifyViewUpdate(role = ROLE.RESULTS, ...args) {
+    super.notifyViewUpdate(role, ...args);
+    return this;
+  }
 
-class Recommendation {
+  // tracker //
+  useTracker(options) {
+    this._tracker.config(options);
+    return this;
+  }
 
-  constructor(context) {
-    delegateGetters(this, context, ['units', 'has', 'create', 'get'/*, 'interactions'*/]);
+  // interactions //
+  _preprocessInteraction({ context : { custom_context, ...context } = {}, ...payload } = {}) {
+    const { uuid, id } = this;
+    return {
+      ...payload,
+      context: {
+        ...context,
+        custom_context: {
+          unit_id: id,
+          unit_instance_uuid: uuid,
+          ...custom_context,
+        },
+      },
+    };
+  }
+
+  // destroy //
+  _destroy() {
+    this._context._members.delete(this.id);
+    this._tracker._destroy();
+    super._destroy();
   }
 
 }

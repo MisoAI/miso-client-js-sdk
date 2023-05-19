@@ -21,16 +21,31 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 export default class Ask extends Workflow {
 
-  constructor(plugin, client) {
-    super(plugin, client, {
+  constructor(context, index) {
+    super(context._plugin, context._client, {
       name: 'ask',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,
     });
+    this._context = context;
+    this._context._push(this);
+    this._index = index;
     this._feedback = new FeedbackActor(this._hub);
-
     this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
+  }
+
+  // question chain //
+  get index() {
+    return this._index;
+  }
+
+  get previous() {
+    return this._context.get(this._index - 1);
+  }
+
+  get next() {
+    return this._context.get(this._index + 1) || new Ask(this._context, this._index + 1);
   }
 
   // lifecycle //
@@ -42,5 +57,7 @@ export default class Ask extends Workflow {
     this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload }));
     return this;
   }
+
+  // TODO: destroy() {}
 
 }

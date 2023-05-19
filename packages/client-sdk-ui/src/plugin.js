@@ -1,5 +1,5 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Ask, Search, RecommendationContext } from './workflow';
+import { Asks, Search, Recommendations } from './workflow';
 import Layouts from './layouts';
 import * as elements from './element';
 import * as layouts from './layout';
@@ -16,7 +16,8 @@ export default class UiPlugin extends Component {
   constructor() {
     super('ui');
     this.layouts = new Layouts(this);
-    this._recommendationContexts = new WeakMap();
+    this._recommendations = new WeakMap();
+    this._asks = new WeakMap();
     this._extensions = new WeakMap();
   }
 
@@ -71,12 +72,20 @@ export default class UiPlugin extends Component {
     return extensions;
   }
 
-  _getRecommendationContext(client) {
-    let context = this._recommendationContexts.get(client);
-    if (!context) {
-      this._recommendationContexts.set(client, context = new RecommendationContext(this, client));
+  _getRecommendations(client) {
+    let recommendations = this._recommendations.get(client);
+    if (!recommendations) {
+      this._recommendations.set(client, recommendations = new Recommendations(this, client));
     }
-    return context;
+    return recommendations;
+  }
+
+  _getAsks(client) {
+    let asks = this._asks.get(client);
+    if (!asks) {
+      this._asks.set(client, asks = new Asks(this, client));
+    }
+    return asks;
   }
 
 }
@@ -113,16 +122,24 @@ class Ui {
     });
   }
 
+  get recommendations() {
+    return this._recommendations || (this._recommendations = this._plugin._getRecommendations(this._client));
+  }
+
   get recommendation() {
-    return this._recommendation || (this._recommendation = this._plugin._getRecommendationContext(this._client).interface);
+    return this.recommendations.get(); // get default recommendation unit
   }
 
   get search() {
     return this._search || (this._search = new Search(this._plugin, this._client));
   }
 
+  get asks() {
+    return this._asks || (this._asks = this._plugin._getAsks(this._client));
+  }
+
   get ask() {
-    return this._ask || (this._ask = new Ask(this._plugin, this._client));
+    return this.asks.root;
   }
 
 }

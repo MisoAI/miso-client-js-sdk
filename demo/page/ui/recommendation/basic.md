@@ -46,7 +46,7 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const workflow = client.ui.recommendation.get();
+  const workflow = client.ui.recommendations.get();
   workflow.useApi('user_to_products', { rows: 6 });
   window.onReload = () => workflow.reset().start();
   window.onSelectLayout = value => workflow.useLayouts({ results: value });

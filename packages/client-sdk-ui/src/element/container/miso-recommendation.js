@@ -20,7 +20,7 @@ export default class MisoRecommendationElement extends MisoContainerElement {
   }
 
   _getWorkflowByUnitId(client, unitId) {
-    return client.ui.recommendation.get(unitId);
+    return client.ui.recommendations.get(unitId);
   }
 
   // properties //

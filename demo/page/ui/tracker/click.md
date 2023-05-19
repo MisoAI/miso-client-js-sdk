@@ -54,7 +54,7 @@ misocmd.push(() => {
       lenient: true,
     }
   };
-  const unit = client.ui.recommendation.get('unit-1');
+  const unit = client.ui.recommendations.get('unit-1');
   window.helpers.unit.monitorEvents(unit);
   unit.useTracker(trackerOptions).startTracker();
 });
