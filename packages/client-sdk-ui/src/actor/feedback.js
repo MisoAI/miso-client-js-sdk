@@ -21,9 +21,13 @@ export default class FeedbackActor {
   _buildInteraction(question_id, { value, unselected }) {
     return {
       type: 'feedback',
-      result_type: 'answer',
-      question_id,
-      value: unselected ? 'unselected' : value,
+      context: {
+        custom_context: {
+          result_type: 'answer',
+          question_id,
+          value: unselected ? 'unselected' : value,
+        },
+      },
     };
   }
 
