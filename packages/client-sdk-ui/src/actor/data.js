@@ -94,6 +94,8 @@ export default class DataActor {
   }
 
   destroy() {
+    // abort ongoing data fetch if any
+    this._ac && this._ac.abort();
     for (const unsubscribe of this._unsubscribes) {
       unsubscribe();
     }

@@ -29,12 +29,20 @@ export default class MisoAskElement extends MisoContainerElement {
   }
 
   set parentQuestionId(value) {
-    value = value && `${value}`;
+    value = value !== undefined ? `${value}` : undefined;
+    if (value === this.parentQuestionId) {
+      return;
+    }
     if (value) {
       this.setAttribute(ATTR_PARENT_QUESTION_ID, value);
     } else {
       this.removeAttribute(ATTR_PARENT_QUESTION_ID);
     }
+  }
+
+  set workflow(workflow) {
+    this._setWorkflow(workflow);
+    this.parentQuestionId = workflow && workflow.parentQuestionId;
   }
 
   // lifecycle //
@@ -47,6 +55,8 @@ export default class MisoAskElement extends MisoContainerElement {
   }
 
   _handleParentQuestionIdUpdate(oldId, newId) {
+    oldId = oldId || undefined; // null -> undefined
+    newId = newId || undefined;
     if (oldId === newId || !this._client) {
       return;
     }

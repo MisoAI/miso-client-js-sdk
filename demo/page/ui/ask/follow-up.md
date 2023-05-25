@@ -79,14 +79,11 @@ const template = (data) => {
   return html;
 };
 function prepareFollowUp(workflow) {
+  workflow.on('loading', () => {
+    relatedResourcesContainer.workflow = workflow;
+  });
   workflow.on('done', () => {
-    const parentQuestionId = workflow.questionId;
-    followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId }));
-    const nextWorkflow = workflow.followUp();
-    // TODO: have a workflow="latest" attribute
-    nextWorkflow.on('loading', () => {
-      relatedResourcesContainer.parentQuestionId = parentQuestionId;
-    });
+    followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
   });
 }
 const misocmd = window.misocmd || (window.misocmd = []);
@@ -108,8 +105,8 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.ask;
-  prepareFollowUp(workflow);
   client.ui.asks.on('create', prepareFollowUp);
+  prepareFollowUp(workflow);
   workflow.on('loading', () => {
     followUpsSection.innerHTML = '';
   });

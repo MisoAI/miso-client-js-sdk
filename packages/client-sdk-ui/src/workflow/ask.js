@@ -113,9 +113,6 @@ export default class Ask extends Workflow {
     if (!this._context._cascadeDeleteFollowUps || !this.next) {
       return;
     }
-    for (const element of this.next._views._containers.keys()) {
-      element.remove();
-    }
     this.next.destroy();
   }
 

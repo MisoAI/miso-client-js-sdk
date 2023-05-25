@@ -4,11 +4,16 @@ export default class MisoContainerElement extends HTMLElement {
 
   constructor() {
     super();
+    this._workflow = undefined;
     this._components = new Set();
   }
 
   get isContainer() {
     return true;
+  }
+
+  get workflow() {
+    return this._workflow;
   }
 
   // lifecycle //
