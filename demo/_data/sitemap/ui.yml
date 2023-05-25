@@ -2,8 +2,10 @@ sections:
 - title: Ask
   path: /ask
   pages:
-  - title: Markdown
-    path: /ask/markdown
+  - title: Basic
+    path: /ask/basic
+  - title: Follow Up
+    path: /ask/follow-up
   - title: Plaintext
     path: /ask/plaintext
 - title: Search

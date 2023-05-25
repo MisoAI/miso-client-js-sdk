@@ -1,38 +1,18 @@
-import { trimObj, requestAnimationFrame as raf } from '@miso.ai/commons';
+import { trimObj, defineValues, Resolution } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY, STATUS } from '../../../constants';
-import TemplateBasedLayout from '../../template';
+import ProgressiveLayout from '../../progressive';
 import ProgressController from './progress';
 import PlaintextRenderer from './plaintext';
+import { containerElement, cursorClassName, fromSameSession } from './utils';
 
 const TYPE = 'typewriter';
 const DEFAULT_CLASSNAME = 'miso-typewriter';
 
-function cursorClassName(className) {
-  return `${className}__cursor`;
-}
+const onDebug = ({ index, ref, operation, cursors, conflict, tree }) => {
+  console.log(`[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`, ref, `${operation}`, conflict);
+};
 
-function root(layout) {
-  let { className, role, options: { tag, format, builtInStyles = true } } = layout;
-  if (tag === 'auto') {
-    tag = format === 'markdown' ? 'div' : 'p';
-  }
-  const roleAttr = role ? `data-role="${role}"` : '';
-  const classNames = [className, cursorClassName(className)];
-  if (builtInStyles && format === 'markdown') {
-    classNames.push('miso-markdown');
-  }
-  return `<${tag} class="${classNames.join(' ')}" ${roleAttr} data-format="${format}"></${tag}>`;
-}
-
-const DEFAULT_TEMPLATES = Object.freeze({
-  root,
-});
-
-function areFromSameSession(a, b) {
-  return a && b && a.session && b.session && a.session.uuid === b.session.uuid;
-}
-
-export default class TypewriterLayout extends TemplateBasedLayout {
+export default class TypewriterLayout extends ProgressiveLayout {
 
   static get category() {
     return LAYOUT_CATEGORY.TEXT;
@@ -42,32 +22,31 @@ export default class TypewriterLayout extends TemplateBasedLayout {
     return TYPE;
   }
 
-  static get defaultTemplates() {
-    return DEFAULT_TEMPLATES;
-  }
-
   static get defaultClassName() {
     return DEFAULT_CLASSNAME;
   }
 
   constructor({
     className = DEFAULT_CLASSNAME,
-    templates,
     cps,
     tag = 'auto',
     format = 'markdown',
     ...options
   } = {}) {
     super({
-      className,
-      templates: { ...DEFAULT_TEMPLATES, ...templates },
       cps,
       tag,
       format,
       ...options,
     });
-    this._states = new WeakMap();
+    defineValues(this, {
+      className,
+    });
+    this._prevState = undefined;
     this._progress = new ProgressController({ cps });
+    this._readiness = new Resolution();
+
+    // kick off sooner
     if (format === 'markdown') {
       MisoClient.plugins.install('std:ui-markdown');
     }
@@ -75,12 +54,22 @@ export default class TypewriterLayout extends TemplateBasedLayout {
 
   initialize(view) {
     this._view = view;
-    switch (this.options.format) {
-      case 'plaintext':
-        this._setupForPlaintext();
-        break;
-      default:
-        this._setupForMarkdown();
+    this._setup();
+  }
+
+  // setup //
+  async _setup() {
+    try {
+      switch (this.options.format) {
+        case 'plaintext':
+          await this._setupForPlaintext();
+          break;
+        default:
+          await this._setupForMarkdown();
+      }
+      this._readiness.resolve();
+    } catch (e) {
+      this._readiness.reject(e);
     }
   }
 
@@ -96,63 +85,39 @@ export default class TypewriterLayout extends TemplateBasedLayout {
       onDone: (element) => {
         element.classList.add('done');
       },
-      /*
-      onDebug: ({ index, ref, operation, cursors, conflict, tree }) => {
-        console.log(`[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`, ref, `${operation}`, conflict);
-      },
-      */
+      //onDebug,
     });
-    // TODO: we may want to put readiness resolution here
   }
 
-  _setupForPlaintext() {
+  async _setupForPlaintext() {
     this._renderer = new PlaintextRenderer();
   }
 
-  async render(_, state, { silence }) {
-    await this._ready(); // TODO: just check readiness at raf()?
-    this._updateInput(state);
-    if (state.status === STATUS.READY) {
-      this._requestLoop();
-    }
-    silence(); // skip notify view update here and do so manually
-  }
-
-  _getContentElement() {
-    const element = this._view.element;
-    if (!element) {
-      return undefined;
-    }
-    if (element.children.length === 0) {
-      element.innerHTML = this.templates.root(this);
-    }
-    const content = element.children[0];
-    content.setAttribute('data-status', this._input.status || STATUS.INITIAL);
-    return content;
-  }
-
   async _ready() {
-    if (this.options.format === 'markdown') {
-      await MisoClient.plugins.whenInstalled('std:ui-markdown');
-    }
+    return this._readiness.promise;
   }
 
-  _updateInput(state) {
-    const prev = this._input;
-    const { value: text = '', meta, session, status } = state;
-    // TODO: might not always share same prefix, get streak from state
+  // render //
+  async render(...args) {
+    await this._ready();
+    await super.render(...args);
+  }
+
+  _preprocess({ state }) {
+    const prev = this._prevState;
+    const { value = '', meta, session, status, ongoing } = state;
     const stage = meta && meta.answer_stage || 'result';
-    const sameSession = areFromSameSession(prev, state);
+    const sameSession = fromSameSession(prev, state);
     const sameStreak = sameSession && (stage === prev.stage);
     const streak = !prev ? 0 : sameStreak ? prev.streak : prev.streak + 1;
 
-    const doneAt = (sameSession && prev && prev.doneAt) || (state.status === STATUS.READY && !state.ongoing ? Date.now() : undefined);
+    const doneAt = (sameSession && prev && prev.doneAt) || (status === STATUS.READY && !ongoing ? Date.now() : undefined);
     const done = doneAt !== undefined;
 
-    this._input = Object.freeze(trimObj({
+    return this._prevState = Object.freeze(trimObj({
       session,
       status,
-      text,
+      value,
       stage,
       streak,
       doneAt,
@@ -160,60 +125,25 @@ export default class TypewriterLayout extends TemplateBasedLayout {
     }));
   }
 
-  _requestLoop() {
-    if (this._looping) {
-      return;
-    }
-    this._looping = true;
-    this._raf();
-  }
-
-  async _raf() {
-    if (!this._looping) {
-      return;
-    }
-    raf(() => {
-      const element = this._getContentElement();
-      const { session, done } = this._updateText(element, this._input);
-      if (done) {
-        this._looping = false;
-      }
-      this._view.updateState({ session }, { silent: !done });
-      this._raf();
-    });
-  }
-
-  _getState(element) {
-    return this._states.get(element);
-  }
-
-  _setState(element, state) {
-    this._states.set(element, Object.freeze(state));
-    return state;
-  }
-
-  _updateText(element, input) {
-    const timestamp = Date.now();
-    const prevState = this._getState(element);
-
-    let result;
+  _render(element, { state, rendered }, { notifyUpdate, writeToState, loop }) {
+    const container = containerElement(this, element, state);
     // TODO: distinguish between first render and element replacement
-    if (!prevState || input.streak !== prevState.input.streak) {
+    let result;
+    if (!rendered || state.streak !== rendered.streak) {
       // new typing streak
-      result = this._renderer.clear(element, prevState);
+      result = this._renderer.clear(container, rendered);
     } else {
-      const cursor = this._progress.get(prevState, { input, timestamp });
-      result = this._renderer.update(element, prevState, { input, timestamp, cursor });
+      const cursor = this._progress.get(rendered, state);
+      result = this._renderer.update(container, rendered, { ...state, cursor });
     }
+    writeToState(result);
 
-    this._setState(element, {
-      timestamp,
-      input,
-      ...result,
-    });
-    const { session } = input;
-    const { done } = result;
-    return { session, done };
+    const ongoing = state.status === STATUS.READY && !result.done;
+    // silence on consecutive ongoing renders
+    const silent = ongoing && (!rendered || rendered.status === STATUS.READY);
+    notifyUpdate({ ongoing }, { silent });
+
+    ongoing && loop();
   }
 
 }

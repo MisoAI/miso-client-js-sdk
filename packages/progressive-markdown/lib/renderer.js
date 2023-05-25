@@ -14,21 +14,21 @@ export default class Renderer {
     const index = this._index++;
     this._query.clear();
     element.innerHTML = '';
-    this._syncRef(prevState ? prevState.ref : element, element);
+    this._handleRefChange(prevState ? prevState.ref : element, element);
     return { cursor: 0, done: false, ref: element, index };
   }
 
-  update(element, { cursor: prevCursor, ref }, { input, cursor }) {
+  update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor, done: dataDone }) {
     const index = this._index++;
     const query = this._query;
 
     // optimize:
     //   search for conflict only up to the cursor
     // TODO
-    const { conflict } = query.update(input.text, { done: input.done });
+    const { conflict } = query.update(value, { done: dataDone });
 
-    const safeRightBound = input.done ? query.rightBound : query.safeRightBound;
-    const done = !!input.done && (cursor >= query.rightBound);
+    const safeRightBound = dataDone ? query.rightBound : query.safeRightBound;
+    const viewDone = !!dataDone && (cursor >= query.rightBound);
 
     cursor = Math.min(cursor, safeRightBound);
 
@@ -43,22 +43,20 @@ export default class Renderer {
     // we have to overwrite the whole thing if we had rendered pass the conflict point
     const overwrite = conflict !== undefined && prevCursor >= conflict.index;
 
-    const oldRef = ref;
+    let ref = prevRef;
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
     for (const operation of operations) {
       this._onDebug && this._onDebug({ index, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } });
       ref = operation.applyTo(element, ref);
     }
-    done && this._onDone && this._onDone(element);
-    this._syncRef(oldRef, ref);
+    viewDone && this._onDone && this._onDone(element);
+    this._handleRefChange(prevRef, ref);
 
-    return { cursor, done, ref, index };
+    return { cursor, done: viewDone, ref, index };
   }
 
-  _syncRef(oldRef, newRef) {
-    if (oldRef !== newRef && this._onRefChange) {
-      this._onRefChange(oldRef, newRef);
-    }
+  _handleRefChange(oldRef, newRef) {
+    oldRef !== newRef && this._onRefChange && this._onRefChange(oldRef, newRef);
   }
 
 }

@@ -5,25 +5,24 @@ export default class PlaintextRenderer {
     return { cursor: 0, done: false };
   }
 
-  update(element, { input: prevInput, cursor: prevCursor }, { input, cursor }) {
-    const { text } = input;
-    const length = text.length;
+  update(element, { value: prevValue, cursor: prevCursor }, { value, cursor, done: dataDone }) {
+    const length = value.length;
     cursor = Math.min(cursor, length);
-    const done = !!input.done && (cursor === length);
+    const viewDone = !!dataDone && (cursor === length);
 
     // in case text already rendered were modified
-    const prevRenderedText = prevInput.text.substring(0, prevCursor);
-    const overwrite = !text.startsWith(prevRenderedText);
+    const prevRenderedText = prevValue.substring(0, prevCursor);
+    const overwrite = !value.startsWith(prevRenderedText);
 
     // when done, also re-set the entire text so we don't have fragmental text nodes
-    if (done || overwrite) {
-      element.innerText = text;
+    if (viewDone || overwrite) {
+      element.innerText = value;
     } else {
-      element.insertAdjacentText('beforeend', text.substring(prevCursor, cursor));
+      element.insertAdjacentText('beforeend', value.substring(prevCursor, cursor));
     }
-    done && element.classList.add('done');
+    viewDone && element.classList.add('done');
 
-    return { cursor, done };
+    return { cursor, done: viewDone };
   }
 
 }

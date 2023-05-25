@@ -134,7 +134,8 @@ export default class ViewsActor {
     if (!this._data || this._data.data !== data) {
       const status = (!data || !data.session || !data.session.active) ? STATUS.INITIAL :
         data.error ? STATUS.ERRONEOUS : data.value ? STATUS.READY : STATUS.LOADING;
-      this._data = Object.freeze({ ...data, status });
+      const ongoing = status === STATUS.READY ? !!data.ongoing : undefined;
+      this._data = Object.freeze({ ...data, status, ongoing });
     }
     return this._data;
   }

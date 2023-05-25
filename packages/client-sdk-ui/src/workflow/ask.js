@@ -1,6 +1,7 @@
+import { defineValues } from '@miso.ai/commons';
 import Workflow from './base';
 import { fields, FeedbackActor } from '../actor';
-import { ROLE } from '../constants';
+import { ROLE, STATUS } from '../constants';
 import { SearchBoxLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout';
 import { mergeApiParams } from './utils';
 
@@ -23,43 +24,117 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 export default class Ask extends Workflow {
 
-  constructor(context, index) {
+  constructor(context, parentQuestionId) {
     super(context._plugin, context._client, {
       name: 'ask',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,
     });
-    this._context = context;
-    this._context._push(this);
-    this._index = index;
+    defineValues(this, { parentQuestionId });
+
     this._feedback = new FeedbackActor(this._hub);
-    this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
+    this._unsubscribes = [
+      ...this._unsubscribes,
+      this._hub.on(fields.query(), payload => this.query(payload)),
+      this._hub.on(fields.data(), data => this._onDataUpdate(data)),
+      this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
+    ];
+
+    this._context = context;
+    parentQuestionId && context._byPqid.set(parentQuestionId, this);
+    context._events.emit('create', this);
   }
 
-  // question chain //
-  get index() {
-    return this._index;
+  get questionId() {
+    return this._questionId;
   }
 
   get previous() {
-    return this._context.get(this._index - 1);
+    const { parentQuestionId } = this;
+    return parentQuestionId ? this._context.getByQuestionId(parentQuestionId) : undefined;
   }
 
   get next() {
-    return this._context.get(this._index + 1) || new Ask(this._context, this._index + 1);
+    const { questionId } = this;
+    return questionId ? this._context.getByParentQuestionId(questionId) : undefined;
+  }
+
+  followUp() {
+    const { questionId } = this;
+    return questionId ? this._context.getByParentQuestionId(questionId, { autoCreate: true }) : undefined;
   }
 
   // lifecycle //
   query({ q: question, ...payload } = {}) {
     payload = { ...payload, question };
-    // TODO: abort previous ongoing query
+    if (this.parentQuestionId) {
+      payload.parent_question_id = this.parentQuestionId;
+    }
+
+    // may need to cascade delete follow up workflows
+    this._deleteFollowUpIfNecessary();
+
+    // clear question id from previous session
+    if (this._questionId) {
+      this._context._byQid.delete(this._questionId);
+      this._questionId = undefined;
+    }
+
     this._sessions.new();
     this._sessions.start();
+
     this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload }));
+
     return this;
   }
 
-  // TODO: destroy() {}
+  _onDataUpdate(data) {
+    if (this._questionId) {
+      return;
+    }
+    const questionId = data && data.value && data.value.question_id;
+    // capture question ID and register at context
+    if (questionId) {
+      this._questionId = questionId;
+      this._context._byQid.set(questionId, this);
+    }
+  }
+
+  _onAnswerViewUpdate({ session, status, ongoing }) {
+    if (status === STATUS.INITIAL) {
+      return;
+    }
+    const eventName = status === STATUS.READY && !ongoing ? 'done' : status;
+    this._events.emit(eventName, { session });
+  }
+
+  _deleteFollowUpIfNecessary() {
+    if (!this._context._cascadeDeleteFollowUps || !this.next) {
+      return;
+    }
+    for (const element of this.next._views._containers.keys()) {
+      element.remove();
+    }
+    this.next.destroy();
+  }
+
+  _destroy() {
+    // TODO: abort ongoing request
+
+    // cascade first
+    this._deleteFollowUpIfNecessary();
+
+    const { parentQuestionId, questionId } = this;
+    if (parentQuestionId) {
+      this._context._byPqid.delete(parentQuestionId);
+    }
+    if (questionId) {
+      this._context._byQid.delete(questionId);
+    }
+
+    this._feedback._destroy();
+    super._destroy();
+  }
 
 }

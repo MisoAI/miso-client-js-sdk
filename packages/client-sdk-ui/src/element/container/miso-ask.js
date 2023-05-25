@@ -2,8 +2,8 @@ import MisoContainerElement from './miso-container.js';
 
 const TAG_NAME = 'miso-ask';
 
-const ATTR_INDEX = 'index';
-const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_INDEX]);
+const ATTR_PARENT_QUESTION_ID = 'parent-question-id';
+const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_PARENT_QUESTION_ID]);
 
 export default class MisoAskElement extends MisoContainerElement {
 
@@ -16,48 +16,41 @@ export default class MisoAskElement extends MisoContainerElement {
   }
 
   _getWorkflow(client) {
-    return this._getWorkflowByIndex(client, this.index);
+    return this._getWorkflowByParentQuestionId(client, this.parentQuestionId);
   }
 
-  _getWorkflowByIndex(client, index) {
-    return client.ui.asks.get(index);
+  _getWorkflowByParentQuestionId(client, id) {
+    return client.ui.asks.getByParentQuestionId(id, { autoCreate: true });
   }
 
   // properties //
-  get index() {
-    const attrValue = this.getAttribute(ATTR_INDEX);
-    // TODO
-    return attrValue ? Number(attrValue) : 0;
+  get parentQuestionId() {
+    return this.getAttribute(ATTR_PARENT_QUESTION_ID) || undefined;
   }
 
-  set index(value) {
-    // TODO: special value: 'last'
-    if (value !== undefined && typeof value !== 'number') {
-      // TODO
-      throw new TypeError('index must be undefined or a non-negative integer');
-    }
+  set parentQuestionId(value) {
     value = value && `${value}`;
     if (value) {
-      this.setAttribute(ATTR_INDEX, value);
+      this.setAttribute(ATTR_PARENT_QUESTION_ID, value);
     } else {
-      this.removeAttribute(ATTR_INDEX);
+      this.removeAttribute(ATTR_PARENT_QUESTION_ID);
     }
   }
 
   // lifecycle //
   attributeChangedCallback(attr, oldValue, newValue) {
     switch (attr) {
-      case ATTR_INDEX:
-        this._handleIndexUpdate(oldValue, newValue);
+      case ATTR_PARENT_QUESTION_ID:
+        this._handleParentQuestionIdUpdate(oldValue, newValue);
         break;
     }
   }
 
-  _handleIndexUpdate(oldIndex, newIndex) {
-    if (oldIndex === newIndex || !this._client) {
+  _handleParentQuestionIdUpdate(oldId, newId) {
+    if (oldId === newId || !this._client) {
       return;
     }
-    this._setWorkflow(this._getWorkflowByIndex(this._client, newIndex));
+    this._setWorkflow(this._getWorkflowByParentQuestionId(this._client, newId));
   }
 
 }

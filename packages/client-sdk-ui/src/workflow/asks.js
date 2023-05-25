@@ -1,33 +1,48 @@
+import { Component } from '@miso.ai/commons';
 import Ask from './ask';
 
-export default class Asks {
+export default class Asks extends Component {
 
   constructor(plugin, client) {
+    super('asks', plugin);
     this._plugin = plugin;
     this._client = client;
-    this._members = [];
-    new Ask(this, 0); // initialize with one workflow
+    this._byQid = new Map();
+    this._byPqid = new Map();
+    this._root = new Ask(this); // initialize with default workflow
   }
 
-  get count() {
-    return this._members.length;
-  }
-  
   get root() {
-    return this.get(0);
+    return this._root;
   }
 
-  get last() {
-    return this.get(this.count - 1);
+  get members() {
+    return [this._root, ...this._byPqid.values()];
   }
 
-  get(index = 0) {
-    return this._members[index];
+  getByQuestionId(questionId) {
+    if (typeof questionId !== 'string') {
+      throw new Error(`Required ID to be a string: ${questionId}`);
+    }
+    return this._byQid.get(questionId);
   }
 
-  _push(ask) {
-    this._members.push(ask);
-    // TODO: move containers with index="last" to the new one
+  getByParentQuestionId(parentQuestionId, { autoCreate = false } = {}) {
+    if (parentQuestionId === undefined) {
+      return this._root;
+    }
+    if (typeof parentQuestionId !== 'string') {
+      throw new Error(`Required ID to be a string: ${parentQuestionId}`);
+    }
+    let workflow = this._byPqid.get(parentQuestionId);
+    if (!workflow && autoCreate) {
+      workflow = new Ask(this, parentQuestionId);
+    }
+    return workflow;
+  }
+
+  cascadeDeleteFollowUps(value) {
+    this._cascadeDeleteFollowUps = value !== false;
   }
 
 }

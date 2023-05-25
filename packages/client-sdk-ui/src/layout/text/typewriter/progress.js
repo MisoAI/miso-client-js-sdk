@@ -5,16 +5,16 @@ export default class ProgressController {
   }
 
   get(prevState, newState) {
-    const cps = this._cps(newState.input, newState.timestamp);
+    const cps = this._cps(newState);
     const increment = Math.floor((newState.timestamp - prevState.timestamp) * cps / 1000);
     return prevState.cursor + increment;
   }
 
-  _cps({ done, doneAt }, now) {
+  _cps({ doneAt, timestamp }) {
     let cps = this._options.cps * (Math.random() + 0.5);
-    if (done) {
+    if (doneAt !== undefined) {
       // speed up gradually when input is done
-      cps *= (now - doneAt) / 250;
+      cps *= (timestamp - doneAt) / 250;
     }
     return cps;
   }

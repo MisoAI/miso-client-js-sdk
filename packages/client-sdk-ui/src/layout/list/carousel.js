@@ -62,10 +62,10 @@ export default class CarouselLayout extends CollectionLayout {
     this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
-  async render(element, state, options) {
-    this._dataState = state;
+  _render(element, states, controls) {
+    super._render(element, states, controls);
+    const { state } = states;
     this._itemCount = state.value ? state.value.length : undefined;
-    await super.render(element, state, options);
     this.syncSize();
   }
 

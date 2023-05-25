@@ -60,14 +60,12 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     ];
   }
 
-  async render(element, state, options = {}) {
-    const { silence } = options;
+  async render(element, state, controls) {
     if (element.childElementCount > 0) {
       // only render once, and also skip if there are children already to allow customized DOM
-      silence();
       return;
     }
-    await super.render(element, state, options);
+    await super.render(element, state, controls);
   }
 
   _handleKeyDown({ key, target }) {
@@ -92,6 +90,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (!value) {
       return;
     }
+    // TODO: q -> value
     view.hub.trigger(fields.query(), { q: value });
   }
 

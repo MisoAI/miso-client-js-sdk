@@ -49,8 +49,7 @@ export default class RadioLayout extends TemplateBasedLayout {
   }
 
   initialize(view) {
-    this._view = view;
-    const { proxyElement } = view;
+    const { proxyElement } = this._view = view;
     this._unsubscribes = [
       ...this._unsubscribes,
       view.hub.on(this._field, () => this._refresh()),
@@ -59,15 +58,11 @@ export default class RadioLayout extends TemplateBasedLayout {
     this._defaultValue ? this._select(this._defaultValue) : this._clear();
   }
 
-  async render(element, state, options = {}) {
-    const { silence } = options;
-    if (this._rendered) {
-      // only render once
-      silence();
-      return;
+  _preprocess(states, controls) {
+    if (states.rendered) {
+      controls.skip(); // only render once
     }
-    this._rendered = true;
-    await super.render(element, state, options);
+    return super._preprocess(states, controls);
   }
 
   _handleClick({ target }) {

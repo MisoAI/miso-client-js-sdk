@@ -7,6 +7,7 @@ export * from './validation';
 export * from './readiness';
 export * from './storage';
 export * from './url';
+export * from './capture';
 export { default as Resolution } from './resolution';
 export { default as Bulk } from './bulk';
 export { default as EventEmitter } from './events';

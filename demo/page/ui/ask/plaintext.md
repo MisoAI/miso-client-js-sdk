@@ -46,7 +46,9 @@ misocmd.push(() => {
   window.helpers.fetch.intercept({
     request: (request) => {
       // add header to force plaintext response
-      request.headers.append('x-answer-format', 'plaintext');
+      if (request.method.toLowerCase() === 'post' && request.url.indexOf('/api/ask/questions') > -1) {
+        request.headers.append('x-answer-format', 'plaintext');
+      }
       return request;
     }
   });

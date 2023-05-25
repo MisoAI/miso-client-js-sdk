@@ -20,7 +20,7 @@ export default class Ask extends ApiBase {
     return this._run(`questions/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
-  _iterable(questionId, { pollingInternal = 500, ...options } = {}) {
+  _iterable(questionId, { pollingInternal = 1000, ...options } = {}) {
     // TODO: abort signal
     let apiErrorCount = 0;
     const buffer = new ValueBuffer();

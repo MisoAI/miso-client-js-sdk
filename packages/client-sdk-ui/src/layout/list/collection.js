@@ -1,4 +1,3 @@
-import { requestAnimationFrame as raf } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY } from '../../constants';
 import TemplateBasedLayout from '../template';
 import { product } from '../templates';
@@ -67,54 +66,47 @@ export default class CollectionLayout extends TemplateBasedLayout {
     });
   }
 
-  initialize(view) {
-    this._view = view;
+  _preprocess({ state, rendered }) {
+    const incremental = this._shallRenderIncrementally(state, rendered);
+    const html = this._html(state, rendered, incremental);
+    return {
+      ...state,
+      incremental,
+      html,
+    };
   }
 
-  async render(element, state, { silence }) {
-    // keep track of incoming state
-    this._html = this.templates.root(this, state);
-    this._state = state;
-    silence();
-
-    // TODO: move incremental logic here
-
-    // only render the last update request
-    await raf(() => {
-      if (!this._html) {
-        return; // use _html as a flag of render request
-      }
-      // if rendering current state with updated data, do so by appending new elements to the list
-      const state = this._state;
-      const { session } = state;
-      const incremental = this._shallRenderIncrementally(state);
-      const listElement = incremental && this._getListElement(element);
-      if (listElement) {
-        const items = state.value.slice(this._rendered.value.length);
-        if (items.length > 0) {
-          listElement.insertAdjacentHTML('beforeend', this.templates.items(this, state, 'product', items));
-          this._view.updateState({ session });
-        }
-      } else {
-        element.innerHTML = this._html;
-        this._view.updateState({ session });
-      }
-
-      this._html = undefined;
-      this._rendered = state;
-    });
-  }
-
-  _shallRenderIncrementally(state) {
-    if (!this.options.incremental) {
-      return false;
+  _html(state, rendered, incremental) {
+    if (incremental) {
+      const items = state.value.slice(rendered.value.length);
+      return items.length > 0 ? this.templates.items(this, state, 'product', items) : '';
+    } else {
+      return this.templates.root(this, state);
     }
-    const { status, session = {} } = state;
-    const rendered = this._rendered || {};
-    return status === STATUS.READY &&
+  }
+
+  _render(element, { state }, { notifyUpdate }) {
+    const { incremental, html } = state;
+    if (incremental) {
+      if (html) {
+        const listElement = this._getListElement(element);
+        listElement.insertAdjacentHTML('beforeend', html);
+      } else {
+        notifyUpdate(false);
+      }
+    } else {
+      element.innerHTML = html;
+    }
+  }
+
+  _shallRenderIncrementally(state, rendered) {
+    // TODO: compare item ids as well
+    return this.options.incremental &&
+    rendered && rendered.value && rendered.value.length > 0 &&
+      state.status === STATUS.READY &&
       rendered.status === STATUS.READY &&
-      session && rendered.session &&
-      session.id === rendered.session.id;
+      state.session && rendered.session &&
+      state.session.id === rendered.session.id;
   }
 
   _getListElement(element) {

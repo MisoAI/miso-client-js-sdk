@@ -98,7 +98,7 @@ export default class ViewActor {
     this._data = data = this._sliceData(data || this._views._getData());
 
     // protocol: no reaction until session starts
-    const { session } = data;
+    const { session, status, ongoing } = data;
     const active = session && session.active;
     if (!force && !active) {
       return;
@@ -110,25 +110,22 @@ export default class ViewActor {
     }
 
     // render
-    let silent = false;
-    let error;
-    function silence() {
-      silent = true;
-    }
+    const notifyUpdate = (state = {}, options) => {
+      state !== false && this.updateState({ session, status, ongoing, ...state }, options);
+    };
     try {
-      await this._layout.render(element, data, { silence, previous: previousData });
-    } catch(e) {
-      this._error(e);
-      error = e;
+      await this._layout.render(element, data, { notifyUpdate });
+    } catch(error) {
+      this._error(error);
+      notifyUpdate({ error });
     }
-
-    // update view state
-    this.updateState({ session, error }, { silent });
   }
 
-  updateState({ session, error }, { silent = false } = {}) {
-    const status = error ? STATUS.ERRONEOUS : STATUS.READY;
-    const state = this._state = Object.freeze(trimObj({ session, status, error }));
+  updateState({ session, status, ongoing, error }, { silent = false } = {}) {
+    if (error) {
+      status = STATUS.ERRONEOUS;
+    }
+    const state = this._state = Object.freeze(trimObj({ session, status, ongoing, error }));
     const { role } = this;
     this.hub.update(fields.view(role), state, { silent });
   }

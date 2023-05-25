@@ -23,7 +23,7 @@ export default class ProxyElement {
   }
 
   _off(event, handler) {
-    const { element } = this._get();
+    const element = this._get();
     if (element) {
       element.removeEventListener(event, handler);
     }
