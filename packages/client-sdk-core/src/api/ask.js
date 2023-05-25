@@ -9,7 +9,7 @@ export default class Ask extends ApiBase {
 
   async questions(payload, options = {}) {
     const response = await this._run('questions', payload, options);
-    return new Answer(this, response);
+    return new Answer(this, response, options);
   }
 
   async _questions(payload, options) {
@@ -20,8 +20,11 @@ export default class Ask extends ApiBase {
     return this._run(`questions/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
-  _iterable(questionId, { pollingInternal = 1000, ...options } = {}) {
-    // TODO: abort signal
+  // TODO: move impl away
+  _iterable(questionId, { pollingInterval = 1000, signal, ...options } = {}) {
+    if (signal && signal.aborted) {
+      return [];
+    }
     let apiErrorCount = 0;
     const buffer = new ValueBuffer();
     const intervalId = setInterval(async () => {
@@ -29,12 +32,12 @@ export default class Ask extends ApiBase {
       try {
         response = await this._get(questionId, options);
       } catch(error) {
+        console.error(error); // TODO
         apiErrorCount++;
         if (apiErrorCount > 10) {
           clearInterval(intervalId);
-          // TODO: cascade to buffer and user
+          buffer.error(error);
         }
-        console.error(error); // TODO
         return;
       }
       const { finished } = response;
@@ -42,7 +45,15 @@ export default class Ask extends ApiBase {
       if (response.finished) {
         clearInterval(intervalId);
       }
-    }, pollingInternal);
+    }, pollingInterval);
+
+    if (signal && signal.addEventListener) {
+      signal.addEventListener('abort', () => {
+        clearInterval(intervalId);
+        // TODO: optimize: abort current request as well
+        buffer.abort();
+      });
+    }
 
     return buffer;
   }
@@ -51,10 +62,11 @@ export default class Ask extends ApiBase {
 
 class Answer {
 
-  constructor(api, { question_id }, options = {}) {
+  constructor(api, { question_id }, { signal, ...options } = {}) {
     this._api = api;
     this._id = question_id;
-    this._options = options;
+    this._ac = new AbortController();
+    this._options = { ...options, signal: this._ac.signal };
   }
 
   get id() {
@@ -64,6 +76,10 @@ class Answer {
   async get(options) {
     options = { ...this._options, ...options };
     return this._api._get(this._id, options);
+  }
+
+  abort() {
+    this._ac.abort();
   }
 
   [Symbol.asyncIterator]() {

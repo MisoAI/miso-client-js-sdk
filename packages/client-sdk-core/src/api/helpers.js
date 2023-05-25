@@ -13,12 +13,11 @@ export default class ApiHelpers {
     method = 'POST',
     timeout,
   } = {}) {
+    // TODO: external abort signal
     // TODO: organize arguments
     const body = method !== 'GET' && payload != undefined ? JSON.stringify(payload) : undefined;
 
-    const controller = timeout && new AbortController();
-    const signal = controller && controller.signal;
-    const timeoutId = controller && setTimeout(() => controller.abort(), timeout);
+    const signal = timeout ? AbortSignal.timeout(timeout) : undefined;
 
     const res = await window.fetch(url, trimObj({
       method,
@@ -27,8 +26,6 @@ export default class ApiHelpers {
       mode: 'cors',
       signal,
     }));
-
-    timeoutId && clearTimeout(timeoutId);
 
     const resBody = await res.json();
     if (res.status >= 400 || resBody.errors) {

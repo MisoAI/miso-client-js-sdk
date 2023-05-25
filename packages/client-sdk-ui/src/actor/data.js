@@ -27,7 +27,14 @@ export default class DataActor {
     if (!this._source) {
       return;
     }
-    // TODO: abort ongoing data fetch if any
+
+    // abort ongoing data fetch if any
+    if (!this._session || (session.index !== this._session.index)) {
+      // new session, abort preview data fetch if necessary
+      this._ac && this._ac.abort();
+      this._ac = new AbortController();
+    }
+    this._session = session;
 
     // reflect session update
     this._emitData({ session });
@@ -40,8 +47,9 @@ export default class DataActor {
     }
     const { session } = this._hub.states;
     try {
-      // TODO: abort signal
-      const value = await this._source({ session, ...event }, {});
+      const { signal } = this._ac || {};
+      const options = { ...event.options, signal };
+      const value = await this._source({ session, ...event, options });
       // takes either iterator or iterable, sync or async
       const iterator = value && (typeof value.next === 'function' ? value : value[Symbol.asyncIterator]);
       if (iterator) {
