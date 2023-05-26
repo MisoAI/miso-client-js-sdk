@@ -40,7 +40,7 @@ export default class ContainerLayout extends RafLayout {
   _shallRenderBanner(element) {
     const { logo: globalLogo } = this.options;
     const { logo: localLogo } = element;
-    const logo = (localLogo !== undefined && localLogo !== 'auto' ? localLogo : globalLogo) || 'auto';
+    const logo = (localLogo !== undefined && localLogo !== 'auto' ? localLogo : globalLogo);
     // logo === 'auto': only add banner when result-typed components are present
     return logo === 'auto' ? element.components.some(({ role }) => role === ROLE.RESULTS || role === ROLE.ANSWER) : !!logo;
   }

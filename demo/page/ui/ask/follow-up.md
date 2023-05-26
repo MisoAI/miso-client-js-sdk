@@ -78,7 +78,7 @@ const template = (data) => {
   }
   return html;
 };
-function prepareFollowUp(workflow) {
+function setup(workflow) {
   // when a new query starts, associate the last section container to that workflow
   workflow.on('loading', () => {
     relatedResourcesContainer.workflow = workflow;
@@ -107,8 +107,8 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const rootWorkflow = client.ui.ask;
-  client.ui.asks.on('create', prepareFollowUp);
-  prepareFollowUp(rootWorkflow);
+  client.ui.asks.on('create', setup);
+  setup(rootWorkflow);
   rootWorkflow.on('loading', () => {
     // clean up the entire follow-ups section
     followUpsSection.innerHTML = '';
