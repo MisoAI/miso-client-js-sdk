@@ -3,15 +3,17 @@ $statuses: "initial", "loading", "erroneous", "ready";
 miso-ask,
 miso-search,
 miso-recommendation {
+  display: block;
+
   &[visible-when],
   [visible-when] {
-    display: none;
+    display: none !important;
   }
   @each $status in $statuses {
     &[status="#{$status}"] {
       &[visible-when~="#{$status}"],
       [visible-when~="#{$status}"] {
-        display: initial;
+        display: block !important;
       }
     }
   }
