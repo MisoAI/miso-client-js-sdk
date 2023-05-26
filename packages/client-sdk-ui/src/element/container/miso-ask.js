@@ -3,7 +3,10 @@ import MisoContainerElement from './miso-container.js';
 const TAG_NAME = 'miso-ask';
 
 const ATTR_PARENT_QUESTION_ID = 'parent-question-id';
-const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_PARENT_QUESTION_ID]);
+const OBSERVED_ATTRIBUTES = Object.freeze([
+  ...MisoContainerElement.observedAttributes,
+  ATTR_PARENT_QUESTION_ID,
+]);
 
 export default class MisoAskElement extends MisoContainerElement {
 
@@ -51,6 +54,8 @@ export default class MisoAskElement extends MisoContainerElement {
       case ATTR_PARENT_QUESTION_ID:
         this._handleParentQuestionIdUpdate(oldValue, newValue);
         break;
+      default:
+        super.attributeChangedCallback(attr, oldValue, newValue);
     }
   }
 

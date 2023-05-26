@@ -14,29 +14,28 @@ export default class ContainerLayout extends RafLayout {
     return TYPE;
   }
 
-  constructor({ logo = 'auto', ...options } = {}) {
-    super({
-      logo,
-      ...options,
-    });
+  constructor(options = {}) {
+    super(options);
   }
 
   _render(element, { state }) {
-    this._renderBanner(element);
+    this._syncBanner(element);
     this._syncStatus(element, { state });
   }
 
-  _renderBanner(element) {
-    // add banner only if necessary
-    const banner = MisoBannerElement.tagName;
+  _syncBanner(element) {
+    const bannerTagName = MisoBannerElement.tagName;
     const shallRender = this._shallRenderBanner(element);
-    if (shallRender && !element.querySelector(banner)) {
-      element.insertAdjacentHTML('beforeend', `<${banner} visible-when="ready"></${banner}>`);
+    const bannerElement = element.querySelector(bannerTagName);
+    if (shallRender && !bannerElement) {
+      element.insertAdjacentHTML('beforeend', `<${bannerTagName} visible-when="ready"></${bannerTagName}>`);
+    } else if (!shallRender && bannerElement) {
+      bannerElement.remove();
     }
   }
 
   _shallRenderBanner(element) {
-    const { logo } = this.options;
+    const { logo } = element;
     // logo === 'auto': only add banner when result-typed components are present
     return logo === 'auto' ? element.components.some(({ role }) => role === ROLE.RESULTS || role === ROLE.ANSWER) : !!logo;
   }

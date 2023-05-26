@@ -3,7 +3,10 @@ import MisoContainerElement from './miso-container.js';
 const TAG_NAME = 'miso-recommendation';
 
 const ATTR_UNIT_ID = 'unit-id';
-const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_UNIT_ID]);
+const OBSERVED_ATTRIBUTES = Object.freeze([
+  ...MisoContainerElement.observedAttributes,
+  ATTR_UNIT_ID,
+]);
 
 export default class MisoRecommendationElement extends MisoContainerElement {
 
@@ -43,6 +46,8 @@ export default class MisoRecommendationElement extends MisoContainerElement {
       case ATTR_UNIT_ID:
         this._handleUnitIdUpdate(oldValue, newValue);
         break;
+      default:
+        super.attributeChangedCallback(attr, oldValue, newValue);
     }
   }
 

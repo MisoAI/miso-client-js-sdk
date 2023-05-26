@@ -16,7 +16,7 @@ export default class Asks extends Component {
     return this._root;
   }
 
-  get members() {
+  get workflows() {
     return [this._root, ...this._byPqid.values()];
   }
 
@@ -39,10 +39,6 @@ export default class Asks extends Component {
       workflow = new Ask(this, parentQuestionId);
     }
     return workflow;
-  }
-
-  cascadeDeleteFollowUps(value) {
-    this._cascadeDeleteFollowUps = value !== false;
   }
 
 }

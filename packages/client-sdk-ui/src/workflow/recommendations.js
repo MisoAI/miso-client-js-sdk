@@ -9,7 +9,7 @@ export default class Recommendations {
     this._members = new Map();
   }
 
-  units() {
+  workflows() {
     return [...this._members.values()];
   }
 

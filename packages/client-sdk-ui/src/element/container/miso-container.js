@@ -1,6 +1,41 @@
 import { getClient } from '../utils';
 
+const ATTR_LOGO = 'logo';
+const DEFAULT_LOGO_VALUE = 'auto';
+const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_LOGO]);
+
+function logoAttrToProp(value) {
+  if (!value) {
+    return DEFAULT_LOGO_VALUE;
+  }
+  switch (value) {
+    case 'true':
+      return true;
+    case 'false':
+      return false;
+    default:
+      throw new Error(`Invalid logo attribute value: ${value}.`);
+  }
+}
+
+function logoPropToAttr(value) {
+  switch (value) {
+    case DEFAULT_LOGO_VALUE:
+      return undefined;
+    case true:
+      return 'true';
+    case false:
+      return 'false';
+    default:
+      throw new Error(`Invalid logo property value: ${value}.`);
+  }
+}
+
 export default class MisoContainerElement extends HTMLElement {
+
+  static get observedAttributes() {
+    return OBSERVED_ATTRIBUTES;
+  }
 
   constructor() {
     super();
@@ -8,12 +43,29 @@ export default class MisoContainerElement extends HTMLElement {
     this._components = new Set();
   }
 
+  // properties //
   get isContainer() {
     return true;
   }
 
   get workflow() {
     return this._workflow;
+  }
+
+  get logo() {
+    return logoAttrToProp(this.getAttribute(ATTR_LOGO));
+  }
+
+  set logo(value) {
+    if (this.logo === value) {
+      return;
+    }
+    const attrValue = logoPropToAttr(value);
+    if (attrValue) {
+      this.setAttribute(ATTR_LOGO, attrValue);
+    } else {
+      this.removeAttribute(ATTR_LOGO);
+    }
   }
 
   // lifecycle //
@@ -43,6 +95,23 @@ export default class MisoContainerElement extends HTMLElement {
       workflow._views.addContainer(this);
     }
     this._workflow = workflow;
+  }
+
+  attributeChangedCallback(attr, oldValue, newValue) {
+    switch (attr) {
+      case ATTR_LOGO:
+        this._handleLogoUpdate(oldValue, newValue);
+        break;
+    }
+  }
+
+  _handleLogoUpdate(oldAttrValue, newAttrValue) {
+    const oldPropValue = logoAttrToProp(oldAttrValue);
+    const newPropValue = logoAttrToProp(newAttrValue);
+    if (oldPropValue === newPropValue || !this._workflow) {
+      return;
+    }
+    this._workflow._views.refreshElement(this);
   }
 
   // components //

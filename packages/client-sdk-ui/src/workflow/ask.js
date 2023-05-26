@@ -72,9 +72,6 @@ export default class Ask extends Workflow {
       payload.parent_question_id = this.parentQuestionId;
     }
 
-    // may need to cascade delete follow up workflows
-    this._deleteFollowUpIfNecessary();
-
     // clear question id from previous session
     if (this._questionId) {
       this._context._byQid.delete(this._questionId);
@@ -109,19 +106,7 @@ export default class Ask extends Workflow {
     this._events.emit(eventName, { session });
   }
 
-  _deleteFollowUpIfNecessary() {
-    if (!this._context._cascadeDeleteFollowUps || !this.next) {
-      return;
-    }
-    this.next.destroy();
-  }
-
   _destroy() {
-    // TODO: abort ongoing request
-
-    // cascade first
-    this._deleteFollowUpIfNecessary();
-
     const { parentQuestionId, questionId } = this;
     if (parentQuestionId) {
       this._context._byPqid.delete(parentQuestionId);

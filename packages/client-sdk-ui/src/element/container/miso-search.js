@@ -4,6 +4,10 @@ const TAG_NAME = 'miso-search';
 
 export default class MisoSearchElement extends MisoContainerElement {
 
+  static get observedAttributes() {
+    return MisoContainerElement.observedAttributes;
+  }
+
   static get tagName() {
     return TAG_NAME;
   }

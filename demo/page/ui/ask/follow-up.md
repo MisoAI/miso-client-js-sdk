@@ -29,7 +29,7 @@
   </miso-ask>
 </section>
 <section>
-  <miso-ask visible-when="ready">
+  <miso-ask visible-when="ready" logo="false">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
     <hr>
@@ -42,7 +42,7 @@
 <section id="follow-ups">
 </section>
 <section>
-  <miso-ask id="related-resources" visible-when="ready">
+  <miso-ask id="related-resources" visible-when="ready" logo="true">
     <hr>
     <div class="phrase">Go beyond, and learn more about this topic:</div>
     <miso-related-resources></miso-related-resources>
@@ -54,7 +54,7 @@
   <miso-ask visible-when="initial loading" parent-question-id="{{parentQuestionId}}">
     <miso-query></miso-query>
   </miso-ask>
-  <miso-ask visible-when="ready" parent-question-id="{{parentQuestionId}}">
+  <miso-ask visible-when="ready" parent-question-id="{{parentQuestionId}}" logo="false">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
     <hr>
@@ -79,9 +79,11 @@ const template = (data) => {
   return html;
 };
 function prepareFollowUp(workflow) {
+  // when a new query starts, associate the last section container to that workflow
   workflow.on('loading', () => {
     relatedResourcesContainer.workflow = workflow;
   });
+  // when a answer is fully populated, insert a new section for the follow-up question
   workflow.on('done', () => {
     followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
   });
@@ -104,13 +106,19 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
-  const workflow = client.ui.ask;
+  const rootWorkflow = client.ui.ask;
   client.ui.asks.on('create', prepareFollowUp);
-  prepareFollowUp(workflow);
-  workflow.on('loading', () => {
+  prepareFollowUp(rootWorkflow);
+  rootWorkflow.on('loading', () => {
+    // clean up the entire follow-ups section
     followUpsSection.innerHTML = '';
+    // destroy all follow-up workflows
+    for (const workflow of client.ui.asks.workflows) {
+      if (workflow !== rootWorkflow) {
+        workflow.destroy();
+      }
+    }
   });
-  client.ui.asks.cascadeDeleteFollowUps(true);
 });
 </script>
 {% endraw %}
