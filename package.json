@@ -25,6 +25,7 @@
     "start:client-sdk-shopify": "npm run start --workspace=packages/client-sdk-shopify",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
+    "test:v2": "npm run test:v2 --workspaces --if-present",
     "test:watch": "npm run build:esm && jest --no-cache --watch",
     "test": "npm run build:clean && npm run build:esm && npm run build:cjs && jest --no-cache",
     "version": "node ./bin/version.mjs",
@@ -60,7 +61,8 @@
     "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-serve": "^2.0.2",
     "sass": "^1.49.8",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "uvu": "^0.5.6"
   },
   "overrides": {
     "terser": "^5.15.0"
