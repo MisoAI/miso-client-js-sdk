@@ -13,6 +13,8 @@
   --miso-list-title-lines: 1;
   // how many lines to show for description text
   --miso-list-description-lines: 3;
+  // currency symbol for price properties
+  --miso-currency-symbol: "$";
 
   ul.miso-list__list {
     list-style: none;

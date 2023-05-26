@@ -13,6 +13,8 @@
   --miso-carousel-image-aspect-ratio: 1;
   // how many lines to show for title text
   --miso-carousel-title-lines: 3;
+  // currency symbol for price properties
+  --miso-currency-symbol: "$";
 
   position: relative;
   display: flex;

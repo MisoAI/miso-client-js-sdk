@@ -13,6 +13,8 @@
   --miso-cards-title-lines: 2;
   // how many lines to show for description text
   --miso-cards-description-lines: 4;
+  // currency symbol for price properties
+  --miso-currency-symbol: "$";
 
   ul.miso-cards__list {
     list-style: none;
