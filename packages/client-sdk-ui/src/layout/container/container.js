@@ -14,8 +14,11 @@ export default class ContainerLayout extends RafLayout {
     return TYPE;
   }
 
-  constructor(options = {}) {
-    super(options);
+  constructor({ logo = 'auto', ...options } = {}) {
+    super({
+      logo,
+      ...options,
+    });
   }
 
   _render(element, { state }) {
@@ -35,7 +38,9 @@ export default class ContainerLayout extends RafLayout {
   }
 
   _shallRenderBanner(element) {
-    const { logo } = element;
+    const { logo: globalLogo } = this.options;
+    const { logo: localLogo } = element;
+    const logo = (localLogo !== undefined && localLogo !== 'auto' ? localLogo : globalLogo) || 'auto';
     // logo === 'auto': only add banner when result-typed components are present
     return logo === 'auto' ? element.components.some(({ role }) => role === ROLE.RESULTS || role === ROLE.ANSWER) : !!logo;
   }
