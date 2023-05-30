@@ -20,8 +20,6 @@
     --miso-list-item-gap: 0.65rem;
     --miso-list-description-lines: 3;
   }
-  .follow-up {
-  }
 </style>
 <section>
   <miso-ask>
