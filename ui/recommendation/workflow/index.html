@@ -105,6 +105,8 @@
             <a href="/miso-client-js-sdk/ui/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -138,6 +140,8 @@
             <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/search-box/">Search box</a>
           </li></ul>
       </div>
     </li></ul>
@@ -161,9 +165,9 @@
 </ul>
 <h3 id="access-workflow" tabindex="-1">Access workflow</h3>
 <p>You can access the workflow as the following:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendation<span class="token punctuation">;</span></code></pre>
 <p>When there are multiple recommendation blocks in the page or in your site, you can access them by their unit IDs:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> unitId <span class="token operator">=</span> <span class="token string">'after-article-1'</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> unitId <span class="token operator">=</span> <span class="token string">'after-article-1'</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendations<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>The workflow will connect to a <code>&lt;miso-recommendation&gt;</code> element with a matching <code>unit-id</code> attribute:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>after-article-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  ...<br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <p>Workflow performance with different unit IDs are tracked separately.</p>
@@ -211,7 +215,7 @@
         </div>
       </main>
     </div>
-    <footer class="py-5 mt-5 bg-light">
+    <footer class="py-5 bg-light">
       <div class="container-lg">
   <div class="row gx-4">
     <div id="footer-notes" class="col-md-4">

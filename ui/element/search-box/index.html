@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Overview</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/" />
-<meta name="description" content="UI plugin overview" />
+<title>Miso SDK for JavaScript - UI - Search box</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/element/search-box/" />
+<meta name="description" content="The element for search box" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Overview" />
-<meta property="og:description" content="UI plugin overview" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Search box" />
+<meta property="og:description" content="The element for search box" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/search-box/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Overview">
-<meta name="twitter:description" content="UI plugin overview">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Search box">
+<meta name="twitter:description" content="The element for search box">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/element/search-box/">
 
 
 
@@ -89,7 +89,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active ">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
@@ -140,7 +140,7 @@
             <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/ui/element/search-box/">Search box</a>
           </li></ul>
       </div>
@@ -151,42 +151,56 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>UI extension for Miso client SDK</h1><hr>
+          <h1>Elements - search box</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso client SDK comes with a built-in UI extension to let you quickly integrate Miso API results into your site.</p>
-<h3>Table of Content</h3>
-<div class="chapter-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4 "><h5 class="title mb-2">
-        Overview
-      </h5>
-      <div>
-        <ul class="page-list list-unstyled ps-3"><li class="page ">
-            <div>
-              <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
-            </div><p class="mb-0 ps-3">
-              How to setup the UI plugin.
-            </p></li></ul>
-      </div></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/ask/">Ask</a>
-      </h5><p class="mb-0">
-        UI for Miso ask API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
-      </h5><p class="mb-0">
-        UI for Miso recommendation
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/search/">Search</a>
-      </h5><p class="mb-0">
-        UI for Miso search
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/element/">Elements</a>
-      </h5><p class="mb-0">
-        Miso custom elements
-      </p></li></ul>
-</div>
+          <p>The following elements are classified as search box elements:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Element tag name</th>
+      <th scope="col">Used in</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;miso-query&gt;</code></td>
+      <td>
+        <a href="/miso-client-js-sdk/ui/search/elements/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h3 id="layouts" tabindex="-1">Layouts</h3>
+<p>The is currently no configuration options for search box elements.</p>
+<h4 id="customize-styles" tabindex="-1">Customize styles</h4>
+<p>You can customize the look-and-feel of any layouts by adding additional CSS rules. The built-in layouts have the following base class names:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Layout</th>
+      <th scope="col">CSS class name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SearchBox</td>
+      <td><code>miso-search-box</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>If you want to change the base class name of the elements, specify it in the options:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'my-miso-search-box'</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="customize-dom-structure" tabindex="-1">Customize DOM structure</h4>
+<p>Simply leave elements inside <code>&lt;miso-query&gt;</code> element:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-query</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>submit<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-query</span><span class="token punctuation">></span></span></code></pre>
+<p>The layout handles DOM events by the following rules:</p>
+<ol>
+<li>The first <code>&lt;input&gt;</code> element without attribute <code>type=&quot;submit&quot;</code> holds the query text.</li>
+<li>When clicking on an element with attribute <code>type=&quot;submit&quot;</code>, it submits the query.</li>
+</ol>
 
         </div>
       </main>

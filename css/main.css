@@ -1,3 +1,8 @@
+:root {
+  --color-token-deleted-bg: hsl(350deg 100% 88% / 47%);
+  --color-token-inserted-bg: hsl(120deg 73% 75% / 35%);
+}
+
 pre[class*=language-],
 code {
   font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -78,6 +83,19 @@ pre[class*=language-] ::selection {
 }
 .token.namespace {
   opacity: 0.75;
+}
+.token.deleted {
+  background-color: var(--color-token-deleted-bg);
+}
+.token.inserted {
+  background-color: var(--color-token-inserted-bg);
+}
+.token.prefix.unchanged, .token.prefix.inserted, .token.prefix.deleted {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.token:not(.prefix).inserted, .token:not(.prefix).deleted {
+  display: block;
 }
 
 :root {
@@ -280,7 +298,7 @@ aside > nav {
     position: sticky;
     top: 1rem;
     display: block !important;
-    height: calc(100vh - 7rem);
+    height: calc(100vh - 2rem);
     padding-left: 1.25rem;
     margin-left: -0.25rem;
     overflow-y: auto;

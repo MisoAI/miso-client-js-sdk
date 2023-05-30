@@ -105,6 +105,8 @@
             <a href="/miso-client-js-sdk/ui/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -138,6 +140,8 @@
             <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
           </li><li class="page active ">
             <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/search-box/">Search box</a>
           </li></ul>
       </div>
     </li></ul>
@@ -167,11 +171,11 @@
         <a href="/miso-client-js-sdk/ui/search/elements/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/ui/recommendation/elements/">Recommendation</a>
       </td>
     </tr>
-    <tr class="__preview__">
+    <tr>
       <td><code>&lt;miso-sources&gt;</code></td>
       <td><a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a></td>
     </tr>
-    <tr class="__preview__">
+    <tr>
       <td><code>&lt;miso-related-resources&gt;</code></td>
       <td><a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a></td>
     </tr>
@@ -187,7 +191,7 @@
 <li><code>cards</code></li>
 <li><code>carousel</code></li>
 </ul>
-<h5 id="customize-styles" tabindex="-1">Customize styles</h5>
+<h4 id="customize-styles" tabindex="-1">Customize styles</h4>
 <p>You can customize the look-and-feel of any layouts by adding additional CSS rules. The built-in layouts have the following base class names:</p>
 <table class="table">
   <thead>
@@ -213,7 +217,7 @@
 </table>
 <p>If you want to change the base class name of the elements, specify it in the options:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'my-miso-list'</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h5 id="customize-dom-structure" tabindex="-1">Customize DOM structure</h5>
+<h4 id="customize-dom-structure" tabindex="-1">Customize DOM structure</h4>
 <p>In addition, to customize product item DOM structure, you can override the template function:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">product</span><span class="token operator">:</span> renderProduct<br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">function</span> <span class="token function">renderProduct</span><span class="token punctuation">(</span><span class="token parameter">layout<span class="token punctuation">,</span> state<span class="token punctuation">,</span> product</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> html <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> html<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
 <p>The render function takes the following arguments and should return an HTML string.</p>
@@ -227,7 +231,7 @@
         </div>
       </main>
     </div>
-    <footer class="py-5 mt-5 bg-light">
+    <footer class="py-5 bg-light">
       <div class="container-lg">
   <div class="row gx-4">
     <div id="footer-notes" class="col-md-4">

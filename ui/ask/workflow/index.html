@@ -105,6 +105,8 @@
             <a href="/miso-client-js-sdk/ui/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -138,6 +140,8 @@
             <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/search-box/">Search box</a>
           </li></ul>
       </div>
     </li></ul>
@@ -152,21 +156,28 @@
         </div>
         
         <div class="content ps-lg-4">
-          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display. An <code>ask</code> workflow is a type of workflow for Miso search API, which allows you:</p>
+          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display. Use <code>ask</code> workflow to work with Miso <a href="/miso-client-js-sdk/sdk/ask/" target="_blank" rel="noopener">ask</a> API, which allows you:</p>
 <ul>
 <li>Configure API default payload.</li>
 <li>Configure the look and feel of UI elements.</li>
 </ul>
 <h3 id="access-workflow" tabindex="-1">Access workflow</h3>
-<p>You can access the workflow as the following:</p>
+<p>You can access the (root) workflow as the following:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span></code></pre>
+<p>When there are multiple workflows, you can retrieve all of them or by question ID or by parent question ID:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflows <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span>workflows<span class="token punctuation">;</span> <span class="token comment">// returns an array of workflows</span><br><br><span class="token keyword">const</span> workflow0 <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">getByQuestionId</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">const</span> workflow1 <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">getByParentQuestionId</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>You can also navigate through the question chain:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> nextWorkflow0 <span class="token operator">=</span> workflow<span class="token punctuation">.</span>next<span class="token punctuation">;</span> <span class="token comment">// undefined if there is no follow-up question</span><br><span class="token keyword">const</span> nextWorkflow1 <span class="token operator">=</span> workflow<span class="token punctuation">.</span><span class="token function">getOrCreateNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// create a new workflow if absent</span><br><span class="token keyword">const</span> previousWorkflow <span class="token operator">=</span> workflow<span class="token punctuation">.</span>previous<span class="token punctuation">;</span> <span class="token comment">// undefined for the root workflow</span></code></pre>
+<p>See <a href="/miso-client-js-sdk/ui/ask/follow-up/" target="_blank" rel="noopener">follow-up questions</a> for details.</p>
+<h3 id="properties" tabindex="-1">Properties</h3>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> questionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span><br><span class="token keyword">const</span> parentQuestionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>parentQuestionId<span class="token punctuation">;</span></code></pre>
 <h3 id="configure-api" tabindex="-1">Configure API</h3>
 <p>You can configure the default search API payload:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token string">'questions'</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>For example, to make the API return <code>8</code> products instead of the default value:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token string">'questions'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">8</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>Given a question <code>Who's the best doggo?</code>, the API payload will be:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"Who's the best doggo?"</span><span class="token punctuation">,</span><br>  <span class="token property">"rows"</span><span class="token operator">:</span> <span class="token number">8</span><br><span class="token punctuation">}</span></code></pre>
+<p>Given a question <code>What's the meaing of life?</code>, the API payload will be:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"What's the meaing of life?"</span><span class="token punctuation">,</span><br>  <span class="token property">"rows"</span><span class="token operator">:</span> <span class="token number">8</span><br><span class="token punctuation">}</span></code></pre>
 <p>Available <code>apiName</code> values are:</p>
 <table class="table">
   <thead>
@@ -191,11 +202,16 @@
 <p>To hide Miso logo:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>See <a href="/miso-client-js-sdk/ui/ask/elements/" target="_blank" rel="noopener">elements</a> section for details.</p>
+<h3 id="events" tabindex="-1">Events</h3>
+<p>Events on workflow collection:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">workflow</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When a new workflow is created</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Events on individual workflow:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span> <span class="token comment">// or other workflow</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'loading'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When API is called and we are waiting for the response</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'ready'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer starts to display</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer is fully populated</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></code></pre>
 
         </div>
       </main>
     </div>
-    <footer class="py-5 mt-5 bg-light">
+    <footer class="py-5 bg-light">
       <div class="container-lg">
   <div class="row gx-4">
     <div id="footer-notes" class="col-md-4">

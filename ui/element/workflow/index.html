@@ -105,6 +105,8 @@
             <a href="/miso-client-js-sdk/ui/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -138,6 +140,8 @@
             <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/search-box/">Search box</a>
           </li></ul>
       </div>
     </li></ul>
@@ -161,7 +165,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr class="__preview__">
+    <tr>
       <td><code>&lt;miso-ask&gt;</code></td>
       <td><a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a></td>
     </tr>
@@ -179,8 +183,10 @@
 <p>You can configure the layout options for the workflow elements:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">setLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token comment">//...</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="logo" tabindex="-1">Logo</h4>
-<p>Configure the logo display:</p>
+<p>Turn off Miso logo display globally:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">setLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Configure Miso logo display for each workflow element:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-ask</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-ask</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-search</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-search</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <table class="table">
   <thead>
     <tr>
@@ -211,7 +217,7 @@
         </div>
       </main>
     </div>
-    <footer class="py-5 mt-5 bg-light">
+    <footer class="py-5 bg-light">
       <div class="container-lg">
   <div class="row gx-4">
     <div id="footer-notes" class="col-md-4">

@@ -105,6 +105,8 @@
             <a href="/miso-client-js-sdk/ui/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -138,6 +140,8 @@
             <a href="/miso-client-js-sdk/ui/element/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/element/collections/">Collections</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/element/search-box/">Search box</a>
           </li></ul>
       </div>
     </li></ul>
@@ -163,7 +167,7 @@
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">visible-when</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ready<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-results</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-results</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <h3 id="layouts" tabindex="-1">Layouts</h3>
 <p>You can configure the details of the Miso elements using workflow API:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token operator">...</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token operator">...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendation<span class="token punctuation">;</span><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token operator">...</span><br>  <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token operator">...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>You can find configuration details in the following sections:</p>
 <ul>
 <li><a href="/miso-client-js-sdk/ui/element/workflow/" target="_blank" rel="noopener">Workflow</a> (<code>container</code>)</li>
@@ -173,7 +177,7 @@
         </div>
       </main>
     </div>
-    <footer class="py-5 mt-5 bg-light">
+    <footer class="py-5 bg-light">
       <div class="container-lg">
   <div class="row gx-4">
     <div id="footer-notes" class="col-md-4">
