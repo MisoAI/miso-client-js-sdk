@@ -60,7 +60,7 @@ export default class Ask extends Workflow {
     return questionId ? this._context.getByParentQuestionId(questionId) : undefined;
   }
 
-  followUp() {
+  getOrCreateNext() {
     const { questionId } = this;
     return questionId ? this._context.getByParentQuestionId(questionId, { autoCreate: true }) : undefined;
   }

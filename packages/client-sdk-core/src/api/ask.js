@@ -64,18 +64,18 @@ class Answer {
 
   constructor(api, { question_id }, { signal, ...options } = {}) {
     this._api = api;
-    this._id = question_id;
+    this._questionId = question_id;
     this._ac = new AbortController();
     this._options = { ...options, signal: this._ac.signal };
   }
 
-  get id() {
-    return this._id;
+  get questionId() {
+    return this._questionId;
   }
 
   async get(options) {
     options = { ...this._options, ...options };
-    return this._api._get(this._id, options);
+    return this._api._get(this._questionId, options);
   }
 
   abort() {
@@ -83,7 +83,7 @@ class Answer {
   }
 
   [Symbol.asyncIterator]() {
-    return this._api._iterable(this._id, this._options)[Symbol.asyncIterator]();
+    return this._api._iterable(this._questionId, this._options)[Symbol.asyncIterator]();
   }
 
 }

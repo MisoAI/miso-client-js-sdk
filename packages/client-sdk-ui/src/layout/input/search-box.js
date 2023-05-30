@@ -82,7 +82,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
 
   async _submit() {
     const view = this._view;
-    const input = this._input || (this._input = view.element && view.element.querySelector('input'));
+    const input = this._input || (this._input = view.element && view.element.querySelector('input:not([type="submit"])'));
     if (!input) {
       return;
     }
