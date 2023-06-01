@@ -6,6 +6,8 @@ sections:
     path: /ask/basic
   - title: Follow Up
     path: /ask/follow-up
+  - title: Syntax highlight
+    path: /ask/syntax-highlight
   - title: Plaintext
     path: /ask/plaintext
 - title: Search
