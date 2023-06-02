@@ -89,15 +89,8 @@ function setup(workflow) {
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   // TODO: better timing management
-  window.helpers.fetch.intercept({
-    request: (request) => {
-      // add header to force plaintext response
-      if (request.method.toLowerCase() === 'post' && request.url.indexOf('/api/ask/questions') > -1) {
-        request.headers.append('x-answer-sampling', '0.5');
-        request.headers.append('x-speed-rate', '2');
-      }
-      return request;
-    }
+  window.helpers.doggo.config({
+    answer: { sampling: 0.5 }, speedRate: 2
   });
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient({

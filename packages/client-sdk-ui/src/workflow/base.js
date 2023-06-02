@@ -51,7 +51,7 @@ export default class Workflow extends Component {
 
     this._unsubscribes = [];
 
-    this.useSource('api');
+    this._data.source = sources.api(this._client);
   }
 
   get uuid() {
@@ -71,14 +71,48 @@ export default class Workflow extends Component {
     return this._hub.states;
   }
 
+  // lifecycle //
+  reset() {
+    this._sessions.new();
+    return this;
+  }
+
+  start() {
+    this._sessions.start();
+    return this;
+  }
+
+  restart() {
+    this.reset();
+    this.start();
+    return this;
+  }
+
   // states //
   updateData(data) {
-    this._assertActive();
-    this._hub.update(fields.data(), {
-      session: this.session,
-      ...data,
-    });
+    if (!data) {
+      throw new Error(`Data is required.`);
+    }
+    const { session } = data;
+    if (!session) {
+      throw new Error(`Session is required to update data.`);
+    }
+    if (!this.session) {
+      throw new Error(`No session is created yet. Call workflow.restart() to start a new session.`);
+    }
+    if (session.uuid !== this.session.uuid) {
+      return; // ignore data for old session or inactive session
+    }
+
+    this._sessions.start(); // in case session not started yet
+
+    data = this._postProcessData(data);
+    this._hub.update(fields.data(), data);
     return this;
+  }
+
+  _postProcessData(data) {
+    return data;
   }
 
   notifyViewUpdate(role, state) {
@@ -94,22 +128,12 @@ export default class Workflow extends Component {
 
   // source //
   useApi(name, payload) {
-    this._apiParams = mergeApiParams(this._defaultApiParams, { name, payload });
-    return this;
-  }
-
-  useSource(source) {
-    this._data.source = this._normalizeSource(source);
-    return this;
-  }
-
-  _normalizeSource(source) {
-    if (source === 'api') {
-      return sources.api(this._client);
-    } else if (source === false || typeof source === 'function') {
-      return source;
+    if (name === false) {
+      this._data.source = false
+    } else {
+      this._apiParams = mergeApiParams(this._defaultApiParams, { name, payload });
     }
-    throw new Error(`Source must be 'api', an async function, or false: ${source}`);
+    return this;
   }
 
   // layout //
@@ -171,12 +195,6 @@ export default class Workflow extends Component {
   _assertActive() {
     if (!this.active) {
       throw new Error(`Unit is not active yet. Call unit.start() to activate it.`)
-    }
-  }
-
-  _assertInactive() {
-    if (this.active) {
-      throw new Error(`Unit has already started.`);
     }
   }
 

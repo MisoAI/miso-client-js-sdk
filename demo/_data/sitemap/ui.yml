@@ -4,12 +4,14 @@ sections:
   pages:
   - title: Basic
     path: /ask/basic
+  - title: Plaintext
+    path: /ask/plaintext
   - title: Follow Up
     path: /ask/follow-up
   - title: Syntax highlight
     path: /ask/syntax-highlight
-  - title: Plaintext
-    path: /ask/plaintext
+  - title: Custom data
+    path: /ask/custom-data
 - title: Search
   path: /search
   pages:

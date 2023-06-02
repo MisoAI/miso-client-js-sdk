@@ -4,6 +4,7 @@ import { fields, FeedbackActor } from '../actor';
 import { ROLE, STATUS } from '../constants';
 import { SearchBoxLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout';
 import { mergeApiParams } from './utils';
+import { utils as dataUtils } from '../source';
 
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'ask',
@@ -78,12 +79,18 @@ export default class Ask extends Workflow {
       this._questionId = undefined;
     }
 
-    this._sessions.new();
-    this._sessions.start();
+    this.restart();
 
-    this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload }));
+    const { session } = this;
+    this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload, session }));
 
     return this;
+  }
+
+  _postProcessData({ value, ...data } = {}) {
+    value = dataUtils.postProcessQuestionsResponse(value);
+    const ongoing = value && !value.finished;
+    return { value, ongoing, ...data };
   }
 
   _onDataUpdate(data) {

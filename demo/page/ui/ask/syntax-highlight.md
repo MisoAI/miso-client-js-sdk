@@ -43,6 +43,9 @@
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
+  window.helpers.doggo.config({
+    answer: { languages: ['js'] }
+  });
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient({
     apiKey: '...',

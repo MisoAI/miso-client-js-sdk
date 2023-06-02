@@ -38,19 +38,17 @@ export default class Recommendation extends Workflow {
   }
 
   // lifecycle //
-  reset() {
-    this._sessions.new();
-    return this;
-  }
-
   start() {
     this._sessions.start();
-    this._hub.update(fields.input(), this._apiParams);
+    // in recommendation workflow, start() triggers query
+    // TODO: we should still make the query lifecycle
+    const { session } = this;
+    this._hub.update(fields.input(), { ...this._apiParams, session });
     return this;
   }
 
   startTracker() {
-    this.useSource(false);
+    this.useApi(false);
     this.useLayouts({
       [ROLE.RESULTS]: false,
     });

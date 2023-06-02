@@ -30,6 +30,7 @@
   <miso-ask visible-when="ready">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
+    <hr>
     <miso-answer></miso-answer>
     <miso-feedback></miso-feedback>
     <hr>
@@ -39,23 +40,27 @@
     <miso-related-resources></miso-related-resources>
   </miso-ask>
 </section>
+<script src=https://www.unpkg.com/@miso.ai/doggoganger@0.9.0-beta.13/dist/umd/doggoganger-browser.min.js></script>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
-misocmd.push(() => {
-  // TODO: better timing management
-  window.helpers.doggo.config({
-    answer: { format: 'plaintext' }
-  });
+misocmd.push(async () => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient({
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.ask;
-  workflow.useLayouts({
-    answer: {
-      format: 'plaintext',
-    },
+  workflow.useApi(false);
+  const api = window.doggoganger.buildApi();
+  workflow.on('input', async ({ session, payload }) => {
+    const answer = await api.ask.questions(payload);
+    let intervalId;
+    intervalId = setInterval(async () => {
+      const value = await answer.get();
+      const { finished } = value;
+      finished && clearInterval(intervalId);
+      workflow.updateData({ session, value, ongoing: !finished });
+    }, 1000);
   });
 });
 </script>

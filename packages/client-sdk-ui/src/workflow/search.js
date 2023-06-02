@@ -32,9 +32,9 @@ export default class Search extends Workflow {
 
   // lifecycle //
   query(payload) {
-    this._sessions.new();
-    this._sessions.start();
-    this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload }));
+    this.restart();
+    const { session } = this;
+    this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload, session }));
     return this;
   }
 
