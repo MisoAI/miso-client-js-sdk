@@ -24,7 +24,7 @@ class MisoClient extends Component {
     this.options = Object.freeze(this._normalizeOptions(options));
   }
 
-  _normalizeOptions(options) {
+  _normalizeOptions(options = {}) {
     if (typeof options === 'string') {
       options = { apiKey: options };
     }

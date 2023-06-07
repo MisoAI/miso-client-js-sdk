@@ -11,8 +11,17 @@ export default class ApiHelpers {
 
   async fetch(url, payload, {
     method = 'POST',
+    headers,
     timeout,
+    sendApiKeyByHeader,
   } = {}) {
+    const { apiKey, request = {} } = this._client.options;
+    timeout = timeout || request.timeout;
+    sendApiKeyByHeader = sendApiKeyByHeader || request.sendApiKeyByHeader;
+
+    if (sendApiKeyByHeader) {
+      headers = { ...headers, 'X-API-KEY': apiKey };
+    }
     // TODO: external abort signal
     // TODO: organize arguments
     const body = method !== 'GET' && payload != undefined ? JSON.stringify(payload) : undefined;
@@ -21,6 +30,7 @@ export default class ApiHelpers {
 
     const res = await window.fetch(url, trimObj({
       method,
+      headers,
       body,
       cache: 'no-cache',
       mode: 'cors',
@@ -49,7 +59,8 @@ export default class ApiHelpers {
   }
 
   async _runBulkFetch(requests) {
-    const url = this.url('bulk');
+    // TODO: request options?
+    const url = this.url(['bulk']);
     const payload = {
       requests: requests.map(({ action: { apiGroup, apiName, payload } }) => ({
         api_name: `${apiGroup}/${apiName}`,
@@ -77,11 +88,12 @@ export default class ApiHelpers {
     }
   }
 
-  url(...paths) {
-    const { apiKey } = this._client.options;
+  url(paths, options = {}) {
+    const { apiKey, request = {} } = this._client.options;
+    const sendApiKeyByHeader = options.sendApiKeyByHeader || request.sendApiKeyByHeader;
     const apiName = paths.filter(s => s).join('/');
-    // TODO: neutralize use of DOM API
-    return `${this.getApiEndpoint(apiName)}/${apiName}?api_key=${window.encodeURIComponent(apiKey)}`;
+    const url = `${this.getApiEndpoint(apiName)}/${apiName}`;
+    return sendApiKeyByHeader ? url : `${url}?api_key=${window.encodeURIComponent(apiKey)}`;
   }
 
   getApiEndpoint(apiName) {

@@ -10,8 +10,13 @@ sections:
     path: /api/autocomplete
   - title: Recommendation
     path: /api/recommendation
-  - title: Options
-    path: /api/options
+  - title: 'Options: timeout'
+    path: /api/timeout
+- title: Setup
+  path: /setup
+  pages:
+  - title: Send key by header
+    path: /setup/send-key-by-header
 - title: Helpers
   path: /helpers
   pages:

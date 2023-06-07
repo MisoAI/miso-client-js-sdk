@@ -18,9 +18,9 @@ export default class Interactions extends ApiBase {
     }
   }
 
-  _url({ apiGroup, apiName }) {
-    const url = this.helpers.url(this._apiPath);
-    return this.helpers.applyUrlPasses(this, { apiGroup, apiName, url });
+  _url({ apiGroup, apiName, options }) {
+    const url = this.helpers.url([this._apiPath], options);
+    return this.helpers.applyUrlPasses(this, { apiGroup, apiName, url, options });
   }
 
   _preprocess({ apiGroup, apiName, payload }) {

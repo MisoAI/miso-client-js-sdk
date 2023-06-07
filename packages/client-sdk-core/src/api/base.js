@@ -30,9 +30,9 @@ export default class ApiBase extends Component {
     return this.helpers.applyPayloadPasses(this, { apiGroup, apiName, payload });
   }
 
-  _url({ apiGroup, apiName }) {
-    const url = this.helpers.url(apiGroup, apiName);
-    return this.helpers.applyUrlPasses(this, { apiGroup, apiName, url });
+  _url({ apiGroup, apiName, options }) {
+    const url = this.helpers.url([apiGroup, apiName], options);
+    return this.helpers.applyUrlPasses(this, { apiGroup, apiName, url, options });
   }
 
   async _send({ apiGroup, apiName, url, payload, options: { bulk, ...options } = {} }) {
