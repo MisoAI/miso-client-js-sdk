@@ -17,6 +17,8 @@ sections:
   pages:
   - title: Send key by header
     path: /setup/send-key-by-header
+  - title: Timeout
+    path: /setup/timeout
 - title: Helpers
   path: /helpers
   pages:
