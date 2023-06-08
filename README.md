@@ -19,7 +19,7 @@
 
 <div align="center">
   <a href="https://miso.ai">
-    <img src="asset/cta.svg" height="36px">
+    <img src=".github/img/cta.svg" height="36px">
   </a>
 </div>
 
