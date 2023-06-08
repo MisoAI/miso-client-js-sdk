@@ -1,5 +1,9 @@
 <div align="center">
-  <h1>Miso SDK for JavaScript</h1>
+  <h1>
+    <a href="https://miso.ai">
+      <img src=".github/img/logo.svg" width="160px">
+    </a>
+  </h1>
   <p>
     Enhance your site with high conversion magic with <a href="https://miso.ai/">Miso's</a> power.
   </p>
