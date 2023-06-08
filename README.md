@@ -1,17 +1,15 @@
-# Miso SDK for JavaScript
-Enhance your site with high conversion magic with [Miso's](https://miso.ai/) power.
-
-<p>
-  <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
-  <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/bundlephobia/minzip/@miso.ai/client-sdk"></a>
-  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
-</p>
-
-[Home](https://miso.ai/) |
-[Docs](https://docs.miso.ai/) |
-[SDK Reference](https://misoai.github.io/miso-client-js-sdk/sdk) |
-[API Reference](https://api.askmiso.com/) |
-[Recipes](https://docs.miso.ai/recipes)
+<div align="center">
+  <h1>Miso SDK for JavaScript</h1>
+  <p>
+    Enhance your site with high conversion magic with <a href="https://miso.ai/">Miso's</a> power.
+  </p>
+  <p>
+    <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
+    <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/bundlephobia/minzip/@miso.ai/client-sdk"></a>
+    <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
+  </p>
+  <a href="https://miso.ai/">Home</a> | <a href="https://docs.miso.ai/">Docs</a> | <a href="https://misoai.github.io/miso-client-js-sdk/sdk">SDK Reference</a> | <a href="https://api.askmiso.com/">API Reference</a> | <a href="https://docs.miso.ai/recipes">Recipes</a>
+</div>
 
 ## Highlights
 * Lightweight, mobile friendly.
