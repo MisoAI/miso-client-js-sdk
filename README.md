@@ -5,7 +5,7 @@
     </a>
   </div>
   <p>
-    Engage your users with trustworthy answers with <a href="https://miso.ai/">Miso's</a> power.
+    <strong>Engage your users with trustworthy answers.</strong>
   </p>
   <p>
     <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
