@@ -1,11 +1,11 @@
 <div align="center">
-  <h1>
+  <div>
     <a href="https://miso.ai">
       <img src=".github/img/logo.svg" width="160px">
     </a>
-  </h1>
+  </div>
   <p>
-    Enhance your site with high conversion magic with <a href="https://miso.ai/">Miso's</a> power.
+    Engage your users with trustworthy answers with <a href="https://miso.ai/">Miso's</a> power.
   </p>
   <p>
     <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
@@ -15,17 +15,13 @@
   <a href="https://miso.ai/">Home</a> | <a href="https://docs.miso.ai/">Docs</a> | <a href="https://misoai.github.io/miso-client-js-sdk/sdk">SDK Reference</a> | <a href="https://api.askmiso.com/">API Reference</a> | <a href="https://docs.miso.ai/recipes">Recipes</a>
 </div>
 
+# Miso JavaScript SDK
+
 ## Highlights
 * Lightweight, mobile friendly.
 * Simple, easy to integrate.
 * Bundled in UMD format. Can be loaded as a CJS/AMD module or by a script tag.
 * For browser. Server-side SDK coming up later.
-
-<div align="center">
-  <a href="https://miso.ai">
-    <img src=".github/img/cta.svg" height="36px">
-  </a>
-</div>
 
 ## Packages
 This monorepo contains the following packages:
