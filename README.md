@@ -32,6 +32,12 @@ Miso is an innovative API platform that empowers you to engage your users with t
 - Bootstrapped with small initial data
 - SDKs to integrate into your sites
 
+<div align="center">
+  <a href="https://miso.ai">
+    <img src=".github/img/cta.svg" height="48px">
+  </a>
+</div>
+
 ----
 
 # Getting started
@@ -39,6 +45,12 @@ Miso is an innovative API platform that empowers you to engage your users with t
 1. [Submit](https://miso.ai/get-answers) your domain to get your own private search engine.
 2. Optionally add in more data to fine-tune your engine.
 3. Add it to your site using our JavaScript SDK and flexible APIs.
+
+<div align="center">
+  <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.7/ui/ask/showcase-1">
+    <img src=".github/img/live-demo.svg" height="48px">
+  </a>
+</div>
 
 ----
 
