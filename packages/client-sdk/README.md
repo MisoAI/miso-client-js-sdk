@@ -1,7 +1,7 @@
 <div align="center">
   <div>
     <a href="https://miso.ai">
-      <img src="asset/img/logo.svg" width="160px">
+      <img src=".github/img/logo.svg" width="160px">
     </a>
   </div>
   <p>
@@ -34,7 +34,7 @@ Miso is an innovative API platform that empowers you to engage your users with t
 
 <div align="center">
   <a href="https://miso.ai">
-    <img src="asset/img/cta.svg" height="48px">
+    <img src=".github/img/cta.svg" height="48px">
   </a>
 </div>
 
@@ -48,7 +48,7 @@ Miso is an innovative API platform that empowers you to engage your users with t
 
 <div align="center">
   <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.7/ui/ask/showcase-1">
-    <img src="asset/img/live-demo.svg" height="48px">
+    <img src=".github/img/live-demo.svg" height="48px">
   </a>
 </div>
 
