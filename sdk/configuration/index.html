@@ -37,7 +37,7 @@
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
   <svg xmlns="http://www.w3.org/2000/svg" role="img"
-    height="28" viewbox="0 0 327 132"
+    height="28" viewbox="0 0 500 200"
     class="bi d-block my-1" fill="currentColor">
     <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
   </svg>
@@ -158,10 +158,23 @@
 <p>Create the client instance from npm module:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> MisoClient <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@miso.ai/client-sdk'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> apiKey <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span>apiKey<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>If you include the SDK by script tag, create the client like this:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> apiKey <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br><span class="token keyword">var</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span>apiKey<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> apiKey <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span>apiKey<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="load-asynchronously" tabindex="-1">Load asynchronously</h3>
 <p>If the SDK is loaded by an <code>async</code> script tag, it will be ready in the following callback:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">var</span> apiKey <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br><span class="token keyword">var</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">var</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span>apiKey<span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> apiKey <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span>apiKey<span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h2 id="client-options" tabindex="-1">Client options</h2>
+<p>The <code>MisoClient</code> can be configured optionally:</p>
+<h3 id="request-timeout" tabindex="-1">Request timeout</h3>
+<p>You can specify request timeout globally:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">apiKey</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">request</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">timeout</span><span class="token operator">:</span> <span class="token number">10000</span><span class="token punctuation">,</span> <span class="token comment">// in milliseconds</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="send-api-key-by-header" tabindex="-1">Send API key by header</h3>
+<p>If you don't like the API key shown in the URL, you can send it by header instead:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">apiKey</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">request</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">sendApiKeyByHeader</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// default: false</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Note that:</p>
+<ul>
+<li>User can still read it key from the browser's network inspector.</li>
+<li>It will cause the browser to send an extra preflight request due to CORS mechanism.</li>
+</ul>
 
         </div>
       </main>
@@ -172,8 +185,8 @@
     <div id="footer-notes" class="col-md-4">
       <div class="brand mb-3">
         <svg xmlns="http://www.w3.org/2000/svg" role="img"
-          height="28" viewbox="0 0 327 132"
-          class="bi d-block my-1" fill="currentColor">
+          height="32" viewbox="0 0 500 200"
+          class="bi d-block" fill="currentColor">
           <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
         </svg>
       </div>

@@ -37,7 +37,7 @@
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
         <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
   <svg xmlns="http://www.w3.org/2000/svg" role="img"
-    height="28" viewbox="0 0 327 132"
+    height="28" viewbox="0 0 500 200"
     class="bi d-block my-1" fill="currentColor">
     <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
   </svg>
@@ -107,6 +107,8 @@
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/ui/ask/custom-data/">Customize data source</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -188,9 +190,15 @@
   </thead>
   <tbody>
     <tr>
-      <td><code>questions</code></td>
+      <td><code>"questions"</code></td>
       <td>
         <a href="/miso-client-js-sdk/sdk/ask/questions/">Questions</a>
+      </td>
+    </tr>
+    <tr>
+      <td><code>false</code></td>
+      <td>
+        Disable built-in data source. See <a href="/miso-client-js-sdk/ui/ask/custom-data/">customize data source</a>.
       </td>
     </tr>
   </tbody>
@@ -202,11 +210,47 @@
 <p>To hide Miso logo:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>See <a href="/miso-client-js-sdk/ui/ask/elements/" target="_blank" rel="noopener">elements</a> section for details.</p>
+<h3 id="lifecycle" tabindex="-1">Lifecycle</h3>
+<p>Update API results manually. See <a href="/miso-client-js-sdk/ui/ask/custom-data/" target="_blank" rel="noopener">customize data source</a> for details.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span> session<span class="token punctuation">,</span> value<span class="token punctuation">,</span> ongoing <span class="token punctuation">}</span><span class="token punctuation">;</span><br>workflow<span class="token punctuation">.</span><span class="token function">updateData</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The data object has the following properties:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>session</code></td>
+      <td>object</td>
+      <td>
+        <strong>Required.</strong> Session object from `input` event. Updates associated to expired sessions are ignored.
+      </td>
+    </tr>
+    <tr>
+      <td><code>value</code></td>
+      <td>object</td>
+      <td>
+        <strong>Required.</strong> Result of <a href="/miso-client-js-sdk/sdk/ask/questions/">questions</a> API.
+      </td>
+    </tr>
+    <tr>
+      <td><code>ongoing</code></td>
+      <td>boolean</td>
+      <td>
+        Whether the result is ongoing, expecting more updates to the current session. Default: <code>false</code>.
+      </td>
+    </tr>
+  </tbody>
+</table>
 <h3 id="events" tabindex="-1">Events</h3>
 <p>Events on workflow collection:</p>
 <pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">workflow</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When a new workflow is created</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>Events on individual workflow:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span> <span class="token comment">// or other workflow</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'loading'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When API is called and we are waiting for the response</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'ready'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer starts to display</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer is fully populated</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span> <span class="token comment">// or other workflow</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> payload <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When user submits a question in search box.</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'loading'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When API is called and we are waiting for the response</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'ready'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer starts to display</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer is fully populated</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>
@@ -217,8 +261,8 @@
     <div id="footer-notes" class="col-md-4">
       <div class="brand mb-3">
         <svg xmlns="http://www.w3.org/2000/svg" role="img"
-          height="28" viewbox="0 0 327 132"
-          class="bi d-block my-1" fill="currentColor">
+          height="32" viewbox="0 0 500 200"
+          class="bi d-block" fill="currentColor">
           <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
         </svg>
       </div>
