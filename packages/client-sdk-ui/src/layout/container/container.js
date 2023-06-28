@@ -46,9 +46,17 @@ export default class ContainerLayout extends RafLayout {
   }
 
   _syncStatus(element, { state }) {
-    const { status } = state;
+    if (!element) {
+      return;
+    }
+    const { status, meta: { miso_id } = {} } = state;
     // TODO: add "ongoing" status
-    element && element.setAttribute('status', status);
+    element.setAttribute('status', status);
+    if (miso_id) {
+      element.setAttribute('miso-id', miso_id);
+    } else {
+      element.removeAttribute('miso-id');
+    }
   }
 
 }

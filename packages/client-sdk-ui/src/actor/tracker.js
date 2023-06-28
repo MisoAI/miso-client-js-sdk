@@ -1,4 +1,4 @@
-import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, viewable as whenViewable } from '@miso.ai/commons';
+import { isElement, findInAncestors, trimObj, asArray, computeIfAbsent, viewable as whenViewable, uuidToTimestamp } from '@miso.ai/commons';
 import { STATUS, EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
 import Items from './items';
 import * as fields from './fields';
@@ -91,19 +91,19 @@ export default class Tracker {
     this._refreshItems();
   }
 
-  impression(productIds) {
+  impression(productIds, options) {
     this._assertViewReady();
-    this._trigger(productIds, IMPRESSION, true);
+    this._trigger(productIds, IMPRESSION, { ...options, manual: true });
   }
 
-  viewable(productIds) {
+  viewable(productIds, options) {
     this._assertViewReady();
-    this._trigger(productIds, VIEWABLE, true);
+    this._trigger(productIds, VIEWABLE, { ...options, manual: true });
   }
 
-  click(productIds) {
+  click(productIds, options) {
     this._assertViewReady();
-    this._trigger(productIds, CLICK, true);
+    this._trigger(productIds, CLICK, { ...options, manual: true });
   }
 
   _getViewState() {
@@ -121,6 +121,11 @@ export default class Tracker {
 
   _isViewReady() {
     return this._hub.active && isReady(this._getViewState());
+  }
+
+  _getMisoId() {
+    const state = this._getViewState();
+    return (state && state.meta && state.meta.miso_id) || (this._element && this._element.getAttribute('miso-id')) || undefined;
   }
 
   getState(productId) {
@@ -157,7 +162,8 @@ export default class Tracker {
     if (!options) {
       return;
     }
-    this._trigger(bindings.map(b => b.productId), IMPRESSION);
+    const misoId = this._getMisoId();
+    this._trigger(bindings.map(b => b.productId), IMPRESSION, { misoId });
   }
 
 
@@ -187,13 +193,14 @@ export default class Tracker {
     this._states.set(productId, type, TRACKING);
 
     const { area, duration } = this._options.viewable;
+    const misoId = this._getMisoId();
     // abort signal
     const ac = new AbortController();
     const { signal } = ac;
     this._viewables.set(element, { ac });
     await whenViewable(element, { area, duration, signal });
     this._viewables.delete(element);
-    this._trigger([productId], type);
+    this._trigger([productId], type, { misoId });
   }
 
   _untrackViewableOnElement({ productId, element }) {
@@ -273,12 +280,13 @@ export default class Tracker {
         return;
       }
     }
-    this._trigger([productId], CLICK);
+    const misoId = this._getMisoId();
+    this._trigger([productId], CLICK, { misoId });
   }
 
 
 
-  _trigger(productIds, type, manual) {
+  _trigger(productIds, type, { manual = false, misoId } = {}) {
     validateEventType(type);
 
     if (!this._isViewReady()) {
@@ -292,19 +300,27 @@ export default class Tracker {
       return;
     }
     this._states.set(productIds, type, TRIGGERED);
-    this._hub.trigger(fields.interaction(), this._buildInteraction({ type, productIds, manual }));
+    this._hub.trigger(fields.interaction(), this._buildInteraction({ type, productIds, manual, misoId }));
   }
 
-  _buildInteraction({ type, productIds, manual }) {
-    return {
+  _buildInteraction({ type, productIds, manual, misoId }) {
+    let api_ts;
+    if (misoId) {
+      try {
+        api_ts = uuidToTimestamp(misoId);
+      } catch (e) {}
+    }
+    return trimObj({
       type: type === 'viewable' ? 'viewable_impression' : type,
       product_ids: productIds,
+      miso_id: misoId,
       context: {
-        custom_context: {
+        custom_context: trimObj({
+          api_ts,
           trigger: manual ? 'manual' : 'auto',
-        },
+        }),
       },
-    };
+    });
   }
 
   _destroy() {

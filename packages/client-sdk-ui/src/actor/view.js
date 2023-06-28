@@ -98,7 +98,7 @@ export default class ViewActor {
     this._data = data = this._sliceData(data || this._views._getData());
 
     // protocol: no reaction until session starts
-    const { session, status, ongoing } = data;
+    const { session, status, ongoing, meta } = data;
     const active = session && session.active;
     if (!force && !active) {
       return;
@@ -111,7 +111,7 @@ export default class ViewActor {
 
     // render
     const notifyUpdate = (state = {}, options) => {
-      state !== false && this.updateState({ session, status, ongoing, ...state }, options);
+      state !== false && this.updateState({ session, status, ongoing, meta, ...state }, options);
     };
     try {
       await this._layout.render(element, data, { notifyUpdate });
@@ -121,11 +121,11 @@ export default class ViewActor {
     }
   }
 
-  updateState({ session, status, ongoing, error }, { silent = false } = {}) {
+  updateState({ session, status, ongoing, meta, error }, { silent = false } = {}) {
     if (error) {
       status = STATUS.ERRONEOUS;
     }
-    const state = this._state = Object.freeze(trimObj({ session, status, ongoing, error }));
+    const state = this._state = Object.freeze(trimObj({ session, status, ongoing, meta, error }));
     const { role } = this;
     this.hub.update(fields.view(role), state, { silent });
   }

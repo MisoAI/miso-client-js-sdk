@@ -21,8 +21,12 @@ export default function(client) {
 
 function postProcess(response) {
   // TODO: more API types
+  const { miso_id } = response;
   // search, u2p, p2p
   return {
+    _meta: {
+      miso_id,
+    },
     [ROLE.RESULTS]: response.products,
   };
 }
