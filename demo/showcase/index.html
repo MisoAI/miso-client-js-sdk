@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miso SDK for JavaScript</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/demo/showcase/" />
+<meta name="description" content="" />
+
+<meta property="og:title" content="Miso SDK for JavaScript" />
+<meta property="og:description" content="" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/demo/showcase/" />
+<meta property="og:type" content="documentation" />
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@askmiso">
+<meta name="twitter:creator" content="@askmiso">
+<meta name="twitter:title" content="Miso SDK for JavaScript">
+<meta name="twitter:description" content="">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/demo/showcase/">
+
+
+
+    <link rel="icon" href="/miso-client-js-sdk/favicon/favicon-16x16.png" sizes="16x16">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-32x32.png" sizes="32x32">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon.ico" sizes="48x48">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-512x512.png" sizes="192x192">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-192x192.png" sizes="512x512">
+<link rel="apple-touch-icon" href="/miso-client-js-sdk/favicon/apple-touch-icon.png" sizes="180x180">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+
+    <script src=https://www.unpkg.com/@miso.ai/doggoganger@0.9.0-beta.13/dist/umd/doggoganger-browser.min.js></script>
+    <script async src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.7.4/dist/umd/miso.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.7.4/dist/css/ui.css" />
+  </head>
+  <body class="demo">
+    <link rel="stylesheet" href="./style.css" />
+<section class="question">
+  <div class="hero">
+    <div class="hero-inner">
+      <a href="https://miso.ai" target="_blank" rel="noopener noreferrer" class="miso-logo-link">
+        <img class="miso-logo" src="./asset/miso-logo.svg" alt="Miso">
+      </a>
+      <p class="miso-ask-slogan">“The language skills of GPT3, but with your content at the core”</p>
+    </div>
+  </div>
+  <miso-ask class="query-container">
+    <miso-query>
+      <input class="input" placeholder="Ask Miso anything">
+    </miso-query>
+  </miso-ask>
+</section>
+<section class="answer">
+  <div class="container">
+    <miso-ask visible-when="ready" logo="false">
+      <div class="phrase question">You asked about...</div>
+      <miso-question></miso-question>
+      <miso-answer></miso-answer>
+      <miso-feedback></miso-feedback>
+      <div class="phrase sources">My reply is based on the following:</div>
+      <miso-sources></miso-sources>
+    </miso-ask>
+  </div>
+</section>
+<section id="follow-ups" class="follow-ups">
+</section>
+<section id="related-resources" class="related-resources">
+  <div class="container">
+    <miso-ask visible-when="ready" logo="true">
+      <div class="phrase related-resources">Go beyond, and learn more about this topic:</div>
+      <miso-related-resources></miso-related-resources>
+    </miso-ask>
+  </div>
+</section>
+<div id="login" class="login-backdrop">
+  <div class="login-modal">
+    <div class="input-wrapper">
+      <input id="key-input" class="input" placeholder="Enter API key or &quot;lorem&quot;">
+    </div>
+  </div>
+</div>
+<script async src="./index.js"></script>
+
+  </body>
+</html>
