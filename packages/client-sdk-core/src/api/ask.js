@@ -1,4 +1,4 @@
-import { ValueBuffer } from '@miso.ai/commons';
+import { polling } from '@miso.ai/commons';
 import ApiBase from './base';
 
 export default class Ask extends ApiBase {
@@ -8,6 +8,9 @@ export default class Ask extends ApiBase {
   }
 
   async questions(payload, options = {}) {
+    if (typeof payload === 'string' && payload.charAt(0) !== '{') {
+      return new Answer(this, { question_id: payload }, options);
+    }
     const response = await this._run('questions', payload, options);
     return new Answer(this, response, options);
   }
@@ -20,49 +23,12 @@ export default class Ask extends ApiBase {
     return this._run(`questions/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
-  // TODO: move impl away
-  _iterable(questionId, { pollingInterval = 1000, signal, ...options } = {}) {
-    if (signal && signal.aborted) {
-      return [];
-    }
-    let apiErrorCount = 0;
-    const buffer = new ValueBuffer();
-    const intervalId = setInterval(async () => {
-      let response;
-      try {
-        response = await this._get(questionId, options);
-      } catch(error) {
-        console.error(error); // TODO
-        apiErrorCount++;
-        if (apiErrorCount > 10) {
-          clearInterval(intervalId);
-          buffer.error(error);
-        }
-        return;
-      }
-      const { finished } = response;
-      buffer.update(response, finished);
-      if (response.finished) {
-        clearInterval(intervalId);
-      }
-    }, pollingInterval);
-
-    if (signal && signal.addEventListener) {
-      signal.addEventListener('abort', () => {
-        clearInterval(intervalId);
-        // TODO: optimize: abort current request as well
-        buffer.abort();
-      });
-    }
-
-    return buffer;
-  }
-
 }
 
 class Answer {
 
-  constructor(api, { question_id }, { signal, ...options } = {}) {
+  constructor(api, { question_id }, { signal: _, ...options } = {}) {
+    // TODO: take external singal as well?
     this._api = api;
     this._questionId = question_id;
     this._ac = new AbortController();
@@ -83,7 +49,13 @@ class Answer {
   }
 
   [Symbol.asyncIterator]() {
-    return this._api._iterable(this._questionId, this._options)[Symbol.asyncIterator]();
+    const fetch = async ({ signal } = {}) => {
+      // TODO: pass signal
+      const response = await this.get();
+      return [response, response.finished];
+    };
+    const { pollingInterval: interval, ...options } = this._options;
+    return polling(fetch, { interval, ...options })[Symbol.asyncIterator]();
   }
 
 }

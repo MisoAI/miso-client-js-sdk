@@ -8,6 +8,7 @@ export * from './readiness';
 export * from './storage';
 export * from './url';
 export * from './capture';
+export * from './polling';
 export { default as Resolution } from './resolution';
 export { default as Bulk } from './bulk';
 export { default as EventEmitter } from './events';
