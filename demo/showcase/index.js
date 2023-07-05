@@ -58,14 +58,14 @@ function setup(workflow) {
 }
 
 function start(apiKey) {
-  apiKey = apiKey.trim().toLowerCase();
+  apiKey = apiKey.trim();
   const misocmd = window.misocmd || (window.misocmd = []);
   misocmd.push(() => {
     MisoClient.plugins.use('std:ui');
 
     const client = new MisoClient(apiKey);
 
-    if (apiKey === 'lorem') {
+    if (apiKey.toLowerCase() === 'lorem') {
       useCustomData(client);
     }
 
