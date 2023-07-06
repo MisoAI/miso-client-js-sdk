@@ -2,6 +2,10 @@ export function session() {
   return 'session';
 }
 
+export function suggestions() {
+  return 'suggestions';
+}
+
 export function query() {
   return 'query';
 }

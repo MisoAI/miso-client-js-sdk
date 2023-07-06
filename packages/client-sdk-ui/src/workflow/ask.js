@@ -23,16 +23,26 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, }],
 });
 
+function getDefaultLayouts(parentQuestionId) {
+  return parentQuestionId ? {
+    ...DEFAULT_LAYOUTS,
+    [ROLE.QUERY]: [SearchBoxLayout.type, { autocomplete: true }],
+  } : DEFAULT_LAYOUTS;
+}
+
 export default class Ask extends Workflow {
 
   constructor(context, parentQuestionId) {
     super(context._plugin, context._client, {
       name: 'ask',
       roles: Object.keys(DEFAULT_LAYOUTS),
-      layouts: DEFAULT_LAYOUTS,
+      layouts: getDefaultLayouts(parentQuestionId),
       defaultApiParams: DEFAULT_API_PARAMS,
     });
     defineValues(this, { parentQuestionId });
+
+    this._context = context;
+    this._setFollowUpQuestions();
 
     this._feedback = new FeedbackActor(this._hub);
     this._unsubscribes = [
@@ -42,7 +52,6 @@ export default class Ask extends Workflow {
       this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
     ];
 
-    this._context = context;
     parentQuestionId && context._byPqid.set(parentQuestionId, this);
     context._events.emit('create', this);
   }
@@ -111,6 +120,15 @@ export default class Ask extends Workflow {
     }
     const eventName = status === STATUS.READY && !ongoing ? 'done' : status;
     this._events.emit(eventName, { session });
+  }
+
+  _setFollowUpQuestions() {
+    const { previous } = this;
+    if (!previous) {
+      return;
+    }
+    const value = (previous.states[fields.data()].value.followup_questions || []).map(text => ({ text }));
+    this._hub.update(fields.suggestions(), { value });
   }
 
   _destroy() {

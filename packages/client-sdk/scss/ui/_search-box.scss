@@ -6,9 +6,11 @@
   --miso-search-box-border-color: #8f96a3;
   --miso-search-box-border-radius: .25rem;
 
+  position: relative;
   line-height: 1.5;
 
   .miso-search-box__input-group {
+    position: relative;
     display: flex;
     width: 100%;
     border-radius: .5rem;
@@ -59,4 +61,37 @@
     cursor: pointer;
   }
 
+  .miso-search-box__autocomplete {
+    display: none;
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 0;
+    right: 0;
+    z-index: 1;
+    border: 1px solid var(--miso-search-box-border-color);
+    border-radius: var(--miso-search-box-border-radius);
+    background-color: #fff;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    overflow-y: auto;
+    transition: opacity .2s ease-in-out;
+
+    &.open:not(.empty),
+    &:active:not(.empty) {
+      display: block;
+    }
+    .miso-search-box__suggestion-list {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .miso-search-box__suggestion-item {
+      padding: 0.375rem 0.5rem;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+    }
+  }
 }
