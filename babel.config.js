@@ -28,7 +28,8 @@ module.exports = (api) => {
           loose: true,
           useBuiltIns: true,
         }
-      ]
+      ],
+      '@babel/plugin-transform-export-namespace-from'
     ]
   };
 }
