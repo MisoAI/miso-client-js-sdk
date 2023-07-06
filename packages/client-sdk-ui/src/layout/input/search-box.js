@@ -103,8 +103,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (element.childElementCount === 0) {
       // only render the template once, and also skip if there are children already to allow customized DOM
       super._render(element, data, controls);
-      this._setupAutocomplete(element);
     }
+    this._setupAutocomplete(element);
     this._renderSuggestions(element, data, controls);
   }
 
@@ -113,16 +113,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (!autocomplete) {
       return;
     }
-    const { inputElement, autocompleteElement } = this._context(element);
-    if (inputElement && autocompleteElement) {
-      // TODO: should we clean up
-      inputElement.addEventListener('focus', () => {
-        autocompleteElement.classList.add('open');
-      });
-      inputElement.addEventListener('blur', () => {
-        autocompleteElement.classList.remove('open');
-      });
-    }
+    this._context(element).setupAutocomplete();
   }
 
   _renderSuggestions(element, { state }, { writeToState } = {}) {
@@ -226,6 +217,23 @@ class Context {
 
   get suggestionListElement() {
     return this._get('suggestion-list');
+  }
+
+  setupAutocomplete() {
+    if (!this._element || this._autocompleteSetup) {
+      return;
+    }
+    this._autocompleteSetup = true;
+    const { inputElement, autocompleteElement } = this;
+    if (inputElement && autocompleteElement) {
+      // TODO: should we clean up
+      inputElement.addEventListener('focus', () => {
+        autocompleteElement.classList.add('open');
+      });
+      inputElement.addEventListener('blur', () => {
+        autocompleteElement.classList.remove('open');
+      });
+    }
   }
 
   _get(role) {
