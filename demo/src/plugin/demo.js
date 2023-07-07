@@ -44,10 +44,13 @@ export default class DemoPlugin {
     // inject client options
     const _normalizeOptions = MisoClient.prototype._normalizeOptions;
     MisoClient.prototype._normalizeOptions = function(options) {
+      if (typeof options === 'string' && options !== '...') {
+        options = { apiKey: options };
+      }
       return _normalizeOptions.call(this, {
-        ...options,
-        //apiKey: selection.value.apiKey,
         apiKey: DEFAULT_API_KEY,
+        //apiKey: selection.value.apiKey,
+        ...options,
       });
     }
 
