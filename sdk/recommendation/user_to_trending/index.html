@@ -188,11 +188,16 @@
       <td>The hash of <code>user_id</code> (or <code>anonymous_id</code>) encrypted by your <a href="https://api.askmiso.com/#section/Authentication/Secret%20API%20Key" target="_blank" rel="noopener">Secret API Key</a>.
 </td>
     </tr><tr>
+      <td><code>fq</code></td>
+      <td>string</td>
+      <td>A query string in Solr syntax which restricts the superset of products to return, without influencing the overall ranking.
+</td>
+    </tr><tr>
       <td><code>fl</code></td>
       <td>array of strings</td>
       <td>List of fields to retrieve. The field <code>product_id</code> is always included.
 When not specified, only <code>product_id</code> will be retrieved.
-You can retrieve all fields with <code>[&quot;*&quot;]</code>
+You can retrieve all fields with <code>[&quot;*&quot;]</code>. Default: <code>[&quot;*&quot;]</code>.
 </td>
     </tr><tr>
       <td><code>type</code></td>
