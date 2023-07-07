@@ -70,6 +70,37 @@ code, hr {
 .input::placeholder {
   color: #a6a5bb;
 }
+.autocomplete {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 2rem;
+  right: 2rem;
+  z-index: 1;
+  border: 1px solid #ccc;
+  border-radius: .25rem;
+  background-color: #fff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  overflow-y: auto;
+  transition: opacity .2s ease-in-out;
+}
+.autocomplete.open:not(.empty),
+.autocomplete:active:not(.empty) {
+  display: block;
+}
+.suggestion-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.suggestion-list > li {
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+}
+.suggestion-list > li:hover {
+  background-color: var(--color-primary-light);
+}
 
 /* body */
 :root {
@@ -204,7 +235,7 @@ miso-question h2 {
 }
 .phrase.sources {
   line-height: 1.5;
-  margin: 1.5rem 0 1.875rem;
+  padding: 1.5rem 0 1rem;
   font-size: .75rem;
   font-weight: 600;
   color: #33323e;
