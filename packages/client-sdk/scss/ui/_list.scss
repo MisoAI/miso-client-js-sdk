@@ -99,6 +99,7 @@
   }
 
   .miso-list__item-title {
+    flex-shrink: 0;
     -webkit-line-clamp: var(--miso-list-title-lines);
     font-weight: 500;
     font-size: 1rem;
