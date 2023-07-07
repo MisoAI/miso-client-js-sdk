@@ -11,6 +11,7 @@ const DEFAULT_API_PARAMS = Object.freeze({
   name: 'questions',
   payload: {
     source_fl: ['cover_image'],
+    related_resource_fl: ['cover_image'],
   },
 });
 
