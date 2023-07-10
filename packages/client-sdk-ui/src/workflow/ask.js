@@ -16,7 +16,7 @@ const DEFAULT_API_PARAMS = Object.freeze({
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.QUERY]: SearchBoxLayout.type,
+  [ROLE.QUERY]: [SearchBoxLayout.type, { buttonText: 'Ask' }],
   [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
   [ROLE.ANSWER]: TypewriterLayout.type,
   [ROLE.FEEDBACK]: FeedbackLayout.type,
@@ -27,7 +27,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 function getDefaultLayouts(parentQuestionId) {
   return parentQuestionId ? {
     ...DEFAULT_LAYOUTS,
-    [ROLE.QUERY]: [SearchBoxLayout.type, { autocomplete: true }],
+    [ROLE.QUERY]: [SearchBoxLayout.type, { buttonText: 'Ask', autocomplete: true }],
   } : DEFAULT_LAYOUTS;
 }
 
