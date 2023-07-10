@@ -152,8 +152,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     return context;
   }
 
-  _handleKeyDown({ key, target }) {
-    if (key === 'Enter' && target.matches('input')) {
+  _handleKeyDown({ key, target, isComposing }) {
+    if (!isComposing && key === 'Enter' && target.matches('input')) {
       this._submit(target.value);
       target.blur();
     }
