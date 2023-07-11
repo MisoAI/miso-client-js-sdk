@@ -79,6 +79,8 @@ function patchNodesBounds(nodes, options) {
 
 function sizeOf(node) {
   switch (node.type) {
+    case 'root':
+      return 0;
     case 'text':
       return node.value.length;
   }
@@ -107,7 +109,15 @@ export function isAtomic(node) {
 }
 
 export function search(tree, index) {
-  return (Array.isArray(tree) ? searchNodes : searchNode)(tree, index);
+  const isArray = Array.isArray(tree);
+
+  const leftBound = (isArray ? tree[0] : tree).bounds.left;
+  const rightBound = (isArray ? tree[tree.length - 1] : tree).bounds.right;
+  if (index < leftBound || index > rightBound) {
+    throw new Error(`Index ${index} is out of bounds [${leftBound}, ${rightBound}]`);
+  }
+
+  return (isArray ? searchNodes : searchNode)(tree, index);
 }
 
 function searchNode(node, index) {
@@ -116,7 +126,9 @@ function searchNode(node, index) {
   }
   const { children } = node;
   return children && children.length > 0 ? searchNodes(children, index) :
-    isAtomic(node) ? Position.intermediate(index, node.previousSibling, node) : Position.interior(index, node);
+    !isAtomic(node) ? Position.interior(index, node) :
+    node.type === 'root' ? Position.empty(node) :
+    Position.intermediate(index, node.previousSibling, node);
 }
 
 function searchNodes(nodes, index) {
@@ -202,7 +214,16 @@ export function findConflict(prev, next) {
     //   assume identical until safe right bound of prev tree
     // TODO
   }
-  return findConflictInNodes(prev.tree.children, next.tree.children);
+  const prevChildren = prev.tree.children;
+  const nextChildren = next.tree.children;
+
+  if (prevChildren.length === 0) {
+    return undefined;
+  }
+  if (nextChildren.length === 0) {
+    return Position.empty(next.tree);
+  }
+  return findConflictInNodes(prevChildren, nextChildren);
 }
 
 function findConflictInNodes(prevNodes, nextNodes) {
@@ -213,7 +234,10 @@ function findConflictInNodes(prevNodes, nextNodes) {
       return position;
     }
   }
-  return undefined;
+  if (prevNodes.length <= nextNodes.length) {
+    return undefined;
+  }
+  return Position.intermediate(nextNodes[nextNodes.length - 1].bounds.right, nextNodes[nextNodes.length - 1], undefined);
 }
 
 function findConflictInNode(prevNode, nextNode) {

@@ -1,4 +1,5 @@
 const TYPE = Object.freeze({
+  EMPTY: 'empty',
   INTERIOR: 'interior',
   INTERMEDIATE: 'intermediate',
   PIVOTAL: 'pivotal',
@@ -8,6 +9,10 @@ export default class Position {
 
   static get TYPE() {
     return TYPE;
+  }
+
+  static empty(root) {
+    return new Position({ type: TYPE.EMPTY, index: 0, root });
   }
 
   static intermediate(index, left, right) {
@@ -31,6 +36,10 @@ export default class Position {
     Object.freeze(this);
   }
 
+  get empty() {
+    return this.type === TYPE.EMPTY;
+  }
+
   get intermediate() {
     return this.type === TYPE.INTERMEDIATE;
   }
@@ -48,11 +57,11 @@ export default class Position {
   }
 
   get parent() {
-    return this.refNode.parent;
+    return this.refNode ? this.refNode.parent : this.root;
   }
 
   get depth() {
-    return this.refNode.depth;
+    return this.refNode ? this.refNode.depth : 0;
   }
 
   pivot(depth) {
@@ -105,25 +114,50 @@ export default class Position {
   }
 
   equals(other) {
-    return this === other || (
-      other &&
-      this.type === other.type &&
-      this.intermediate ? equalsIntermidiate(this, other) : equalsInterior(this, other)
-    );
+    if (this === other) {
+      return true;
+    }
+    if (!other || this.type !== other.type) {
+      return false;
+    }
+    switch (this.type) {
+      case TYPE.EMPTY:
+        return this.root === other.root;
+      case TYPE.INTERMEDIATE:
+        return this.left === other.left && this.right === other.right;
+      case TYPE.INTERIOR:
+        return this.node === other.node && this.index === other.index;
+      case TYPE.PIVOTAL:
+        return this.node === other.node && this.index === other.index;
+      default:
+        return false;
+    }
+  }
+
+  toString() {
+    const head = `${formatType(this.type)}${this.index}`;
+    switch (this.type) {
+      case TYPE.EMPTY:
+        return head;
+      case TYPE.INTERMEDIATE:
+        if (this.right) {
+          return `${head}:${formatNode(this.right)}`;
+        } else {
+          const path = formatNode(this.parent);
+          return `${head}:${ path ? `${path}/${this.left.childIndex + 1}` : this.left.childIndex + 1 }`;
+        }
+      case TYPE.INTERIOR:
+        return `${head}:${formatNode(this.node)}+${this.offset}`;
+      case TYPE.PIVOTAL:
+        return `${head}:${formatNode(this.node)}#${this.childIndices.join('/')}`;
+    }
+    return '?';
   }
 
 }
 
 function unlinkNode({ parent, previousSibling, nextSibling, firstChild, lastChild, children, position, ...node }) {
   return node;
-}
-
-function equalsInterior(a, b) {
-  return a.node === b.node && a.index === b.index;
-}
-
-function equalsIntermidiate(a, b) {
-  return a.left === b.left && a.right === b.right;
 }
 
 function sliceLeft({ children, ...node }, childIndices, original, level) {
@@ -170,4 +204,25 @@ function cropNode({ node: { value, ...node }, offset }, toOffset) {
     ...node,
     value: toOffset !== undefined ? value.slice(offset, toOffset) : value.slice(offset),
   };
+}
+
+function formatType(type) {
+  switch (type) {
+    case TYPE.EMPTY:
+      return 'E';
+    case TYPE.INTERMEDIATE:
+      return 'M';
+    case TYPE.INTERIOR:
+      return 'I';
+    case TYPE.PIVOTAL:
+      return 'P';
+  }
+}
+
+function formatNode(node) {
+  let str = '';
+  for (let n = node; n && n.type !== 'root'; n = n.parent) {
+    str = str ? `${n.childIndex}/${str}` : `${n.childIndex}`;
+  }
+  return str;
 }

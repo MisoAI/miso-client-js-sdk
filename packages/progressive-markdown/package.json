@@ -8,7 +8,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "npx uvu test"
+    "test": "npx uvu test -i 'ignored'"
   },
   "repository": {
     "type": "git",
