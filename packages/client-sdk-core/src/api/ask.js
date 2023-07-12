@@ -1,4 +1,4 @@
-import { polling } from '@miso.ai/commons';
+import { polling, signals, StallTimeoutAbortController } from '@miso.ai/commons';
 import ApiBase from './base';
 
 export default class Ask extends ApiBase {
@@ -27,12 +27,11 @@ export default class Ask extends ApiBase {
 
 class Answer {
 
-  constructor(api, { question_id }, { signal: _, ...options } = {}) {
-    // TODO: take external singal as well?
+  constructor(api, { question_id }, options = {}) {
     this._api = api;
     this._questionId = question_id;
     this._ac = new AbortController();
-    this._options = { ...options, signal: this._ac.signal };
+    this._options = options;
   }
 
   get questionId() {
@@ -40,8 +39,7 @@ class Answer {
   }
 
   async get(options) {
-    options = { ...this._options, ...options };
-    return this._api._get(this._questionId, options);
+    return this._api._get(this._questionId, { ...this._options, ...options });
   }
 
   abort() {
@@ -54,8 +52,24 @@ class Answer {
       const response = await this.get();
       return [response, response.finished];
     };
-    const { pollingInterval: interval, ...options } = this._options;
-    return polling(fetch, { interval, ...options })[Symbol.asyncIterator]();
+    let { pollingInterval: interval, signal, stallTimeout = 30000, ...options } = this._options;
+    const stac = new StallTimeoutAbortController(stallTimeout);
+    signal = signals.any(this._ac.signal, stac.signal, signal);
+
+    let prevResponse;
+    const onResponse = (response, finished) => {
+      if (finished) {
+        stac.clear();
+      } else if (isUpdated(prevResponse, response)) {
+        stac.touch();
+      }
+      prevResponse = response;
+    };
+    return polling(fetch, { interval, signal, onResponse, ...options })[Symbol.asyncIterator]();
   }
 
+}
+
+function isUpdated(prev, curr) {
+  return !prev || prev.answer_stage !== curr.answer_stage || prev.answer.length !== curr.answer.length;
 }

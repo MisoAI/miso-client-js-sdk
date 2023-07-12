@@ -50,7 +50,11 @@ export default class ValueBuffer {
     this._abortReason = reason;
 
     if (this._resolution) {
-      this._resolution.resolve();
+      if (reason instanceof Error) {
+        this._resolution.reject(reason);
+      } else {
+        this._resolution.resolve();
+      }
       this._resolution = undefined;
     }
   }

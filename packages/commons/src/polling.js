@@ -1,6 +1,6 @@
 import ValueBuffer from './value-buffer';
 
-export function polling(fetch, { interval = 1000, errorLimit = 10, onError, signal } = {}) {
+export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onResponse, signal } = {}) {
   if (signal && signal.aborted) {
     return [];
   }
@@ -10,6 +10,7 @@ export function polling(fetch, { interval = 1000, errorLimit = 10, onError, sign
     let response, finished;
     try {
       [response, finished] = await fetch(signal ? { signal } : {});
+      onResponse && onResponse(response, finished);
     } catch(error) {
       onError && onError(error);
       errorCount++;
@@ -28,7 +29,7 @@ export function polling(fetch, { interval = 1000, errorLimit = 10, onError, sign
   if (signal && signal.addEventListener) {
     signal.addEventListener('abort', () => {
       clearInterval(intervalId);
-      buffer.abort();
+      buffer.abort(signal.reason);
     });
   }
 

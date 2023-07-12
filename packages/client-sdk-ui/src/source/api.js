@@ -11,7 +11,7 @@ export default function(client) {
           case 'questions':
             const { signal } = options || {};
             const answer = await client.api[group][name](payload, options);
-            signal && signal.addEventListener && signal.addEventListener('abort', () => answer.abort());
+            signal && signal.addEventListener && signal.addEventListener('abort', () => answer.abort(signal.reason));
             return mapAsyncIterator(answer, postProcessQuestionsResponse);
         }
     }
