@@ -42,8 +42,8 @@ class Answer {
     return this._api._get(this._questionId, { ...this._options, ...options });
   }
 
-  abort() {
-    this._ac.abort();
+  abort(reason) {
+    this._ac.abort(reason);
   }
 
   [Symbol.asyncIterator]() {

@@ -31,7 +31,10 @@ export default class DataActor {
     // abort ongoing data fetch if any
     if (!this._session || (session.index !== this._session.index)) {
       // new session, abort preview data fetch if necessary
-      this._ac && this._ac.abort();
+      this._ac && this._ac.abort({
+        type: 'new-session',
+        message: 'A new session is created, discarding the old one.',
+      });
       this._ac = new AbortController();
     }
     this._session = session;
@@ -62,7 +65,7 @@ export default class DataActor {
           this._emitData({ session, value, ongoing: true });
         }
         // TODO: find a way to emit the last value without the ongoing flag
-        this._emitData({ session, value });
+        this._emitDataWithSessionCheck({ session, value });
       } else {
         this._emitDataWithSessionCheck({ session, value });
       }

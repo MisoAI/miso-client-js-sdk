@@ -97,6 +97,18 @@ export default class Ask extends Workflow {
     return this;
   }
 
+  restart() {
+    // TODO: move to workflow base
+    const { session, status, ongoing } = this._hub.states[fields.view(ROLE.ANSWER)];
+    if (session && status !== STATUS.INITIAL && (status !== STATUS.READY || ongoing)) {
+      // it's interrupted by a new question
+      const state = Object.freeze({ session, status, ongoing });
+      this._events.emit('interrupt', state);
+      this._events.emit('finally', state);
+    }
+    super.restart();
+  }
+
   _postProcessData({ value, ...data } = {}) {
     value = dataUtils.postProcessQuestionsResponse(value);
     const ongoing = value && !value.finished;
@@ -119,8 +131,14 @@ export default class Ask extends Workflow {
     if (status === STATUS.INITIAL) {
       return;
     }
-    const eventName = status === STATUS.READY && !ongoing ? 'done' : status;
-    this._events.emit(eventName, { session });
+    const done = status === STATUS.READY && !ongoing;
+    const erroneous = status === STATUS.ERRONEOUS;
+    const eventName = done ? 'done' : erroneous ? 'error' : status;
+    const state = Object.freeze({ session, status, ongoing });
+    this._events.emit(eventName, state);
+    if (done || erroneous) {
+      this._events.emit('finally', state);
+    }
   }
 
   _setFollowUpQuestions() {
