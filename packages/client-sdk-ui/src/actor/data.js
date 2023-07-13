@@ -99,7 +99,10 @@ export default class DataActor {
 
   destroy() {
     // abort ongoing data fetch if any
-    this._ac && this._ac.abort();
+    this._ac && this._ac.abort({
+      type: 'data-actor-destroy',
+      message: 'Data actor is destroyed.',
+    });
     for (const unsubscribe of this._unsubscribes) {
       unsubscribe();
     }
