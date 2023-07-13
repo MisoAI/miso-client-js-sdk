@@ -50,6 +50,10 @@ function render({ parentQuestionId }) {
 }
 
 function setup(workflow) {
+  workflow.useApi('questions', {
+    source_fl: ['cover_image', 'url'],
+    related_resoruce_fl: ['cover_image', 'url'],
+  });
   // follow-up questions:
   // when a answer is fully populated, insert a new section for the follow-up question
   workflow.on('done', () => {
@@ -83,6 +87,8 @@ function start(apiKey) {
   misocmd.push(() => {
     MisoClient.plugins.use('std:ui');
 
+    displayVersionInfo(MisoClient);
+
     const client = new MisoClient(apiKey);
     const rootWorkflow = client.ui.ask;
 
@@ -108,4 +114,15 @@ function start(apiKey) {
     });
   
   });
+}
+
+function displayVersionInfo(MisoClient) {
+  let version = MisoClient.version;
+  const versionInfo = document.getElementById('sdk-version');
+  if (versionInfo) {
+    if (version !== 'dev') {
+      version = `v${version}`;
+    }
+    versionInfo.innerHTML = `SDK ${version}`;
+  }
 }

@@ -251,7 +251,85 @@
 <p>Events on workflow collection:</p>
 <pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">workflow</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When a new workflow is created</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>Events on individual workflow:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span> <span class="token comment">// or other workflow</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> payload <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When user submits a question in search box.</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'loading'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When API is called and we are waiting for the response</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'ready'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer starts to display</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer is fully populated</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span> <span class="token comment">// or other workflow</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> payload <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When user submits a question in search box.</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> status<span class="token punctuation">,</span> ongoing <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer is fully populated</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>The session will always result in either a <code>done</code>, <code>interrupt</code>, or <code>error</code> event.</li>
+<li>Following the three types of event, the session then always ends with a <code>finally</code> event.</li>
+</ul>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Data</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>input</code></td>
+      <td>
+        <code>session</code>, <code>payload</code>
+      </td>
+      <td>
+        When user submits a question in search box.
+      </td>
+    </tr>
+    <tr>
+      <td><code>loading</code></td>
+      <td>
+        <code>session</code>, <code>status</code>, <code>ongoing</code>
+      </td>
+      <td>
+        When API is called and the workflow is waiting for the response.
+      </td>
+    </tr>
+    <tr>
+      <td><code>ready</code></td>
+      <td>
+        <code>session</code>, <code>status</code>, <code>ongoing</code>
+      </td>
+      <td>
+        When the workflow starts to display the answer.
+      </td>
+    </tr>
+    <tr>
+      <td><code>done</code></td>
+      <td>
+        <code>session</code>, <code>status</code>, <code>ongoing</code>
+      </td>
+      <td>
+        When the answer is fully populated.
+      </td>
+    </tr>
+    <tr>
+      <td><code>interrupt</code></td>
+      <td>
+        <code>session</code>, <code>status</code>, <code>ongoing</code>
+      </td>
+      <td>
+        When the current session is interrupted by a new session (usually by a new question input).
+      </td>
+    </tr>
+    <tr>
+      <td><code>error</code></td>
+      <td>
+        <code>session</code>, <code>status</code>, <code>ongoing</code>
+      </td>
+      <td>
+        When the session is interrupted by an error.
+      </td>
+    </tr>
+    <tr>
+      <td><code>finally</code></td>
+      <td>
+        <code>session</code>, <code>status</code>, <code>ongoing</code>
+      </td>
+      <td>
+        When the session is terminated, either due to completion, interruption or error.
+      </td>
+    </tr>
+  </tbody>
+</table>
 
         </div>
       </main>
