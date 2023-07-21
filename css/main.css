@@ -151,6 +151,16 @@ table.miso-diagram .arrow.left {
 }
 
 /* reset */
+.btn-primary {
+  color: #fff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
 .btn-outline-primary {
   color: var(--color-primary);
   border-color: var(--color-primary);
