@@ -56,7 +56,9 @@ class SearchApiContext {
 
   constructor(searchClient) {
     defineValues(this, { searchClient, misoClient: searchClient._client, misoApiName: searchClient._api });
-    delegateGetters(this, this, ['execute', 'mapRequest', 'callMisoApi', 'mapResponse']);
+    for (const method of ['execute', 'mapRequest', 'callMisoApi', 'mapResponse']) {
+      this[method] = this[method].bind(this);
+    }
   }
 
   async execute(request, options) {
