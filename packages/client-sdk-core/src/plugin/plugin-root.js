@@ -1,6 +1,7 @@
-import { delegateGetters, defineValues, Registry, Resolution } from '@miso.ai/commons';
+import { delegateGetters, defineValues, Registry, Resolution, Resources, uuidv4 } from '@miso.ai/commons';
 import classes from '../classes';
 import AnonymousPlugin from './anonymous';
+import { getPluginScriptUrl } from './urls';
 
 export default class PluginRoot extends Registry {
 
@@ -183,21 +184,23 @@ export default class PluginRoot extends Registry {
   }
 
   async _registerStdRemotely(id) {
-    // TODO: look up by manifest
-    const pkgName = id.slice(4);
-    const src = this._currentScript.src;
-    const searchIndex = src.indexOf('?');
-    const k = searchIndex < 0 ? src.length : searchIndex;
-    const i = src.lastIndexOf('/', k) + 1;
-    const j = src.indexOf('.', i);
-    const ext = j < 0 ? '' : src.slice(j, k);
+    const { version } = this._root;
+    const request = version === 'dev' ? `plugin:${id}@dev:${MisoClient.uuid}` : `plugin:${id}@${version}`;
 
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `${src.slice(0, i)}plugins/${pkgName}${ext}`;
-    document.head.appendChild(script);
+    // check if such script already exists
+    if (!document.querySelector(`script[data-request="${request}"]`)) {
+      // skip if already exists
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = getPluginScriptUrl(id, version, this._currentScript);
+      script.setAttribute('data-request', request);
+      document.head.appendChild(script);
+      // TODO: hook up error event
+    }
 
-    await this.whenRegistered(id);
+    // TODO: fine tune
+    const Plugin = await new Resources().get(request);
+    !this.isRegistered(id) && this.register(Plugin);
   }
 
 }

@@ -10,6 +10,8 @@ export * from './url';
 export * from './capture';
 export * from './polling';
 export * as signals from './signals';
+export * from './cmd';
+export { default as Resources } from './resources';
 export { default as Resolution } from './resolution';
 export { default as Bulk } from './bulk';
 export { default as EventEmitter } from './events';

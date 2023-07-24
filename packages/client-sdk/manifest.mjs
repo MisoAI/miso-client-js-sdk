@@ -9,6 +9,15 @@ export default [
     },
   },
   {
+    input: 'src/lite.js',
+    output: {
+      filename: 'miso-lite',
+      format: 'umd',
+      name: 'MisoClient',
+      exports: 'default',
+    },
+  },
+  {
     input: 'src/with-algolia.js',
     output: {
       filename: 'miso-algolia',
@@ -28,6 +37,13 @@ export default [
     input: 'src/plugins/ui-markdown.js',
     output: {
       filename: 'plugins/ui-markdown',
+      format: 'iife',
+    },
+  },
+  {
+    input: 'src/plugins/algolia.js',
+    output: {
+      filename: 'plugins/algolia',
       format: 'iife',
     },
   },

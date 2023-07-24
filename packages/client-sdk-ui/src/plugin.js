@@ -27,6 +27,7 @@ export default class UiPlugin extends Component {
 
     const ui = {};
     delegateGetters(ui, this, ['layouts']);
+    defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });
 
     // layouts
@@ -51,7 +52,7 @@ export default class UiPlugin extends Component {
   async requireExtension(name) {
     switch (name) {
       case 'markdown':
-        return await MisoClient.plugins.install('std:ui-markdown');
+        return await this.MisoClient.plugins.install('std:ui-markdown');
       default:
         throw new Error(`Unknown extension: ${name}`);
     }

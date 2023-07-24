@@ -1,10 +1,22 @@
-import { trimObj, Component } from '@miso.ai/commons';
-import { root, register } from './root';
+import { trimObj, Component, uuidv4, defineValues } from '@miso.ai/commons';
+import { root, register, init } from './root';
 import Api from './api';
 import Context from './context';
 import * as helpers from './utils';
 
 class MisoClient extends Component {
+
+  static attach() {
+    (window.MisoClients || (window.MisoClients = [])).push(MisoClient);
+    if (window.MisoClient) {
+      if (window.MisoClient !== MisoClient) {
+        // TODO: check version as well
+        console.warn(`Use already defined window.MisoClient (${window.MisoClient.version}).`);
+      }
+      return;
+    }
+    window.MisoClient = MisoClient;
+  }
 
   constructor(options) {
     super('client', root);
@@ -58,4 +70,8 @@ class MisoClient extends Component {
 
 MisoClient.helpers = helpers;
 
-export default MisoClient;
+defineValues(MisoClient, {
+  uuid: uuidv4(),
+});
+
+export default init(MisoClient);

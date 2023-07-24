@@ -1,4 +1,4 @@
-import MisoClient from './detached';
+import MisoClient from './detached/lite';
 import cmd from './cmd';
 
 MisoClient.attach();
