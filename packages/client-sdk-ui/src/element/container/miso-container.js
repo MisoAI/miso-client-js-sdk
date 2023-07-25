@@ -70,7 +70,7 @@ export default class MisoContainerElement extends HTMLElement {
 
   // lifecycle //
   async connectedCallback() {
-    const client = this._client = await getClient();
+    const client = this._client = await getClient(MisoContainerElement);
     if (document.body.contains(this)) { // in case already disconnected
       this._setWorkflow(this._getWorkflow(client));
     }

@@ -4,6 +4,7 @@ import Layouts from './layouts';
 import * as elements from './element';
 import * as layouts from './layout';
 import * as sources from './source';
+import MisoContainerElement from './element/container/miso-container';
 
 const PLUGIN_ID = 'std:ui';
 
@@ -38,6 +39,8 @@ export default class UiPlugin extends Component {
     }
 
     // custom elements
+    MisoContainerElement.MisoClient = MisoClient; // TODO
+
     const { containers, roles, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
     for (const elementClass of [

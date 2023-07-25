@@ -1,7 +1,7 @@
 let MisoClientPromise, clientPromise, client;
 
-export async function getClient() {
-  const MisoClient = await getMisoClient();
+export async function getClient(ElementClass) {
+  const MisoClient = await getMisoClient(ElementClass);
   clientPromise = clientPromise || MisoClient.any();
   client = client || await clientPromise;
   if (!client.ui) {
@@ -10,8 +10,9 @@ export async function getClient() {
   return client;
 }
 
-export async function getMisoClient() {
-  return window.MisoClient || MisoClientPromise || (MisoClientPromise = waitForMisoClient());
+export async function getMisoClient(ElementClass) {
+  // TODO: ElementClass.MisoClient should be enough
+  return ElementClass.MisoClient || window.MisoClient || MisoClientPromise || (MisoClientPromise = waitForMisoClient());
 }
 
 async function waitForMisoClient() {
