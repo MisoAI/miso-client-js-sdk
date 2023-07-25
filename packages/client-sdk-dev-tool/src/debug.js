@@ -1,49 +1,24 @@
-const TAG = '%cMiso';
-const STYLE = 'color: #fff; background-color: #334cbb; padding: 2px 2px 1px 4px;';
-
 const ID = 'std:debug';
-
-const _log = (path, name, ...data) => console.log(TAG, STYLE, _path(path), _name(name), ...data);
-
-function _logw(path, name, data) {
-  if (data === undefined) {
-    _log(path, name);
-  } else if (Array.isArray(data)) {
-    _log(path, name, ...data.map(_wrapObj));
-  } else {
-    _log(path, name, _wrapObj(data));
-  }
-}
-
-// format path
-function _path(path) {
-  return `<${typeof path === 'string' ? path : path.filter(v => v).join('/')}>`;
-}
-
-// format event name
-function _name(name) {
-  return `[${name}]`;
-}
-
-function _wrapObj(value) {
-  const type = typeof value;
-  return type === 'function' || (type === 'object' && !Array.isArray(value)) ? [value] : value;
-}
 
 export default class DebugPlugin {
 
-  constructor() {
-    this._log = console.log.bind(console, TAG, STYLE);
+  constructor(options = {}) {
+    this._options = options;
   }
 
   static get id() {
     return ID;
   }
 
-  // TODO: config({ active })
-
   install(MisoClient) {
     this._injectComponents(MisoClient);
+  }
+
+  config(options = {}) {
+    this._options = {
+      ...this._options,
+      ...options,
+    }
   }
 
   _injectComponents(component, treePath = []) {
@@ -80,11 +55,11 @@ export default class DebugPlugin {
         }
         return;
     }
-    _logw(path.join('.'), name, data);
+    this._logw(path.join('.'), name, data);
   }
 
   _handleCreateClient(eventName, data) {
-    _logw('client', eventName, data);
+    this._logw('client', eventName, data);
   }
 
   _handleApiEvent(eventName, { groupName, apiName, url, bulk, ...data }) {
@@ -103,15 +78,20 @@ export default class DebugPlugin {
 
     args.push([{ ...data, url }]);
 
-    _log.apply(undefined, args);
+    this._log(...args);
   }
 
   _handlePluginsEvent(eventName, plugin) {
-    _log('plugins', eventName, `${plugin.id || '(anonymous)'}`, [plugin]);
+    let data = [];
+    if (Array.isArray(plugin)) {
+      data = plugin.slice(1);
+      plugin = plugin[0];
+    }
+    this._log('plugins', eventName, `${plugin.id || '(anonymous)'}`, [plugin, ...data]);
   }
 
   _handlePluginSpecificEvent(pluginId, path, name, data) {
-    _logw([pluginId, path.join('.')], name, data);
+    this._logw([pluginId, path.join('.')], name, data);
   }
 
   _getPath(component) {
@@ -122,4 +102,42 @@ export default class DebugPlugin {
     return path.reverse();
   }
 
+  _log(path, name, ...data) {
+    const options = this._options.console || {};
+    console.log(_tag(options), _style(options), _path(path), _name(name), ...data);
+  }
+
+  _logw(path, name, data) {
+    if (data === undefined) {
+      this._log(path, name);
+    } else if (Array.isArray(data)) {
+      this._log(path, name, ...data.map(_wrapObj));
+    } else {
+      this._log(path, name, _wrapObj(data));
+    }
+  }
+
+}
+
+function _tag({ text = 'Miso' } = {}) {
+  return `%c${text}`;
+}
+
+function _style({ color = '#fff', background = '#334cbb' } = {}) {
+  return `color: ${color}; background-color: ${background}; padding: 2px 2px 1px 4px;`;
+}
+
+// format path
+function _path(path) {
+  return `<${typeof path === 'string' ? path : path.filter(v => v).join('/')}>`;
+}
+
+// format event name
+function _name(name) {
+  return `[${name}]`;
+}
+
+function _wrapObj(value) {
+  const type = typeof value;
+  return type === 'function' || (type === 'object' && !Array.isArray(value)) ? [value] : value;
 }

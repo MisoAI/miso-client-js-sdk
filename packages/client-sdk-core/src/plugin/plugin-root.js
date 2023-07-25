@@ -104,6 +104,7 @@ export default class PluginRoot extends Registry {
     }
     if (typeof instance.config === 'function') {
       instance.config(options);
+      this._events.emit('config', [instance, options]);
     } else {
       this._warn(`Attempt to pass options to plugin "${instance.id}", which offers no config() method.`);
     }

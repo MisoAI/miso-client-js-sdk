@@ -26,3 +26,5 @@ sections:
   pages:
   - title: Viewable
     path: /helpers/viewable
+  - title: Debug
+    path: /helpers/debug
