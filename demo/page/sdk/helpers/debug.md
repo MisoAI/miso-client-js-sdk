@@ -9,4 +9,7 @@
     },
   });
 });
+(window.misocmd || (window.misocmd = [])).push(() => {
+  window.MisoClient.debug('manual', 'my-event-name', 'my-title', 1, 2, 3);
+});
 </script>

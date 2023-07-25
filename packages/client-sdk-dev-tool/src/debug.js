@@ -12,6 +12,7 @@ export default class DebugPlugin {
 
   install(MisoClient) {
     this._injectComponents(MisoClient);
+    MisoClient.debug = (...args) => this._log(...args);
   }
 
   config(options = {}) {
