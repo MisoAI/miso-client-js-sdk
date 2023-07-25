@@ -12,7 +12,7 @@ export default class DebugPlugin {
 
   install(MisoClient) {
     this._injectComponents(MisoClient);
-    MisoClient.debug = (...args) => this._log(...args);
+    MisoClient.debug = (...args) => this._logr(...args);
   }
 
   config(options = {}) {
@@ -101,6 +101,11 @@ export default class DebugPlugin {
       c.meta.name && path.push(c.meta.name)
     }
     return path.reverse();
+  }
+
+  _logr(...data) {
+    const options = this._options.console || {};
+    console.log(_tag(options), _style(options), ...data);
   }
 
   _log(path, name, ...data) {
