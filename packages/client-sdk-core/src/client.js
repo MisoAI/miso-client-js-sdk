@@ -11,7 +11,7 @@ class MisoClient extends Component {
     if (window.MisoClient) {
       if (window.MisoClient !== MisoClient) {
         // TODO: check version as well
-        console.warn(`Use already defined window.MisoClient (${window.MisoClient.version}).`);
+        console.warn(`window.MisoClient already exists: (${window.MisoClient.version}).`);
       }
       return;
     }
