@@ -13,6 +13,7 @@ export const ROLE = Object.freeze({
   ANSWER: 'answer',
   SOURCES: 'sources',
   RELATED_RESOURCES: 'related_resources',
+  QUERY_SUGGESTIONS: 'query_suggestions',
 });
 
 export const LAYOUT_CATEGORY = Object.freeze({

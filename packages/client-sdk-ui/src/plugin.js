@@ -16,12 +16,13 @@ export default class UiPlugin extends Component {
     return PLUGIN_ID;
   }
 
-  constructor() {
+  constructor({ loadStyles = true } = {}) {
     super('ui');
     this.layouts = new Layouts(this);
     this._recommendations = new WeakMap();
     this._asks = new WeakMap();
     this._extensions = new WeakMap();
+    // TODO: load CSS
   }
 
   install(MisoClient, context) {
@@ -146,6 +147,10 @@ class Ui {
 
   get ask() {
     return this.asks.root;
+  }
+
+  async whenStylesLoaded() {
+    // TODO
   }
 
 }

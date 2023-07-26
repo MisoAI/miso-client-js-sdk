@@ -1,0 +1,29 @@
+.miso-option-list {
+  &, * {
+    box-sizing: border-box;
+  }
+
+  position: relative;
+
+  .miso-option-list__options {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .miso-option-list__option {
+    border: 1px solid #e3e5e8;
+    border-radius: 0.5rem;
+    line-height: 1.5;
+    padding: 0.5rem 0.8rem;
+    margin-bottom: 0.25rem;
+    color: #23262b;
+    user-select: none;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #8f96a3;
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+  }
+}

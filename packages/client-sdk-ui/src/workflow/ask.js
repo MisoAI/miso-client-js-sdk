@@ -2,7 +2,7 @@ import { defineValues } from '@miso.ai/commons';
 import Workflow from './base';
 import { fields, FeedbackActor } from '../actor';
 import { ROLE, STATUS } from '../constants';
-import { SearchBoxLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout';
+import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout';
 import { mergeApiParams } from './utils';
 import { utils as dataUtils } from '../source';
 
@@ -10,8 +10,8 @@ const DEFAULT_API_PARAMS = Object.freeze({
   group: 'ask',
   name: 'questions',
   payload: {
-    source_fl: ['cover_image'],
-    related_resource_fl: ['cover_image'],
+    source_fl: ['cover_image', 'url'],
+    related_resource_fl: ['cover_image', 'url'],
   },
 });
 
@@ -22,12 +22,13 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.FEEDBACK]: FeedbackLayout.type,
   [ROLE.SOURCES]: [ListLayout.type, { incremental: true, }],
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, }],
+  [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
 });
 
 function getDefaultLayouts(parentQuestionId) {
   return parentQuestionId ? {
     ...DEFAULT_LAYOUTS,
-    [ROLE.QUERY]: [SearchBoxLayout.type, { buttonText: 'Ask', autocomplete: true }],
+    [ROLE.QUERY]: [SearchBoxLayout.type, { buttonText: 'Ask' }],
   } : DEFAULT_LAYOUTS;
 }
 
@@ -43,7 +44,7 @@ export default class Ask extends Workflow {
     defineValues(this, { parentQuestionId });
 
     this._context = context;
-    this._setFollowUpQuestions();
+    this._setSuggestedQuestions();
 
     this._feedback = new FeedbackActor(this._hub);
     this._unsubscribes = [
@@ -141,7 +142,7 @@ export default class Ask extends Workflow {
     }
   }
 
-  _setFollowUpQuestions() {
+  _setSuggestedQuestions() {
     const { previous } = this;
     if (!previous) {
       return;

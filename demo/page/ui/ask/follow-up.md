@@ -49,7 +49,10 @@
 <script id="follow-up-template" type="text/plain">
 <div class="follow-up">
   <hr>
-  <miso-ask visible-when="initial loading" parent-question-id="{{parentQuestionId}}">
+  <miso-ask visible-when="initial" parent-question-id="{{parentQuestionId}}">
+    <div class="phrase">Related questions you can explore</div>
+    <miso-query-suggestions></miso-query-suggestions>
+    <div class="phrase">... or enter by yourself</div>
     <miso-query></miso-query>
   </miso-ask>
   <miso-ask visible-when="ready" parent-question-id="{{parentQuestionId}}" logo="false">

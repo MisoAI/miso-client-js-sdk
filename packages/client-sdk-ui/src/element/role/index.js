@@ -1,5 +1,6 @@
 export { default as MisoComponentElement } from './miso-component';
 export { default as MisoQueryElement } from './miso-query';
+export { default as MisoQuerySuggestionsElement } from './miso-query-suggestions';
 export { default as MisoFeedbackElement } from './miso-feedback';
 export { default as MisoResultsElement } from './miso-results';
 export { default as MisoQuestionElement } from './miso-question';
