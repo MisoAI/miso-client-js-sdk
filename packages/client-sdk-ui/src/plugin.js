@@ -149,8 +149,10 @@ class Ui {
     return this.asks.root;
   }
 
+  /*
   async whenStylesLoaded() {
     // TODO
   }
+  */
 
 }

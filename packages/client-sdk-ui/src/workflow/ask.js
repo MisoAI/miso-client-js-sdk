@@ -100,7 +100,7 @@ export default class Ask extends Workflow {
 
   restart() {
     // TODO: move to workflow base
-    const { session, status, ongoing } = this._hub.states[fields.view(ROLE.ANSWER)];
+    const { session, status, ongoing } = this._hub.states[fields.view(ROLE.ANSWER)] || {};
     if (session && status !== STATUS.INITIAL && (status !== STATUS.READY || ongoing)) {
       // it's interrupted by a new question
       const state = Object.freeze({ session, status, ongoing });
