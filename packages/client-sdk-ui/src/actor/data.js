@@ -8,6 +8,7 @@ export default class DataActor {
       hub.on(fields.session(), session => this._handleSession(session)),
       hub.on(fields.input(), event => this._handleInput(event)),
     ];
+    this._postProcess = v => v;
   }
 
   get source() {
@@ -20,6 +21,13 @@ export default class DataActor {
       throw new Error(`Expect source to be a function: ${source}`);
     }
     this._source = source;
+  }
+
+  set postProcess(fn) {
+    if (fn && typeof fn !== 'function') {
+      throw new Error(`Expect postProcess to be a function: ${fn}`);
+    }
+    this._postProcess = fn || (v => v);
   }
 
   _handleSession(session) {
@@ -89,7 +97,7 @@ export default class DataActor {
   }
 
   _emitData(data) {
-    this._hub.update(fields.data(), data);
+    this._hub.update(fields.data(), this._postProcess(data));
   }
 
   _error(error) {

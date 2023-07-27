@@ -54,7 +54,7 @@ export default class Workflow extends Component {
     this._unsubscribes = [];
 
     this._data.source = sources.api(this._client);
-    this._dataProcessor = IDF;
+    this._customPostProcessData = IDF;
   }
 
   get uuid() {
@@ -109,7 +109,7 @@ export default class Workflow extends Component {
 
     this._sessions.start(); // in case session not started yet
 
-    data = this._dataProcessor(this._postProcessData(data));
+    data = this._customPostProcessData(this._postProcessData(data));
     this._hub.update(fields.data(), data);
     return this;
   }
@@ -122,7 +122,7 @@ export default class Workflow extends Component {
     if (fn && typeof fn !== 'function') {
       throw new Error(`Data processor must be a function or undefined.`);
     }
-    this._dataProcessor = fn || IDF;
+    this._data.postProcess = this._customPostProcessData = fn || IDF;
     return this;
   }
 

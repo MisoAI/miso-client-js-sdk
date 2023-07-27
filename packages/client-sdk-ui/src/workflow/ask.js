@@ -112,7 +112,7 @@ export default class Ask extends Workflow {
 
   _postProcessData({ value, ...data } = {}) {
     value = dataUtils.postProcessQuestionsResponse(value);
-    const ongoing = value && !value.finished;
+    const ongoing = value && !value.finished; // TODO: do we need this?
     return { value, ongoing, ...data };
   }
 
