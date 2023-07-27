@@ -14,6 +14,8 @@ function normalizeLayoutOptions(args) {
   return [name, options];
 }
 
+const IDF = v => v;
+
 export default class Workflow extends Component {
 
   constructor(plugin, client, {
@@ -52,6 +54,7 @@ export default class Workflow extends Component {
     this._unsubscribes = [];
 
     this._data.source = sources.api(this._client);
+    this._dataProcessor = IDF;
   }
 
   get uuid() {
@@ -106,13 +109,21 @@ export default class Workflow extends Component {
 
     this._sessions.start(); // in case session not started yet
 
-    data = this._postProcessData(data);
+    data = this._dataProcessor(this._postProcessData(data));
     this._hub.update(fields.data(), data);
     return this;
   }
 
   _postProcessData(data) {
     return data;
+  }
+
+  useDataProcessor(fn) {
+    if (fn && typeof fn !== 'function') {
+      throw new Error(`Data processor must be a function or undefined.`);
+    }
+    this._dataProcessor = fn || IDF;
+    return this;
   }
 
   notifyViewUpdate(role, state) {
@@ -129,7 +140,7 @@ export default class Workflow extends Component {
   // source //
   useApi(name, payload) {
     if (name === false) {
-      this._data.source = false
+      this._data.source = false;
     } else {
       this._apiParams = mergeApiParams(this._defaultApiParams, { name, payload });
     }
