@@ -48,7 +48,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
 
     // kick off sooner
     if (format === 'markdown') {
-      MisoClient.plugins.install('std:ui-markdown');
+      TypewriterLayout.MisoClient.plugins.install('std:ui-markdown');
     }
   }
 

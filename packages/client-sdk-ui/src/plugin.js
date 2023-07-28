@@ -5,6 +5,7 @@ import * as elements from './element';
 import * as layouts from './layout';
 import * as sources from './source';
 
+import TypewriterLayout from './layout/text/typewriter';
 import MisoContainerElement from './element/container/miso-container';
 import MisoBannerElement from './element/miso-banner';
 
@@ -35,6 +36,8 @@ export default class UiPlugin extends Component {
     defineValues(MisoClient, { ui });
 
     // layouts
+    TypewriterLayout.MisoClient = MisoClient; // TODO: find better way
+
     for (const LayoutClass of Object.values(layouts)) {
       if (LayoutClass.type) {
         this.layouts.register(LayoutClass);
