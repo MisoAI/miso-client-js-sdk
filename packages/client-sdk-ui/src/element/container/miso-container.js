@@ -52,6 +52,10 @@ export default class MisoContainerElement extends HTMLElement {
     return this._workflow;
   }
 
+  set workflow(workflow) {
+    this._setWorkflow(workflow);
+  }
+
   get logo() {
     return logoAttrToProp(this.getAttribute(ATTR_LOGO));
   }
