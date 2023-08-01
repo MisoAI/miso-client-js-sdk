@@ -160,7 +160,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   _handleClick({ target }) {
-    if (target.matches('[type="submit"]')) {
+    if (target.matches('[type="submit"]') || target.matches('[data-role="button"]')) {
       const { inputElement } = this._context();
       if (inputElement) {
         inputElement.blur();
