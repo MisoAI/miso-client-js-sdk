@@ -160,13 +160,15 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   _handleClick({ target }) {
-    if (target.matches('[type="submit"]') || target.matches('[data-role="button"]')) {
-      const { inputElement } = this._context();
-      if (inputElement) {
-        inputElement.blur();
-        this._submit(inputElement.value);
+    const { inputElement } = this._context();
+    for (let element = target; element && element !== this._view.element; element = element.parentElement) {
+      if (element.matches('[type="submit"]') || element.matches('[data-role="button"]')) {
+        if (inputElement) {
+          inputElement.blur();
+          this._submit(inputElement.value);
+        }
+        return;
       }
-      return;
     }
     const { autocomplete } = this.options;
     if (!autocomplete) {
@@ -177,7 +179,6 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       if (!suggestion) {
         continue;
       }
-      const { inputElement } = this._context();
       if (inputElement) {
         inputElement.value = suggestion.text;
       }
