@@ -1,5 +1,5 @@
-import { delegateGetters } from './objects';
-import { removeItem } from "./arrays";
+import { delegateGetters } from './objects.js';
+import { removeItem } from './arrays.js';
 
 export default class EventEmitter {
 

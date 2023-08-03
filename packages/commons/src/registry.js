@@ -1,5 +1,5 @@
-import Component from './component';
-import Resolution from './resolution';
+import Component from './component.js';
+import Resolution from './resolution.js';
 
 export default class Registry extends Component {
 

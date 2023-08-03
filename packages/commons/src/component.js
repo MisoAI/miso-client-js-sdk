@@ -1,6 +1,6 @@
-import { defineValues, defineTypeByKey } from './objects';
-import { uuidv4 } from './uuid';
-import EventEmitter from './events';
+import { defineValues, defineTypeByKey } from './objects.js';
+import { uuidv4 } from './uuid.js';
+import EventEmitter from './events.js';
 
 function buildMeta(name, parent) {
   if (name !== undefined && typeof name !== 'string' && parent === undefined) {

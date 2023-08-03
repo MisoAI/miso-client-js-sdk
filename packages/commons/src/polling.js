@@ -1,4 +1,4 @@
-import ValueBuffer from './value-buffer';
+import ValueBuffer from './value-buffer.js';
 
 export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onResponse, signal } = {}) {
   if (signal && signal.aborted) {

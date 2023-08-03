@@ -1,4 +1,4 @@
-import ContinuityObserver from './continuity';
+import ContinuityObserver from './continuity.js';
 
 /**
  * Convert value to element by querying selector, if value is a string. Return value otherwise.

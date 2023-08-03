@@ -1,4 +1,4 @@
-import { defineValues } from './objects';
+import { defineValues } from './objects.js';
 
 export function capture(value) {
   return new Capture(value);

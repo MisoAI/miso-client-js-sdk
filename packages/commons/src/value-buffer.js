@@ -1,4 +1,4 @@
-import Resolution from './resolution';
+import Resolution from './resolution.js';
 
 export default class ValueBuffer {
 
