@@ -1,1 +1,1 @@
-export { default as UiMarkdownPlugin } from './plugin';
+export { default as UiMarkdownPlugin } from './plugin.js';

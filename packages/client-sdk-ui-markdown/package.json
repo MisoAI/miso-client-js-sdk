@@ -1,20 +1,20 @@
 {
   "name": "@miso.ai/client-sdk-ui-markdown",
   "description": "Markdown support for Miso SDK UI plugin",
-  "main": "dist/es/index.js",
-  "module": "dist/es/index.js",
-  "files": [
-    "dist/*"
-  ],
+  "type": "module",
+  "main": "dist/cjs/index.js",
+  "module": "src/index.js",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./dist/cjs/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "start": "npx babel src --root-mode upward --out-dir dist/es --watch",
     "build:clean": "npx rimraf dist",
-    "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
-    "build:cjs": "echo TODO",
-    "build": "npm run build:clean && npm run build:esm && npm run build:cjs"
+    "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
+    "build": "npm run build:clean && npm run build:cjs"
   },
   "repository": "MisoAI/miso-client-js-sdk",
   "homepage": "https://misoai.github.io/miso-client-js-sdk/plugins/gtm",
