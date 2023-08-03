@@ -1,7 +1,7 @@
 import { Component } from '@miso.ai/commons';
 import * as utils from 'shopify-store-utils';
-import { Cart } from './cart';
-import { Page } from './page';
+import { Cart } from './cart.js';
+import { Page } from './page.js';
 
 const { getCustomerId, getAnonymousUserToken, ajax } = utils;
 

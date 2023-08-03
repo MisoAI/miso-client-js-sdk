@@ -1,1 +1,1 @@
-export { default as GtmPlugin } from './plugin';
+export { default as GtmPlugin } from './plugin.js';

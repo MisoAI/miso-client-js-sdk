@@ -1,6 +1,6 @@
 import { Component, EventEmitter } from '@miso.ai/commons';
-import observe from './data-layer';
-import Ecommerce from './ecommerce';
+import observe from './data-layer.js';
+import Ecommerce from './ecommerce.js';
 
 const PLUGIN_ID = 'std:gtm';
 

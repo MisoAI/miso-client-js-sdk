@@ -1,1 +1,1 @@
-export { default as ShopifyPlugin } from './plugin';
+export { default as ShopifyPlugin } from './plugin.js';

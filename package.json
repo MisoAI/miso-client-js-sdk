@@ -17,9 +17,7 @@
   "scripts": {
     "start": "concurrently 'npm:start:*'",
     "start:client-sdk-core": "npm run start --workspace=packages/client-sdk-core",
-    "start:client-sdk-dev-tool": "npm run start --workspace=packages/client-sdk-dev-tool",
     "start:client-sdk-ui": "npm run start --workspace=packages/client-sdk-ui",
-    "start:client-sdk-shopify": "npm run start --workspace=packages/client-sdk-shopify",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
     "test": "npm run test --workspaces --if-present",
