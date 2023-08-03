@@ -1,21 +1,17 @@
 {
   "name": "@miso.ai/client-sdk-algolia",
-  "description": "A set of custom elements to work with Miso client JS SDK",
+  "description": "Algolia plugin for Miso client SDK",
+  "type": "module",
   "main": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "files": [
-    "dist/*"
-  ],
+  "module": "src/index.js",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test:v2": "npx uvu test",
-    "start": "npx babel src --root-mode upward --out-dir dist/es --watch",
     "build:clean": "npx rimraf dist",
-    "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
-    "build": "npm run build:clean && npm run build:esm && npm run build:cjs"
+    "build": "npm run build:clean && npm run build:cjs"
   },
   "repository": "MisoAI/miso-client-js-sdk",
   "homepage": "https://misoai.github.io/miso-client-js-sdk/plugins/algolia",
