@@ -1,1 +1,1 @@
-export { default as AlgoliaPlugin } from './plugin';
+export { default as AlgoliaPlugin } from './plugin.js';

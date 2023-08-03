@@ -2,7 +2,7 @@ import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 
-import { Query } from '../lib/index.js';
+import { Query } from '../src/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const str = readFileSync(resolve(__dirname, './test.md'), 'utf8');

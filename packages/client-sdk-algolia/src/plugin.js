@@ -1,5 +1,5 @@
 import { Component } from '@miso.ai/commons';
-import AlgoliaClient from './client';
+import AlgoliaClient from './client.js';
 
 const PLUGIN_ID = 'std:algolia';
 

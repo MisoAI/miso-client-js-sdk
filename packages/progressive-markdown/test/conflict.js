@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { Query } from '../lib/index.js';
+import { Query } from '../src/index.js';
 
 test('conflict: interior', () => {
   const query = new Query();

@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { Query, Position } from '../lib/index.js';
+import { Query, Position } from '../src/index.js';
 
 test('query: empty', () => {
   const query = new Query();

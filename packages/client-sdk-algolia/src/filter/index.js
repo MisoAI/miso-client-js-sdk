@@ -1,5 +1,5 @@
 import { trimObj } from '@miso.ai/commons';
-import shadow from './shadow';
+import shadow from './shadow.js';
 
 export function buildFilters(algoliaClient, params) {
   const fq = [

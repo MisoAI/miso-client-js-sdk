@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { buildFilters } from '../src/filter/index';
+import { buildFilters } from '../src/filter/index.js';
 
 const mockAlgoliaClient = {};
 const build = filters => buildFilters(mockAlgoliaClient, filters);
@@ -82,3 +82,5 @@ function run(group, name, parameters, fq) {
     assert.equal(build(parameters), fq === undefined ? {} : { fq });
   });
 }
+
+test.run();

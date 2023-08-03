@@ -1,5 +1,5 @@
 import { trimObj, mapValues, asArray } from '@miso.ai/commons';
-import { buildFilters } from './filter';
+import { buildFilters } from './filter/index.js';
 
 const DEFAULT_ROWS = 5;
 
