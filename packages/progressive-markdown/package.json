@@ -2,13 +2,16 @@
   "name": "@miso.ai/progressive-markdown",
   "description": "Utilities for Markdown progressive rendering",
   "type": "module",
-  "main": "lib/index.js",
-  "module": "lib/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "src/index.js",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "npx uvu test -i 'ignored'"
+    "test": "npx uvu test -i 'ignored'",
+    "build:clean": "npx rimraf dist",
+    "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
+    "build": "npm run build:clean && npm run build:cjs"
   },
   "repository": {
     "type": "git",
