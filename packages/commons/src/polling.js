@@ -4,17 +4,18 @@ export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onRe
   if (signal && signal.aborted) {
     return [];
   }
-  let errorCount = 0;
+  let consecutiveErrorCount = 0;
   const buffer = new ValueBuffer();
   const intervalId = setInterval(async () => {
     let response, finished;
     try {
       [response, finished] = await fetch(signal ? { signal } : {});
       onResponse && onResponse(response, finished);
+      consecutiveErrorCount = 0;
     } catch(error) {
       onError && onError(error);
-      errorCount++;
-      if (errorCount > errorLimit) {
+      consecutiveErrorCount++;
+      if (consecutiveErrorCount > errorLimit) {
         clearInterval(intervalId);
         buffer.error(error);
       }
