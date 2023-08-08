@@ -1,7 +1,7 @@
 import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/commons';
 import { STATUS } from '../constants';
 import * as fields from './fields';
-import ProxyElement from './proxy';
+import ProxyElement from '../util/proxy';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&
@@ -44,12 +44,16 @@ export default class ViewActor {
       this._safeApplyOnLayout('unrender', this._element);
     }
     this._element = element;
+    this._proxyElement && this._proxyElement.sync();
     this._events.emit('element', element);
     this.refresh({ force: true });
   }
 
   get proxyElement() {
-    return this._proxyElement || (this._proxyElement = new ProxyElement(this));
+    if (!this._proxyElement) {
+      this._proxyElement = new ProxyElement(() => this.element);
+    }
+    return this._proxyElement;
   }
 
   get layout() {

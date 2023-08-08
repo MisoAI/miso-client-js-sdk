@@ -1,9 +1,14 @@
 import { isElement, isInDocument } from '@miso.ai/commons';
-import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
 
 export default class Items {
 
-  constructor() {
+  constructor({
+    itemIdAttrName = 'data-item-id',
+  } = {}) {
+    if (!itemIdAttrName) {
+      throw new Error(`itemIdAttrName is required.`);
+    }
+    this._itemIdAttrName = itemIdAttrName;
     this._bindings = new Map();
     this._e2b = new WeakMap();
   }
@@ -24,7 +29,7 @@ export default class Items {
       return this.unbindAll();
     }
     const unbounds = this._purge();
-    const elements = rootElement.querySelectorAll(`[${ATTR_DATA_MISO_PRODUCT_ID}]`);
+    const elements = rootElement.querySelectorAll(`[${this._itemIdAttrName}]`);
     const bounds = [];
     // warn for conflict productIds
     // TODO
@@ -48,28 +53,28 @@ export default class Items {
 
 
 
-  _bind(productId, element) {
-    if (!productId) {
+  _bind(item, element) {
+    if (!item) {
       throw new Error(`Product ID or element is required.`);
     }
-    if (element === undefined && isElement(productId)) {
-      element = productId;
-      if (!element.hasAttribute(ATTR_DATA_MISO_PRODUCT_ID)) {
-        throw new Error(`No attribute "${ATTR_DATA_MISO_PRODUCT_ID} found on element ${element}"`);
+    if (element === undefined && isElement(item)) {
+      element = item;
+      if (!element.hasAttribute(this._itemIdAttrName)) {
+        throw new Error(`No attribute "${this._itemIdAttrName} found on element ${element}"`);
       }
-      productId = element.getAttribute(ATTR_DATA_MISO_PRODUCT_ID);
+      item = element.getAttribute(this._itemIdAttrName);
     }
 
     // check if binding already exist
-    const oldBinding = this._bindings.get(productId);
+    const oldBinding = this._bindings.get(item);
     if (oldBinding && oldBinding.element === element) {
       return [];
     }
-    const unbound0 = this._unbind(this.get(productId));
+    const unbound0 = this._unbind(this.get(item));
     const unbound1 = this._unbind(this.get(element));
 
-    const binding = Object.freeze({ productId, element });
-    this._bindings.set(productId, binding);
+    const binding = Object.freeze({ item, element });
+    this._bindings.set(item, binding);
     this._e2b.set(element, binding);
 
     const results = [binding];
@@ -93,7 +98,7 @@ export default class Items {
 
   _unbind(binding) {
     if (binding) {
-      this._bindings.delete(binding.productId);
+      this._bindings.delete(binding.item);
       this._e2b.delete(binding.element);
     }
     return binding;
