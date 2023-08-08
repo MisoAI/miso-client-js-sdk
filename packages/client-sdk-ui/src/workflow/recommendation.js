@@ -1,4 +1,4 @@
-import { defineValues } from '@miso.ai/commons';
+import { defineValues, trimObj } from '@miso.ai/commons';
 import Workflow from './base';
 import { fields, Tracker } from '../actor';
 import { ListLayout } from '../layout';
@@ -69,17 +69,19 @@ export default class Recommendation extends Workflow {
   }
 
   // interactions //
-  _preprocessInteraction({ context : { custom_context, ...context } = {}, ...payload } = {}) {
-    const { uuid, id } = this;
+  _preprocessInteraction(payload) {
+    payload = super._preprocessInteraction(payload) || {};
+    const { context = {} } = payload;
+    const { custom_context = {} } = context;
     return {
       ...payload,
       context: {
         ...context,
-        custom_context: {
-          unit_id: id,
-          unit_instance_uuid: uuid,
+        custom_context: trimObj({
+          unit_id: this.id,
+          unit_instance_uuid: this.uuid,
           ...custom_context,
-        },
+        }),
       },
     };
   }

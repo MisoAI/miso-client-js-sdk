@@ -178,8 +178,28 @@ export default class Workflow extends Component {
     return this;
   }
 
-  _preprocessInteraction(payload) {
-    return payload;
+  _preprocessInteraction({
+    context: {
+      custom_context,
+      ...context
+    } = {},
+    ...payload
+  } = {}) {
+    const {
+      group: api_group,
+      name: api_name,
+    } = this._apiParams;
+    return {
+      ...payload,
+      context: {
+        ...context,
+        custom_context: {
+          api_group,
+          api_name,
+          ...custom_context,
+        },
+      },
+    };
   }
 
   // destroy //

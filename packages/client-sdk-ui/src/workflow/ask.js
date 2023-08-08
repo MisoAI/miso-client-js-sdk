@@ -1,6 +1,6 @@
-import { defineValues } from '@miso.ai/commons';
+import { defineValues, trimObj } from '@miso.ai/commons';
 import Workflow from './base';
-import { fields, FeedbackActor } from '../actor';
+import { fields, FeedbackActor, Tracker } from '../actor';
 import { ROLE, STATUS } from '../constants';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout';
 import { mergeApiParams } from './utils';
@@ -47,6 +47,10 @@ export default class Ask extends Workflow {
     this._setSuggestedQuestions();
 
     this._feedback = new FeedbackActor(this._hub);
+    this._trackers = Object.freeze({
+      sources: new Tracker(this._hub, this._views.get(ROLE.SOURCES)),
+      relatedResources: new Tracker(this._hub, this._views.get(ROLE.RELATED_RESOURCES)),
+    });
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), payload => this.query(payload)),
@@ -151,6 +155,34 @@ export default class Ask extends Workflow {
     this._hub.update(fields.suggestions(), { value });
   }
 
+  // trackers //
+  get trackers() {
+    return this._trackers;
+  }
+
+  useTrackers({ sources, relatedResources } = {}) {
+    this._trackers.sources.config(sources);
+    this._trackers.relatedResources.config(relatedResources);
+    return this;
+  }
+
+  _preprocessInteraction(payload) {
+    payload = super._preprocessInteraction(payload) || {};
+    const { context = {} } = payload;
+    const { custom_context = {} } = context;
+    return {
+      ...payload,
+      context: {
+        ...context,
+        custom_context: trimObj({
+          parent_question_id: this.parentQuestionId,
+          question_id: this.questionId,
+          ...custom_context,
+        }),
+      },
+    };
+  }
+
   _destroy() {
     const { parentQuestionId, questionId } = this;
     if (parentQuestionId) {
@@ -161,6 +193,8 @@ export default class Ask extends Workflow {
     }
 
     this._feedback._destroy();
+    this._trackers.sources._destroy();
+    this._trackers.relatedResources._destroy();
     super._destroy();
   }
 

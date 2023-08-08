@@ -51,7 +51,7 @@ export default class Tracker {
   config(options) {
     const { active } = this._hub;
     if (active) {
-      throw new Error(`Cannot change configuration after unit starts.`);
+      throw new Error(`Cannot change configuration after workflow starts.`);
     }
     this._options = this._normalizeOptions(options);
   }
@@ -67,11 +67,11 @@ export default class Tracker {
   }
 
   start() {
-    throw new Error(`unit.tracker.start() is deprecated. Use unit.startTracker() instead.`);
+    throw new Error(`workflow.tracker.start() is deprecated. Use workflow.startTracker() instead.`);
   }
 
   refresh() {
-    // refresh against unit element
+    // refresh against workflow element
     this._syncElement();
 
     // refresh against view state
@@ -83,7 +83,7 @@ export default class Tracker {
     if (this._states && session.uuid !== this._states.uuid) {
       this._retireStates();
     }
-    if (!this._states) {
+    if (!this._states && session) {
       this._states = new States(session.uuid);
     }
 
@@ -112,10 +112,10 @@ export default class Tracker {
 
   _assertViewReady() {
     if (!this._hub.active) {
-      throw new Error(`Unit is not active. Call unit.start() to activate it.`);
+      throw new Error(`Workflow is not active. Call workflow.start() to activate it.`);
     }
     if (!isReady(this._getViewState())) {
-      throw new Error(`Unit is not rendered yet. If you handle rendering by yourself, call unit.notifyViewUpdate() when DOM is ready.`);
+      throw new Error(`Workflow is not rendered yet. If you handle rendering by yourself, call workflow.notifyViewUpdate() when DOM is ready.`);
     }
   }
 
@@ -148,7 +148,8 @@ export default class Tracker {
     if (!this._states) {
       return;
     }
-    const { bounds, unbounds } = this._items.refresh();
+    const { element } = this._view;
+    const { bounds, unbounds } = this._items.refresh(element);
     this._untrackViewables(unbounds);
     this._trackImpressions(bounds);
     this._trackViewables(bounds);
@@ -317,6 +318,7 @@ export default class Tracker {
       context: {
         custom_context: trimObj({
           api_ts,
+          res_prop: toResProp(this._role),
           trigger: manual ? 'manual' : 'auto',
         }),
       },
@@ -387,4 +389,9 @@ class States {
     return productIds.filter(productId => this.get(productId, type) !== TRIGGERED);
   }
 
+}
+
+function toResProp(role) {
+  // TODO: ad-hoc, see #83
+  return role === 'results' ? 'products' : role;
 }
