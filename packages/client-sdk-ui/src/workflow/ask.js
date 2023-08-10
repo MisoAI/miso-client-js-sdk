@@ -69,6 +69,10 @@ export default class Ask extends Workflow {
     return this._questionId;
   }
 
+  get rootQuestionId() {
+    return this._context.root.questionId;
+  }
+
   get previous() {
     const { parentQuestionId } = this;
     return parentQuestionId ? this._context.getByQuestionId(parentQuestionId) : undefined;
@@ -187,7 +191,7 @@ export default class Ask extends Workflow {
     payload = super._preprocessInteraction(payload) || {};
     const { context = {} } = payload;
     const { custom_context = {} } = context;
-    let { parentQuestionId, questionId } = this;
+    let { rootQuestionId, parentQuestionId, questionId } = this;
     // when we track suggested questions, we are actually tracking the suggested_followup_questions of the previous workflow
     if (custom_context.property === ROLE.QUERY_SUGGESTIONS) {
       questionId = parentQuestionId;
@@ -199,6 +203,7 @@ export default class Ask extends Workflow {
     payload.context = {
       ...context,
       custom_context: trimObj({
+        root_question_id: rootQuestionId,
         parent_question_id: parentQuestionId,
         question_id: questionId,
         ...custom_context,
