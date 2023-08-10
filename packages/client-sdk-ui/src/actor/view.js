@@ -1,5 +1,5 @@
 import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/commons';
-import { STATUS } from '../constants';
+import { STATUS, ROLE } from '../constants';
 import * as fields from './fields';
 import ProxyElement from '../util/proxy';
 
@@ -135,9 +135,9 @@ export default class ViewActor {
   }
 
   _sliceData(data) {
-    const { value, ...rest } = data;
+    const { value, error, ...rest } = data;
     return trimObj({
-      value: value && value[this.role],
+      value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
       meta: value && value._meta,
       ...rest,
     });

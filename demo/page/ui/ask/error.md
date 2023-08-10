@@ -20,6 +20,16 @@
     --miso-list-item-gap: 0.65rem;
     --miso-list-description-lines: 3;
   }
+  .miso-error {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    display: inline-block;
+    margin-top: 0;
+    border-radius: 0.5rem;
+  }
+  .error-header {
+    margin-top: 1rem;
+  }
 </style>
 <section>
   <miso-ask>
@@ -27,6 +37,14 @@
   </miso-ask>
 </section>
 <section>
+  <miso-ask visible-when="erroneous">
+    <h2 class="error-header">Oops!</h2>
+    <hr>
+    <p>
+      We are currently experiencing some difficulties. Would you mind trying again later?
+    </p>
+    <miso-error></miso-error>
+  </miso-ask>
   <miso-ask visible-when="ready">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
@@ -54,8 +72,16 @@ misocmd.push(async () => {
   const api = window.doggoganger.buildApi();
   workflow.on('input', async ({ session, payload }) => {
     const answer = await api.ask.questions(payload);
+    const start = Date.now();
     let intervalId;
     intervalId = setInterval(async () => {
+      const elapsed = Date.now() - start;
+      if (elapsed > 5000) {
+        clearInterval(intervalId);
+        const error = new Error(`Emulated timeout: ${elapsed / 1000} seconds`);
+        workflow.updateData({ session, error });
+        return;
+      }
       const value = await answer.get();
       const { finished } = value;
       finished && clearInterval(intervalId);

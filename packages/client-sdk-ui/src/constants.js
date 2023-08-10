@@ -14,6 +14,7 @@ export const ROLE = Object.freeze({
   SOURCES: 'sources',
   RELATED_RESOURCES: 'related_resources',
   QUERY_SUGGESTIONS: 'query_suggestions',
+  ERROR: 'error',
 });
 
 export const LAYOUT_CATEGORY = Object.freeze({
@@ -23,6 +24,7 @@ export const LAYOUT_CATEGORY = Object.freeze({
   QUERY: 'query',
   RADIO: 'radio',
   TEXT: 'text',
+  ERROR: 'error',
 });
 
 export const EVENT_TYPE = Object.freeze({

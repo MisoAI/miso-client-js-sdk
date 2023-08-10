@@ -36,25 +36,27 @@ export default class UiPlugin extends Component {
     defineValues(MisoClient, { ui });
 
     // layouts
-    TypewriterLayout.MisoClient = MisoClient; // TODO: find better way
-
-    for (const LayoutClass of Object.values(layouts)) {
-      if (LayoutClass.type) {
-        this.layouts.register(LayoutClass);
-      }
+    const LayoutClasses = Object.values(layouts).filter(LayoutClass => LayoutClass.type);
+    for (const LayoutClass of LayoutClasses) {
+      LayoutClass.MisoClient = MisoClient; // TODO: find better way
+    }
+    for (const LayoutClass of LayoutClasses) {
+      this.layouts.register(LayoutClass);
     }
 
     // custom elements
-    MisoContainerElement.MisoClient = MisoBannerElement.MisoClient = MisoClient; // TODO: find better way
-
     const { containers, roles, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
-    for (const elementClass of [
+    const ElementClasses = [
       ...Object.values(containers),
       ...Object.values(roles),
       ...Object.values(others),
-    ]) {
-      defineAndUpgrade(elementClass);
+    ];
+    for (const ElementClass of ElementClasses) {
+      ElementClass.MisoClient = MisoClient; // TODO: find better way
+    }
+    for (const ElementClass of ElementClasses) {
+      defineAndUpgrade(ElementClass);
     }
   }
 

@@ -1,5 +1,6 @@
 export { default as TemplateBasedLayout } from './template';
 export { default as ContainerLayout } from './container/container';
+export { default as ErrorLayout } from './error/error';
 export { default as BannerLayout } from './banner/banner';
 export { default as CollectionLayout } from './list/collection';
 export { default as ListLayout } from './list/list';

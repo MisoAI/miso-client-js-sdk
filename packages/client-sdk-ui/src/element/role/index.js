@@ -7,3 +7,4 @@ export { default as MisoQuestionElement } from './miso-question';
 export { default as MisoAnswerElement } from './miso-answer';
 export { default as MisoSourcesElement } from './miso-sources';
 export { default as MisoRelatedResourcesElement } from './miso-related-resources';
+export { default as MisoErrorElement } from './miso-error';

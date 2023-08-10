@@ -12,6 +12,8 @@ sections:
     path: /ask/syntax-highlight
   - title: Custom data
     path: /ask/custom-data
+  - title: Error
+    path: /ask/error
 - title: Search
   path: /search
   pages:

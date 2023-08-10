@@ -2,7 +2,7 @@ import { Component, asArray } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor';
 import * as sources from '../source';
 import { STATUS, ROLE } from '../constants';
-import { ContainerLayout } from '../layout';
+import { ContainerLayout, ErrorLayout } from '../layout';
 import { mergeApiParams, mergeInteractionsOptions, injectLogger } from './utils';
 
 function normalizeLayoutOptions(args) {
@@ -35,6 +35,7 @@ export default class Workflow extends Component {
 
     this._defaultLayouts = {
       [ROLE.CONTAINER]: ContainerLayout.type,
+      [ROLE.ERROR]: ErrorLayout.type,
       ...layouts,
     };
     this._apiParams = this._defaultApiParams = defaultApiParams;
