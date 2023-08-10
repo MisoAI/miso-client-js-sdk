@@ -5,9 +5,7 @@ import * as elements from './element';
 import * as layouts from './layout';
 import * as sources from './source';
 
-import TypewriterLayout from './layout/text/typewriter';
 import MisoContainerElement from './element/container/miso-container';
-import MisoBannerElement from './element/miso-banner';
 
 const PLUGIN_ID = 'std:ui';
 
@@ -52,6 +50,7 @@ export default class UiPlugin extends Component {
       ...Object.values(roles),
       ...Object.values(others),
     ];
+    MisoContainerElement.MisoClient = MisoClient;
     for (const ElementClass of ElementClasses) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }
