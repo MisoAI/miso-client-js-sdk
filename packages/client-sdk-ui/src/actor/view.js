@@ -164,7 +164,7 @@ export default class ViewActor {
 
   _destroy() {
     this._safeApplyOnLayout('destroy');
-    this._proxyElement && this._proxyElement._destroy();
+    this._proxyElement && this._proxyElement.destroy();
   }
 
 }
