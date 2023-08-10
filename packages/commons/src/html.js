@@ -20,8 +20,8 @@ export function isElement(value) {
 /**
  * Compute a function along the ancestors of an element until it returns a non-undefined value;
  */
-export function findInAncestors(element, fn) {
-  for (; element && element !== element.ownerDocument; element = element.parentElement) {
+export function findInAncestors(element, fn, { root = element.ownerDocument } = {}) {
+  for (; element && element !== root; element = element.parentElement) {
     const value = fn(element);
     if (value !== undefined) {
       return value;

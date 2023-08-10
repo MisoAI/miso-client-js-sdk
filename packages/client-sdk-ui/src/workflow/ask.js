@@ -61,6 +61,8 @@ export default class Ask extends Workflow {
 
     parentQuestionId && context._byPqid.set(parentQuestionId, this);
     context._events.emit('create', this);
+
+    this.reset(); // create a session so query suggestions can be tracked
   }
 
   get questionId() {
@@ -154,14 +156,18 @@ export default class Ask extends Workflow {
     }
     const values = previous.states[fields.data()].value;
     const value = values.suggested_followup_questions || values.followup_questions || [];
-    /*
     if (value.length > 0) {
-      this._trackers.querySuggestions = new Tracker(this._hub, this._views.get(ROLE.QUERY_SUGGESTIONS), {
-        item: value,
-        active: () => this._hub.active, // no need to check view state
+      const view = this._views.get(ROLE.QUERY_SUGGESTIONS);
+      const tracker = this._trackers.querySuggestions = new Tracker(this._hub, view, {
+        items: view.layout.items,
+        active: true, // we are tracking events at initial stage, when session is not active yet
+      });
+      tracker.config({
+        click: {
+          validate: event => event.button === 0, // left click only
+        },
       });
     }
-    */
     this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
   }
 
@@ -187,6 +193,8 @@ export default class Ask extends Workflow {
       questionId = parentQuestionId;
       parentQuestionId = this.previous && this.previous.parentQuestionId;
       custom_context.property = 'suggested_followup_questions';
+      custom_context.items = payload.product_ids.map(({ text }) => text);
+      payload.product_ids = [];
     }
     payload.context = {
       ...context,

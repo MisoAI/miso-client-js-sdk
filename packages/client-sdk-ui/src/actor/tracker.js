@@ -9,16 +9,20 @@ function isReady(viewState) {
 
 export default class Tracker {
 
-  constructor(hub, view, { item, active } = {}) {
+  constructor(hub, view, { active, items, ...options } = {}) {
     this._hub = hub;
     this._view = view;
     const role = this._role = view.role;
+
     this._tracker = new _Tracker({
-      item,
-      itemAttrName: ATTR_DATA_MISO_PRODUCT_ID,
+      items: {
+        itemAttrName: ATTR_DATA_MISO_PRODUCT_ID,
+        ...items,
+      },
       proxyElement: view.proxyElement,
       sessionId: () => this._getSessionId(),
       active: active || (() => this._isViewReady()),
+      ...options,
     });
 
     this._unsubscribes = [

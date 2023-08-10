@@ -1,14 +1,22 @@
-import { isElement, isInDocument } from '@miso.ai/commons';
+import { isElement, isInDocument, findInAncestors } from '@miso.ai/commons';
+
+function fallbackGetItem(itemAttrName) {
+  return element => element.hasAttribute(itemAttrName) ? element.getAttribute(itemAttrName) : undefined;
+}
+
+function fallbackFindElements(itemAttrName) {
+  return element => element.querySelectorAll(`[${itemAttrName}]`);
+}
 
 export class Items {
 
   constructor({
+    findElements,
+    getItem,
     itemAttrName = 'data-item',
   } = {}) {
-    if (!itemAttrName) {
-      throw new Error(`itemAttrName is required.`);
-    }
-    this._itemAttrName = itemAttrName;
+    this._findElements = findElements || fallbackFindElements(itemAttrName);
+    this._getItem = getItem || fallbackGetItem(itemAttrName);
     this._bindings = new Map();
     this._e2b = new WeakMap();
   }
@@ -21,15 +29,22 @@ export class Items {
     if (!ref) {
       throw new Error(`Item or element is required.`);
     }
-    return isElement(ref) ? this._e2b.get(ref) : this._bindings.get(ref);
+    if (!this._root) {
+      return undefined;
+    }
+    if (!isElement(ref)) {
+      return this._bindings.get(ref);
+    }
+    return findInAncestors(ref, element => this._e2b.get(element) || undefined, { root: this._root });
   }
 
   refresh(rootElement) {
     if (!rootElement) {
       return this.unbindAll();
     }
+    this._root = rootElement;
     const unbounds = this._purge();
-    const elements = rootElement.querySelectorAll(`[${this._itemAttrName}]`);
+    const elements = this._findElements(rootElement);
     const bounds = [];
     // warn for conflict productIds
     // TODO
@@ -48,6 +63,7 @@ export class Items {
   unbindAll() {
     const unbounds = this.list();
     this._bindings.clear();
+    this._root = undefined;
     return { bounds: [], unbounds };
   }
 
@@ -59,10 +75,10 @@ export class Items {
     }
     if (element === undefined && isElement(item)) {
       element = item;
-      if (!element.hasAttribute(this._itemAttrName)) {
-        throw new Error(`No attribute "${this._itemAttrName} found on element ${element}"`);
+      item = this._getItem(element);
+      if (item === undefined) {
+        throw new Error(`Cannot get item from element: ${element}`);
       }
-      item = element.getAttribute(this._itemAttrName);
     }
 
     // check if binding already exist

@@ -32,14 +32,13 @@ export default class Tracker {
     element,
     sessionId = 'default',
     active = true,
-    item,
-    itemAttrName,
+    items,
   } = {}) {
     this._events = new EventEmitter({ target: this });
     this._proxyElement = proxyElement || new ProxyElement(element);
     this._getSessionId = typeof sessionId === 'function' ? sessionId : () => sessionId;
     this._isActive = typeof active === 'function' ? active : () => active;
-    this._items = item ? new SingleItems({ item }) : new Items({ itemAttrName });
+    this._items = new Items(items);
     this._viewables = new WeakMap();
     this._options = DEFAULT_TRACKING_OPTIONS;
 
@@ -243,12 +242,17 @@ export default class Tracker {
     if (!options || !this._isActive()) {
       return;
     }
-    const binding = findInAncestors(event.target, element => this._items.get(element));
+    const binding = this._items.get(event.target);
     if (!binding) {
       return;
     }
 
-    if (!options.lenient) {
+    // TODO: refactor
+    if (typeof options.validate === 'function') {
+      if (!options.validate(event, binding)) {
+        return;
+      }
+    } else if (!options.lenient) {
       // it must be a left click
       if (event.button !== 0) {
         return;

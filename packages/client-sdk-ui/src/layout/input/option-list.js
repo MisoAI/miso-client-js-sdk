@@ -61,6 +61,13 @@ export default class OptionListLayout extends TemplateBasedLayout {
       ...options,
     });
     this._optionValues = new WeakMap();
+
+    Object.defineProperty(this, 'items', {
+      value: Object.freeze({
+        findElements: element => element.querySelectorAll(`[data-role="option"]`),
+        getItem: element => this._optionValues.get(element),
+      }),
+    });
   }
 
   initialize(view) {
