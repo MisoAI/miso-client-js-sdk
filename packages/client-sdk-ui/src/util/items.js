@@ -1,14 +1,14 @@
 import { isElement, isInDocument } from '@miso.ai/commons';
 
-export default class Items {
+export class Items {
 
   constructor({
-    itemIdAttrName = 'data-item-id',
+    itemAttrName = 'data-item',
   } = {}) {
-    if (!itemIdAttrName) {
-      throw new Error(`itemIdAttrName is required.`);
+    if (!itemAttrName) {
+      throw new Error(`itemAttrName is required.`);
     }
-    this._itemIdAttrName = itemIdAttrName;
+    this._itemAttrName = itemAttrName;
     this._bindings = new Map();
     this._e2b = new WeakMap();
   }
@@ -19,7 +19,7 @@ export default class Items {
 
   get(ref) {
     if (!ref) {
-      throw new Error(`Product ID or element is required.`);
+      throw new Error(`Item or element is required.`);
     }
     return isElement(ref) ? this._e2b.get(ref) : this._bindings.get(ref);
   }
@@ -29,7 +29,7 @@ export default class Items {
       return this.unbindAll();
     }
     const unbounds = this._purge();
-    const elements = rootElement.querySelectorAll(`[${this._itemIdAttrName}]`);
+    const elements = rootElement.querySelectorAll(`[${this._itemAttrName}]`);
     const bounds = [];
     // warn for conflict productIds
     // TODO
@@ -55,14 +55,14 @@ export default class Items {
 
   _bind(item, element) {
     if (!item) {
-      throw new Error(`Product ID or element is required.`);
+      throw new Error(`Item is required.`);
     }
     if (element === undefined && isElement(item)) {
       element = item;
-      if (!element.hasAttribute(this._itemIdAttrName)) {
-        throw new Error(`No attribute "${this._itemIdAttrName} found on element ${element}"`);
+      if (!element.hasAttribute(this._itemAttrName)) {
+        throw new Error(`No attribute "${this._itemAttrName} found on element ${element}"`);
       }
-      item = element.getAttribute(this._itemIdAttrName);
+      item = element.getAttribute(this._itemAttrName);
     }
 
     // check if binding already exist
@@ -102,6 +102,57 @@ export default class Items {
       this._e2b.delete(binding.element);
     }
     return binding;
+  }
+
+  _destroy() {
+    this.unbindAll();
+  }
+
+}
+
+export class SingleItems {
+
+  constructor({ item }) {
+    this._item = item;
+    this._binding = undefined;
+  }
+
+  list() {
+    return this._binding ? [this._binding] : [];
+  }
+
+  get(ref) {
+    if (!ref) {
+      throw new Error(`Item or element is required.`);
+    }
+    return ref === this._item || ref === this.element ? this._binding : undefined;
+  }
+
+  get element() {
+    return this._binding && this._binding.element;
+  }
+
+  get binding() {
+    return this._binding;
+  }
+
+  refresh(element) {
+    if (element === this.element) {
+      return { bounds: [], unbounds: [] };
+    }
+    if (!element) {
+      return this.unbindAll();
+    }
+    const unbounds = this.list();
+    this._binding = element ? Object.freeze({ item: this._item, element }) : undefined;
+    const bounds = this.list();
+    return { bounds, unbounds };
+  }
+
+  unbindAll() {
+    const unbounds = this.list();
+    this._binding = undefined;
+    return { bounds: [], unbounds };
   }
 
   _destroy() {

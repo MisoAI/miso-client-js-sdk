@@ -1,6 +1,6 @@
 import { EventEmitter, isElement, findInAncestors, trimObj, asArray, viewable as whenViewable } from '@miso.ai/commons';
 import { EVENT_TYPE, TRACKING_STATUS, validateEventType } from '../constants';
-import Items from './items';
+import { Items, SingleItems } from './items';
 import States from './states';
 import ProxyElement from './proxy';
 
@@ -32,13 +32,14 @@ export default class Tracker {
     element,
     sessionId = 'default',
     active = true,
-    itemIdAttrName,
+    item,
+    itemAttrName,
   } = {}) {
     this._events = new EventEmitter({ target: this });
     this._proxyElement = proxyElement || new ProxyElement(element);
     this._getSessionId = typeof sessionId === 'function' ? sessionId : () => sessionId;
     this._isActive = typeof active === 'function' ? active : () => active;
-    this._items = new Items({ itemIdAttrName });
+    this._items = item ? new SingleItems({ item }) : new Items({ itemAttrName });
     this._viewables = new WeakMap();
     this._options = DEFAULT_TRACKING_OPTIONS;
 

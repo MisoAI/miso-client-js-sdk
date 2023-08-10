@@ -41,16 +41,17 @@ export default class Ask extends Workflow {
       layouts: getDefaultLayouts(parentQuestionId),
       defaultApiParams: DEFAULT_API_PARAMS,
     });
+    this._context = context;
     defineValues(this, { parentQuestionId });
 
-    this._context = context;
-    this._setSuggestedQuestions();
-
     this._feedback = new FeedbackActor(this._hub);
-    this._trackers = Object.freeze({
+    this._trackers = {
       sources: new Tracker(this._hub, this._views.get(ROLE.SOURCES)),
       relatedResources: new Tracker(this._hub, this._views.get(ROLE.RELATED_RESOURCES)),
-    });
+    };
+    this._setSuggestedQuestions();
+    Object.freeze(this._trackers);
+
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), payload => this.query(payload)),
@@ -151,8 +152,17 @@ export default class Ask extends Workflow {
     if (!previous) {
       return;
     }
-    const value = (previous.states[fields.data()].value.followup_questions || []).map(text => ({ text }));
-    this._hub.update(fields.suggestions(), { value });
+    const values = previous.states[fields.data()].value;
+    const value = values.suggested_followup_questions || values.followup_questions || [];
+    /*
+    if (value.length > 0) {
+      this._trackers.querySuggestions = new Tracker(this._hub, this._views.get(ROLE.QUERY_SUGGESTIONS), {
+        item: value,
+        active: () => this._hub.active, // no need to check view state
+      });
+    }
+    */
+    this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
   }
 
   // trackers //
@@ -160,9 +170,10 @@ export default class Ask extends Workflow {
     return this._trackers;
   }
 
-  useTrackers({ sources, relatedResources } = {}) {
+  useTrackers({ sources, relatedResources, suggestedFollowUpQuestions } = {}) {
     this._trackers.sources.config(sources);
     this._trackers.relatedResources.config(relatedResources);
+    // TODO
     return this;
   }
 
@@ -170,17 +181,22 @@ export default class Ask extends Workflow {
     payload = super._preprocessInteraction(payload) || {};
     const { context = {} } = payload;
     const { custom_context = {} } = context;
-    return {
-      ...payload,
-      context: {
-        ...context,
-        custom_context: trimObj({
-          parent_question_id: this.parentQuestionId,
-          question_id: this.questionId,
-          ...custom_context,
-        }),
-      },
+    let { parentQuestionId, questionId } = this;
+    // when we track suggested questions, we are actually tracking the suggested_followup_questions of the previous workflow
+    if (custom_context.property === ROLE.QUERY_SUGGESTIONS) {
+      questionId = parentQuestionId;
+      parentQuestionId = this.previous && this.previous.parentQuestionId;
+      custom_context.property = 'suggested_followup_questions';
+    }
+    payload.context = {
+      ...context,
+      custom_context: trimObj({
+        parent_question_id: parentQuestionId,
+        question_id: questionId,
+        ...custom_context,
+      }),
     };
+    return payload;
   }
 
   _destroy() {

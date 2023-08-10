@@ -1,7 +1,7 @@
-import { trimObj, uuidToTimestamp } from '@miso.ai/commons';
 import { STATUS, ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
 import * as fields from './fields';
 import _Tracker from '../util/tracker';
+import { toInteraction } from './utils';
 
 function isReady(viewState) {
   return viewState && viewState.status === STATUS.READY;
@@ -9,15 +9,16 @@ function isReady(viewState) {
 
 export default class Tracker {
 
-  constructor(hub, view) {
+  constructor(hub, view, { item, active } = {}) {
     this._hub = hub;
     this._view = view;
     const role = this._role = view.role;
     this._tracker = new _Tracker({
-      itemIdAttrName: ATTR_DATA_MISO_PRODUCT_ID,
+      item,
+      itemAttrName: ATTR_DATA_MISO_PRODUCT_ID,
       proxyElement: view.proxyElement,
       sessionId: () => this._getSessionId(),
-      active: () => this._isViewReady(),
+      active: active || (() => this._isViewReady()),
     });
 
     this._unsubscribes = [
@@ -90,30 +91,10 @@ export default class Tracker {
     return this._tracker.getState(productId);
   }
 
-  _handleEvent({ event, items, manual }) {
-    this._hub.trigger(fields.interaction(), this._buildInteraction({ event, items, manual }));
-  }
-
-  _buildInteraction({ event, items, manual }) {
+  _handleEvent(data) {
+    const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
     const misoId = this._getMisoId();
-    let api_ts;
-    if (misoId) {
-      try {
-        api_ts = uuidToTimestamp(misoId);
-      } catch (e) {}
-    }
-    return trimObj({
-      type: event === 'viewable' ? 'viewable_impression' : event,
-      product_ids: items,
-      miso_id: misoId,
-      context: {
-        custom_context: trimObj({
-          api_ts,
-          property: this._role === 'results' ? 'products' : this._role, // TODO: ad-hoc, see #83
-          trigger: manual ? 'manual' : 'auto',
-        }),
-      },
-    });
+    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId }, data));
   }
 
   _destroy() {
