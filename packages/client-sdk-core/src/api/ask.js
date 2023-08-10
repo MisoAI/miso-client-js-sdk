@@ -52,7 +52,7 @@ class Answer {
       const response = await this.get();
       return [response, response.finished];
     };
-    let { pollingInterval: interval, signal, stallTimeout = 60000, ...options } = this._options;
+    let { pollingInterval: interval, signal, stallTimeout = 120000, ...options } = this._options;
     const stac = new StallTimeoutAbortController(stallTimeout);
     signal = signals.any(this._ac.signal, stac.signal, signal);
 
