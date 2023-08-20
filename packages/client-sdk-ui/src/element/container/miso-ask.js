@@ -43,6 +43,10 @@ export default class MisoAskElement extends MisoContainerElement {
     }
   }
 
+  get workflow() {
+    return this._workflow;
+  }
+
   set workflow(workflow) {
     this._setWorkflow(workflow);
     this.parentQuestionId = workflow && workflow.parentQuestionId;
