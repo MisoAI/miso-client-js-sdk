@@ -1,5 +1,4 @@
-import MisoClient from '@miso.ai/client-sdk-core';
-import { UserPlugin, PageInfoPlugin, AutoEventsPlugin } from '@miso.ai/client-sdk-core/dist/es/plugin';
+import { MisoClient, UserPlugin, PageInfoPlugin, AutoEventsPlugin } from '@miso.ai/client-sdk-core';
 import { DebugPlugin, DryRunPlugin } from '@miso.ai/client-sdk-dev-tool';
 
 MisoClient.plugins.register(DebugPlugin, DryRunPlugin);

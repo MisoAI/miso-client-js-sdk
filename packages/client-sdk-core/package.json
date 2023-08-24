@@ -1,20 +1,20 @@
 {
   "name": "@miso.ai/client-sdk-core",
   "description": "A collection of shared utilies across many Miso packages",
+  "type": "module",
   "main": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "files": [
-    "dist/*"
-  ],
+  "module": "src/index.js",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./dist/cjs/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "start": "npx babel src --root-mode upward --out-dir dist/es --watch",
     "build:clean": "npx rimraf dist",
-    "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
-    "build": "npm run build:clean && npm run build:esm && npm run build:cjs"
+    "build": "npm run build:clean && npm run build:cjs"
   },
   "repository": {
     "type": "git",

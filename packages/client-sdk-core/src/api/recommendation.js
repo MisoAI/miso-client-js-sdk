@@ -1,4 +1,4 @@
-import ApiBase from './base';
+import ApiBase from './base.js';
 
 export default class Recommendation extends ApiBase {
 

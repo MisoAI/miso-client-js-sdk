@@ -1,12 +1,7 @@
-import Api from './api';
-import ApiBase from './api/base';
-import ApiHelpers from './api/helpers';
-import Interactions from './api/interactions';
-import Recommendation from './api/recommendation';
-import Search from './api/search';
-import Context from './context';
+import * as api from './api/index.js';
+import Context from './context.js';
 
 export default {
-  api: { Api, ApiBase, ApiHelpers, Interactions, Recommendation, Search },
+  api,
   context: { Context },
 }

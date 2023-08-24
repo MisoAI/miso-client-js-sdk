@@ -1,5 +1,5 @@
 import { Bulk, trimObj } from '@miso.ai/commons';
-import { API } from '../constants';
+import { API } from '../constants.js';
 
 export default class ApiHelpers {
 

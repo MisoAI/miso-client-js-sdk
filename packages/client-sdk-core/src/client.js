@@ -1,6 +1,6 @@
 import { trimObj, Component, uuidv4, defineValues } from '@miso.ai/commons';
 import { root, register, init } from './root';
-import Api from './api';
+import { Api } from './api/index.js';
 import Context from './context';
 import * as helpers from './utils';
 

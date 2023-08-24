@@ -1,3 +1,3 @@
-export { default as UserPlugin } from './user';
-export { default as PageInfoPlugin } from './page-info';
-export { default as AutoEventsPlugin } from './auto-events';
+export { default as UserPlugin } from './user.js';
+export { default as PageInfoPlugin } from './page-info.js';
+export { default as AutoEventsPlugin } from './auto-events.js';

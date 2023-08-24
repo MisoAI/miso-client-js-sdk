@@ -1,5 +1,5 @@
 import { polling, signals, StallTimeoutAbortController } from '@miso.ai/commons';
-import ApiBase from './base';
+import ApiBase from './base.js';
 
 export default class Ask extends ApiBase {
 

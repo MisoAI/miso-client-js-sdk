@@ -1,6 +1,6 @@
 import { delegateGetters, Component } from '@miso.ai/commons';
-import version from './version';
-import PluginRoot from './plugin/plugin-root';
+import version from './version.js';
+import PluginRoot from './plugin/plugin-root.js';
 
 /**
  * The hidden singleton root component that oversees all client components.

@@ -1,7 +1,7 @@
-import { delegateGetters, defineValues, Registry, Resolution, Resources, uuidv4 } from '@miso.ai/commons';
-import classes from '../classes';
-import AnonymousPlugin from './anonymous';
-import { getPluginScriptUrl } from './urls';
+import { delegateGetters, defineValues, Registry, Resolution, Resources } from '@miso.ai/commons';
+import classes from '../classes.js';
+import AnonymousPlugin from './anonymous.js';
+import { getPluginScriptUrl } from './urls.js';
 
 export default class PluginRoot extends Registry {
 
