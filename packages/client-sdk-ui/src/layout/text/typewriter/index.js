@@ -28,13 +28,11 @@ export default class TypewriterLayout extends ProgressiveLayout {
 
   constructor({
     className = DEFAULT_CLASSNAME,
-    cps,
     tag = 'auto',
     format = 'markdown',
     ...options
   } = {}) {
     super({
-      cps,
       tag,
       format,
       ...options,
@@ -43,7 +41,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       className,
     });
     this._prevState = undefined;
-    this._progress = new ProgressController({ cps });
+    this._progress = new ProgressController(options);
     this._readiness = new Resolution();
 
     // kick off sooner
