@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import { writeFileSync, existsSync } from 'fs';
 import { dirname, join as joinPath } from 'path';
-import { readPackageFileSync, writePackageFileSync } from './package.mjs';
+import { readPackageFileSync, writePackageFileSync } from './package.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

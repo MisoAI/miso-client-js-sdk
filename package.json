@@ -1,6 +1,7 @@
 {
   "name": "@miso.ai/client-sdk-monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/commons",
     "packages/progressive-markdown",
@@ -19,8 +20,8 @@
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
     "test": "npm run test --workspaces --if-present",
-    "version": "node ./bin/version.mjs",
-    "examples": "node ./bin/examples.mjs",
+    "version": "node ./bin/version.js",
+    "examples": "node ./bin/examples.js",
     "build:clean": "npm run build:clean --workspaces --if-present",
     "build:esm": "npm run build:esm --workspaces --if-present",
     "build:cjs": "npm run build:cjs --workspaces --if-present",

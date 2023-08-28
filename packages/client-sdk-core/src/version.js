@@ -1,1 +1,1 @@
-export default 'dev'; // this will be replaced by bin/version.mjs in CD workflow
+export default 'dev'; // this will be replaced by bin/version.js in CD workflow
