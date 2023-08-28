@@ -1,4 +1,4 @@
-import { getContainer } from '../utils';
+import { getContainer } from '../utils.js';
 
 const TAG_NAME = 'miso-component';
 

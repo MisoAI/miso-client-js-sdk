@@ -1,10 +1,10 @@
 import { defineValues, trimObj } from '@miso.ai/commons';
-import Workflow from './base';
-import { fields, FeedbackActor, Tracker } from '../actor';
-import { ROLE, STATUS } from '../constants';
-import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout';
-import { mergeApiParams } from './utils';
-import { utils as dataUtils } from '../source';
+import Workflow from './base.js';
+import { fields, FeedbackActor, Tracker } from '../actor/index.js';
+import { ROLE, STATUS } from '../constants.js';
+import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
+import { mergeApiParams } from './utils.js';
+import { utils as dataUtils } from '../source/index.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'ask',

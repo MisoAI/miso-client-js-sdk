@@ -1,4 +1,4 @@
-import MisoContainerElement from './miso-container';
+import MisoContainerElement from './miso-container.js';
 
 const TAG_NAME = 'miso-search';
 

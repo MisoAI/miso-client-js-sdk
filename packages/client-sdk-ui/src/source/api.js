@@ -1,6 +1,6 @@
 import { mapAsyncIterator } from '@miso.ai/commons';
-import { ROLE } from '../constants';
-import { postProcessQuestionsResponse } from './utils';
+import { ROLE } from '../constants.js';
+import { postProcessQuestionsResponse } from './utils.js';
 
 export default function(client) {
     // TODO: send uuid & unit id

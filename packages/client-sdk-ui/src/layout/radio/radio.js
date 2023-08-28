@@ -1,7 +1,7 @@
 import { findInAncestors, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY } from '../../constants';
-import TemplateBasedLayout from '../template';
-import { requiresImplementation } from '../templates';
+import { LAYOUT_CATEGORY } from '../../constants.js';
+import TemplateBasedLayout from '../template.js';
+import { requiresImplementation } from '../templates.js';
 
 function root(layout) {
   const { className, role, templates } = layout;

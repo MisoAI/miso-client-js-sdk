@@ -1,9 +1,9 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Asks, Search, Recommendations } from './workflow';
-import Layouts from './layouts';
-import * as elements from './element';
-import * as layouts from './layout';
-import * as sources from './source';
+import { Asks, Search, Recommendations } from './workflow/index.js';
+import Layouts from './layouts.js';
+import * as elements from './element/index.js';
+import * as layouts from './layout/index.js';
+import * as sources from './source/index.js';
 
 import MisoContainerElement from './element/container/miso-container';
 

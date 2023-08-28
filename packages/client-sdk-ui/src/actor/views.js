@@ -1,7 +1,7 @@
 import { defineValues, delegateGetters } from '@miso.ai/commons';
-import { STATUS, ROLE } from '../constants';
-import * as fields from './fields';
-import ViewActor from './view';
+import { STATUS, ROLE } from '../constants.js';
+import * as fields from './fields.js';
+import ViewActor from './view.js';
 
 export default class ViewsActor {
 

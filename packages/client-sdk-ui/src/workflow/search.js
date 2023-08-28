@@ -1,8 +1,8 @@
-import Workflow from './base';
-import { fields } from '../actor';
-import { ROLE } from '../constants';
-import { ListLayout, SearchBoxLayout } from '../layout';
-import { mergeApiParams } from './utils';
+import Workflow from './base.js';
+import { fields } from '../actor/index.js';
+import { ROLE } from '../constants.js';
+import { ListLayout, SearchBoxLayout } from '../layout/index.js';
+import { mergeApiParams } from './utils.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'search',

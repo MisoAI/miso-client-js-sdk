@@ -1,5 +1,5 @@
-import { capture, requestAnimationFrame as raf } from '@miso.ai/commons';
-import RafLayout from './raf';
+import { capture } from '@miso.ai/commons';
+import RafLayout from './raf.js';
 
 export default class ProgressiveLayout extends RafLayout {
 

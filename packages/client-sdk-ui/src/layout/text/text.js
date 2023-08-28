@@ -1,5 +1,5 @@
-import { LAYOUT_CATEGORY } from '../../constants';
-import TemplateBasedLayout from '../template';
+import { LAYOUT_CATEGORY } from '../../constants.js';
+import TemplateBasedLayout from '../template.js';
 
 const TYPE = 'text';
 const DEFAULT_CLASSNAME = 'miso-text';

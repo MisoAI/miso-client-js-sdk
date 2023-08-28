@@ -1,8 +1,8 @@
 import { EventEmitter, isElement, findInAncestors, trimObj, asArray, viewable as whenViewable } from '@miso.ai/commons';
-import { EVENT_TYPE, TRACKING_STATUS, validateEventType } from '../constants';
-import { Items, SingleItems } from './items';
-import States from './states';
-import ProxyElement from './proxy';
+import { EVENT_TYPE, TRACKING_STATUS, validateEventType } from '../constants.js';
+import { Items } from './items.js';
+import States from './states.js';
+import ProxyElement from './proxy.js';
 
 const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
 const { UNTRACKED, TRACKING, TRIGGERED } = TRACKING_STATUS;

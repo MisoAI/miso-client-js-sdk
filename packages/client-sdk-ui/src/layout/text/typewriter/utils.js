@@ -1,4 +1,4 @@
-import { STATUS } from '../../../constants';
+import { STATUS } from '../../../constants.js';
 
 export function containerElement(layout, element, { status }) {
   if (!element) {

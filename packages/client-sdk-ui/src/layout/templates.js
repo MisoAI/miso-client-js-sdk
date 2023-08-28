@@ -1,4 +1,4 @@
-import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
+import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
 export function requiresImplementation(...names) {
   return names.reduce((acc, name) => {

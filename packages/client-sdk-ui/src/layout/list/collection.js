@@ -1,6 +1,6 @@
-import { STATUS, LAYOUT_CATEGORY } from '../../constants';
-import TemplateBasedLayout from '../template';
-import { product } from '../templates';
+import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
+import TemplateBasedLayout from '../template.js';
+import { product } from '../templates.js';
 
 function root(layout, state) {
   const { className, role, templates } = layout;

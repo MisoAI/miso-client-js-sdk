@@ -1,6 +1,6 @@
-import { LAYOUT_CATEGORY } from '../../constants';
-import { fields } from '../../actor';
-import TemplateBasedLayout from '../template';
+import { LAYOUT_CATEGORY } from '../../constants.js';
+import { fields } from '../../actor/index.js';
+import TemplateBasedLayout from '../template.js';
 
 const TYPE = 'option-list';
 const DEFAULT_CLASSNAME = 'miso-option-list';

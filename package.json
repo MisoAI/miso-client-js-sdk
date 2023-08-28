@@ -16,7 +16,6 @@
   ],
   "scripts": {
     "start": "concurrently 'npm:start:*'",
-    "start:client-sdk-ui": "npm run start --workspace=packages/client-sdk-ui",
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
     "test": "npm run test --workspaces --if-present",

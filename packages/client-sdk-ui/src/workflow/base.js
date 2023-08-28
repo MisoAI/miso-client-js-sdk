@@ -1,9 +1,9 @@
 import { Component, asArray } from '@miso.ai/commons';
-import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor';
-import * as sources from '../source';
-import { STATUS, ROLE } from '../constants';
-import { ContainerLayout, ErrorLayout } from '../layout';
-import { mergeApiParams, mergeInteractionsOptions, injectLogger } from './utils';
+import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor/index.js';
+import * as sources from '../source/index.js';
+import { STATUS, ROLE } from '../constants.js';
+import { ContainerLayout, ErrorLayout } from '../layout/index.js';
+import { mergeApiParams, mergeInteractionsOptions, injectLogger } from './utils.js';
 
 function normalizeLayoutOptions(args) {
   let [name, options] = asArray(args);

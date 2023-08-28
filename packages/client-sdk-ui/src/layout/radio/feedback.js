@@ -1,6 +1,6 @@
-import { fields } from '../../actor';
-import RadioLayout from './radio';
-import { THUMB } from '../svgs';
+import { fields } from '../../actor/index.js';
+import RadioLayout from './radio.js';
+import { THUMB } from '../svgs.js';
 
 const TYPE = 'feedback';
 const DEFAULT_CLASSNAME = 'miso-feedback';

@@ -1,2 +1,2 @@
-export { default as api } from './api';
-export * as utils from './utils';
+export { default as api } from './api.js';
+export * as utils from './utils.js';

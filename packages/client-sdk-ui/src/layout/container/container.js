@@ -1,6 +1,6 @@
-import { ROLE, LAYOUT_CATEGORY } from '../../constants';
-import RafLayout from '../raf';
-import MisoBannerElement from '../../element/miso-banner';
+import { ROLE, LAYOUT_CATEGORY } from '../../constants.js';
+import RafLayout from '../raf.js';
+import MisoBannerElement from '../../element/miso-banner.js';
 
 const TYPE = 'container';
 

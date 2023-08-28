@@ -1,5 +1,5 @@
-import { DEFAULT_UNIT_ID } from '../constants';
-import Recommendation from './recommendation';
+import { DEFAULT_UNIT_ID } from '../constants.js';
+import Recommendation from './recommendation.js';
 
 export default class Recommendations {
 

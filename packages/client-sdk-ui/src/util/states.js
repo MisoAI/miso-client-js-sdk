@@ -1,5 +1,5 @@
 import { asArray, computeIfAbsent } from '@miso.ai/commons';
-import { EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants';
+import { EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus } from '../constants.js';
 
 const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
 const { UNTRACKED, TRIGGERED } = TRACKING_STATUS;

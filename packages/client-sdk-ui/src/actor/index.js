@@ -1,8 +1,8 @@
-export { default as Hub } from './hub';
-export { default as SessionMaker } from './sessions';
-export { default as DataActor } from './data';
-export { default as ViewsActor } from './views';
-export { default as Tracker } from './tracker';
-export { default as FeedbackActor } from './feedback';
-export { default as InteractionsActor } from './interactions';
-export * as fields from './fields';
+export { default as Hub } from './hub.js';
+export { default as SessionMaker } from './sessions.js';
+export { default as DataActor } from './data.js';
+export { default as ViewsActor } from './views.js';
+export { default as Tracker } from './tracker.js';
+export { default as FeedbackActor } from './feedback.js';
+export { default as InteractionsActor } from './interactions.js';
+export * as fields from './fields.js';

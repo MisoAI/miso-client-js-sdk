@@ -1,5 +1,5 @@
 import { asArray } from '@miso.ai/commons';
-import * as fields from './fields';
+import * as fields from './fields.js';
 
 export default class InteractionsActor {
 

@@ -1,5 +1,5 @@
-import MisoComponentElement from './miso-component';
-import { ROLE } from '../../constants';
+import MisoComponentElement from './miso-component.js';
+import { ROLE } from '../../constants.js';
 
 export default class MisoResultsElement extends MisoComponentElement {
 

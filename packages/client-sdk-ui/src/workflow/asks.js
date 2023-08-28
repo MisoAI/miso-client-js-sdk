@@ -1,5 +1,5 @@
 import { Component } from '@miso.ai/commons';
-import Ask from './ask';
+import Ask from './ask.js';
 
 export default class Asks extends Component {
 

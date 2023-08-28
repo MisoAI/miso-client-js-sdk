@@ -1,7 +1,7 @@
 import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/commons';
-import { STATUS, ROLE } from '../constants';
-import * as fields from './fields';
-import ProxyElement from '../util/proxy';
+import { STATUS, ROLE } from '../constants.js';
+import * as fields from './fields.js';
+import ProxyElement from '../util/proxy.js';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&

@@ -1,1 +1,1 @@
-export { default as UiPlugin } from './plugin';
+export { default as UiPlugin } from './plugin.js';

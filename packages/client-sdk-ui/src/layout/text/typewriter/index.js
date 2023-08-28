@@ -1,9 +1,9 @@
 import { trimObj, defineValues, Resolution } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY, STATUS } from '../../../constants';
-import ProgressiveLayout from '../../progressive';
-import ProgressController from './progress';
-import PlaintextRenderer from './plaintext';
-import { containerElement, cursorClassName, fromSameSession } from './utils';
+import { LAYOUT_CATEGORY, STATUS } from '../../../constants.js';
+import ProgressiveLayout from '../../progressive.js';
+import ProgressController from './progress.js';
+import PlaintextRenderer from './plaintext.js';
+import { containerElement, cursorClassName, fromSameSession } from './utils.js';
 
 const TYPE = 'typewriter';
 const DEFAULT_CLASSNAME = 'miso-typewriter';

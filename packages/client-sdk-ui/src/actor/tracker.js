@@ -1,7 +1,7 @@
-import { STATUS, ATTR_DATA_MISO_PRODUCT_ID } from '../constants';
-import * as fields from './fields';
-import _Tracker from '../util/tracker';
-import { toInteraction } from './utils';
+import { STATUS, ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
+import * as fields from './fields.js';
+import _Tracker from '../util/tracker.js';
+import { toInteraction } from './utils.js';
 
 function isReady(viewState) {
   return viewState && viewState.status === STATUS.READY;

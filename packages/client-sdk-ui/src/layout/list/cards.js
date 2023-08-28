@@ -1,4 +1,4 @@
-import CollectionLayout from './collection';
+import CollectionLayout from './collection.js';
 
 const TYPE = 'cards';
 const DEFAULT_CLASSNAME = 'miso-cards';

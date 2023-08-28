@@ -1,4 +1,4 @@
-import { getClient } from '../utils';
+import { getClient } from '../utils.js';
 
 const ATTR_LOGO = 'logo';
 const DEFAULT_LOGO_VALUE = 'auto';

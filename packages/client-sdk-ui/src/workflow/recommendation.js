@@ -1,8 +1,8 @@
 import { defineValues, trimObj } from '@miso.ai/commons';
-import Workflow from './base';
-import { fields, Tracker } from '../actor';
-import { ListLayout } from '../layout';
-import { ROLE } from '../constants';
+import Workflow from './base.js';
+import { fields, Tracker } from '../actor/index.js';
+import { ListLayout } from '../layout/index.js';
+import { ROLE } from '../constants.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
   group: 'recommendation',
