@@ -1,4 +1,4 @@
-import MisoClient from '.';
+import MisoClient from './index.js';
 import { ShopifyPlugin } from '@miso.ai/client-sdk-shopify';
 
 MisoClient.plugins.use(ShopifyPlugin);

@@ -6,7 +6,7 @@ import terser from '@rollup/plugin-terser';
 import filesize from 'rollup-plugin-filesize';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
-import manifest from './manifest.mjs';
+import manifest from './manifest.js';
 
 function _config({ input, output: { filename: outputFilename, ...output } }, env = 'prod') {
   const prod = env === 'prod';

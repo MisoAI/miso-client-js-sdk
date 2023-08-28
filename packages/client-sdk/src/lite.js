@@ -1,5 +1,5 @@
-import MisoClient from './detached/lite';
-import cmd from './cmd';
+import MisoClient from './detached/lite.js';
+import cmd from './cmd.js';
 
 MisoClient.attach();
 

@@ -1,25 +1,25 @@
 {
   "name": "@miso.ai/client-sdk",
   "description": "Miso client-side JavaScript SDK",
+  "type": "module",
   "main": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "files": [
-    "dist/*"
-  ],
+  "module": "src/index.js",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./dist/cjs/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "start:esm": "npx babel src --root-mode upward --out-dir dist/es --watch",
-    "start:umd": "rollup -w -c rollup.config.dev.mjs",
+    "start:umd": "rollup -w -c rollup.config.dev.js",
     "start:sass": "npx sass --watch scss:dist/css",
     "start": "concurrently 'npm:start:*'",
     "build:clean": "npx rimraf dist",
-    "build:esm": "npx babel src --root-mode upward --out-dir dist/es",
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
     "build:umd": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
     "build:sass": "npx sass scss:dist/css",
-    "build": "npm run build:clean && npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:sass",
+    "build": "npm run build:clean && npm run build:cjs && npm run build:umd && npm run build:sass",
     "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"
   },
   "repository": "MisoAI/miso-client-js-sdk",
