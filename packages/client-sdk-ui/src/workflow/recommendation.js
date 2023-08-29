@@ -13,7 +13,7 @@ const DEFAULT_API_PARAMS = Object.freeze({
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.RESULTS]: ListLayout.type,
+  [ROLE.PRODUCTS]: ListLayout.type,
 });
 
 export default class Recommendation extends Workflow {
@@ -25,7 +25,7 @@ export default class Recommendation extends Workflow {
       layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,
     });
-    this._tracker = new Tracker(this._hub, this._views.get(ROLE.RESULTS));
+    this._tracker = new Tracker(this._hub, this._views.get(ROLE.PRODUCTS));
 
     defineValues(this, { id });
     this._context = context;
@@ -35,6 +35,16 @@ export default class Recommendation extends Workflow {
 
   get tracker() {
     return this._tracker;
+  }
+
+  // layout //
+  useLayouts({ [ROLE.RESULTS]: results, ...layouts } = {}) {
+    // fallback
+    if (results !== undefined) {
+      console.warn(`useLayouts({ ${[ROLE.RESULTS]}: ... }) is deprecated, use useLayouts({ ${[ROLE.PRODUCTS]}: ... }) instead`);
+      layouts[ROLE.PRODUCTS] = results;
+    }
+    super.useLayouts(layouts);
   }
 
   // lifecycle //
@@ -50,14 +60,14 @@ export default class Recommendation extends Workflow {
   startTracker() {
     this.useApi(false);
     this.useLayouts({
-      [ROLE.RESULTS]: false,
+      [ROLE.PRODUCTS]: false,
     });
     this._sessions.start();
-    this.notifyViewUpdate(ROLE.RESULTS);
+    this.notifyViewUpdate(ROLE.PRODUCTS);
     return this;
   }
 
-  notifyViewUpdate(role = ROLE.RESULTS, ...args) {
+  notifyViewUpdate(role = ROLE.PRODUCTS, ...args) {
     super.notifyViewUpdate(role, ...args);
     return this;
   }

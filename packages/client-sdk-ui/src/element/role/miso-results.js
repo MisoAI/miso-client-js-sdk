@@ -5,8 +5,13 @@ export default class MisoResultsElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.RESULTS,
+      role: ROLE.PRODUCTS,
     });
+  }
+
+  connectedCallback() {
+    console.warn('Element <miso-results> is deprecated. Please use <miso-products> instead.');
+    super.connectedCallback();
   }
 
   static get tagName() {

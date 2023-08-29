@@ -41,7 +41,7 @@
 <hr>
 <section>
   <miso-search>
-    <miso-results></miso-results>
+    <miso-products></miso-products>
   </miso-search>
 </section>
 <script>
@@ -54,7 +54,7 @@ misocmd.push(() => {
   });
   const workflow = client.ui.search;
   workflow.useApi('search', { rows: 10 });
-  window.onSelectLayout = value => workflow.useLayouts({ results: value });
+  window.onSelectLayout = value => workflow.useLayouts({ products: value });
   window.onSelectLayout(window.selectedLayout);
 });
 </script>

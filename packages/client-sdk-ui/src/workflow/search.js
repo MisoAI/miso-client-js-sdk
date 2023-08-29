@@ -14,7 +14,7 @@ const DEFAULT_API_PARAMS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.QUERY]: SearchBoxLayout.type,
-  [ROLE.RESULTS]: ListLayout.type,
+  [ROLE.PRODUCTS]: ListLayout.type,
 });
 
 export default class Search extends Workflow {
@@ -30,6 +30,16 @@ export default class Search extends Workflow {
     this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
   }
 
+  // layout //
+  useLayouts({ [ROLE.RESULTS]: results, ...layouts } = {}) {
+    // fallback
+    if (results !== undefined) {
+      console.warn(`useLayouts({ ${[ROLE.RESULTS]}: ... }) is deprecated, use useLayouts({ ${[ROLE.PRODUCTS]}: ... }) instead`);
+      layouts[ROLE.PRODUCTS] = results;
+    }
+    super.useLayouts(layouts);
+  }
+
   // lifecycle //
   query(payload) {
     this.restart();
@@ -38,7 +48,7 @@ export default class Search extends Workflow {
     return this;
   }
 
-  notifyViewUpdate(role = ROLE.RESULTS, ...args) {
+  notifyViewUpdate(role = ROLE.PRODUCTS, ...args) {
     super.notifyViewUpdate(role, ...args);
     return this;
   }

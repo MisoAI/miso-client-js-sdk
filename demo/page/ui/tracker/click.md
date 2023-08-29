@@ -26,7 +26,7 @@ Click mode: lenient = true
 <section>
   <h3>Recommendation Units</h3>
   <miso-recommendation unit-id="unit-1">
-    <miso-results>
+    <miso-products>
       <ul class="list">
         <li id="product-1" class="item" data-miso-product-id="product-1">
           <a href="#">Product 1</a>
@@ -38,7 +38,7 @@ Click mode: lenient = true
           <span>Product 3</span>
         </li>
       </ul>
-    </miso-results>
+    </miso-products>
   </miso-recommendation>
 </section>
 <script>

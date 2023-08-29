@@ -38,7 +38,7 @@
 <hr>
 <section>
   <miso-recommendation>
-    <miso-results></miso-results>
+    <miso-products></miso-products>
   </miso-recommendation>
 </section>
 <script>
@@ -52,7 +52,7 @@ misocmd.push(() => {
   const workflow = client.ui.recommendations.get();
   workflow.useApi('user_to_products', { rows: 6 });
   window.onReload = () => workflow.reset().start();
-  window.onSelectLayout = value => workflow.useLayouts({ results: value });
+  window.onSelectLayout = value => workflow.useLayouts({ products: value });
   window.onSelectLayout(window.selectedLayout);
   workflow.start();
 });

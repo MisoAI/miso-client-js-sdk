@@ -3,6 +3,7 @@ export { default as MisoQueryElement } from './miso-query.js';
 export { default as MisoQuerySuggestionsElement } from './miso-query-suggestions.js';
 export { default as MisoFeedbackElement } from './miso-feedback.js';
 export { default as MisoResultsElement } from './miso-results.js';
+export { default as MisoProductsElement } from './miso-products.js';
 export { default as MisoQuestionElement } from './miso-question.js';
 export { default as MisoAnswerElement } from './miso-answer.js';
 export { default as MisoSourcesElement } from './miso-sources.js';

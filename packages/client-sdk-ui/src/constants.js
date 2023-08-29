@@ -7,6 +7,9 @@ export const ROLE = Object.freeze({
   BANNER: 'banner',
   QUERY: 'query',
   FEEDBACK: 'feedback',
+  PRODUCTS: 'products',
+  CATEGORIES: 'categories',
+  ATTRIBUTES: 'attributes',
   RESULTS: 'results',
   ITEMS: 'items',
   QUESTION: 'question',
@@ -45,23 +48,6 @@ export const STATUS = Object.freeze({
   ERRONEOUS: 'erroneous',
   READY: 'ready',
 });
-
-// TODO: per workflow
-/*
-const ROLE_TO_LAYOUT_CATEGORY = Object.freeze({
-  [ROLE.RESULTS]: LAYOUT_CATEGORY.LIST,
-  [ROLE.QUERY]: LAYOUT_CATEGORY.QUERY,
-  [ROLE.ANSWER]: LAYOUT_CATEGORY.TEXT,
-});
-
-export function getLayoutCategoryByRole(role) {
-  const category = ROLE_TO_LAYOUT_CATEGORY[role];
-  if (!category) {
-    throw new Error(`Unrecognized role: ${role}`);
-  }
-  return category;
-}
-*/
 
 export function validateEventType(value) {
   if (value !== EVENT_TYPE.IMPRESSION && value !== EVENT_TYPE.VIEWABLE && value !== EVENT_TYPE.CLICK) {

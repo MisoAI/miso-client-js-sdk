@@ -149,7 +149,7 @@ export default class Workflow extends Component {
   }
 
   // layout //
-  useLayouts(layouts) {
+  useLayouts(layouts = {}) {
     this._views.layouts = this._generateLayoutFactoryFunctions(layouts);
     return this;
   }

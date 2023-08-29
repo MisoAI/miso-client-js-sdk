@@ -28,9 +28,9 @@
 <section>
   <h3>Recommendation Units</h3>
   <miso-recommendation unit-id="unit-1">
-    <miso-results>
+    <miso-products>
       <ul id="list" class="list"></ul>
-    </miso-results>
+    </miso-products>
   </miso-recommendation>
 </section>
 <script>
