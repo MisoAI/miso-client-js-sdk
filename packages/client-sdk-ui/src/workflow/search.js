@@ -1,3 +1,4 @@
+import { API } from '@miso.ai/client-sdk-core';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
@@ -5,8 +6,8 @@ import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { mergeApiParams } from './utils.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
-  group: 'search',
-  name: 'search',
+  group: API.GROUP.SEARCH,
+  name: API.NAME.SEARCH,
   payload: {
     fl: ['*'],
   },

@@ -1,14 +1,15 @@
+import { GROUP, NAME } from './constants.js';
 import ApiBase from './base.js';
 
 export default class Interactions extends ApiBase {
 
   constructor(api) {
-    super(api, 'interactions');
+    super(api, GROUP.INTERACTIONS);
   }
 
   async upload(payload, options) {
     try {
-      return await this._run('upload', payload, options);
+      return await this._run(NAME.UPLOAD, payload, options);
     } catch (e) {
       if (e.status === 400 && e.message && e.message.toLowerCase().indexOf('playground') > -1) {
         this._warn(`Ignore interactions uploaded to playground app.`);
@@ -24,7 +25,7 @@ export default class Interactions extends ApiBase {
   }
 
   _preprocess({ apiGroup, apiName, payload }) {
-    if (apiName === 'upload') {
+    if (apiName === NAME.UPLOAD) {
       payload = this._normalizeUploadPayload(payload);
     }
     return super._preprocess({ apiGroup, apiName, payload });

@@ -1,4 +1,5 @@
 import { Component } from '@miso.ai/commons';
+import { constants as API } from '../api/index.js';
 
 const PLUGIN_ID = 'std:auto-events';
 
@@ -27,9 +28,9 @@ export default class AutoEventsPlugin extends Component {
 
   _captureApiRequest({ client, apiGroup, apiName, payload }) {
     switch (apiGroup) {
-      case 'search':
+      case API.GROUP.SEARCH:
         switch (apiName) {
-          case 'search':
+          case API.NAME.SEARCH:
             this._captureSearchApiRequest(client, payload);
             break;
         }

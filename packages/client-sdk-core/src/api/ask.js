@@ -1,26 +1,27 @@
 import { polling, signals, StallTimeoutAbortController } from '@miso.ai/commons';
+import { GROUP, NAME } from './constants.js';
 import ApiBase from './base.js';
 
 export default class Ask extends ApiBase {
 
   constructor(api) {
-    super(api, 'ask');
+    super(api, GROUP.ASK);
   }
 
   async questions(payload, options = {}) {
     if (typeof payload === 'string' && payload.charAt(0) !== '{') {
       return new Answer(this, { question_id: payload }, options);
     }
-    const response = await this._run('questions', payload, options);
+    const response = await this._run(NAME.QUESTIONS, payload, options);
     return new Answer(this, response, options);
   }
 
   async _questions(payload, options) {
-    return this._run('questions', payload, options);
+    return this._run(NAME.QUESTIONS, payload, options);
   }
 
   async _get(questionId, options) {
-    return this._run(`questions/${questionId}/answer`, undefined, { ...options, method: 'GET' });
+    return this._run(`${NAME.QUESTIONS}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
 }

@@ -1,13 +1,14 @@
 import { mapAsyncIterator } from '@miso.ai/commons';
+import { API } from '@miso.ai/client-sdk-core';
 import { postProcessQuestionsResponse } from './utils.js';
 
 export default function(client) {
     // TODO: send uuid & unit id
     return async ({ group, name, payload, options }) => {
     switch (group) {
-      case 'ask':
+      case API.GROUP.ASK:
         switch (name) {
-          case 'questions':
+          case API.NAME.QUESTIONS:
             const { signal } = options || {};
             const answer = await client.api[group][name](payload, options);
             signal && signal.addEventListener && signal.addEventListener('abort', () => answer.abort(signal.reason));

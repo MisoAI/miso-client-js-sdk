@@ -1,9 +1,10 @@
 import { Component, defineValues, assertNullableFunction } from '@miso.ai/commons';
+import { API } from '@miso.ai/client-sdk-core';
 import { buildPayload, transformResponse } from './data.js';
 
 export default class AlgoliaClient extends Component {
 
-  constructor(algolia, { api = 'search', handleSearch } = {}) {
+  constructor(algolia, { api = API.NAME.SEARCH, handleSearch } = {}) {
     super('client', algolia._plugin);
     this._plugin = algolia._plugin;
     this._client = algolia._client;

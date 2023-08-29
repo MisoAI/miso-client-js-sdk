@@ -27,6 +27,7 @@
     "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
   },
   "dependencies": {
-    "@miso.ai/commons": "file:packages/commons"
+    "@miso.ai/commons": "file:packages/commons",
+    "@miso.ai/client-sdk-core": "file:packages/client-sdk-core"
   }
 }

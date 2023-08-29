@@ -1,4 +1,5 @@
 import { trimObj, mapValues, asArray } from '@miso.ai/commons';
+import { API } from '@miso.ai/client-sdk-core';
 import { buildFilters } from './filter/index.js';
 
 const DEFAULT_ROWS = 5;
@@ -72,7 +73,7 @@ function buildFacets({ facets, maxValuesPerFacet }) {
 }
 
 function buildForAutoComplete(apiName, { attributesToHighlight, highlightPreTag, highlightPostTag }) {
-  if (apiName !== 'autocomplete') {
+  if (apiName !== API.NAME.AUTOCOMPLETE) {
     return {};
   }
   for (const attr of (attributesToHighlight || [])) {
@@ -106,9 +107,9 @@ export function transformResponse(algoliaClient, apiName, { params = {} }, respo
 
 function transformHits(apiName, params, response) {
   switch (apiName) {
-    case 'autocomplete':
+    case API.NAME.AUTOCOMPLETE:
       return transformCompletionsToHits(params, response);
-    case 'search':
+    case API.NAME.SEARCH:
     default:
       return response.products;
   }

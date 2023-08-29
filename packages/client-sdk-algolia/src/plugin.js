@@ -1,4 +1,5 @@
 import { Component } from '@miso.ai/commons';
+import { API } from '@miso.ai/client-sdk-core';
 import AlgoliaClient from './client.js';
 
 const PLUGIN_ID = 'std:algolia';
@@ -35,11 +36,11 @@ class Algolia {
   }
 
   searchClient(options) {
-    return this._createClient('search', options);
+    return this._createClient(API.NAME.SEARCH, options);
   }
 
   autocompleteClient(options) {
-    return this._createClient('autocomplete', options);
+    return this._createClient(API.NAME.AUTOCOMPLETE, options);
   }
 
   _createClient(api, options = {}) {

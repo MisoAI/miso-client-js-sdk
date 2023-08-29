@@ -1,4 +1,5 @@
 import { defineValues, trimObj } from '@miso.ai/commons';
+import { API } from '@miso.ai/client-sdk-core';
 import Workflow from './base.js';
 import { fields, FeedbackActor, Tracker } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
@@ -7,8 +8,8 @@ import { mergeApiParams } from './utils.js';
 import { utils as dataUtils } from '../source/index.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
-  group: 'ask',
-  name: 'questions',
+  group: API.GROUP.ASK,
+  name: API.NAME.QUESTIONS,
   payload: {
     source_fl: ['cover_image', 'url'],
     related_resource_fl: ['cover_image', 'url'],

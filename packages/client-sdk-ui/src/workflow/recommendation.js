@@ -1,12 +1,13 @@
 import { defineValues, trimObj } from '@miso.ai/commons';
+import { API } from '@miso.ai/client-sdk-core';
 import Workflow from './base.js';
 import { fields, Tracker } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
-  group: 'recommendation',
-  name: 'user_to_products',
+  group: API.GROUP.RECOMMENDATION,
+  name: API.NAME.USER_TO_PRODUCTS,
   payload: {
     fl: ['*'],
   },
