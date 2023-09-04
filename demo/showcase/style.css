@@ -326,6 +326,16 @@ miso-question h2 {
   margin-bottom: 2rem;
   opacity: 0.25;
 }
+.follow-ups .query-suggestions-container {
+  margin-bottom: 3rem;
+}
+.phrase.query-suggestions {
+  line-height: 1.5;
+  padding: 1.5rem 0 1rem;
+  font-size: .75rem;
+  font-weight: 600;
+  color: #33323e;
+}
 
 /* section: related-resources */
 section.related-resources {
@@ -388,7 +398,7 @@ section.related-resources > .container {
   padding: 0 2rem;
   border-radius: 9999px;
   background: #fff;
-  box-shadow: 0 6px 26px rgba(0,0,0,.08);
+  box-shadow: 0 6px 26px rgba(0, 0, 0, .1);
 }
 .login-modal .input {
   height: 4rem;
