@@ -12,7 +12,7 @@ export default class ProgressController {
 
 }
 
-function normalizeSpeedFunction({ speed = 75, acceleration = 4 } = {}) {
+function normalizeSpeedFunction({ speed = 100, acceleration = 4 } = {}) {
   if (typeof speed === 'function') {
     return speed;
   }
