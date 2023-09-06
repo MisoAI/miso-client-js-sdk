@@ -1,7 +1,9 @@
 import MisoClient from '@miso.ai/client-sdk';
+import { LoremPlugin } from '@miso.ai/client-sdk-dev-tool';
 import { DemoPlugin } from '../plugin';
 
 MisoClient.plugins.use(DemoPlugin);
+MisoClient.plugins.register(LoremPlugin);
 
 (() => {
   const ids = {};
@@ -35,7 +37,7 @@ MisoClient.plugins.use(DemoPlugin);
 })();
 
 window.renderProductCard = product => `
-  <div class="product-card row-4">
+  <a class="product-card row-4" href="${ product.url }">
     <div>
       <div class="title">${ product.title }</div>
       <div class="image">
@@ -43,5 +45,5 @@ window.renderProductCard = product => `
       </div>
       <div class="footer">$${ product.sale_price }</div>
     </div>
-  </div>
+  </a>
 `;

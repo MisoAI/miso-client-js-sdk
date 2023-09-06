@@ -14,6 +14,7 @@ class Root extends Component {
     this._clients = [];
     this._payloadPasses = [];
     this._urlPasses = [];
+    this._customFetch = undefined;
     this.version = version || 'dev';
   }
 

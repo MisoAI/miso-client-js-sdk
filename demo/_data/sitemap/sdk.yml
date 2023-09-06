@@ -28,3 +28,5 @@ sections:
     path: /helpers/viewable
   - title: Debug
     path: /helpers/debug
+  - title: Lorem
+    path: /helpers/lorem

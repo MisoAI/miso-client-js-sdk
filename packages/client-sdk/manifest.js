@@ -38,4 +38,11 @@ export default [
       format: 'iife',
     },
   },
+  {
+    input: 'src/plugins/lorem.js',
+    output: {
+      filename: 'plugins/lorem',
+      format: 'iife',
+    },
+  },
 ]; 

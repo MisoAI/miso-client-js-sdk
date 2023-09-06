@@ -28,7 +28,7 @@ export default class ApiHelpers {
 
     const signal = timeout ? AbortSignal.timeout(timeout) : undefined;
 
-    const res = await window.fetch(url, trimObj({
+    const res = await (this._root._customFetch || window.fetch)(url, trimObj({
       method,
       headers,
       body,

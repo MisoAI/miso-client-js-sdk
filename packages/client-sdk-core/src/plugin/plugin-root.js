@@ -72,6 +72,9 @@ export default class PluginRoot extends Registry {
   }
 
   async whenInstalled(id) {
+    if (typeof id === 'function' && id.id && typeof id.id === 'string') {
+      id = id.id;
+    }
     if (this.isInstalled(id)) {
       return this.get(id);
     }
@@ -96,6 +99,13 @@ export default class PluginRoot extends Registry {
       throw new Error(`Expect parameter to be a function: ${pass}`);
     }
     this._root._urlPasses.push(pass);
+  }
+
+  setCustomFetch(fetch) {
+    if (typeof fetch !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${fetch}`);
+    }
+    this._root._customFetch = fetch;
   }
 
   _tryConfig(instance, options) {
@@ -212,7 +222,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'whenInstalled', 'whenRegistered']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'setCustomFetch', 'whenInstalled', 'whenRegistered']);
     defineValues(this, { classes });
   }
 

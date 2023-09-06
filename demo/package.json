@@ -9,7 +9,7 @@
     "start:sass": "npx sass --watch scss:dist/css",
     "build:js": "rollup -c",
     "start:js": "rollup -w -c rollup.config.dev.mjs",
-    "start:service": "[[ -n $(command -v doggoganger) ]] && (doggoganger -w) || (npx -p @miso.ai/doggoganger doggoganger)",
+    "start:service": "[[ -f \"$(npm bin -g)/doggoganger\" ]] && (\"$(npm bin -g)/doggoganger\" -w) || (npx -p @miso.ai/doggoganger doggoganger)",
     "_build": "npm-run-all build:*",
     "start": "npm-run-all build:sass --parallel start:*",
     "debug": "DEBUG=* npx eleventy"
@@ -31,6 +31,7 @@
   "dependencies": {
     "@miso.ai/client-sdk": "file:packages/client-sdk",
     "@miso.ai/client-sdk-algolia": "file:packages/client-sdk-algolia",
+    "@miso.ai/client-sdk-dev-tool": "file:packages/client-sdk-dev-tool",
     "@miso.ai/doc-utils": "^1.0.0",
     "@rollup/plugin-yaml": "^4.0.1",
     "instantsearch.js": "^4.40.4"
