@@ -1,6 +1,9 @@
+import { defineValues } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
+
+const OPTION_VALUE = Symbol.for('miso.option-value');
 
 const TYPE = 'option-list';
 const DEFAULT_CLASSNAME = 'miso-option-list';
@@ -17,16 +20,17 @@ function root(layout, state) {
 
 function options(layout, state) {
   const { className, templates } = layout;
-  const { value = [] } = state;
+  const values = state.value || [];
   return `
 <ol class="${className}__options" data-role="options">
-  ${value.map((item, index) => templates.option(layout, item, { index })).join('')}
+  ${values.map((value, index) => templates.option(layout, value, { index })).join('')}
 </ol>
 `;
 }
 
-function option(layout, { text }) {
+function option(layout, value) {
   const { className } = layout;
+  const text = value.text || value;
   return `<li class="${className}__option" data-role="option" tabindex="0">${text}</li>`;
 }
 
@@ -60,12 +64,9 @@ export default class OptionListLayout extends TemplateBasedLayout {
       templates: { ...DEFAULT_TEMPLATES, ...templates },
       ...options,
     });
-    this._optionValues = new WeakMap();
-
-    Object.defineProperty(this, 'items', {
-      value: Object.freeze({
-        findElements: element => element.querySelectorAll(`[data-role="option"]`),
-        getItem: element => this._optionValues.get(element),
+    defineValues(this, {
+      bindings: Object.freeze({
+        list: this._listBindings.bind(this),
       }),
     });
   }
@@ -88,10 +89,10 @@ export default class OptionListLayout extends TemplateBasedLayout {
 
   _render(element, data, controls) {
     super._render(element, data, controls);
-    this._bindOptionValues(element, data);
+    this._syncOptionValues(element, data);
   }
 
-  _bindOptionValues(element, { state }) {
+  _syncOptionValues(element, { state }) {
     if (!element) {
       return;
     }
@@ -102,18 +103,34 @@ export default class OptionListLayout extends TemplateBasedLayout {
     const optionValues = state.value || [];
     optionsElement.classList[optionValues.length === 0 ? 'add' : 'remove']('empty');
     let i = 0;
-    for (const optionElement of optionsElement.children) {
-      this._optionValues.set(optionElement, optionValues[i++]);
+    for (const optionElement of this._listOptionElements(optionsElement)) {
+      optionElement[OPTION_VALUE] = optionValues[i++];
     }
+  }
+
+  _listBindings(element) {
+    if (!element) {
+      return [];
+    }
+    const optionsElement = this._getOptionsElement(element);
+    return this._listOptionElements(optionsElement).map(element => {
+      const value = element[OPTION_VALUE];
+      const key = value.text || value;
+      return { key, value, element };
+    });
   }
 
   _getOptionsElement(element) {
     return element.querySelector(`[data-role="options"]`);
   }
 
+  _listOptionElements(optionsElement) {
+    return optionsElement ? Array.from(optionsElement.querySelectorAll(`[data-role="option"]`)) : [];
+  }
+
   _handleClick(e) {
     for (let element = e.target; element && element !== this._view.element; element = element.parentElement) {
-      const option = this._optionValues.get(element);
+      const option = element[OPTION_VALUE];
       if (!option) {
         continue;
       }

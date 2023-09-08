@@ -22,6 +22,8 @@
   }
 </style>
 <section>
+  Use <code>workflow.useDataProcessor()</code> to add a "Wooof!" string to the answer.
+  <hr>
   <miso-ask>
     <miso-query></miso-query>
   </miso-ask>
@@ -40,7 +42,6 @@
     <miso-related-resources></miso-related-resources>
   </miso-ask>
 </section>
-<script src="https://www.unpkg.com/@miso.ai/doggoganger@beta/dist/umd/doggoganger-browser.min.js"></script>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
@@ -50,16 +51,22 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.ask;
-  workflow.useApi(false);
-  const api = window.doggoganger.buildApi();
-  workflow.on('request', async ({ session, payload }) => {
-    const { question_id } = await api.ask.questions(payload);
-    let intervalId;
-    intervalId = setInterval(async () => {
-      const value = await api.ask.answer(question_id);
-      value.finished && clearInterval(intervalId);
-      workflow.updateData({ session, value });
-    }, 1000);
+  workflow.useDataProcessor(data => {
+    const { value } = data;
+    if (!value) {
+      return data;
+    }
+    const { answer } = value;
+    if (!answer) {
+      return data;
+    }
+    return {
+      ...data,
+      value: {
+        ...value,
+        answer: `Wooof!\n${answer}`,
+      },
+    };
   });
 });
 </script>

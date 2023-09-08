@@ -35,8 +35,9 @@ function suggestionList(layout) {
   return `<ol class="${className}__suggestion-list" data-role="suggestion-list"></ol>`;
 }
 
-function suggestionItem(layout, { text }) {
+function suggestionItem(layout, value) {
   const { className } = layout;
+  const text = value.text || value;
   return `<li class="${className}__suggestion-item" data-role="suggestion-item" tabindex="0">${text}</li>`;
 }
 
@@ -72,7 +73,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       ...options,
     });
     this._contexts = new WeakMap();
-    this._suggestionItems = new WeakMap();
+    this._suggestionItems = new WeakMap(); // TODO: put them on elements as layout can be potentially replaced
   }
 
   initialize(view) {
@@ -179,10 +180,11 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       if (!suggestion) {
         continue;
       }
+      const value = suggestion.text || suggestion;
       if (inputElement) {
-        inputElement.value = suggestion.text;
+        inputElement.value = value;
       }
-      this._submit(suggestion.text);
+      this._submit(value);
       return;
     }
   }

@@ -53,9 +53,9 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const unit = client.ui.recommendations.get('unit-1');
-  window.helpers.unit.monitorEvents(unit);
-  unit.useTracker({ watch: true }).startTracker();
+  const workflow = client.ui.recommendations.get('unit-1');
+  window.helpers.unit.monitorEvents(workflow);
+  workflow.useTracker({ watch: true }).startTracker();
 });
 </script>
 {% endraw %}

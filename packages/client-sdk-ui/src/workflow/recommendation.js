@@ -54,7 +54,7 @@ export default class Recommendation extends Workflow {
     // in recommendation workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     const { session } = this;
-    this._hub.update(fields.input(), { ...this._apiParams, session });
+    this._hub.update(fields.request(), { ...this._apiParams, session });
     return this;
   }
 

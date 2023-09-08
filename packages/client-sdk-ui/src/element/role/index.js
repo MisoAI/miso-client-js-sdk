@@ -8,4 +8,5 @@ export { default as MisoQuestionElement } from './miso-question.js';
 export { default as MisoAnswerElement } from './miso-answer.js';
 export { default as MisoSourcesElement } from './miso-sources.js';
 export { default as MisoRelatedResourcesElement } from './miso-related-resources.js';
+export { default as MisoRelatedQuestionsElement } from './miso-related-questions.js';
 export { default as MisoErrorElement } from './miso-error.js';

@@ -6,7 +6,7 @@ export default class DataActor {
     this._hub = hub;
     this._unsubscribes = [
       hub.on(fields.session(), session => this._handleSession(session)),
-      hub.on(fields.input(), event => this._handleInput(event)),
+      hub.on(fields.request(), event => this._handleRequest(event)),
     ];
     this._postProcess = v => v;
   }
@@ -48,10 +48,10 @@ export default class DataActor {
     this._session = session;
 
     // reflect session update
-    this._emitData({ session });
+    this._emitResponse({ session });
   }
 
-  async _handleInput(event) {
+  async _handleRequest(event) {
     // protocol: no source, no reaction
     if (!this._source) {
       return;
@@ -60,32 +60,29 @@ export default class DataActor {
     try {
       const { signal } = this._ac || {};
       const options = { ...event.options, signal };
-      const value = await this._source({ session, ...event, options });
-      // takes either iterator or iterable, sync or async
-      const iterator = value && (typeof value.next === 'function' ? value : value[Symbol.asyncIterator]);
-      if (iterator) {
+      const response = await this._source({ session, ...event, options });
+      // takes an iterable, either sync or async
+      if (response && response[Symbol.asyncIterator]) {
         let value;
-        for await (value of iterator) {
+        for await (value of response) {
           // A new session invalidates ongoing data fetch for the old session, terminating the loop
           if (!this._isCurrentSession(session)) {
             break;
           }
-          this._emitData({ session, value, ongoing: true });
+          this._emitResponse({ session, value });
         }
-        // TODO: find a way to emit the last value without the ongoing flag
-        this._emitDataWithSessionCheck({ session, value });
       } else {
-        this._emitDataWithSessionCheck({ session, value });
+        this._emitResponseWithSessionCheck({ session, value: response });
       }
     } catch(error) {
       this._error(error);
-      this._emitDataWithSessionCheck({ session, error });
+      this._emitResponseWithSessionCheck({ session, error });
     }
   }
 
-  _emitDataWithSessionCheck(data) {
+  _emitResponseWithSessionCheck(response) {
     // A new session invalidates ongoing data fetch
-    this._isCurrentSession(data.session) && this._emitData(data);
+    this._isCurrentSession(response.session) && this._emitResponse(response);
   }
 
   _isCurrentSession(session) {
@@ -96,8 +93,8 @@ export default class DataActor {
     return currentSession && currentSession.index === session.index;
   }
 
-  _emitData(data) {
-    this._hub.update(fields.data(), this._postProcess(data));
+  _emitResponse(response) {
+    this._hub.update(fields.response(), response);
   }
 
   _error(error) {

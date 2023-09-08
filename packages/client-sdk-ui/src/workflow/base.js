@@ -52,10 +52,12 @@ export default class Workflow extends Component {
     });
     this._interactions = new InteractionsActor(hub, client, interactionsOptions);
 
-    this._unsubscribes = [];
-
     this._data.source = sources.api(this._client);
-    this._customPostProcessData = IDF;
+    this._customProcessData = IDF;
+
+    this._unsubscribes = [
+      this._hub.on(fields.response(), data => this.updateData(data)),
+    ];
   }
 
   get uuid() {
@@ -110,20 +112,33 @@ export default class Workflow extends Component {
 
     this._sessions.start(); // in case session not started yet
 
-    data = this._customPostProcessData(this._postProcessData(data));
+    data = this._customProcessData(this._defaultProcessData(data));
+
     this._hub.update(fields.data(), data);
+
     return this;
   }
 
-  _postProcessData(data) {
-    return data;
+  _defaultProcessData(data) {
+    const { value } = data;
+    // put miso_id to meta
+    if (!value || !value.miso_id) {
+      return data;
+    }
+    return {
+      ...data,
+      meta: {
+        ...data.meta,
+        miso_id: value.miso_id,
+      },
+    };
   }
 
   useDataProcessor(fn) {
     if (fn && typeof fn !== 'function') {
       throw new Error(`Data processor must be a function or undefined.`);
     }
-    this._data.postProcess = this._customPostProcessData = fn || IDF;
+    this._customProcessData = fn || IDF;
     return this;
   }
 

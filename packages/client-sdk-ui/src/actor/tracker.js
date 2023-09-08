@@ -1,6 +1,7 @@
 import { STATUS, ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 import * as fields from './fields.js';
 import _Tracker from '../util/tracker.js';
+import { fallbackListFunction } from '../util/bindings.js';
 import { toInteraction } from './utils.js';
 
 function isReady(viewState) {
@@ -9,15 +10,16 @@ function isReady(viewState) {
 
 export default class Tracker {
 
-  constructor(hub, view, { active, items, ...options } = {}) {
+  constructor(hub, view, { active, bindings, ...options } = {}) {
     this._hub = hub;
     this._view = view;
+    this._bindings = bindings;
     const role = this._role = view.role;
+    // TODO: know item type
 
     this._tracker = new _Tracker({
-      items: {
-        itemAttrName: ATTR_DATA_MISO_PRODUCT_ID,
-        ...items,
+      bindings: {
+        list: element => this._listBindingsFn()(element),
       },
       proxyElement: view.proxyElement,
       sessionId: () => this._getSessionId(),
@@ -62,6 +64,18 @@ export default class Tracker {
   click(productIds, options) {
     this._assertViewReady();
     this._tracker.click(productIds, options);
+  }
+
+  _listBindingsFn() {
+    if (this._bindings && typeof this._bindings.list === 'function') {
+      return this._bindings.list;
+    }
+    const { layout } = this._view;
+    if (layout && layout.bindings && typeof layout.bindings.list === 'function') {
+      return layout.bindings.list;
+    }
+    // TODO: only if item is product typed
+    return fallbackListFunction(ATTR_DATA_MISO_PRODUCT_ID);
   }
 
   _assertViewReady() {

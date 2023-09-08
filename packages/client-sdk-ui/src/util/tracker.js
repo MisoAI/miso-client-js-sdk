@@ -1,6 +1,6 @@
 import { EventEmitter, isElement, findInAncestors, trimObj, asArray, viewable as whenViewable } from '@miso.ai/commons';
 import { EVENT_TYPE, TRACKING_STATUS, validateEventType } from '../constants.js';
-import { Items } from './items.js';
+import { Bindings } from './bindings.js';
 import States from './states.js';
 import ProxyElement from './proxy.js';
 
@@ -32,13 +32,13 @@ export default class Tracker {
     element,
     sessionId = 'default',
     active = true,
-    items,
+    bindings,
   } = {}) {
     this._events = new EventEmitter({ target: this });
     this._proxyElement = proxyElement || new ProxyElement(element);
     this._getSessionId = typeof sessionId === 'function' ? sessionId : () => sessionId;
     this._isActive = typeof active === 'function' ? active : () => active;
-    this._items = new Items(items);
+    this._bindings = new Bindings(bindings);
     this._viewables = new WeakMap();
     this._options = DEFAULT_TRACKING_OPTIONS;
 
@@ -73,8 +73,8 @@ export default class Tracker {
     this._syncElement();
     // refresh against view state
     this._syncStates();
-    // refresh items
-    this._refreshItems();
+    // refresh bindings
+    this._refreshBindings();
   }
 
   _syncStates() {
@@ -90,19 +90,19 @@ export default class Tracker {
     }
   }
 
-  impression(items, options) {
+  impression(values, options) {
     this._assertActive();
-    this._trigger(IMPRESSION, items, { ...options, manual: true });
+    this._trigger(IMPRESSION, values, { ...options, manual: true });
   }
 
-  viewable(items, options) {
+  viewable(values, options) {
     this._assertActive();
-    this._trigger(VIEWABLE, items, { ...options, manual: true });
+    this._trigger(VIEWABLE, values, { ...options, manual: true });
   }
 
-  click(items, options) {
+  click(values, options) {
     this._assertActive();
-    this._trigger(CLICK, items, { ...options, manual: true });
+    this._trigger(CLICK, values, { ...options, manual: true });
   }
 
   _assertActive() {
@@ -111,11 +111,11 @@ export default class Tracker {
     }
   }
 
-  getState(itemId) {
+  getState(value) {
     // TODO: do we have to be so precise?
     return Object.freeze({
       [CLICK]: this._proxyElement.current ? TRACKING : UNTRACKED,
-      ...this._states.getFullState(itemId),
+      ...this._states.getFullState(value),
     });
   }
 
@@ -153,17 +153,17 @@ export default class Tracker {
   }
 
   _retireStates() {
-    const { unbounds } = this._items.unbindAll();
+    const { unbounds } = this._bindings.unbindAll();
     this._untrackViewables(unbounds);
     this._states = undefined;
   }
 
-  _refreshItems() {
+  _refreshBindings() {
     if (!this._states) {
       return;
     }
     const element = this._proxyElement.current;
-    const { bounds, unbounds } = this._items.refresh(element);
+    const { bounds, unbounds } = this._bindings.refresh(element);
     this._untrackViewables(unbounds);
     this._trackImpressions(bounds);
     this._trackViewables(bounds);
@@ -177,7 +177,7 @@ export default class Tracker {
     if (!options) {
       return;
     }
-    this._trigger(IMPRESSION, bindings.map(b => b.item), { bindings });
+    this._trigger(IMPRESSION, bindings.map(b => b.value), { bindings });
   }
 
 
@@ -194,16 +194,16 @@ export default class Tracker {
   }
 
   async _trackViewableOnElement(binding) {
-    const { item, element } = binding;
-    if (!item || !isElement(element) || this._viewables.has(element)) {
+    const { value, element } = binding;
+    if (!value || !isElement(element) || this._viewables.has(element)) {
       return;
     }
     // TODO: when element is replaced without proper unload...
-    const state = this._states.get(item, VIEWABLE);
+    const state = this._states.get(value, VIEWABLE);
     if (state !== UNTRACKED) {
       return;
     }
-    this._states.set(item, VIEWABLE, TRACKING);
+    this._states.set(value, VIEWABLE, TRACKING);
 
     const { area, duration } = this._options.viewable;
     // abort signal
@@ -212,10 +212,10 @@ export default class Tracker {
     this._viewables.set(element, { ac });
     await whenViewable(element, { area, duration, signal });
     this._viewables.delete(element);
-    this._trigger(VIEWABLE, [item], { bindings: [binding] });
+    this._trigger(VIEWABLE, [value], { bindings: [binding] });
   }
 
-  _untrackViewableOnElement({ item, element }) {
+  _untrackViewableOnElement({ value, element }) {
     const viewable = this._viewables.get(element);
     if (!viewable) {
       return;
@@ -223,8 +223,8 @@ export default class Tracker {
     viewable.ac.abort();
     this._viewables.delete(element);
     const type = VIEWABLE;
-    if (this._states.get(item, type) === TRACKING) {
-      this._states.set(item, type, UNTRACKED);
+    if (this._states.get(value, type) === TRACKING) {
+      this._states.set(value, type, UNTRACKED);
     }
   }
 
@@ -242,7 +242,7 @@ export default class Tracker {
     if (!options || !this._isActive()) {
       return;
     }
-    const binding = this._items.get(event.target);
+    const binding = this._bindings.get(event.target);
     if (!binding) {
       return;
     }
@@ -266,12 +266,12 @@ export default class Tracker {
         return;
       }
     }
-    this._trigger(CLICK, [binding.item], { bindings: [binding] });
+    this._trigger(CLICK, [binding.value], { bindings: [binding] });
   }
 
 
 
-  _trigger(event, items, { manual = false, bindings } = {}) {
+  _trigger(event, values, { manual = false, bindings } = {}) {
     validateEventType(event);
 
     if (!this._isActive()) {
@@ -279,19 +279,19 @@ export default class Tracker {
     }
 
     // ignore already triggered
-    items = this._states.untriggered(asArray(items), event);
+    values = this._states.untriggered(asArray(values), event);
 
-    if (items.length === 0) {
+    if (values.length === 0) {
       return;
     }
-    this._states.set(items, event, TRIGGERED);
-    this._events.emit(event, { event, items, manual, bindings });
+    this._states.set(values, event, TRIGGERED);
+    this._events.emit(event, { event, values, manual, bindings });
   }
 
   destroy() {
     this._retireElement();
     this._retireStates();
-    this._items._destroy();
+    this._bindings._destroy();
     for (const unsubscribe of this._unsubscribes) {
       unsubscribe();
     }

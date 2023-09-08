@@ -20,17 +20,25 @@ export function product(layout, state, data) {
   return `${openTag}${imgBox}${infoBox}${closeTag}`;
 }
 
+export function question(layout, state, data) {
+  const [openTag, closeTag] = renderTagPair(layout, data);
+  return `${openTag}${data.text || data}${closeTag}`;
+}
+
+/*
 export function source(layout, state, data, { index }) {
   const [openTag, closeTag] = renderTagPair(layout, data);
   const imgBox = renderImgBox(layout, data);
   const infoBox = renderInfoBox(layout, data);
   return `${openTag}${imgBox}${infoBox}${closeTag}`;
 }
+*/
 
 function renderTagPair({ className }, { product_id, url }) {
-  const openTag = url ? `<a class="${className}__item-body" ${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}" href="${url}" target="_blank" rel="noopener">` : `<div class="${className}__item-body">`;
-  const clostTag = url ? `</a>` : `</div>`;
-  return [openTag, clostTag];
+  const tag = url ? 'a' : 'div';
+  const urlAttrs = url ? `href="${url}" target="_blank" rel="noopener"` : '';
+  const productAttrs = product_id ? `${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}"` : '';
+  return [`<${tag} class="${className}__item-body" data-role="item" ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
 }
 
 function renderImgBox({ className }, { cover_image }) {

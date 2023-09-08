@@ -10,8 +10,12 @@ export function query() {
   return 'query';
 }
 
-export function input() {
-  return 'input';
+export function request() {
+  return 'request';
+}
+
+export function response() {
+  return 'response';
 }
 
 export function data() {

@@ -17,6 +17,7 @@ export const ROLE = Object.freeze({
   SOURCES: 'sources',
   RELATED_RESOURCES: 'related_resources',
   QUERY_SUGGESTIONS: 'query_suggestions',
+  RELATED_QUESTIONS: 'related_questions',
   ERROR: 'error',
 });
 

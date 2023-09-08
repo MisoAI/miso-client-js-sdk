@@ -138,7 +138,6 @@ export default class ViewActor {
     const { value, error, ...rest } = data;
     return trimObj({
       value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
-      meta: value && value._meta,
       ...rest,
     });
   }

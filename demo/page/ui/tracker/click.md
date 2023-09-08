@@ -54,9 +54,9 @@ misocmd.push(() => {
       lenient: true,
     }
   };
-  const unit = client.ui.recommendations.get('unit-1');
-  window.helpers.unit.monitorEvents(unit);
-  unit.useTracker(trackerOptions).startTracker();
+  const workflow = client.ui.recommendations.get('unit-1');
+  window.helpers.unit.monitorEvents(workflow);
+  workflow.useTracker(trackerOptions).startTracker();
 });
 </script>
 {% endraw %}

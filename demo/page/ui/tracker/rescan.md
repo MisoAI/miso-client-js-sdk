@@ -55,10 +55,10 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const unit = client.ui.recommendations.get('unit-1');
-  window.helpers.unit.monitorEvents(unit);
-  unit.startTracker();
-  window.onPopulate = window.onClear = () => unit.notifyViewUpdate();
+  const workflow = client.ui.recommendations.get('unit-1');
+  window.helpers.unit.monitorEvents(workflow);
+  workflow.startTracker();
+  window.onPopulate = window.onClear = () => workflow.notifyViewUpdate();
 });
 </script>
 {% endraw %}

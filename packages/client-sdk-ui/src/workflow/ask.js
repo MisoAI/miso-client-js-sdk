@@ -5,7 +5,6 @@ import { fields, FeedbackActor, Tracker } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
 import { mergeApiParams } from './utils.js';
-import { utils as dataUtils } from '../source/index.js';
 
 const DEFAULT_API_PARAMS = Object.freeze({
   group: API.GROUP.ASK,
@@ -105,7 +104,7 @@ export default class Ask extends Workflow {
     this.restart();
 
     const { session } = this;
-    this._hub.update(fields.input(), mergeApiParams(this._apiParams, { payload, session }));
+    this._hub.update(fields.request(), mergeApiParams(this._apiParams, { payload, session }));
 
     return this;
   }
@@ -122,13 +121,26 @@ export default class Ask extends Workflow {
     super.restart();
   }
 
-  _postProcessData({ value, ...data } = {}) {
-    value = dataUtils.postProcessQuestionsResponse(value);
-    const ongoing = value && !value.finished; // TODO: do we need this?
-    return { value, ongoing, ...data };
+  _defaultProcessData(data) {
+    data = super._defaultProcessData(data);
+    const { value } = data;
+    if (!value) {
+      return data;
+    }
+    // 1. put answer_stage to meta
+    // 2. mark ongoing flag
+    return {
+      ...data,
+      ongoing: !value.finished,
+      meta: {
+        ...data.meta,
+        answer_stage: value.answer_stage,
+      },
+    };
   }
 
   _onDataUpdate(data) {
+    // TODO: can we just put this in _defaultProcessData?
     if (this._questionId) {
       return;
     }
@@ -164,7 +176,6 @@ export default class Ask extends Workflow {
     if (value.length > 0) {
       const view = this._views.get(ROLE.QUERY_SUGGESTIONS);
       const tracker = this._trackers.querySuggestions = new Tracker(this._hub, view, {
-        items: view.layout.items,
         active: true, // we are tracking events at initial stage, when session is not active yet
       });
       tracker.config({
@@ -198,8 +209,6 @@ export default class Ask extends Workflow {
       questionId = parentQuestionId;
       parentQuestionId = this.previous && this.previous.parentQuestionId;
       custom_context.property = 'suggested_followup_questions';
-      custom_context.items = payload.product_ids.map(({ text }) => text);
-      payload.product_ids = [];
     }
     payload.context = {
       ...context,

@@ -24,6 +24,10 @@ export default class Ask extends ApiBase {
     return this._run(`${NAME.QUESTIONS}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
+  async relatedQuestions(payload, options = {}) {
+    return this._run(NAME.RELATED_QUESTIONS, payload, options);
+  }
+
 }
 
 class Answer {

@@ -1,5 +1,5 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Asks, Search, Recommendations } from './workflow/index.js';
+import { Asks, Explore, Search, Recommendations } from './workflow/index.js';
 import Layouts from './layouts.js';
 import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
@@ -151,6 +151,10 @@ class Ui {
 
   get ask() {
     return this.asks.root;
+  }
+
+  get explore() {
+    return this._explore || (this._explore = new Explore(this._plugin, this._client));
   }
 
   /*
