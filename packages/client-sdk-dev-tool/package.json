@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "@miso.ai/commons": "file:packages/commons",
-    "@miso.ai/doggoganger": "^0.9.1-beta.7"
+    "@miso.ai/doggoganger": "^0.9.1-beta.8"
   }
 }
