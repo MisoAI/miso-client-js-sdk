@@ -106,7 +106,7 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const start = Date.now();
-  const onDebug = ({ summary, ref, operation, conflict }) => console.log(`[${(Date.now() - start) / 1000}]`, summary, ref, `${operation}`, conflict);
+  const onDebug = ({ summary, timestamp, elapsed, ref, operation, conflict }) => console.log(`[${(timestamp - start) / 1000}](${elapsed[0] / 1000}, ${elapsed[1] / 1000})`, summary, ref, `${operation}`, conflict);
   const workflow = client.ui.ask;
   workflow.useLayouts({
     answer: { onDebug },

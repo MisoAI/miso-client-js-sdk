@@ -18,7 +18,7 @@ export default class Renderer {
     return { cursor: 0, done: false, ref: element, index };
   }
 
-  update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor, done: dataDone }) {
+  update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor, timestamp, done: dataDone }) {
     const index = this._index++;
     const query = this._query;
 
@@ -44,14 +44,19 @@ export default class Renderer {
     const overwrite = conflict !== undefined && prevCursor >= conflict.index;
 
     let ref = prevRef;
+    let t0, t1;
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
     for (const operation of operations) {
       if (this._onDebug) {
-        const info = { index, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } };
+        t0 = Date.now();
+      }
+      ref = operation.applyTo(element, ref);
+      if (this._onDebug) {
+        t1 = Date.now();
+        const info = { index, timestamp, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound }, elapsed: [t0 - timestamp, t1 - t0] };
         info.summary = summarize(info);
         this._onDebug(info);
       }
-      ref = operation.applyTo(element, ref);
     }
     viewDone && this._onDone && this._onDone(element);
     this._handleRefChange(prevRef, ref);
