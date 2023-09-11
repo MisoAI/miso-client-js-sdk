@@ -46,7 +46,11 @@ export default class Renderer {
     let ref = prevRef;
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
     for (const operation of operations) {
-      this._onDebug && this._onDebug({ index, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } });
+      if (this._onDebug) {
+        const info = { index, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } };
+        info.summary = summarize(info);
+        this._onDebug(info);
+      }
       ref = operation.applyTo(element, ref);
     }
     viewDone && this._onDone && this._onDone(element);
@@ -59,4 +63,8 @@ export default class Renderer {
     oldRef !== newRef && this._onRefChange && this._onRefChange(oldRef, newRef);
   }
 
+}
+
+function summarize({ index, cursors, conflict, tree }) {
+  return `[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`;
 }

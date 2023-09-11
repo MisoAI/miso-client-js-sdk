@@ -8,9 +8,11 @@ import { containerElement, cursorClassName, fromSameSession } from './utils.js';
 const TYPE = 'typewriter';
 const DEFAULT_CLASSNAME = 'miso-typewriter';
 
-const onDebug = ({ index, ref, operation, cursors, conflict, tree }) => {
-  console.log(`[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`, ref, `${operation}`, conflict);
+/*
+const onDebug = ({ summary, ref, operation, conflict }) => {
+  console.log(summary, ref, `${operation}`, conflict);
 };
+*/
 
 export default class TypewriterLayout extends ProgressiveLayout {
 
@@ -83,7 +85,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       onDone: (element) => {
         element.classList.add('done');
       },
-      //onDebug,
+      onDebug: this.options.onDebug || undefined,
     });
   }
 
