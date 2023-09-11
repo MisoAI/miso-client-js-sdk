@@ -21,14 +21,19 @@ export default class LoremPlugin {
     return this._api;
   }
 
-  install(MisoClient, { setCustomFetch }) {
+  install(MisoClient, { setCustomFetch, setCustomSendBeacon }) {
     MisoClient.lorem = new Lorem(this);
     setCustomFetch(this._fetch.bind(this));
+    setCustomSendBeacon(this._sendBeacon.bind(this));
     interceptDummyLinkClick();
   }
 
   _fetch(url, options) {
     return fetch(this._api, url, options);
+  }
+
+  _sendBeacon(/*url, data*/) {
+    return true;
   }
 
 }

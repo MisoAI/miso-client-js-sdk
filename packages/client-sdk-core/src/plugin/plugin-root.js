@@ -108,6 +108,13 @@ export default class PluginRoot extends Registry {
     this._root._customFetch = fetch;
   }
 
+  setCustomSendBeacon(sendBeacon) {
+    if (typeof sendBeacon !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${sendBeacon}`);
+    }
+    this._root._customSendBeacon = sendBeacon;
+  }
+
   _tryConfig(instance, options) {
     if (options === undefined) {
       return;
@@ -222,7 +229,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'setCustomFetch', 'whenInstalled', 'whenRegistered']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'whenInstalled', 'whenRegistered']);
     defineValues(this, { classes });
   }
 

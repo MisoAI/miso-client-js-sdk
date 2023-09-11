@@ -4,6 +4,8 @@ sections:
   pages:
   - title: Basic
     path: /ask/basic
+  - title: Lorem (client)
+    path: /ask/lorem-client
   - title: Plaintext
     path: /ask/plaintext
   - title: Follow up
@@ -19,22 +21,28 @@ sections:
 - title: Explore
   path: /explore
   pages:
-  - title: Dummy
-    path: /explore/dummy
+  - title: Lorem (server)
+    path: /explore/lorem-server
+  - title: Lorem (client)
+    path: /explore/lorem-client
 - title: Search
   path: /search
   pages:
   - title: Basic
     path: /search/basic
-  - title: Dummy
-    path: /search/dummy
+  - title: Lorem (server)
+    path: /search/lorem-server
+  - title: Lorem (client)
+    path: /search/lorem-client
 - title: Recommendation
   path: /recommendation
   pages:
   - title: Basic
     path: /recommendation/basic
-  - title: Dummy
-    path: /recommendation/dummy
+  - title: Lorem (server)
+    path: /recommendation/lorem-server
+  - title: Lorem (client)
+    path: /recommendation/lorem-client
 - title: Tracker
   path: /tracker
   pages:
