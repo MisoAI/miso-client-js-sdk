@@ -69,7 +69,7 @@ function setup(workflow) {
 function useCustomDataSource(workflow) {
   workflow.useApi(false);
   const api = window.doggoganger.buildApi();
-  workflow.on('input', async ({ session, payload }) => {
+  workflow.on('request', async ({ session, payload }) => {
     const answer = await api.ask.questions(payload);
     let intervalId;
     intervalId = setInterval(async () => {
@@ -84,18 +84,17 @@ function useCustomDataSource(workflow) {
 function start(apiKey) {
   apiKey = apiKey.trim();
   const misocmd = window.misocmd || (window.misocmd = []);
-  misocmd.push(() => {
+  misocmd.push(async () => {
     MisoClient.plugins.use('std:ui');
 
     displayVersionInfo(MisoClient);
 
+    if (apiKey.toLowerCase() === 'lorem') {
+      await MisoClient.plugins.install('std:lorem');
+    }
+
     const client = new MisoClient(apiKey);
     const rootWorkflow = client.ui.ask;
-
-    if (apiKey.toLowerCase() === 'lorem') {
-      useCustomDataSource(rootWorkflow);
-      client.ui.asks.on('create', useCustomDataSource);
-    }
 
     setup(rootWorkflow);
     client.ui.asks.on('create', setup);
