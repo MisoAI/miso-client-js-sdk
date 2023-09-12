@@ -83,7 +83,7 @@ export default class ApiHelpers {
     if (method && method !== 'POST') {
       throw new Error(`Non-POST API is not supported in useBeacon mode: ${url}`);
     }
-    if (!(this._root._customSendBeacon || window.navigator.sendBeacon)(url, JSON.stringify(payload))) {
+    if (!((this._root._customSendBeacon || window.navigator.sendBeacon)(url, JSON.stringify(payload)))) {
       throw new Error(`Send beacon unsuccessful: ${url}`);
     }
   }
