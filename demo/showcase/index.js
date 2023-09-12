@@ -2,7 +2,31 @@ const login = document.querySelector('#login');
 const keyInput = document.querySelector('#key-input');
 const mainInput = document.querySelector('miso-ask miso-query input');
 
-const apiKeyFromUrl = new URLSearchParams(window.location.search).get('api_key');
+const paramsFromUrl = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+const apiParams = normalizeApiParams(paramsFromUrl);
+
+function normalizeApiParams({ yearly_decay, fq } = {}) {
+  yearly_decay = normalizeYearlyDecay(yearly_decay);
+  const normalized = {};
+  if (yearly_decay) {
+    normalized.yearly_decay = yearly_decay;
+  }
+  if (fq) {
+    normalized.fq = fq;
+  }
+  return normalized;
+}
+
+function normalizeYearlyDecay(value) {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  value = Number(value);
+  if (isNaN(value)) {
+    return undefined;
+  }
+  return value;
+}
 
 function submitApiKey(value) {
   login.style.display = 'none';
@@ -10,8 +34,8 @@ function submitApiKey(value) {
   mainInput.focus();
 }
 
-if (apiKeyFromUrl) {
-  submitApiKey(apiKeyFromUrl);
+if (paramsFromUrl.api_key) {
+  submitApiKey(paramsFromUrl.api_key);
 } else {
   keyInput.focus();
   keyInput.addEventListener('keydown', (e) => {
@@ -54,11 +78,15 @@ function render({ parentQuestionId }) {
 }
 
 function setup(workflow) {
+  // API parameters (from URL)
+  workflow.useApi('questions', apiParams);
+
   // follow-up questions:
   // when a answer is fully populated, insert a new section for the follow-up question
   workflow.on('done', () => {
     followUpsSection.insertAdjacentHTML('beforeend', render({ parentQuestionId: workflow.questionId }));
   });
+
   // follow-up questions:
   // when a new query starts, associate the last section container (for related resources) to that workflow
   workflow.on('loading', () => {
@@ -66,25 +94,10 @@ function setup(workflow) {
   });
 }
 
-function useCustomDataSource(workflow) {
-  workflow.useApi(false);
-  const api = window.doggoganger.buildApi();
-  workflow.on('input', async ({ session, payload }) => {
-    const answer = await api.ask.questions(payload);
-    let intervalId;
-    intervalId = setInterval(async () => {
-      const value = await answer.get();
-      const { finished } = value;
-      finished && clearInterval(intervalId);
-      workflow.updateData({ session, value, ongoing: !finished });
-    }, 1000);
-  });
-}
-
 function start(apiKey) {
   apiKey = apiKey.trim();
   const misocmd = window.misocmd || (window.misocmd = []);
-  misocmd.push(() => {
+  misocmd.push(async () => {
     MisoClient.plugins.use('std:ui');
 
     displayVersionInfo(MisoClient);
@@ -93,8 +106,7 @@ function start(apiKey) {
     const rootWorkflow = client.ui.ask;
 
     if (apiKey.toLowerCase() === 'lorem') {
-      useCustomDataSource(rootWorkflow);
-      client.ui.asks.on('create', useCustomDataSource);
+      await MisoClient.plugins.install('std:lorem');
     }
 
     setup(rootWorkflow);
