@@ -3,7 +3,7 @@ window.onTypewriterDebug = ({ summary, timestamp, elapsed, ref, operation, confl
 
 const _fns = {};
 const logs = [];
-function injectLogger(method) {
+function injectConsole(method) {
   _fns[method] = console[method].bind(console);
   console[method] = (...args) => {
     logs.push([method, ...args]);
@@ -11,7 +11,7 @@ function injectLogger(method) {
   }
 }
 for (const method of ['log', 'info', 'warn', 'error']) {
-  injectLogger(method);
+  injectConsole(method);
 }
 function shimLogValue(v) {
   if (typeof v === 'function') {

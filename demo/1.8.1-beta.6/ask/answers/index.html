@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/demo/latest/ask/" />
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/demo/1.8.1-beta.6/ask/answers/" />
 <meta name="description" content="" />
 
 <meta property="og:title" content="Miso SDK for JavaScript" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/demo/latest/ask/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/demo/1.8.1-beta.6/ask/answers/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
@@ -17,7 +17,7 @@
 <meta name="twitter:creator" content="@askmiso">
 <meta name="twitter:title" content="Miso SDK for JavaScript">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/demo/latest/ask/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/demo/1.8.1-beta.6/ask/answers/">
 
 
 
@@ -32,20 +32,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
 
-    <script async src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/umd/miso.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/css/ui.css" />
+    <script async src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.8.1-beta.6/dist/umd/miso.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.8.1-beta.6/dist/css/ui.css" />
   </head>
   <body class="demo">
-    <link rel="stylesheet" href="/miso-client-js-sdk/demo/tags/ask/style.css" />
+    <link rel="stylesheet" href="/miso-client-js-sdk/demo/tags/ask/answers/style.css" />
+<link rel="stylesheet" href="/miso-client-js-sdk/demo/tags/ask/answers/debug.css" />
 <section class="question">
   <div class="hero">
     <div class="hero-inner">
       <a href="https://miso.ai" target="_blank" rel="noopener noreferrer" class="miso-logo-link">
-        <img class="miso-logo" src="/miso-client-js-sdk/demo/tags/ask/asset/miso-logo.svg" alt="Miso">
+        <img class="miso-logo" src="/miso-client-js-sdk/demo/tags/ask/answers/logo.svg" alt="Miso">
       </a>
       <p class="miso-ask-slogan">“The language skills of GPT3, but with your content at the core”</p>
-      <span id="sdk-version" class="sdk-version">
-      <span>
+      <span id="sdk-version" class="sdk-version"></span>
+      <button id="save-log-btn">Save Log</button>
     </div>
   </div>
   <miso-ask class="query-container">
@@ -83,7 +84,8 @@
     </div>
   </div>
 </div>
-<script async src="/miso-client-js-sdk/demo/tags/ask/index.js"></script>
+<script src="/miso-client-js-sdk/demo/tags/ask/answers/debug.js"></script>
+<script async src="/miso-client-js-sdk/demo/tags/ask/answers/index.js"></script>
 
   </body>
 </html>

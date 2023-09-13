@@ -1,0 +1,10 @@
+#save-log-btn {
+  display: none;
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+}
+
+body.debug #save-log-btn {
+  display: block;
+}

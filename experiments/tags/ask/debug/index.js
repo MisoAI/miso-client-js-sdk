@@ -89,6 +89,7 @@ function start(apiKey) {
   apiKey = apiKey.trim();
   const misocmd = window.misocmd || (window.misocmd = []);
   misocmd.push(async () => {
+    MisoClient.plugins.use('std:debug');
     MisoClient.plugins.use('std:ui');
 
     displayVersionInfo(MisoClient);
