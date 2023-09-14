@@ -77,6 +77,13 @@ export default class CollectionLayout extends TemplateBasedLayout {
         list: this._listBindings.bind(this),
       }),
     });
+    this._view = undefined;
+  }
+
+  initialize(view) {
+    this._view = view;
+    const { proxyElement } = this._view = view;
+    this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
   _preprocess({ state, rendered }) {
@@ -148,6 +155,21 @@ export default class CollectionLayout extends TemplateBasedLayout {
       const key = this.options.itemType === 'product' ? value.product_id : value;
       return { element, key, value };
     });
+  }
+
+  _onClick(event) {
+    const element = event.target.closest(`[data-role="item"]`);
+    if (!element) {
+      return;
+    }
+    const value = element[VALUE];
+    const { session } = this._view._state;
+    this._view._events.emit('click', { session, value, element });
+  }
+
+  destroy() {
+    this._view = undefined;
+    super.destroy();
   }
 
 }

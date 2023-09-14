@@ -24,7 +24,7 @@ function ready(layout, state) {
 
 function carousel(layout, state, content) {
   const { className, templates } = layout;
-  return `<div class="${className}__control-previous">${templates.previous(layout, state)}</div><div class="${className}__viewport">${content}</div><div class="${className}__control-next">${templates.next(layout, state)}</div>`;
+  return `<div class="${className}__control-previous" data-role="previous">${templates.previous(layout, state)}</div><div class="${className}__viewport">${content}</div><div class="${className}__control-next" data-role="next">${templates.next(layout, state)}</div>`;
 }
 
 function chevron(layout) {
@@ -55,11 +55,6 @@ export default class CarouselLayout extends CollectionLayout {
     window.addEventListener('resize', this.syncSize = this.syncSize.bind(this));
     this._page = 0;
     this._unsubscribes = [];
-  }
-
-  initialize(view) {
-    const { proxyElement } = this._view = view;
-    this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
   }
 
   _render(element, states, controls) {
@@ -123,20 +118,21 @@ export default class CarouselLayout extends CollectionLayout {
   }
 
   _onClick(event) {
-    for (let element = event.target; element; element = element.parentElement) {
-      if (element.classList.contains(`${this.className}__control-previous`)) {
-        this.previous();
-        return;
-      } else if (element.classList.contains(`${this.className}__control-next`)) {
-        this.next();
-        return;
-      }
+    super._onClick(event);
+    const element = event.target;
+    if (element.closest(`[data-role="previous"]`)) {
+      this.previous();
+      return;
+    }
+    if (element.closest(`[data-role="next"]`)) {
+      this.next();
+      return;
     }
   }
 
   destroy() {
     window.removeEventListener('resize', this.syncSize);
-    this._view = undefined;
+    super.destroy();
   }
 
 }

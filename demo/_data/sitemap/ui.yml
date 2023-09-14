@@ -25,6 +25,8 @@ sections:
     path: /explore/lorem-server
   - title: Lorem (client)
     path: /explore/lorem-client
+  - title: Linkless
+    path: /explore/linkless
 - title: Search
   path: /search
   pages:

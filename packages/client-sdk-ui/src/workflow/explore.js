@@ -25,6 +25,7 @@ export default class Explore extends Workflow {
     this._productId = undefined;
     this._linkFn = undefined;
     this._tracker = new Tracker(this._hub, this._views.get(ROLE.RELATED_QUESTIONS));
+    this._unsubscribes.push(this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleQuestionClick(event)));
   }
 
   get tracker() {
@@ -40,8 +41,8 @@ export default class Explore extends Workflow {
   }
 
   useLink(fn) {
-    if (typeof fn !== 'function') {
-      throw new Error('useLink(fn) expects fn to be a function');
+    if (typeof fn !== 'function' && fn !== false) {
+      throw new Error('useLink(fn) expects fn to be a function or false');
     }
     this._linkFn = fn;
     return this;
@@ -75,7 +76,6 @@ export default class Explore extends Workflow {
     return this;
   }
 
-  // TODO: wire into data actor
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     let { value } = data;
@@ -91,6 +91,10 @@ export default class Explore extends Workflow {
         related_questions,
       },
     };
+  }
+
+  _handleQuestionClick({ value: question, ...event }) {
+    this._events.emit('select', Object.freeze({ ...event, question }));
   }
 
   // tracker //
