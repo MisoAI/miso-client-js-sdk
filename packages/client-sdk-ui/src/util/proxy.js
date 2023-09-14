@@ -30,7 +30,7 @@ export default class ProxyElement {
     if (element) {
       element.removeEventListener(event, handler);
     }
-    removeItem(this._handlers, handler);
+    removeItem(this._handlers, en => en.handler === handler);
   }
 
   _onElementUpdated(handler) {
