@@ -1,0 +1,102 @@
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  background-color: #fff;
+  font-size: 16px;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  min-width: 300px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 4.5rem;
+}
+* {
+  box-sizing: border-box;
+}
+img {
+  max-width: 100%;
+  border-style: none;
+  height: auto;
+}
+button {
+  line-height: 1.15;
+  margin: 0;
+  text-transform: none;
+  overflow: visible;
+  -webkit-appearance: button;
+  user-select: none;
+  cursor: pointer;
+}
+body, button, input, optgroup, select, textarea {
+  font-family: "Inter", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+code, pre {
+  -webkit-font-smoothing: auto;
+}
+code, hr {
+  background-color: #f5f5f5;
+}
+.input {
+  max-width: 100%;
+  width: 100%;
+  -webkit-appearance: none;
+  -webkit-box-align: center;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: none !important;
+  outline: none !important;
+  display: inline-flex;
+  font-size: 1rem;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  position: relative;
+  vertical-align: top;
+}
+.input::placeholder {
+  color: #a6a5bb;
+}
+h1 {
+  font-size: 2rem;
+  margin: 1.5rem 0;
+}
+h2 {
+  font-size: 1.75rem;
+  margin: 1.25rem 0;
+}
+h4 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+}
+p {
+  margin: 1.5rem 0;
+}
+
+section.article,
+section.related-questions {
+  max-width: 43.25rem;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+.image-container {
+  margin-top: 2.5rem;
+  margin-bottom: 4.5rem;
+  text-align: center;
+}
+miso-explore h2 {
+  margin-bottom: 0.5rem;
+}
+miso-explore ul {
+  margin-top: 0.5rem;
+}

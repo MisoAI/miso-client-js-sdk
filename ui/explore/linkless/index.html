@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Overview</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/" />
-<meta name="description" content="UI plugin overview" />
+<title>Miso SDK for JavaScript - UI - Linkless</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/explore/linkless/" />
+<meta name="description" content="Practices to handle question selection without links" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Overview" />
-<meta property="og:description" content="UI plugin overview" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Linkless" />
+<meta property="og:description" content="Practices to handle question selection without links" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/explore/linkless/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Overview">
-<meta name="twitter:description" content="UI plugin overview">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Linkless">
+<meta name="twitter:description" content="Practices to handle question selection without links">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/explore/linkless/">
 
 
 
@@ -90,7 +90,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active ">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
@@ -121,7 +121,7 @@
             <a href="/miso-client-js-sdk/ui/explore/quick-start/">Quick start</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/explore/workflow/">Workflow</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/ui/explore/linkless/">Linkless</a>
           </li></ul>
       </div>
@@ -167,46 +167,20 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>UI extension for Miso client SDK</h1><hr>
+          <h1>Explore UI - Linkless</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso client SDK comes with a built-in UI extension to let you quickly integrate Miso API results into your site.</p>
-<h3>Table of Content</h3>
-<div class="chapter-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4 "><h5 class="title mb-2">
-        Overview
-      </h5>
-      <div>
-        <ul class="page-list list-unstyled ps-3"><li class="page ">
-            <div>
-              <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
-            </div><p class="mb-0 ps-3">
-              How to setup the UI plugin.
-            </p></li></ul>
-      </div></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/ask/">Ask</a>
-      </h5><p class="mb-0">
-        UI for Miso ask API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/explore/">Explore</a>
-      </h5><p class="mb-0">
-        UI for Miso related questions API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
-      </h5><p class="mb-0">
-        UI for Miso recommendation
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/search/">Search</a>
-      </h5><p class="mb-0">
-        UI for Miso search
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/element/">Elements</a>
-      </h5><p class="mb-0">
-        Miso custom elements
-      </p></li></ul>
-</div>
+          <p>In this section, based on the previous <a href="/miso-client-js-sdk/ui/explore/quick-start/" target="_blank" rel="noopener">quick start</a> example, we will handle question selection without using links.</p>
+<p>To do so, we need to:</p>
+<ol>
+<li>Turn off link mapping function.</li>
+<li>Listen to <code>select</code> event of the workflow to receive user selection.</li>
+<li>Track <code>click</code> event manually, if necessary.</li>
+</ol>
+<h3 id="implementation" tabindex="-1">Implementation</h3>
+<pre class="language-diff-js"><code class="language-diff-js"><span class="token unchanged language-js"><span class="token prefix unchanged"> </span>   <span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix unchanged"> </span>   misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br><span class="token prefix unchanged"> </span>     <span class="token comment">// turn on the UI plugin</span><br><span class="token prefix unchanged"> </span>     MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'std:ui'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></span><br><span class="token unchanged language-js"><span class="token prefix unchanged"> </span>     <span class="token comment">// create a Miso client instance to enable explore workflow</span><br><span class="token prefix unchanged"> </span>     <span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>apiKey<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix unchanged"> </span>     <span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explore<span class="token punctuation">;</span><br></span><br><span class="token unchanged language-js"><span class="token prefix unchanged"> </span>     <span class="token comment">// tell the workflow which article you want to generate questions against</span><br><span class="token prefix unchanged"> </span>     workflow<span class="token punctuation">.</span>product_id <span class="token operator">=</span> <span class="token string">'product_id_of_the_article'</span><span class="token punctuation">;</span><br></span><br><span class="token deleted-sign deleted language-js"><span class="token prefix deleted">-</span>     <span class="token comment">// tell the workflow how to get to the answers page given a question</span><br><span class="token prefix deleted">-</span>     workflow<span class="token punctuation">.</span><span class="token function">useLink</span><span class="token punctuation">(</span><span class="token parameter">question</span> <span class="token operator">=></span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/answers?q=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">encodeURIComponent</span><span class="token punctuation">(</span>question<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></span><span class="token inserted-sign inserted language-js"><span class="token prefix inserted">+</span>     <span class="token comment">// omit link mapping, so list items are generated without links</span><br><span class="token prefix inserted">+</span>     workflow<span class="token punctuation">.</span><span class="token function">useLink</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix inserted">+</span> <br><span class="token prefix inserted">+</span>     <span class="token comment">// listen to select event</span><br><span class="token prefix inserted">+</span>     workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'select'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> question <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br><span class="token prefix inserted">+</span>       <span class="token comment">// do something with the question</span><br><span class="token prefix inserted">+</span>       <span class="token keyword">const</span> <span class="token punctuation">{</span> text <span class="token punctuation">}</span> <span class="token operator">=</span> question<span class="token punctuation">;</span><br><span class="token prefix inserted">+</span>       <span class="token comment">// ...</span><br><span class="token prefix inserted">+</span>       workflow<span class="token punctuation">.</span>tracker<span class="token punctuation">.</span><span class="token function">click</span><span class="token punctuation">(</span><span class="token punctuation">[</span> text <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// track click event manually</span><br><span class="token prefix inserted">+</span>     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></span><br><span class="token unchanged language-js"><span class="token prefix unchanged"> </span>     <span class="token comment">// kick off the workflow</span><br><span class="token prefix unchanged"> </span>     workflow<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix unchanged"> </span>   <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

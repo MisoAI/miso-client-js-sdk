@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Overview</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/" />
-<meta name="description" content="UI plugin overview" />
+<title>Miso SDK for JavaScript - UI - Workflow</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/explore/workflow/" />
+<meta name="description" content="Explore workflow API" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Overview" />
-<meta property="og:description" content="UI plugin overview" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Workflow" />
+<meta property="og:description" content="Explore workflow API" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/explore/workflow/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Overview">
-<meta name="twitter:description" content="UI plugin overview">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Workflow">
+<meta name="twitter:description" content="Explore workflow API">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/explore/workflow/">
 
 
 
@@ -90,7 +90,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active ">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
@@ -119,7 +119,7 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/ui/explore/quick-start/">Quick start</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/ui/explore/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/explore/linkless/">Linkless</a>
@@ -167,46 +167,40 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>UI extension for Miso client SDK</h1><hr>
+          <h1>Explore - workflow</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso client SDK comes with a built-in UI extension to let you quickly integrate Miso API results into your site.</p>
-<h3>Table of Content</h3>
-<div class="chapter-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4 "><h5 class="title mb-2">
-        Overview
-      </h5>
-      <div>
-        <ul class="page-list list-unstyled ps-3"><li class="page ">
-            <div>
-              <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
-            </div><p class="mb-0 ps-3">
-              How to setup the UI plugin.
-            </p></li></ul>
-      </div></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/ask/">Ask</a>
-      </h5><p class="mb-0">
-        UI for Miso ask API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/explore/">Explore</a>
-      </h5><p class="mb-0">
-        UI for Miso related questions API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
-      </h5><p class="mb-0">
-        UI for Miso recommendation
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/search/">Search</a>
-      </h5><p class="mb-0">
-        UI for Miso search
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/element/">Elements</a>
-      </h5><p class="mb-0">
-        Miso custom elements
-      </p></li></ul>
-</div>
+          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display. Use <code>explore</code> workflow to work with Miso <a href="/miso-client-js-sdk/sdk/ask/related_questions/" target="_blank" rel="noopener">ask/related_questions</a> API, which allows you:</p>
+<ul>
+<li>Specify product ID to generate questions against.</li>
+<li>Specify URL mapping to link questions to answers page.</li>
+<li>Configure API payload.</li>
+</ul>
+<h3 id="access-workflow" tabindex="-1">Access workflow</h3>
+<p>You can access the workflow as the following:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explore<span class="token punctuation">;</span></code></pre>
+<h3 id="specify-product-id" tabindex="-1">Specify product ID</h3>
+<p>You need to supply a <code>product_id</code> to the API to generate questions against it. You can do it as the following:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span>product_id <span class="token operator">=</span> <span class="token string">'product_id_of_the_article'</span><span class="token punctuation">;</span></code></pre>
+<h3 id="specify-url-mapping" tabindex="-1">Specify URL mapping</h3>
+<p>When the API returns a list of questions, the workflow needs to know how to get to the answers page given a question. Suppose you have a page that handles user questions with a URL pattern <code>/answers?q=...</code>, you can specify it as the following:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLink</span><span class="token punctuation">(</span><span class="token parameter">question</span> <span class="token operator">=></span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/answers?q=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">encodeURIComponent</span><span class="token punctuation">(</span>question<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>To generate items without a link, pass in <code>false</code>:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLink</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="configure-api" tabindex="-1">Configure API</h3>
+<p>You can configure the default search API payload:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token string">'related_questions'</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>For example, to make the API return <code>8</code> products instead of the default value:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token string">'related_questions'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">8</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Given a product ID <code>aaaa0000</code>, the API payload will be:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"product_id"</span><span class="token operator">:</span> <span class="token string">"aaaa0000"</span><span class="token punctuation">,</span><br>  <span class="token property">"rows"</span><span class="token operator">:</span> <span class="token number">8</span><br><span class="token punctuation">}</span></code></pre>
+<h3 id="start-workflow" tabindex="-1">Start workflow</h3>
+<p>You can start the workflow by calling the <code>start()</code> method:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="events" tabindex="-1">Events</h3>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'select'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> question<span class="token punctuation">,</span> element <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When user select a question in the question list.</span><br>  <span class="token keyword">const</span> <span class="token punctuation">{</span> text <span class="token punctuation">}</span> <span class="token operator">=</span> question<span class="token punctuation">;</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

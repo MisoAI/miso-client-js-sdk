@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - SDK - User to Trending</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/sdk/recommendation/user_to_trending/" />
-<meta name="description" content="Personalized trending product recommendation." />
+<title>Miso SDK for JavaScript - SDK - Related questions</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/sdk/ask/related_questions/" />
+<meta name="description" content="Generate related questions against an article." />
 
-<meta property="og:title" content="Miso SDK for JavaScript - SDK - User to Trending" />
-<meta property="og:description" content="Personalized trending product recommendation." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/sdk/recommendation/user_to_trending/" />
+<meta property="og:title" content="Miso SDK for JavaScript - SDK - Related questions" />
+<meta property="og:description" content="Generate related questions against an article." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/sdk/ask/related_questions/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - SDK - User to Trending">
-<meta name="twitter:description" content="Personalized trending product recommendation.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/sdk/recommendation/user_to_trending/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - SDK - Related questions">
+<meta name="twitter:description" content="Generate related questions against an article.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/sdk/ask/related_questions/">
 
 
 
@@ -108,7 +108,7 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/ask/questions/">Questions</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/sdk/ask/related_questions/">Related questions</a>
           </li></ul>
       </div>
@@ -128,7 +128,7 @@
             <a href="/miso-client-js-sdk/sdk/recommendation/user_to_products/">User to Products</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/user_to_attributes/">User to Attributes</a>
-          </li><li class="page active ">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/user_to_trending/">User to Trending</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/recommendation/product_to_products/">Product to Products</a>
@@ -152,13 +152,13 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>User to trending</h1><hr>
-          <p>Returns the products that are currently trending and are most likely to be of interest to this user.</p>
+          <h1>Related questions</h1><hr>
+          <p>Generate related questions against an article.</p>
         </div>
         
         <div class="content ps-lg-4">
           <h4 id="syntax" tabindex="-1">Syntax</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToTrending</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="payload" tabindex="-1">Payload</h4>
 <p>The <code>payload</code> parameter is an object with the following properties:</p>
 <table class="table">
@@ -170,86 +170,12 @@
     </tr>
   </thead>
   <tbody><tr>
-      <td><code>engine_id</code></td>
+      <td><code>product_id</code></td>
       <td>string</td>
-      <td>The engine you want to get results from. If not specified, the default engine will be used.
-</td>
-    </tr><tr>
-      <td><code>user_id</code></td>
-      <td>string</td>
-      <td>The user who made the query and for whom Miso will personalize the results. Either <code>user_id</code> or <code>anonymous_id</code> needs to be specified.
-</td>
-    </tr><tr>
-      <td><code>anonymous_id</code></td>
-      <td>string</td>
-      <td>The anonymous visitor who made the query and for whom Miso will personalize the results. Either <code>user_id</code> or <code>anonymous_id</code> needs to be specified for personalization to work.
-</td>
-    </tr><tr>
-      <td><code>user_hash</code></td>
-      <td>string</td>
-      <td>The hash of <code>user_id</code> (or <code>anonymous_id</code>) encrypted by your <a href="https://api.askmiso.com/#section/Authentication/Secret%20API%20Key" target="_blank" rel="noopener">Secret API Key</a>.
-</td>
-    </tr><tr>
-      <td><code>fq</code></td>
-      <td>string</td>
-      <td>A query string in Solr syntax which restricts the superset of products to return, without influencing the overall ranking.
-</td>
-    </tr><tr>
-      <td><code>fl</code></td>
-      <td>array of strings</td>
-      <td>List of fields to retrieve. The field <code>product_id</code> is always included.
-When not specified, only <code>product_id</code> will be retrieved.
-You can retrieve all fields with <code>[&quot;*&quot;]</code>. Default: <code>[&quot;*&quot;]</code>.
-</td>
-    </tr><tr>
-      <td><code>type</code></td>
-      <td>string</td>
-      <td>Specify the type of product to return.
-</td>
-    </tr><tr>
-      <td><code>pagination_id</code></td>
-      <td>string</td>
-      <td>A unique identifier to enable pagination in Recommendation APIs.
-To enable pagination, you generate a <code>pagination_id</code> and set it in the first and subsequent requests in the same browsing session where you want to enable pagination.
-</td>
-    </tr><tr>
-      <td><code>start</code></td>
-      <td>integer</td>
-      <td>The offset of records to retrieve. You can only set it when <code>pagination_id</code> is specified.
-Default: <code>0</code>.
-</td>
-    </tr><tr>
-      <td><code>rows</code></td>
-      <td>integer</td>
-      <td>Number of records to retrieve.
-Default: <code>5</code>.
+      <td>The <code>product_id</code> of the article to generate questions against.
 </td>
     </tr></tbody>
 </table>
-<h4 id="options" tabindex="-1">Options</h4>
-<p>The <code>options</code> parameter is an optional object with the following properties:</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Type</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td><code>timeout</code></td>
-      <td>integer</td>
-      <td>Request timeout in milliseconds.
-</td>
-    </tr><tr>
-      <td><code>bulk</code></td>
-      <td>boolean</td>
-      <td>Bulked API requests froms the same event loop is packed into a single HTTP request.
-Default: <code>false</code>.
-</td>
-    </tr></tbody>
-</table>
-<p>See the <a href="/miso-client-js-sdk/sdk/request-options/" target="_blank" rel="noopener">request options page</a> for more details.</p>
 <h4 id="return-value" tabindex="-1">Return value</h4>
 <p>A <code>Promise</code> of response object with the following properties:</p>
 <table class="table">
@@ -261,16 +187,14 @@ Default: <code>false</code>.
     </tr>
   </thead>
   <tbody><tr>
-      <td><code>products</code></td>
-      <td>array of objects</td>
-      <td>An array of Product records. Use <code>fl</code> parameter to specify what fields are returned.
+      <td><code>related_questions</code></td>
+      <td>array of strings</td>
+      <td>An array of questions.
 </td>
     </tr></tbody>
 </table>
 <h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToTrending</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h4 id="learn-more" tabindex="-1">Learn more</h4>
-<p>For advanced usage, see <a href="https://api.askmiso.com/#tag/Recommendation-APIs/operation/trending_items_v1_recommendation_user_to_trending_post" target="_blank" rel="noopener">REST API</a>.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'...'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> related_questions <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - UI - Overview</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/" />
-<meta name="description" content="UI plugin overview" />
+<title>Miso SDK for JavaScript - UI - Take question from URL</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/ask/question-from-url/" />
+<meta name="description" content="Practices to take user question from URL parameters" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - UI - Overview" />
-<meta property="og:description" content="UI plugin overview" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/" />
+<meta property="og:title" content="Miso SDK for JavaScript - UI - Take question from URL" />
+<meta property="og:description" content="Practices to take user question from URL parameters" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/ask/question-from-url/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Overview">
-<meta name="twitter:description" content="UI plugin overview">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - UI - Take question from URL">
+<meta name="twitter:description" content="Practices to take user question from URL parameters">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/ask/question-from-url/">
 
 
 
@@ -90,7 +90,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active ">
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/ui/">Overview</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
@@ -106,7 +106,7 @@
             <a href="/miso-client-js-sdk/ui/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/elements/">Elements</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/ui/ask/question-from-url/">Take question from URL</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/ui/ask/follow-up/">Follow-up questions</a>
@@ -167,46 +167,25 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>UI extension for Miso client SDK</h1><hr>
+          <h1>Ask UI - Take the question from URL</h1><hr>
           
         </div>
         
         <div class="content ps-lg-4">
-          <p>Miso client SDK comes with a built-in UI extension to let you quickly integrate Miso API results into your site.</p>
-<h3>Table of Content</h3>
-<div class="chapter-toc">
-  <ul class="section-list list-unstyled"><li class="section mb-4 "><h5 class="title mb-2">
-        Overview
-      </h5>
-      <div>
-        <ul class="page-list list-unstyled ps-3"><li class="page ">
-            <div>
-              <a href="/miso-client-js-sdk/ui/setup/">Setup</a>
-            </div><p class="mb-0 ps-3">
-              How to setup the UI plugin.
-            </p></li></ul>
-      </div></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/ask/">Ask</a>
-      </h5><p class="mb-0">
-        UI for Miso ask API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/explore/">Explore</a>
-      </h5><p class="mb-0">
-        UI for Miso related questions API
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/recommendation/">Recommendation</a>
-      </h5><p class="mb-0">
-        UI for Miso recommendation
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/search/">Search</a>
-      </h5><p class="mb-0">
-        UI for Miso search
-      </p></li><li class="section mb-4 "><h5 class="title mb-2">
-        <a href="/miso-client-js-sdk/ui/element/">Elements</a>
-      </h5><p class="mb-0">
-        Miso custom elements
-      </p></li></ul>
+          <p>In this section, based on the previous <a href="/miso-client-js-sdk/ui/ask/quick-start/" target="_blank" rel="noopener">quick start</a> example, we will add the function to take user question from URL parameters.</p>
+<p>To do so, we simply need to:</p>
+<ol>
+<li>Get the question from URL parameters, if any</li>
+<li>If there is a question, invoke query method of the workflow</li>
+</ol>
+<h4 id="live-demo" tabindex="-1">Live demo</h4>
+<div class="my-4">
+  <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.8/ui/ask/question-from-url" role="button" target="_blank" rel="noopener">
+    <img alt="Open in StackBlitz" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg">
+  </a>
 </div>
+<h3 id="implementation" tabindex="-1">Implementation</h3>
+<pre class="language-diff-js"><code class="language-diff-js"><span class="token unchanged language-js"><span class="token prefix unchanged"> </span>   <span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix unchanged"> </span>   misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br><span class="token prefix unchanged"> </span>     <span class="token comment">// turn on the UI plugin</span><br><span class="token prefix unchanged"> </span>     MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'std:ui'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix unchanged"> </span>     <span class="token comment">// create a Miso client instance to enable ask workflow</span><br></span><span class="token deleted-sign deleted language-js"><span class="token prefix deleted">-</span>     <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>apiKey<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></span><span class="token inserted-sign inserted language-js"><span class="token prefix inserted">+</span>     <span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>apiKey<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br></span><br><span class="token inserted-sign inserted language-js"><span class="token prefix inserted">+</span>     <span class="token keyword">const</span> question <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">URLSearchParams</span><span class="token punctuation">(</span>window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>search<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'q'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix inserted">+</span>     <span class="token keyword">if</span> <span class="token punctuation">(</span>question<span class="token punctuation">)</span> <span class="token punctuation">{</span><br><span class="token prefix inserted">+</span>       client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">q</span><span class="token operator">:</span> question <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token prefix inserted">+</span>     <span class="token punctuation">}</span><br></span><span class="token unchanged language-js"><span class="token prefix unchanged"> </span>   <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

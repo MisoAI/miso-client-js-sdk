@@ -1,5 +1,6 @@
 const paramsFromUrl = Object.fromEntries(new URLSearchParams(window.location.search).entries());
-const apiParams = normalizeApiParams(paramsFromUrl);
+const apiParams = getApiParams(paramsFromUrl);
+const envParams = getEnvParams(paramsFromUrl);
 
 const elements = {
   login: document.getElementById('login'),
@@ -35,7 +36,8 @@ async function start(apiKey) {
   }
   MisoClient.plugins.use('std:ui');
 
-  if (apiKey.toLowerCase() === 'lorem') {
+  const lorem = apiKey.toLowerCase() === 'lorem';
+  if (lorem) {
     await MisoClient.plugins.install('std:lorem');
   }
 
@@ -44,8 +46,8 @@ async function start(apiKey) {
   const client = new MisoClient(apiKey);
   const rootWorkflow = client.ui.ask;
 
-  setup(rootWorkflow);
-  client.ui.asks.on('create', setup);
+  setup(rootWorkflow, { lorem });
+  client.ui.asks.on('create', workflow => setup(workflow, { lorem }));
 
   // follow-up questions:
   // if user starts over, clean up current follow-up questions
@@ -69,9 +71,26 @@ async function start(apiKey) {
   }
 }
 
-function setup(workflow) {
+function setup(workflow, { lorem }) {
   // API parameters (from URL)
   workflow.useApi('questions', apiParams);
+
+  if (lorem) {
+    workflow.useDataProcessor(data => {
+      const { value } = data;
+      if (!value) {
+        return data;
+      }
+      return {
+        ...data,
+        value: {
+          ...value,
+          sources: value.sources.map(mapLoremSource),
+          related_resources: value.related_resources.map(mapLoremSource),
+        },
+      };
+    });
+  }
 
   // follow-up questions:
   // when a answer is fully populated, insert a new section for the follow-up question
@@ -115,7 +134,7 @@ function render({ parentQuestionId }) {
 }
 
 // helpers //
-function normalizeApiParams({ yearly_decay, fq } = {}) {
+function getApiParams({ yearly_decay, fq } = {}) {
   yearly_decay = normalizeYearlyDecay(yearly_decay);
   const normalized = {};
   if (yearly_decay) {
@@ -136,6 +155,22 @@ function normalizeYearlyDecay(value) {
     return undefined;
   }
   return value;
+}
+
+function getEnvParams({ api_key, debug }) {
+  return debug !== undefined ? { api_key, debug } : { api_key };
+}
+
+function mapLoremSource(source) {
+  const { product_id } = source;
+  return {
+    ...source,
+    url: `../explore/?${toSearchString({ ...envParams, ...apiParams, article: product_id })}`
+  }
+}
+
+function toSearchString(params) {
+  return new URLSearchParams(params).toString(); // TODO: we want '&debug' rather than '&debug='
 }
 
 function displayVersionInfo(MisoClient) {

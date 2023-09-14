@@ -3,9 +3,9 @@ const keyInput = document.querySelector('#key-input');
 const mainInput = document.querySelector('miso-ask miso-query input');
 
 const paramsFromUrl = Object.fromEntries(new URLSearchParams(window.location.search).entries());
-const apiParams = normalizeApiParams(paramsFromUrl);
+const apiParams = getApiParams(paramsFromUrl);
 
-function normalizeApiParams({ yearly_decay, fq } = {}) {
+function getApiParams({ yearly_decay, fq } = {}) {
   yearly_decay = normalizeYearlyDecay(yearly_decay);
   const normalized = {};
   if (yearly_decay) {

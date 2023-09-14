@@ -108,6 +108,8 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/sdk/ask/questions/">Questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/sdk/ask/related_questions/">Related questions</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -278,7 +280,7 @@ Default: <code>0</code>.
 <h4 id="examples" tabindex="-1">Examples</h4>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">q</span><span class="token operator">:</span> <span class="token string">'doge'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>search<span class="token punctuation">.</span><span class="token function">search</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="learn-more" tabindex="-1">Learn more</h4>
-<p>For advanced usage, see <a href="https://api.askmiso.com/#operation/search_v1_search_search_post" target="_blank" rel="noopener">REST API</a>.</p>
+<p>For advanced usage, see <a href="https://api.askmiso.com/#tag/Search-APIs/operation/search_v1_search_search_post" target="_blank" rel="noopener">REST API</a>.</p>
 
         </div>
       </main>
