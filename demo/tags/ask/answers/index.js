@@ -134,7 +134,7 @@ function render({ parentQuestionId }) {
 }
 
 // helpers //
-function getApiParams({ yearly_decay = 0.9, fq } = {}) {
+function getApiParams({ yearly_decay, fq } = {}) {
   yearly_decay = normalizeYearlyDecay(yearly_decay);
   const normalized = {};
   if (yearly_decay) {
