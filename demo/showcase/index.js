@@ -5,7 +5,7 @@ const mainInput = document.querySelector('miso-ask miso-query input');
 const paramsFromUrl = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 const apiParams = getApiParams(paramsFromUrl);
 
-function getApiParams({ yearly_decay, fq } = {}) {
+function getApiParams({ yearly_decay = 0.9, fq } = {}) {
   yearly_decay = normalizeYearlyDecay(yearly_decay);
   const normalized = {};
   if (yearly_decay) {
