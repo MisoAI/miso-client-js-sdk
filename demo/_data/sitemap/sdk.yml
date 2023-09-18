@@ -21,6 +21,8 @@ sections:
     path: /setup/custom-header
   - title: Timeout
     path: /setup/timeout
+  - title: Detached
+    path: /setup/detached
 - title: Helpers
   path: /helpers
   pages:

@@ -5,8 +5,22 @@
   "main": "dist/cjs/index.js",
   "module": "src/index.js",
   "exports": {
-    "import": "./src/index.js",
-    "require": "./dist/cjs/index.js"
+    ".": {
+      "import": "./src/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./lite.js": {
+      "import": "./src/lite.js",
+      "require": "./dist/cjs/lite.js"
+    },
+    "./detached/index.js": {
+      "import": "./src/detached/index.js",
+      "require": "./dist/cjs/detached/index.js"
+    },
+    "./detached/lite.js": {
+      "import": "./src/detached/lite.js",
+      "require": "./dist/cjs/detached/lite.js"
+    }
   },
   "publishConfig": {
     "access": "public"
