@@ -20,13 +20,10 @@
     --miso-list-item-gap: 0.65rem;
     --miso-list-description-lines: 3;
   }
-  .miso-list__item-info-container {
-    position: relative;
-  }
   .miso-list__item-date {
-    position: absolute;
-    top: 0;
-    right: 0;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+    color: #777;
   }
 </style>
 <section>
@@ -69,7 +66,7 @@ misocmd.push(async () => {
   });
 });
 function renderSourceContent(layout, state, data) {
-  const { product_id, url, cover_image, title, created_at, snippet } = data;
+  const { url, cover_image, title, created_at, snippet } = data;
   return `
 <a class="miso-list__item-body" data-role="item" href="${url}" target="_blank" rel="noopener">
   <div class="miso-list__item-cover-image-container">
