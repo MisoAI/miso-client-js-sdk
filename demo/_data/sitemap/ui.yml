@@ -16,6 +16,8 @@ sections:
     path: /ask/custom-data
   - title: Process data
     path: /ask/process-data
+  - title: Customize element
+    path: /ask/customize-element
   - title: Error
     path: /ask/error
 - title: Explore
