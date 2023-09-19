@@ -43,7 +43,11 @@ async function start(apiKey) {
 
   displayVersionInfo(MisoClient);
 
-  const client = new MisoClient(apiKey);
+  const options = { apiKey };
+  if (envParams.api_host === 'staging') {
+    options.apiHost = 'https://ask-api.askmiso-staging.com/v1';
+  }
+  const client = new MisoClient(options);
   const rootWorkflow = client.ui.ask;
 
   setup(rootWorkflow, { lorem });
@@ -157,8 +161,17 @@ function normalizeYearlyDecay(value) {
   return value;
 }
 
-function getEnvParams({ api_key, debug }) {
-  return debug !== undefined ? { api_key, debug } : { api_key };
+function getEnvParams({ api_key, api_host, debug }) {
+  const params = {
+    api_key,
+  };
+  if (debug !== undefined) {
+    params.debug = debug;
+  }
+  if (api_host) {
+    params.api_host = api_host;
+  }
+  return params;
 }
 
 function mapLoremSource(source) {

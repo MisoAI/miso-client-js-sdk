@@ -21,7 +21,7 @@ function renderArticle({ authors, title, html }) {
 }
 
 async function start(product_id) {
-  const { debug, api_key } = paramsFromUrl;
+  const { debug, api_key, api_host } = envParams;
   const MisoClient = window.MisoClient;
 
   if (debug !== undefined) {
@@ -35,7 +35,11 @@ async function start(product_id) {
 
   //displayVersionInfo(MisoClient);
 
-  const client = new MisoClient(api_key);
+  const options = { apiKey: api_key };
+  if (api_host === 'staging') {
+    options.apiHost = 'https://ask-api.askmiso-staging.com/v1';
+  }
+  const client = new MisoClient(options);
   const workflow = client.ui.explore;
   workflow.productId = product_id;
   workflow.useLink(getLink);
@@ -66,10 +70,13 @@ function syncParamsToUrl(params) {
   return params;
 }
 
-function getEnvParams({ api_key, debug, yearly_decay, fq }) {
+function getEnvParams({ api_key, api_host, debug, yearly_decay, fq }) {
   const params = { api_key };
   if (debug !== undefined) {
     params.debug = debug;
+  }
+  if (api_host !== undefined) {
+    params.api_host = api_host;
   }
   if (yearly_decay !== undefined) {
     params.yearly_decay = yearly_decay;
