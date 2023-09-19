@@ -1,4 +1,4 @@
-import { Component, asArray } from '@miso.ai/commons';
+import { Component, asArray, trimObj } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor/index.js';
 import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
@@ -157,8 +157,11 @@ export default class Workflow extends Component {
   useApi(name, payload) {
     if (name === false) {
       this._data.source = false;
+    } else if (typeof name === 'object' && payload === undefined) {
+      payload = name;
+      name = undefined;
     } else {
-      this._apiParams = mergeApiParams(this._defaultApiParams, { name, payload });
+      this._apiParams = mergeApiParams(this._defaultApiParams, trimObj({ name, payload }));
     }
     return this;
   }
