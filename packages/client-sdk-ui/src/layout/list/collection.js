@@ -1,7 +1,7 @@
 import { defineValues } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
-import { product, question } from '../templates.js';
+import { product, article, question } from '../templates.js';
 
 const VALUE = Symbol.for('miso.value');
 
@@ -26,13 +26,14 @@ function ready(layout, state) {
 
 function list(layout, state, values) {
   const { className, templates, options } = layout;
+  const listTag = templates.ordered ? 'ol' : 'ul';
   // TODO: support separator?
-  return `<ul class="${className}__list" data-item-type="${options.itemType}">${templates.items(layout, state, values)}</ul>`;
+  return `<${listTag} class="${className}__list" data-item-type="${options.itemType}">${templates.items(layout, state, values)}</${listTag}>`;
 }
 
-function items(layout, state, values) {
+function items(layout, state, values, { offset = 0 } = {}) {
   const { templates } = layout;
-  let index = 0;
+  let index = offset;
   return values.map(value => templates.item(layout, state, value, index++)).join('');
 }
 
@@ -47,11 +48,13 @@ function item(layout, state, value, index) {
 
 const DEFAULT_TEMPLATES = Object.freeze({
   product,
+  article,
   question,
   root,
   [STATUS.READY]: ready,
   empty: () => ``,
   list,
+  ordered: false,
   items,
   item,
 });
@@ -108,8 +111,9 @@ export default class CollectionLayout extends TemplateBasedLayout {
 
   _html(state, rendered, incremental) {
     if (incremental) {
-      const values = state.value.slice(rendered.value.length);
-      return values.length > 0 ? this.templates.items(this, state, values) : '';
+      const offset = rendered.value.length;
+      const values = state.value.slice(offset);
+      return values.length > 0 ? this.templates.items(this, state, values, { offset }) : '';
     } else {
       return this.templates.root(this, state);
     }

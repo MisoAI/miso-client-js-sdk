@@ -13,27 +13,69 @@ export function unimplemented(name) {
   }
 }
 
-export function product(layout, state, data) {
+export function product(layout, state, data, meta) {
+  const { templates } = layout;
   const [openTag, closeTag] = renderTagPair(layout, data);
-  const imgBox = renderImgBox(layout, data);
-  const infoBox = renderInfoBox(layout, data);
-  return `${openTag}${imgBox}${infoBox}${closeTag}`;
+  return [
+    openTag,
+    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
+    (templates.imageBlock || renderImageBlock)(layout, data, meta),
+    (templates.infoBlock || productInfoBlock)(layout, data, meta),
+    closeTag,
+  ].join('');
 }
 
 export function question(layout, state, data) {
   const [openTag, closeTag] = renderTagPair(layout, data);
-  return `${openTag}${data.text || data}${closeTag}`;
+  return `${openTag}${data.value || data.text || data}${closeTag}`;
 }
 
-/*
-export function source(layout, state, data, { index }) {
+export function article(layout, state, data, meta) {
+  const { templates } = layout;
   const [openTag, closeTag] = renderTagPair(layout, data);
-  const imgBox = renderImgBox(layout, data);
-  const infoBox = renderInfoBox(layout, data);
-  return `${openTag}${imgBox}${infoBox}${closeTag}`;
+  return [
+    openTag,
+    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
+    (templates.imageBlock || renderImageBlock)(layout, data, meta),
+    (templates.infoBlock || articleInfoBlock)(layout, data, meta),
+    closeTag,
+  ].join('');
 }
-*/
 
+function productInfoBlock({ className }, { title, snippet, description, sale_price, original_price }) {
+  let content = '';
+  if (title) {
+    content += `<div class="${className}__item-title">${title}</div>`;
+  }
+  if (description) {
+    content += `<div class="${className}__item-desc">${description}</div>`;
+  }
+  const price = sale_price || original_price;
+  if (price) {
+    content += `<hr><div class="${className}__item-price">${price}</div>`;
+    // TODO: enhance this
+  }
+  return `<div class="${className}__item-info-container">${content}</div>`;
+}
+
+function articleInfoBlock({ className, templates }, { title, snippet, description, created_at, updated_at, published_at }) {
+  const date = updated_at || published_at || created_at;
+  let content = '';
+  if (title) {
+    content += `<div class="${className}__item-title">${title}</div>`;
+  }
+  if (date) {
+    content += `<div class="${className}__item-date">${(templates.date || renderDate)(date)}</div>`;
+  }
+  if (snippet) {
+    content += `<div class="${className}__item-snippet">${snippet}</div>`;
+  } else if (description) {
+    content += `<div class="${className}__item-desc">${description}</div>`;
+  }
+  return `<div class="${className}__item-info-container">${content}</div>`;
+}
+
+// helpers //
 function renderTagPair({ className }, { product_id, url }) {
   const tag = url ? 'a' : 'div';
   const urlAttrs = url ? `href="${url}" target="_blank" rel="noopener"` : '';
@@ -41,7 +83,7 @@ function renderTagPair({ className }, { product_id, url }) {
   return [`<${tag} class="${className}__item-body" data-role="item" ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
 }
 
-function renderImgBox({ className }, { cover_image }) {
+function renderImageBlock({ className }, { cover_image }) {
   if (!cover_image) {
     return '';
   }
@@ -49,20 +91,10 @@ function renderImgBox({ className }, { cover_image }) {
   return `<div class="${className}__item-cover-image-container">${img}</div>`;
 }
 
-function renderInfoBox({ className }, { title, snippet, description, sale_price, original_price }) {
-  let infoContent = '';
-  if (title) {
-    infoContent += `<div class="${className}__item-title">${title}</div>`;
-  }
-  if (snippet) {
-    infoContent += `<div class="${className}__item-snippet">${snippet}</div>`;
-  } else if (description) {
-    infoContent += `<div class="${className}__item-desc">${description}</div>`;
-  }
-  const price = sale_price || original_price;
-  if (price) {
-    infoContent += `<hr><div class="${className}__item-price">${price}</div>`;
-    // TODO: enhance this
-  }
-  return `<div class="${className}__item-info-container">${infoContent}</div>`;
+function renderIndexBlock({ className }, data, { index }) {
+  return `<div class="${className}__item-index">${index + 1}</div>`;
+}
+
+function renderDate(date) {
+  return new Date(date).toLocaleDateString();
 }

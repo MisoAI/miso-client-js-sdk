@@ -16,6 +16,7 @@
   // currency symbol for price properties
   --miso-currency-symbol: "$";
 
+  ol.miso-cards__list,
   ul.miso-cards__list {
     list-style: none;
     display: grid;
@@ -23,6 +24,9 @@
     gap: var(--miso-cards-item-gap);
     padding: 0;
     margin: 0;
+  }
+  ul li .miso-cards__item-index {
+    display: none;
   }
 
   li.miso-cards__item {
@@ -41,6 +45,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
     height: 100%;
     padding: 1rem;
     user-select: none;

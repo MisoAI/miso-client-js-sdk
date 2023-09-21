@@ -20,8 +20,8 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
   [ROLE.ANSWER]: TypewriterLayout.type,
   [ROLE.FEEDBACK]: FeedbackLayout.type,
-  [ROLE.SOURCES]: [ListLayout.type, { incremental: true, }],
-  [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, }],
+  [ROLE.SOURCES]: [ListLayout.type, { incremental: true, itemType: 'article', templates: { ordered: true } }],
+  [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, itemType: 'article' }],
   [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
 });
 
