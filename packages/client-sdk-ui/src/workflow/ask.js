@@ -10,8 +10,8 @@ const DEFAULT_API_PARAMS = Object.freeze({
   group: API.GROUP.ASK,
   name: API.NAME.QUESTIONS,
   payload: {
-    source_fl: ['cover_image', 'url'],
-    related_resource_fl: ['cover_image', 'url'],
+    source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
+    related_resource_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
   },
 });
 
