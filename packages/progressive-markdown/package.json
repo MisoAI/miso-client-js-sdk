@@ -34,5 +34,9 @@
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
     "unified": "^10.1.2"
+  },
+  "devDependencies": {
+    "rehype-minify-whitespace": "^5.0.1",
+    "remark-gfm": "^3.0.1"
   }
 }

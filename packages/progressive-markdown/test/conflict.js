@@ -1,10 +1,19 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
+import remarkGfm from 'remark-gfm';
+import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
 
 import { Query } from '../src/index.js';
 
+const QUERY_OPTIONS = Object.freeze({
+  parser: Object.freeze({
+    remark: [remarkGfm],
+    rehype: [rehypeMinifyWhitespace],
+  }),
+});
+
 test('conflict: interior', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('# Hello World');
   const { conflict: c1 } = query.update('# Herro');
@@ -16,7 +25,7 @@ test('conflict: interior', () => {
 });
 
 test('conflict: intermediate', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('# Hello World\n\n## Subtitle');
   const { conflict: c1 } = query.update('# Hello World\n\n## Other subtitle');
@@ -31,7 +40,7 @@ test('conflict: intermediate', () => {
 });
 
 test('conflict: intermediate', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('# Hello World\n\n## Subtitle');
   const { conflict: c1 } = query.update('# Hello World\n\n### Subtitle');
@@ -45,7 +54,7 @@ test('conflict: intermediate', () => {
 });
 
 test('conflict: intermediate', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('# Hello World\n\n## Subtitle');
   const { conflict: c1 } = query.update('# Hello World');
@@ -55,7 +64,7 @@ test('conflict: intermediate', () => {
 });
 
 test('conflict: empty -> empty', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('');
   const { conflict: c1 } = query.update('');
@@ -65,7 +74,7 @@ test('conflict: empty -> empty', () => {
 });
 
 test('conflict: empty -> some', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('');
   const { conflict: c1 } = query.update('# Hello World\n\n## Subtitle');
@@ -75,7 +84,7 @@ test('conflict: empty -> some', () => {
 });
 
 test('conflict: some -> empty', () => {
-  const query = new Query();
+  const query = new Query(QUERY_OPTIONS);
 
   const { conflict: c0 } = query.update('# Hello World\n\n## Subtitle');
   const { conflict: c1 } = query.update('');
