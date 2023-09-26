@@ -67,10 +67,10 @@
     color: #777;
   }
   ol li .miso-list__item-body {
-    padding-right: calc(2 * var(--miso-list-item-gap) + var(--miso-list-item-index-size));
+    padding-right: calc(2 * var(--miso-list-item-gap) + var(--miso-list-item-index-size)) !important;
   }
   ul li .miso-list__item-index {
-    display: none;
+    display: none !important;
   }
 
   .miso-list__item-cover-image-container {
