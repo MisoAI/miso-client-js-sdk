@@ -44,8 +44,8 @@ async function start(apiKey) {
   displayVersionInfo(MisoClient);
 
   const options = { apiKey };
-  if (envParams.api_host === 'staging') {
-    options.apiHost = 'https://ask-api.askmiso-staging.com/v1';
+  if (envParams.api_host) {
+    options.apiHost = `https://${envParams.api_host}/v1`;
   }
   const client = new MisoClient(options);
   const rootWorkflow = client.ui.ask;

@@ -36,8 +36,8 @@ async function start(product_id) {
   //displayVersionInfo(MisoClient);
 
   const options = { apiKey: api_key };
-  if (api_host === 'staging') {
-    options.apiHost = 'https://ask-api.askmiso-staging.com/v1';
+  if (api_host) {
+    options.apiHost = `https://${api_host}/v1`;
   }
   const client = new MisoClient(options);
   const workflow = client.ui.explore;
