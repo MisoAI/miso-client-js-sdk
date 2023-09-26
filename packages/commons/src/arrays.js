@@ -2,7 +2,14 @@
  * Remove the specified item from array.
  */
 export function removeItem(array, item) {
-  const i = typeof item === 'function' ? array.findIndex(item) : array.indexOf(item);
+  const i = array.indexOf(item);
+  if (i > -1) {
+    array.splice(i, 1);
+  }
+}
+
+export function findAndRemoveItem(array, test) {
+  const i = array.findIndex(test);
   if (i > -1) {
     array.splice(i, 1);
   }

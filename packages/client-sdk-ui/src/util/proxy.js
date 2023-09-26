@@ -1,4 +1,4 @@
-import { removeItem } from '@miso.ai/commons';
+import { removeItem, findAndRemoveItem } from '@miso.ai/commons';
 
 export default class ProxyElement {
 
@@ -30,7 +30,7 @@ export default class ProxyElement {
     if (element) {
       element.removeEventListener(event, handler);
     }
-    removeItem(this._handlers, en => en.handler === handler);
+    findAndRemoveItem(this._handlers, en => en.handler === handler);
   }
 
   _onElementUpdated(handler) {
