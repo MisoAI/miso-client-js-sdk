@@ -1,4 +1,7 @@
 .miso-markdown {
+  --miso-markdown-citation-link-size: 1.2em;
+  --miso-markdown-citation-link-color: #666;
+
   > * {
     margin-top: 0;
     margin-bottom: 1rem;
@@ -125,5 +128,24 @@
   p > img {
     display: block;
     margin: 0 auto;
+  }
+
+  .citition-link {
+    display: inline-block;
+    height: var(--miso-markdown-citation-link-size);
+    width: var(--miso-markdown-citation-link-size);
+    line-height: calc(var(--miso-markdown-citation-link-size) - 2px);
+    margin: 0 0.15em;
+    font-size: 0.875em;
+    text-align: center;
+    border-radius: 50%;
+    border: 1px solid var(--miso-markdown-citation-link-color);
+    color: var(--miso-markdown-citation-link-color);
+    text-decoration: none;
+
+    &:hover {
+      background-color: var(--miso-markdown-citation-link-color);
+      color: #fff;
+    }
   }
 }

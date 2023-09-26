@@ -2,11 +2,11 @@ import Query from './query.js';
 
 export default class Renderer {
 
-  constructor({ query, onRefChange, onDone, onDebug } = {}) {
+  constructor({ parser, compiler, query, onRefChange, onDone, onDebug } = {}) {
     this._onRefChange = onRefChange;
     this._onDone = onDone;
     this._onDebug = onDebug;
-    this._query = query || new Query();
+    this._query = new Query({ ...query, parser, compiler });
     this._index = 0;
   }
 

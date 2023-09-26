@@ -6,8 +6,8 @@ import { shim, search, commonAncestor, safeRightBoundOf, findConflict } from './
 export default class Query {
 
   constructor({ parser, compiler, ...options } = {}) {
-    this._parser = parser || new Parser();
-    this._compiler = compiler || new Compiler();
+    this._parser = new Parser(parser);
+    this._compiler = new Compiler(compiler);
     this._options = options;
     this.clear();
   }

@@ -12,6 +12,9 @@ const DEFAULT_API_PARAMS = Object.freeze({
   payload: {
     source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
     related_resource_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
+    cite_link: 1,
+    cite_start: '[',
+    cite_end: ']',
   },
 });
 

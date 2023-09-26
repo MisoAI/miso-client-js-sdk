@@ -1,13 +1,12 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
-import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
-import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
 import rehypeHast from './rehype-hast.js';
 
 export default class Parser {
-  
-  constructor({ remark = [remarkGfm], rehype = [rehypeMinifyWhitespace], ...options } = {}) {
+
+  constructor(options = {}) {
+    const { remark = [], rehype = [] } = options;
     let processer = unified().use(remarkParse);
     for (const plugin of remark) {
       processer = processer.use(plugin);

@@ -1,7 +1,18 @@
 import { Component } from '@miso.ai/commons';
-import { Renderer } from '@miso.ai/progressive-markdown';
+import { Renderer, mergeRendererOptions } from '@miso.ai/progressive-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
+import rehypeLinkClass from './rehype-link-class.js';
 
 const PLUGIN_ID = 'std:ui-markdown';
+
+const DEFAULT_PARSER_OPTIONS = Object.freeze({
+  remark: [remarkGfm],
+  rehype: [rehypeMinifyWhitespace, rehypeLinkClass],
+});
+const DEFAULT_RENDERER_OPTIONS = Object.freeze({
+  parser: DEFAULT_PARSER_OPTIONS,
+});
 
 export default class UiMarkdownPlugin extends Component {
 
@@ -45,20 +56,19 @@ class MarkdownContext extends Component {
     super('ui:markdown', plugin);
     this._plugin = plugin;
     this._client = client;
+    this._options = {};
     this.interface = new Markdown(this);
   }
 
-  config() {
-    // TODO
+  config(options = {}) {
+    this._options = options;
   }
 
   createRenderer(options) {
-    // TODO: other options
-    return new Renderer(options);
+    return new Renderer(mergeRendererOptions(DEFAULT_RENDERER_OPTIONS, (this._options && this._options.renderer), options));
   }
 
 }
-
 
 class Markdown {
 
@@ -68,6 +78,10 @@ class Markdown {
 
   config(...args) {
     return this._context.config(...args);
+  }
+
+  get defaultRendererOptions() {
+    return DEFAULT_RENDERER_OPTIONS;
   }
 
 }
