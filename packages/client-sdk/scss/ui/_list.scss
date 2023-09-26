@@ -37,20 +37,19 @@
           box-shadow: 0 0 3px rgba(0, 0, 0, .1);
         }
       }
+      .miso-list__item-body {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        height: var(--miso-list-item-height);
+        padding: var(--miso-list-item-gap);
+        user-select: none;
+      }
+      a.miso-list__item-body {
+        cursor: pointer;
+        text-decoration: none;
+      }
     }
-  }
-
-  .miso-list__item-body {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    height: var(--miso-list-item-height);
-    padding: var(--miso-list-item-gap);
-    user-select: none;
-  }
-  a.miso-list__item-body {
-    cursor: pointer;
-    text-decoration: none;
   }
 
   .miso-list__item-index {
