@@ -1,5 +1,4 @@
-import { Component } from '@miso.ai/commons';
-import { constants as API } from '../api/index.js';
+import { Component, API } from '@miso.ai/commons';
 
 const PLUGIN_ID = 'std:auto-events';
 

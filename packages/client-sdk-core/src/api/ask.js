@@ -1,6 +1,7 @@
-import { polling, signals, StallTimeoutAbortController } from '@miso.ai/commons';
-import { GROUP, NAME } from './constants.js';
+import { polling, signals, StallTimeoutAbortController, API } from '@miso.ai/commons';
 import ApiBase from './base.js';
+
+const { GROUP, NAME } = API;
 
 export default class Ask extends ApiBase {
 

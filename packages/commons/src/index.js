@@ -11,6 +11,7 @@ export * from './capture.js';
 export * from './polling.js';
 export * as signals from './signals.js';
 export * from './cmd.js';
+export * as API from './apis.js';
 export { default as Resources } from './resources.js';
 export { default as Resolution } from './resolution.js';
 export { default as Bulk } from './bulk.js';

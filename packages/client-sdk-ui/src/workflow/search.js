@@ -1,4 +1,4 @@
-import { API } from '@miso.ai/client-sdk-core';
+import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';

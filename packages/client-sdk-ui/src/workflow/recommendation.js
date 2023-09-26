@@ -1,5 +1,4 @@
-import { defineValues, trimObj } from '@miso.ai/commons';
-import { API } from '@miso.ai/client-sdk-core';
+import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, Tracker } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';

@@ -1,5 +1,7 @@
-import { GROUP, NAME } from './constants.js';
+import { API } from '@miso.ai/commons';
 import ApiBase from './base.js';
+
+const { GROUP, NAME } = API;
 
 export default class Interactions extends ApiBase {
 

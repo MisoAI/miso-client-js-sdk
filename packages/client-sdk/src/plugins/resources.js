@@ -1,4 +1,4 @@
-import { version } from '@miso.ai/client-sdk-core';
+import version from '../version.js';
 
 export function push(Plugin) {
   const symbol = Symbol.for('miso:resources');

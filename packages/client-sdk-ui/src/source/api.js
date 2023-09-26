@@ -1,4 +1,4 @@
-import { API } from '@miso.ai/client-sdk-core';
+import { API } from '@miso.ai/commons';
 
 export default function(client) {
   // TODO: send uuid & unit id

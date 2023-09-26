@@ -1,5 +1,4 @@
-import { Component, defineValues, assertNullableFunction } from '@miso.ai/commons';
-import { API } from '@miso.ai/client-sdk-core';
+import { Component, defineValues, assertNullableFunction, API } from '@miso.ai/commons';
 import { buildPayload, transformResponse } from './data.js';
 
 export default class AlgoliaClient extends Component {
