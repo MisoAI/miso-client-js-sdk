@@ -8,12 +8,6 @@ import { containerElement, cursorClassName, fromSameSession } from './utils.js';
 const TYPE = 'typewriter';
 const DEFAULT_CLASSNAME = 'miso-typewriter';
 
-/*
-const onDebug = ({ summary, ref, operation, conflict }) => {
-  console.log(summary, ref, `${operation}`, conflict);
-};
-*/
-
 export default class TypewriterLayout extends ProgressiveLayout {
 
   static get category() {
@@ -87,6 +81,8 @@ export default class TypewriterLayout extends ProgressiveLayout {
       },
       onDebug: this.options.onDebug || undefined,
     });
+    // capture citation link click if necessary
+    this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._handleClick(e)));
   }
 
   async _setupForPlaintext() {
@@ -144,6 +140,19 @@ export default class TypewriterLayout extends ProgressiveLayout {
     notifyUpdate({ ongoing }, { silent });
 
     ongoing && loop();
+  }
+
+  // event //
+  _handleClick({ target }) {
+    const element = target.closest(`[data-role="citation-link"]`);
+    if (!element) {
+      return;
+    }
+    const index = parseInt(element.dataset.index);
+    if (Number.isNaN(index)) {
+      return;
+    }
+    this._view._events.emit('citation-click', { index });
   }
 
 }

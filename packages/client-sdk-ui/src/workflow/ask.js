@@ -59,6 +59,7 @@ export default class Ask extends Workflow {
       this._hub.on(fields.query(), payload => this.query(payload)),
       this._hub.on(fields.data(), data => this._onDataUpdate(data)),
       this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
+      this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
     ];
 
     parentQuestionId && context._byPqid.set(parentQuestionId, this);
@@ -187,6 +188,17 @@ export default class Ask extends Workflow {
       });
     }
     this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
+  }
+
+  _onCitationClick({ index }) {
+    const { value } = this.states[fields.data()] || {};
+    const { sources } = value || {};
+    // index is 1-based
+    const source = sources && sources[index - 1];
+    if (!source || !source.product_id) {
+      return;
+    }
+    this._trackers.sources.click([source.product_id], { manual: false });
   }
 
   // trackers //

@@ -92,17 +92,17 @@ export default class Tracker {
 
   impression(values, options) {
     this._assertActive();
-    this._trigger(IMPRESSION, values, { ...options, manual: true });
+    this._trigger(IMPRESSION, values, { manual: true, ...options });
   }
 
   viewable(values, options) {
     this._assertActive();
-    this._trigger(VIEWABLE, values, { ...options, manual: true });
+    this._trigger(VIEWABLE, values, { manual: true, ...options });
   }
 
   click(values, options) {
     this._assertActive();
-    this._trigger(CLICK, values, { ...options, manual: true });
+    this._trigger(CLICK, values, { manual: true, ...options });
   }
 
   _assertActive() {

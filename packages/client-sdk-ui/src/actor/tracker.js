@@ -53,17 +53,17 @@ export default class Tracker {
 
   impression(productIds, options) {
     this._assertViewReady();
-    this._tracker.impression(productIds, options);
+    this._tracker.impression(productIds.map(product_id => ({ product_id })), options);
   }
 
   viewable(productIds, options) {
     this._assertViewReady();
-    this._tracker.viewable(productIds, options);
+    this._tracker.viewable(productIds.map(product_id => ({ product_id })), options);
   }
 
   click(productIds, options) {
     this._assertViewReady();
-    this._tracker.click(productIds, options);
+    this._tracker.click(productIds.map(product_id => ({ product_id })), options);
   }
 
   _listBindingsFn() {

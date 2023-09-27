@@ -26,6 +26,7 @@ function visitor(node) {
 
   // add other attributes
   node.properties['data-role'] = 'citation-link';
+  node.properties['data-index'] = value.slice(1, -1);
   node.properties.target = '_blank';
   node.properties.rel = 'noopener';
 
