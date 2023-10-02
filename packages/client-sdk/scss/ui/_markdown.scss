@@ -131,6 +131,7 @@
   }
 
   .citition-link {
+    position: relative;
     display: inline-block;
     height: var(--miso-markdown-citation-link-size);
     width: var(--miso-markdown-citation-link-size);
@@ -142,10 +143,43 @@
     border: 1px solid var(--miso-markdown-citation-link-color);
     color: var(--miso-markdown-citation-link-color);
     text-decoration: none;
+    text-rendering: optimizeLegibility;
+
+    &::before {
+      content: attr(data-index);
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
 
     &:hover {
       background-color: var(--miso-markdown-citation-link-color);
       color: #fff;
+    }
+  }
+}
+
+.dingbat {
+  .citition-link {
+    display: inline;
+    font-size: 1.3em;
+    border: none;
+    height: auto;
+    width: auto;
+
+    &::before {
+      position: static;
+      content: attr(data-char);
+    }
+    &:hover {
+      background-color: transparent;
+      color: var(--miso-markdown-citation-link-color);
+
+      &::before {
+        content: attr(data-char-negative);
+      }
     }
   }
 }

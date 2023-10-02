@@ -27,7 +27,7 @@
   </miso-ask>
 </section>
 <section>
-  <miso-ask visible-when="ready">
+  <miso-ask class="dingbat" visible-when="ready">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
     <hr>

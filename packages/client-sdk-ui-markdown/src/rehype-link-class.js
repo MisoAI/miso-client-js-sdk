@@ -1,4 +1,5 @@
-import {visit} from 'unist-util-visit'
+import { visit } from 'unist-util-visit';
+import { dingbatChar } from '@miso.ai/commons';
 
 export default function rehypeLinkClass(options = {}) {
   // TODO: may need to offer some options like rel, className, etc.
@@ -15,21 +16,29 @@ function visitor(node) {
   }
 
   const child = children[0];
-  const { type, value } = child;
+  let { type, value } = child;
   // need to be a text node with value like '[123]'
   if (type !== 'text' || !value.match(/^\[\d+\]$/)) {
     return;
   }
+  value = value.slice(1, -1);
 
   // add CSS class name
   (node.properties.className || (node.properties.className = [])).push('citition-link');
 
   // add other attributes
   node.properties['data-role'] = 'citation-link';
-  node.properties['data-index'] = value.slice(1, -1);
+  node.properties['data-index'] = value;
+  try {
+    const index = parseInt(value);
+    if (index >= 0 && index < 10) {
+      node.properties['data-char'] = dingbatChar(index);
+      node.properties['data-char-negative'] = dingbatChar(index, true);
+    }
+  } catch (e) {}
   node.properties.target = '_blank';
   node.properties.rel = 'noopener';
 
   // remove square brackets from the text
-  child.value = value.slice(1, -1);
+  child.value = '';
 }

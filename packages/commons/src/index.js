@@ -1,6 +1,7 @@
 export * from './arrays.js';
 export * from './objects.js';
 export * from './iterables.js';
+export * from './chars.js';
 export * from './html.js';
 export * from './uuid.js';
 export * from './validation.js';

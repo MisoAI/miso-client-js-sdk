@@ -1,3 +1,4 @@
+import { dingbatChar } from '@miso.ai/commons';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
 export function requiresImplementation(...names) {
@@ -92,7 +93,8 @@ function renderImageBlock({ className }, { cover_image }) {
 }
 
 function renderIndexBlock({ className }, data, { index }) {
-  return `<div class="${className}__item-index">${index + 1}</div>`;
+  const i = index + 1;
+  return `<div class="${className}__item-index" data-index="${i}" data-char="${dingbatChar(i)}" data-char-negative="${dingbatChar(i, true)}"></div>`;
 }
 
 function renderDate(date) {

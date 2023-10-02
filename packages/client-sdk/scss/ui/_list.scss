@@ -61,10 +61,19 @@
     width: var(--miso-list-item-index-size);
     line-height: calc(var(--miso-list-item-index-size) - 2px);
     font-size: 0.8rem;
-    text-align: center;
     border-radius: 50%;
     border: 1px solid #777;
     color: #777;
+
+    &::before {
+      content: attr(data-index);
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      text-align: center;
+    }
   }
   ol li .miso-list__item-body {
     padding-right: calc(2 * var(--miso-list-item-gap) + var(--miso-list-item-index-size)) !important;
@@ -155,5 +164,22 @@
     &::before {
       content: var(--miso-currency-symbol);
     }
+  }
+}
+
+.dingbat .miso-list__item-index {
+  position: absolute;
+  display: block;
+  top: var(--miso-list-item-gap);
+  right: var(--miso-list-item-gap);
+  height: var(--miso-list-item-index-size);
+  width: var(--miso-list-item-index-size);
+  line-height: var(--miso-list-item-index-size);
+  font-size: 1.5rem;
+  border: none;
+  color: #999;
+
+  &::before {
+    content: attr(data-char);
   }
 }
