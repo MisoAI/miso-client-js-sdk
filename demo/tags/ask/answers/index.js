@@ -124,7 +124,7 @@ function render({ parentQuestionId }) {
       </div>
     </miso-query>
   </miso-ask>
-  <miso-ask visible-when="ready" logo="false" parent-question-id="${parentQuestionId}">
+  <miso-ask visible-when="ready" logo="false" class="dingbat" parent-question-id="${parentQuestionId}">
     <hr>
     <div class="phrase question">And then you asked about...</div>
     <miso-question></miso-question>

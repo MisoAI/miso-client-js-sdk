@@ -14,6 +14,6 @@ module.exports = {
       }));
     },
   },
-  sdk_version: ['latest', 'beta', '1.8.2-beta.3'],
+  sdk_version: ['latest', 'beta', '1.8.2-beta.4', '1.8.2-beta.5'],
   permalink: '{{ pginfo.url }}/',
 };
