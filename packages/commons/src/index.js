@@ -1,3 +1,6 @@
+import * as signals from './signals.js';
+import * as API from './apis.js';
+
 export * from './arrays.js';
 export * from './objects.js';
 export * from './iterables.js';
@@ -10,9 +13,10 @@ export * from './storage.js';
 export * from './url.js';
 export * from './capture.js';
 export * from './polling.js';
-export * as signals from './signals.js';
 export * from './cmd.js';
-export * as API from './apis.js';
+
+export { signals, API };
+
 export { default as Resources } from './resources.js';
 export { default as Resolution } from './resolution.js';
 export { default as Bulk } from './bulk.js';
