@@ -80,7 +80,10 @@ const template = (data) => {
   return html;
 };
 function setup(workflow) {
-  workflow.useTrackers(false);
+  //workflow.useTrackers(false);
+  workflow.useInteractions({
+    handle: () => {},
+  });
   // when a new query starts, associate the last section container to that workflow
   workflow.on('loading', () => {
     relatedResourcesContainer.workflow = workflow;

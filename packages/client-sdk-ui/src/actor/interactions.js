@@ -7,24 +7,35 @@ export default class InteractionsActor {
     this._client = client;
     this.config(options);
     this._unsubscribes = [
-      hub.on(fields.interaction(), payload => this._send(payload)),
+      hub.on(fields.interaction(), payload => this._handle(payload)),
     ];
   }
 
   config(options = {}) {
+    if (options === false) {
+      options = { handle: () => {} };
+    }
+    if (typeof options !== 'object') {
+      throw new Error(`options must be an object: ${options}`);
+    }
     if (options.preprocess && typeof options.preprocess !== 'function') {
       throw new Error('preprocess must be a function');
     }
     this._options = options;
   }
 
-  _send(payload) {
+  _handle(payload) {
     payload = asArray(payload);
-    const { preprocess } = this._options;
+    const { preprocess, handle } = this._options;
     if (preprocess) {
       payload = payload.map(preprocess);
     }
-    if (payload.length > 0) {
+    if (payload.length === 0) {
+      return;
+    }
+    if (handle) {
+      handle(payload);
+    } else {
       this._client.api.interactions.upload(payload, { merge: true });
     }
   }
