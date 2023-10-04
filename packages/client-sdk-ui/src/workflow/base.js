@@ -1,5 +1,5 @@
 import { Component, asArray, trimObj } from '@miso.ai/commons';
-import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor/index.js';
+import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, Trackers, fields } from '../actor/index.js';
 import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
@@ -22,6 +22,7 @@ export default class Workflow extends Component {
     name,
     roles,
     layouts = {},
+    trackers = {},
     apiParams,
     interactionsOptions,
   }) {
@@ -54,6 +55,8 @@ export default class Workflow extends Component {
 
     this._data.source = sources.api(this._client);
     this._customProcessData = IDF;
+
+    this._trackers = new Trackers(this._hub, this._views, trackers);
 
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
@@ -191,6 +194,16 @@ export default class Workflow extends Component {
     return fns;
   }
 
+  // trackers //
+  get trackers() {
+    return this._trackers;
+  }
+
+  useTrackers(options) {
+    this._trackers.config(options);
+    return this;
+  }
+
   // interactions //
   useInteractions(options) {
     this._interactions.config(mergeInteractionsOptions(this._defaultInteractionsOptions, options));
@@ -233,6 +246,7 @@ export default class Workflow extends Component {
     }
     this._unsubscribes = [];
 
+    this._trackers._destroy();
     this._views.destroy();
     this._data.destroy();
   }

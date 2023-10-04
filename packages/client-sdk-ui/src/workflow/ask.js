@@ -45,9 +45,9 @@ export default class Ask extends Workflow {
       name: 'ask',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
+      trackers: DEFAULT_TRACKERS,
       apiParams: DEFAULT_API_PARAMS,
     });
-    this._trackers = new Trackers(this._hub, this._views, DEFAULT_TRACKERS);
     this._context = context;
     defineValues(this, { parentQuestionId });
 
@@ -191,16 +191,6 @@ export default class Ask extends Workflow {
     this._trackers.sources.click([source.product_id], { manual: false });
   }
 
-  // trackers //
-  get trackers() {
-    return this._trackers;
-  }
-
-  useTrackers(options) {
-    this._trackers.config(options);
-    return this;
-  }
-
   _preprocessInteraction(payload) {
     payload = super._preprocessInteraction(payload) || {};
     const { context = {} } = payload;
@@ -232,8 +222,6 @@ export default class Ask extends Workflow {
     if (questionId) {
       this._context._byQid.delete(questionId);
     }
-
-    this._trackers._destroy();
     this._feedback._destroy();
     super._destroy();
   }

@@ -1,6 +1,6 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { fields, Tracker } from '../actor/index.js';
+import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { ListLayout } from '../layout/index.js';
 
@@ -13,6 +13,10 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question' }],
 });
 
+const DEFAULT_TRACKERS = Object.freeze({
+  [ROLE.RELATED_QUESTIONS]: {},
+});
+
 export default class Explore extends Workflow {
 
   constructor(plugin, client) {
@@ -20,16 +24,12 @@ export default class Explore extends Workflow {
       name: 'explore',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
+      trackers: DEFAULT_TRACKERS,
       apiParams: DEFAULT_API_PARAMS,
     });
     this._productId = undefined;
     this._linkFn = undefined;
-    this._tracker = new Tracker(this._hub, this._views.get(ROLE.RELATED_QUESTIONS));
     this._unsubscribes.push(this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleQuestionClick(event)));
-  }
-
-  get tracker() {
-    return this._tracker;
   }
 
   get productId() {
@@ -95,18 +95,6 @@ export default class Explore extends Workflow {
 
   _handleQuestionClick({ value: question, ...event }) {
     this._events.emit('select', Object.freeze({ ...event, question }));
-  }
-
-  // tracker //
-  useTracker(options) {
-    this._tracker.config(options);
-    return this;
-  }
-
-  // destroy //
-  _destroy() {
-    this._tracker._destroy();
-    super._destroy();
   }
 
 }

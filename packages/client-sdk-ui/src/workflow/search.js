@@ -18,6 +18,10 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.PRODUCTS]: ListLayout.type,
 });
 
+const DEFAULT_TRACKERS = Object.freeze({
+  [ROLE.PRODUCTS]: {},
+});
+
 export default class Search extends Workflow {
 
   constructor(plugin, client) {
@@ -25,6 +29,7 @@ export default class Search extends Workflow {
       name: 'search',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
+      trackers: DEFAULT_TRACKERS,
       apiParams: DEFAULT_API_PARAMS,
     });
 

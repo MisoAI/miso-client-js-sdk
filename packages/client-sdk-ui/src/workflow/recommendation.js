@@ -1,6 +1,6 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { fields, Tracker } from '../actor/index.js';
+import { fields } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
 
@@ -16,6 +16,10 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.PRODUCTS]: ListLayout.type,
 });
 
+const DEFAULT_TRACKERS = Object.freeze({
+  [ROLE.PRODUCTS]: {},
+});
+
 export default class Recommendation extends Workflow {
 
   constructor(context, id) {
@@ -23,18 +27,14 @@ export default class Recommendation extends Workflow {
       name: 'recommendation',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
+      trackers: DEFAULT_TRACKERS,
       apiParams: DEFAULT_API_PARAMS,
     });
-    this._tracker = new Tracker(this._hub, this._views.get(ROLE.PRODUCTS));
 
     defineValues(this, { id });
     this._context = context;
 
     context._members.set(id, this);
-  }
-
-  get tracker() {
-    return this._tracker;
   }
 
   // layout //
@@ -69,12 +69,6 @@ export default class Recommendation extends Workflow {
 
   notifyViewUpdate(role = ROLE.PRODUCTS, ...args) {
     super.notifyViewUpdate(role, ...args);
-    return this;
-  }
-
-  // tracker //
-  useTracker(options) {
-    this._tracker.config(options);
     return this;
   }
 
