@@ -7,11 +7,6 @@ import ProxyElement from './proxy.js';
 const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
 const { UNTRACKED, TRACKING, TRIGGERED } = TRACKING_STATUS;
 
-function mergeOptions(def, opt) {
-  // if opt is falsy then return false, merge otherwise
-  return !!opt && { ...def, ...opt };
-}
-
 const DEFAULT_TRACKING_OPTIONS = Object.freeze({
   impression: Object.freeze({
   }),
@@ -25,9 +20,20 @@ const DEFAULT_TRACKING_OPTIONS = Object.freeze({
   watch: false,
 });
 
+function mergeOptions(def, opt) {
+  // if opt is falsy then return false, merge otherwise
+  return !!opt && { ...def, ...opt };
+}
+
 function normalizeOptions(options) {
   if (options === false) {
     return false; // turn off all tracking
+  }
+  if (options === true) {
+    options = {};
+  }
+  if (typeof options !== 'object') {
+    throw new Error(`Invalid options: ${options}`);
   }
   const { impression = {}, viewable = {}, click = {}, ...rest } = options;
   return trimObj({

@@ -23,7 +23,7 @@ export default class Recommendation extends Workflow {
       name: 'recommendation',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
-      defaultApiParams: DEFAULT_API_PARAMS,
+      apiParams: DEFAULT_API_PARAMS,
     });
     this._tracker = new Tracker(this._hub, this._views.get(ROLE.PRODUCTS));
 

@@ -45,7 +45,7 @@ export default class Ask extends Workflow {
       name: 'ask',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
-      defaultApiParams: DEFAULT_API_PARAMS,
+      apiParams: DEFAULT_API_PARAMS,
     });
     this._trackers = new Trackers(this._hub, this._views, DEFAULT_TRACKERS);
     this._context = context;

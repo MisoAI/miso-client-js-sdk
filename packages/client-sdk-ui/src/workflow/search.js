@@ -25,7 +25,7 @@ export default class Search extends Workflow {
       name: 'search',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
-      defaultApiParams: DEFAULT_API_PARAMS,
+      apiParams: DEFAULT_API_PARAMS,
     });
 
     this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));

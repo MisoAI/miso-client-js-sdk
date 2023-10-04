@@ -20,7 +20,7 @@ export default class Explore extends Workflow {
       name: 'explore',
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
-      defaultApiParams: DEFAULT_API_PARAMS,
+      apiParams: DEFAULT_API_PARAMS,
     });
     this._productId = undefined;
     this._linkFn = undefined;

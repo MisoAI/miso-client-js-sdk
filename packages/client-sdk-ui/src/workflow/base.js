@@ -22,7 +22,7 @@ export default class Workflow extends Component {
     name,
     roles,
     layouts = {},
-    defaultApiParams,
+    apiParams,
     interactionsOptions,
   }) {
     super(name || 'workflow', plugin);
@@ -38,7 +38,7 @@ export default class Workflow extends Component {
       [ROLE.ERROR]: ErrorLayout.type,
       ...layouts,
     };
-    this._apiParams = this._defaultApiParams = defaultApiParams;
+    this._apiParams = this._defaultApiParams = apiParams;
     this._defaultInteractionsOptions = interactionsOptions = mergeInteractionsOptions({
       preprocess: payload => this._preprocessInteraction(payload),
     }, interactionsOptions);
