@@ -25,6 +25,20 @@ const DEFAULT_TRACKING_OPTIONS = Object.freeze({
   watch: false,
 });
 
+function normalizeOptions(options) {
+  if (options === false) {
+    return false; // turn off all tracking
+  }
+  const { impression = {}, viewable = {}, click = {}, ...rest } = options;
+  return trimObj({
+    ...DEFAULT_TRACKING_OPTIONS,
+    ...rest,
+    impression: mergeOptions(DEFAULT_TRACKING_OPTIONS.impression, impression),
+    viewable: mergeOptions(DEFAULT_TRACKING_OPTIONS.viewable, viewable),
+    click: mergeOptions(DEFAULT_TRACKING_OPTIONS.click, click),
+  });
+}
+
 export default class Tracker {
 
   constructor({
@@ -33,6 +47,7 @@ export default class Tracker {
     sessionId = 'default',
     active = true,
     bindings,
+    ...options
   } = {}) {
     this._events = new EventEmitter({ target: this });
     this._proxyElement = proxyElement || new ProxyElement(element);
@@ -40,7 +55,7 @@ export default class Tracker {
     this._isActive = typeof active === 'function' ? active : () => active;
     this._bindings = new Bindings(bindings);
     this._viewables = new WeakMap();
-    this._options = DEFAULT_TRACKING_OPTIONS;
+    this._options = normalizeOptions(options);
 
     this._unsubscribes = [
       this._proxyElement.on('click', event => this._handleClick(event)),
@@ -55,17 +70,7 @@ export default class Tracker {
   }
 
   config(options) {
-    this._options = this._normalizeOptions(options);
-  }
-
-  _normalizeOptions({ impression = {}, viewable = {}, click = {}, ...options } = {}) {
-    return trimObj({
-      ...DEFAULT_TRACKING_OPTIONS,
-      ...options,
-      impression: mergeOptions(DEFAULT_TRACKING_OPTIONS.impression, impression),
-      viewable: mergeOptions(DEFAULT_TRACKING_OPTIONS.viewable, viewable),
-      click: mergeOptions(DEFAULT_TRACKING_OPTIONS.click, click),
-    });
+    this._options = normalizeOptions(options);
   }
 
   refresh() {
@@ -92,17 +97,23 @@ export default class Tracker {
 
   impression(values, options) {
     this._assertActive();
-    this._trigger(IMPRESSION, values, { manual: true, ...options });
+    if (this._options && this._options.impression) {
+      this._trigger(IMPRESSION, values, { manual: true, ...options });
+    }
   }
 
   viewable(values, options) {
     this._assertActive();
-    this._trigger(VIEWABLE, values, { manual: true, ...options });
+    if (this._options && this._options.viewable) {
+      this._trigger(VIEWABLE, values, { manual: true, ...options });
+    }
   }
 
   click(values, options) {
     this._assertActive();
-    this._trigger(CLICK, values, { manual: true, ...options });
+    if (this._options && this._options.click) {
+      this._trigger(CLICK, values, { manual: true, ...options });
+    }
   }
 
   _assertActive() {
@@ -132,7 +143,7 @@ export default class Tracker {
 
     // add observer on new element
     if (element) {
-      if (this._options.watch) {
+      if (this._options && this._options.watch) {
         // TODO: move to proxy element
         this._mutationObserver = new MutationObserver(() => this.refresh());
         this._mutationObserver.observe(element, { childList: true, subtree: true });
@@ -173,7 +184,7 @@ export default class Tracker {
 
   // impression //
   _trackImpressions(bindings) {
-    const options = this._options.impression;
+    const options = this._options && this._options.impression;
     if (!options) {
       return;
     }
@@ -184,7 +195,7 @@ export default class Tracker {
 
   // viewable //
   _trackViewables(bindings) {
-    const options = this._options.viewable;
+    const options = this._options && this._options.viewable;
     if (!options) {
       return;
     }
@@ -205,7 +216,7 @@ export default class Tracker {
     }
     this._states.set(value, VIEWABLE, TRACKING);
 
-    const { area, duration } = this._options.viewable;
+    const { area, duration } = this._options && this._options.viewable;
     // abort signal
     const ac = new AbortController();
     const { signal } = ac;

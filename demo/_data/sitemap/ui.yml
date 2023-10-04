@@ -18,6 +18,8 @@ sections:
     path: /ask/process-data
   - title: Customize element
     path: /ask/customize-element
+  - title: No tracking
+    path: /ask/no-tracking
   - title: Error
     path: /ask/error
 - title: Explore

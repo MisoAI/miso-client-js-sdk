@@ -1,6 +1,6 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { fields, FeedbackActor, Tracker } from '../actor/index.js';
+import { fields, FeedbackActor, Trackers } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
 import { mergeApiParams } from './utils.js';
@@ -27,12 +27,16 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
 });
 
-function getDefaultLayouts(parentQuestionId) {
-  return parentQuestionId ? {
-    ...DEFAULT_LAYOUTS,
-    [ROLE.QUERY]: [SearchBoxLayout.type, { buttonText: 'Ask' }],
-  } : DEFAULT_LAYOUTS;
-}
+const DEFAULT_TRACKERS = Object.freeze({
+  [ROLE.SOURCES]: {},
+  [ROLE.RELATED_RESOURCES]: {},
+  [ROLE.QUERY_SUGGESTIONS]: {
+    active: true, // we are tracking events at initial stage, when session is not active yet
+    click: {
+      validate: event => event.button === 0, // left click only
+    },
+  },
+});
 
 export default class Ask extends Workflow {
 
@@ -40,19 +44,15 @@ export default class Ask extends Workflow {
     super(context._plugin, context._client, {
       name: 'ask',
       roles: Object.keys(DEFAULT_LAYOUTS),
-      layouts: getDefaultLayouts(parentQuestionId),
+      layouts: DEFAULT_LAYOUTS,
       defaultApiParams: DEFAULT_API_PARAMS,
     });
+    this._trackers = new Trackers(this._hub, this._views, DEFAULT_TRACKERS);
     this._context = context;
     defineValues(this, { parentQuestionId });
 
     this._feedback = new FeedbackActor(this._hub);
-    this._trackers = {
-      sources: new Tracker(this._hub, this._views.get(ROLE.SOURCES)),
-      relatedResources: new Tracker(this._hub, this._views.get(ROLE.RELATED_RESOURCES)),
-    };
     this._setSuggestedQuestions();
-    Object.freeze(this._trackers);
 
     this._unsubscribes = [
       ...this._unsubscribes,
@@ -176,17 +176,6 @@ export default class Ask extends Workflow {
     }
     const values = previous.states[fields.data()].value;
     const value = values.suggested_followup_questions || values.followup_questions || [];
-    if (value.length > 0) {
-      const view = this._views.get(ROLE.QUERY_SUGGESTIONS);
-      const tracker = this._trackers.querySuggestions = new Tracker(this._hub, view, {
-        active: true, // we are tracking events at initial stage, when session is not active yet
-      });
-      tracker.config({
-        click: {
-          validate: event => event.button === 0, // left click only
-        },
-      });
-    }
     this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
   }
 
@@ -198,6 +187,7 @@ export default class Ask extends Workflow {
     if (!source || !source.product_id) {
       return;
     }
+    // TODO: should we track impression as well?
     this._trackers.sources.click([source.product_id], { manual: false });
   }
 
@@ -206,10 +196,8 @@ export default class Ask extends Workflow {
     return this._trackers;
   }
 
-  useTrackers({ sources, relatedResources, suggestedFollowUpQuestions } = {}) {
-    this._trackers.sources.config(sources);
-    this._trackers.relatedResources.config(relatedResources);
-    // TODO
+  useTrackers(options) {
+    this._trackers.config(options);
     return this;
   }
 
@@ -245,9 +233,8 @@ export default class Ask extends Workflow {
       this._context._byQid.delete(questionId);
     }
 
+    this._trackers._destroy();
     this._feedback._destroy();
-    this._trackers.sources._destroy();
-    this._trackers.relatedResources._destroy();
     super._destroy();
   }
 

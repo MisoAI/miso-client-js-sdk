@@ -36,10 +36,6 @@ export default class Tracker {
   }
 
   config(options) {
-    const { active } = this._hub;
-    if (active) {
-      throw new Error(`Cannot change configuration after workflow starts.`);
-    }
     this._tracker.config(options);
   }
 
