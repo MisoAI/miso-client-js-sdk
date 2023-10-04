@@ -418,3 +418,7 @@ section.related-resources > .container {
 .miso-banner {
   margin-top: 1.5rem;
 }
+.citition-link,
+.miso-list__item-index {
+  font-family: sans-serif;
+}

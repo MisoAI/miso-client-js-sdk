@@ -7,7 +7,7 @@ const elements = {
   keyInput: document.getElementById('key-input'),
   mainInput: document.querySelector('miso-ask miso-query input'),
   followUpsSection: document.getElementById('follow-ups'),
-  relatedResourcesContainer: document.getElementById('related-resources'),
+  relatedResourcesContainer: document.querySelector('#related-resources miso-ask'),
 };
 
 if (paramsFromUrl.api_key) {
