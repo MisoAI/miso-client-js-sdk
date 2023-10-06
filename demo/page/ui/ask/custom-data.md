@@ -53,6 +53,7 @@ misocmd.push(async () => {
   workflow.useApi(false);
   const api = window.doggoganger.buildApi();
   workflow.on('request', async ({ session, payload }) => {
+    workflow.updateData({ session });
     const { question_id } = await api.ask.questions(payload);
     let intervalId;
     intervalId = setInterval(async () => {
