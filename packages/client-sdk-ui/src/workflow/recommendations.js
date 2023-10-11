@@ -1,11 +1,11 @@
 import { DEFAULT_UNIT_ID } from '../constants.js';
+import WorkflowContext from './context.js';
 import Recommendation from './recommendation.js';
 
-export default class Recommendations {
+export default class Recommendations extends WorkflowContext {
 
   constructor(plugin, client) {
-    this._plugin = plugin;
-    this._client = client;
+    super('recommendations', plugin, client);
     this._members = new Map();
   }
 

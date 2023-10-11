@@ -2,37 +2,27 @@ import * as fields from './fields.js';
 
 export default class DataActor {
 
-  constructor(hub) {
+  constructor(hub, source, options) {
     this._hub = hub;
+    this._source = source;
+    this._options = options;
     this._unsubscribes = [
       hub.on(fields.session(), session => this._handleSession(session)),
       hub.on(fields.request(), event => this._handleRequest(event)),
     ];
-    this._postProcess = v => v;
+  }
+
+  get active() {
+    return this._options.api.actor !== false;
   }
 
   get source() {
     return this._source;
   }
 
-  set source(source) {
-    // accepts falsy values
-    if (source && typeof source !== 'function') {
-      throw new Error(`Expect source to be a function: ${source}`);
-    }
-    this._source = source;
-  }
-
-  set postProcess(fn) {
-    if (fn && typeof fn !== 'function') {
-      throw new Error(`Expect postProcess to be a function: ${fn}`);
-    }
-    this._postProcess = fn || (v => v);
-  }
-
   _handleSession(session) {
-    // protocol: no source, no reaction
-    if (!this._source) {
+    // protocol: inactive -> no reaction
+    if (!this.active) {
       return;
     }
 
@@ -52,8 +42,8 @@ export default class DataActor {
   }
 
   async _handleRequest(event) {
-    // protocol: no source, no reaction
-    if (!this._source) {
+    // protocol: inactive -> no reaction
+    if (!this.active) {
       return;
     }
     const { session } = this._hub.states;

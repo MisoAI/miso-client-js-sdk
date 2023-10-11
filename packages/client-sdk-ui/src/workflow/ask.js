@@ -1,11 +1,11 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { fields, FeedbackActor, Trackers } from '../actor/index.js';
+import { mergeApi } from './options.js';
+import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
-import { mergeApiParams } from './utils.js';
 
-const DEFAULT_API_PARAMS = Object.freeze({
+const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
   name: API.NAME.QUESTIONS,
   payload: {
@@ -38,15 +38,20 @@ const DEFAULT_TRACKERS = Object.freeze({
   },
 });
 
+const DEFAULT_OPTIONS = Object.freeze({
+  api: DEFAULT_API_OPTIONS,
+});
+
 export default class Ask extends Workflow {
 
   constructor(context, parentQuestionId) {
     super(context._plugin, context._client, {
       name: 'ask',
+      context,
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       trackers: DEFAULT_TRACKERS,
-      apiParams: DEFAULT_API_PARAMS,
+      defaults: DEFAULT_OPTIONS,
     });
     this._context = context;
     defineValues(this, { parentQuestionId });
@@ -107,7 +112,7 @@ export default class Ask extends Workflow {
     this.restart();
 
     const { session } = this;
-    this._hub.update(fields.request(), mergeApiParams(this._apiParams, { payload, session }));
+    this._hub.update(fields.request(), mergeApi(this._options.api, { payload, session }));
 
     return this;
   }

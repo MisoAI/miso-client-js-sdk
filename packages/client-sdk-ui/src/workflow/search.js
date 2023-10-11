@@ -1,11 +1,11 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
+import { mergeApi } from './options.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
-import { mergeApiParams } from './utils.js';
 
-const DEFAULT_API_PARAMS = Object.freeze({
+const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.SEARCH,
   name: API.NAME.SEARCH,
   payload: {
@@ -22,6 +22,10 @@ const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.PRODUCTS]: {},
 });
 
+const DEFAULT_OPTIONS = Object.freeze({
+  api: DEFAULT_API_OPTIONS,
+});
+
 export default class Search extends Workflow {
 
   constructor(plugin, client) {
@@ -30,7 +34,7 @@ export default class Search extends Workflow {
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       trackers: DEFAULT_TRACKERS,
-      apiParams: DEFAULT_API_PARAMS,
+      defaults: DEFAULT_OPTIONS,
     });
 
     this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
@@ -50,7 +54,7 @@ export default class Search extends Workflow {
   query(payload) {
     this.restart();
     const { session } = this;
-    this._hub.update(fields.request(), mergeApiParams(this._apiParams, { payload, session }));
+    this._hub.update(fields.request(), mergeApi(this.options.api, { payload, session }));
     return this;
   }
 

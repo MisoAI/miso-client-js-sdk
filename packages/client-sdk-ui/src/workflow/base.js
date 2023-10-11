@@ -3,7 +3,8 @@ import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, Trackers, 
 import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
-import { mergeApiParams, mergeInteractionsOptions, injectLogger } from './utils.js';
+import { mergeInteractionsOptions, injectLogger } from './utils.js';
+import { WorkflowOptions, normalizeApiOptions } from './options.js';
 
 function normalizeLayoutOptions(args) {
   let [name, options] = asArray(args);
@@ -16,15 +17,21 @@ function normalizeLayoutOptions(args) {
 
 const IDF = v => v;
 
+const DEFAULT_LAYOUTS = Object.freeze({
+  [ROLE.CONTAINER]: ContainerLayout.type,
+  [ROLE.ERROR]: ErrorLayout.type,
+});
+
 export default class Workflow extends Component {
 
   constructor(plugin, client, {
     name,
+    context,
     roles,
     layouts = {},
     trackers = {},
-    apiParams,
     interactionsOptions,
+    defaults,
   }) {
     super(name || 'workflow', plugin);
     this._plugin = plugin;
@@ -32,28 +39,29 @@ export default class Workflow extends Component {
     this._name = name;
     this._roles = roles;
 
+    const options = this._options = new WorkflowOptions(context && context._options, defaults);
+
     const extensions = plugin._getExtensions(client);
 
     this._defaultLayouts = {
-      [ROLE.CONTAINER]: ContainerLayout.type,
-      [ROLE.ERROR]: ErrorLayout.type,
+      ...DEFAULT_LAYOUTS,
       ...layouts,
     };
-    this._apiParams = this._defaultApiParams = apiParams;
     this._defaultInteractionsOptions = interactionsOptions = mergeInteractionsOptions({
       preprocess: payload => this._preprocessInteraction(payload),
     }, interactionsOptions);
 
+    const source = this._source = sources.api(client);
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
+
     this._sessions = new SessionMaker(hub);
-    this._data = new DataActor(hub);
+    this._data = new DataActor(hub, source, options);
     this._views = new ViewsActor(hub, extensions, {
       roles,
       layouts: this._generateLayoutFactoryFunctions(this._defaultLayouts),
     });
     this._interactions = new InteractionsActor(hub, client, interactionsOptions);
 
-    this._data.source = sources.api(this._client);
     this._customProcessData = IDF;
 
     this._trackers = new Trackers(this._hub, this._views, trackers);
@@ -158,14 +166,7 @@ export default class Workflow extends Component {
 
   // source //
   useApi(name, payload) {
-    if (name === false) {
-      this._data.source = false;
-    } else if (typeof name === 'object' && payload === undefined) {
-      payload = name;
-      name = undefined;
-    } else {
-      this._apiParams = mergeApiParams(this._defaultApiParams, trimObj({ name, payload }));
-    }
+    this._options.api = normalizeApiOptions(name, payload);
     return this;
   }
 
@@ -220,7 +221,7 @@ export default class Workflow extends Component {
     const {
       group: api_group,
       name: api_name,
-    } = this._apiParams;
+    } = this._options.api;
     return {
       ...payload,
       context: {

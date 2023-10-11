@@ -1,10 +1,11 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
+import { mergeApi } from './options.js';
 import { fields } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
 
-const DEFAULT_API_PARAMS = Object.freeze({
+const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.RECOMMENDATION,
   name: API.NAME.USER_TO_PRODUCTS,
   payload: {
@@ -20,15 +21,20 @@ const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.PRODUCTS]: {},
 });
 
+const DEFAULT_OPTIONS = Object.freeze({
+  api: DEFAULT_API_OPTIONS,
+});
+
 export default class Recommendation extends Workflow {
 
   constructor(context, id) {
     super(context._plugin, context._client, {
       name: 'recommendation',
+      context,
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       trackers: DEFAULT_TRACKERS,
-      apiParams: DEFAULT_API_PARAMS,
+      defaults: DEFAULT_OPTIONS,
     });
 
     defineValues(this, { id });
@@ -53,7 +59,7 @@ export default class Recommendation extends Workflow {
     // in recommendation workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     const { session } = this;
-    this._hub.update(fields.request(), { ...this._apiParams, session });
+    this._hub.update(fields.request(), mergeApi(this._options.api, { session }));
     return this;
   }
 

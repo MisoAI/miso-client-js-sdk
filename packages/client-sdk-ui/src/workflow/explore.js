@@ -1,10 +1,11 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
+import { mergeApi } from './options.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { ListLayout } from '../layout/index.js';
 
-const DEFAULT_API_PARAMS = Object.freeze({
+const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
   name: API.NAME.RELATED_QUESTIONS,
 });
@@ -17,6 +18,10 @@ const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.RELATED_QUESTIONS]: {},
 });
 
+const DEFAULT_OPTIONS = Object.freeze({
+  api: DEFAULT_API_OPTIONS,
+});
+
 export default class Explore extends Workflow {
 
   constructor(plugin, client) {
@@ -25,7 +30,7 @@ export default class Explore extends Workflow {
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       trackers: DEFAULT_TRACKERS,
-      apiParams: DEFAULT_API_PARAMS,
+      defaults: DEFAULT_OPTIONS,
     });
     this._productId = undefined;
     this._linkFn = undefined;
@@ -60,14 +65,10 @@ export default class Explore extends Workflow {
     // in explore workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     const { session } = this;
-    this._hub.update(fields.request(), {
-      ...this._apiParams,
-      payload: {
-        ...this._apiParams.payload,
-        product_id: this._productId,
-      },
-      session,
-    });
+    const payload = {
+      product_id: this._productId,
+    };
+    this._hub.update(fields.request(), mergeApi(this._options.api, { payload, session }));
     return this;
   }
 

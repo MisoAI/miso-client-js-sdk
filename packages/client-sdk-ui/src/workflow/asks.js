@@ -1,12 +1,10 @@
-import { Component } from '@miso.ai/commons';
+import WorkflowContext from './context.js';
 import Ask from './ask.js';
 
-export default class Asks extends Component {
+export default class Asks extends WorkflowContext {
 
   constructor(plugin, client) {
-    super('asks', plugin);
-    this._plugin = plugin;
-    this._client = client;
+    super('asks', plugin, client);
     this._byQid = new Map();
     this._byPqid = new Map();
     this._root = new Ask(this); // initialize with default workflow

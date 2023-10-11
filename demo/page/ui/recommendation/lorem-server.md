@@ -50,6 +50,7 @@ misocmd.push(() => {
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.recommendations.get();
+  //client.ui.recommendations.useApi({ rows: 6 });
   workflow.useApi('user_to_products', { rows: 6 });
   window.onReload = () => workflow.reset().start();
   window.onSelectLayout = value => workflow.useLayouts({ products: value });
