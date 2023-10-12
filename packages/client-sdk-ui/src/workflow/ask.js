@@ -45,7 +45,7 @@ const DEFAULT_OPTIONS = Object.freeze({
 export default class Ask extends Workflow {
 
   constructor(context, parentQuestionId) {
-    super(context._plugin, context._client, {
+    super({
       name: 'ask',
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
@@ -123,8 +123,8 @@ export default class Ask extends Workflow {
     if (session && status !== STATUS.INITIAL && (status !== STATUS.READY || ongoing)) {
       // it's interrupted by a new question
       const state = Object.freeze({ session, status, ongoing });
-      this._events.emit('interrupt', state);
-      this._events.emit('finally', state);
+      this._emit('interrupt', state);
+      this._emit('finally', state);
     }
     super.restart();
   }
@@ -168,9 +168,9 @@ export default class Ask extends Workflow {
     const erroneous = status === STATUS.ERRONEOUS;
     const eventName = done ? 'done' : erroneous ? 'error' : status;
     const state = Object.freeze({ session, status, ongoing });
-    this._events.emit(eventName, state);
+    this._emit(eventName, state);
     if (done || erroneous) {
-      this._events.emit('finally', state);
+      this._emit('finally', state);
     }
   }
 

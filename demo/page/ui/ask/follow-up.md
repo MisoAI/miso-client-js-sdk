@@ -79,16 +79,6 @@ const template = (data) => {
   }
   return html;
 };
-function setup(workflow) {
-  // when a new query starts, associate the last section container to that workflow
-  workflow.on('loading', () => {
-    relatedResourcesContainer.workflow = workflow;
-  });
-  // when a answer is fully populated, insert a new section for the follow-up question
-  workflow.on('done', () => {
-    followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
-  });
-}
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   // TODO: better timing management
@@ -100,9 +90,16 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
+  const context = client.ui.asks;
+  // when a new query starts, associate the last section container to that workflow
+  context.on('loading', ({ workflow }) => {
+    relatedResourcesContainer.workflow = workflow;
+  });
+  // when a answer is fully populated, insert a new section for the follow-up question
+  context.on('done', ({ workflow }) => {
+    followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
+  });
   const rootWorkflow = client.ui.ask;
-  client.ui.asks.on('create', setup);
-  setup(rootWorkflow);
   rootWorkflow.on('loading', () => {
     // clean up the entire follow-ups section
     followUpsSection.innerHTML = '';

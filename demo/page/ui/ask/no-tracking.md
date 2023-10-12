@@ -84,14 +84,6 @@ function setup(workflow) {
   workflow.useInteractions({
     handle: () => {},
   });
-  // when a new query starts, associate the last section container to that workflow
-  workflow.on('loading', () => {
-    relatedResourcesContainer.workflow = workflow;
-  });
-  // when a answer is fully populated, insert a new section for the follow-up question
-  workflow.on('done', () => {
-    followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
-  });
 }
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
@@ -104,8 +96,15 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
+  const context = client.ui.asks;
+  context.on('loading', ({ workflow }) => {
+    relatedResourcesContainer.workflow = workflow;
+  });
+  context.on('done', ({ workflow }) => {
+    followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
+  });
+  context.on('create', setup);
   const rootWorkflow = client.ui.ask;
-  client.ui.asks.on('create', setup);
   setup(rootWorkflow);
   rootWorkflow.on('loading', () => {
     // clean up the entire follow-ups section

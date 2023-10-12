@@ -28,7 +28,7 @@ const DEFAULT_OPTIONS = Object.freeze({
 export default class Recommendation extends Workflow {
 
   constructor(context, id) {
-    super(context._plugin, context._client, {
+    super({
       name: 'recommendation',
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),

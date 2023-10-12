@@ -24,9 +24,11 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 export default class Workflow extends Component {
 
-  constructor(plugin, client, {
+  constructor({
     name,
     context,
+    plugin,
+    client,
     roles,
     layouts = {},
     trackers = {},
@@ -34,8 +36,9 @@ export default class Workflow extends Component {
     defaults,
   }) {
     super(name || 'workflow', plugin);
-    this._plugin = plugin;
-    this._client = client;
+    this._context = context;
+    this._plugin = plugin = plugin || context._plugin;
+    this._client = client = client || context._client;
     this._name = name;
     this._roles = roles;
 
@@ -254,7 +257,14 @@ export default class Workflow extends Component {
 
   // helper //
   _log(action, name, data) {
-    this._events.emit(name, { _action: action, ...data });
+    this._emit(name, { _action: action, ...data });
+  }
+
+  _emit(name, data) {
+    this._events.emit(name, data);
+    if (this._context) {
+      this._context._events.emit(name, { workflow: this, ...data });
+    }
   }
 
   _assertActive() {

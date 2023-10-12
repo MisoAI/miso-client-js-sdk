@@ -25,8 +25,10 @@ const DEFAULT_OPTIONS = Object.freeze({
 export default class Explore extends Workflow {
 
   constructor(plugin, client) {
-    super(plugin, client, {
+    super({
       name: 'explore',
+      plugin,
+      client,
       roles: Object.keys(DEFAULT_LAYOUTS),
       layouts: DEFAULT_LAYOUTS,
       trackers: DEFAULT_TRACKERS,
