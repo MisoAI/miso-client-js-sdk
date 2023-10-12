@@ -1,0 +1,73 @@
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans+Symbols:wght@100;200;300&display=swap&text=%E2%9E%80%E2%9E%81%E2%9E%82%E2%9E%83%E2%9E%84%E2%9E%85%E2%9E%86%E2%9E%87%E2%9E%88%E2%9E%89%E2%9E%8A%E2%9E%8B%E2%9E%8C%E2%9E%8D%E2%9E%8E%E2%9E%8F%E2%9E%90%E2%9E%91%E2%9E%92%E2%9E%93);
+
+$dingbat-circled-numbers: ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉;
+$dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
+
+.miso-citation-link {
+  margin: 0 0.15em;
+  text-decoration: none;
+
+  & + .miso-citation-link {
+    margin-left: 0;
+  }
+  &::before {
+    content: '[' attr(data-index) ']';
+  }
+}
+.miso-list,
+.miso-cards,
+.miso-carousel {
+  .miso-citation-index {
+    &::before {
+      content: attr(data-index);
+    }
+  }
+}
+
+.miso-circled-citation-index {
+  --miso-circled-citation-link-color: #666;
+
+  .miso-citation-link,
+  .miso-citation-index {
+    font-family: 'Noto Sans Symbols', sans-serif;
+    font-weight: 200;
+    text-rendering: optimizeLegibility;
+
+    @for $i from 1 through length($dingbat-circled-numbers) {
+      &[data-index="#{$i}"] {
+        &::before {
+          content: '#{nth($dingbat-circled-numbers, $i)}';
+        }
+      }
+    }
+  }
+  .miso-citation-link {
+    line-height: 1em;
+    font-size: 1.2em;
+    margin: 0 0.1em;
+    color: var(--miso-circled-citation-link-color);
+    text-rendering: optimizeLegibility;
+
+    @for $i from 1 through length($dingbat-circled-numbers) {
+      &[data-index="#{$i}"] {
+        &:hover::before {
+          content: '#{nth($dingbat-negative-circled-numbers, $i)}';
+        }
+      }
+    }
+    & + .miso-citation-link {
+      margin-left: 0;
+    }
+    &:hover {
+      background-color: transparent;
+      color: var(--miso-circled-citation-link-color);
+    }
+  }
+  .miso-list,
+  .miso-cards,
+  .miso-carousel {
+    .miso-citation-index {
+      font-size: 1.25rem;
+    }
+  }
+}

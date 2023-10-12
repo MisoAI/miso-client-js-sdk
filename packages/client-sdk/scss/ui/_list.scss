@@ -15,7 +15,7 @@
   --miso-list-description-lines: 3;
   // currency symbol for price properties
   --miso-currency-symbol: "$";
-  // the size of list item index circle
+  // the size of list item index number
   --miso-list-item-index-size: 1.2rem;
 
   ol.miso-list__list,
@@ -40,6 +40,7 @@
       .miso-list__item-body {
         display: flex;
         justify-content: space-between;
+        gap: var(--miso-list-item-gap);
         position: relative;
         height: var(--miso-list-item-height);
         padding: var(--miso-list-item-gap);
@@ -52,31 +53,15 @@
     }
   }
 
-  .miso-list__item-index {
-    position: absolute;
-    display: block;
-    top: var(--miso-list-item-gap);
-    right: var(--miso-list-item-gap);
-    height: var(--miso-list-item-index-size);
+  .miso-list__item-index-container {
     width: var(--miso-list-item-index-size);
-    line-height: calc(var(--miso-list-item-index-size) - 2px);
-    font-size: 0.8rem;
-    border-radius: 50%;
-    border: 1px solid #777;
-    color: #777;
-
-    &::before {
-      content: attr(data-index);
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      text-align: center;
-    }
   }
-  ol li .miso-list__item-body {
-    padding-right: calc(2 * var(--miso-list-item-gap) + var(--miso-list-item-index-size)) !important;
+  .miso-list__item-index {
+    display: block;
+    line-height: var(--miso-list-item-index-size);
+    font-size: 1rem;
+    color: #8f96a3;
+    text-align: center;
   }
   ul li .miso-list__item-index {
     display: none !important;
@@ -120,10 +105,6 @@
     flex-direction: column;
     width: 100%;
     color: #5c6370;
-
-    &:not(:first-child) {
-      margin-left: 1rem;
-    }
 
     > hr {
       display: none;

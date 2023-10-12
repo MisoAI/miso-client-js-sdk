@@ -23,7 +23,7 @@ function visitor(node) {
   value = value.slice(1, -1);
 
   // add CSS class name
-  (node.properties.className || (node.properties.className = [])).push('citation-link');
+  (node.properties.className || (node.properties.className = [])).push('miso-citation-link');
 
   // add other attributes
   node.properties['data-role'] = 'citation-link';

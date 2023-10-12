@@ -27,7 +27,7 @@
   </miso-ask>
 </section>
 <section>
-  <miso-ask class="unicode-citation-index" visible-when="ready">
+  <miso-ask class="miso-circled-citation-index" visible-when="ready">
     <div class="phrase">You asked about...</div>
     <miso-question></miso-question>
     <hr>

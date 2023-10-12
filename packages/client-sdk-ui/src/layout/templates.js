@@ -18,9 +18,9 @@ export function product(layout, state, data, meta) {
   const [openTag, closeTag] = renderTagPair(layout, data);
   return [
     openTag,
-    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
     (templates.imageBlock || renderImageBlock)(layout, data, meta),
     (templates.infoBlock || productInfoBlock)(layout, data, meta),
+    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
     closeTag,
   ].join('');
 }
@@ -35,9 +35,9 @@ export function article(layout, state, data, meta) {
   const [openTag, closeTag] = renderTagPair(layout, data);
   return [
     openTag,
-    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
     (templates.imageBlock || renderImageBlock)(layout, data, meta),
     (templates.infoBlock || articleInfoBlock)(layout, data, meta),
+    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
     closeTag,
   ].join('');
 }
@@ -93,7 +93,7 @@ function renderImageBlock({ className }, { cover_image }) {
 
 function renderIndexBlock({ className }, data, { index }) {
   const i = index + 1;
-  return `<div class="${className}__item-index" data-index="${i}"></div>`;
+  return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}"></span></div>`;
 }
 
 function renderDate(date) {
