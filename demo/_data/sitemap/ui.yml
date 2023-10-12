@@ -60,3 +60,8 @@ sections:
     path: /tracker/watch
   - title: Click
     path: /tracker/click
+- title: Misc
+  path: /misc
+  pages:
+  - title: Citation link
+    path: /misc/citation-link

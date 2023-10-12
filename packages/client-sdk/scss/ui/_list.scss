@@ -166,20 +166,3 @@
     }
   }
 }
-
-.dingbat .miso-list__item-index {
-  position: absolute;
-  display: block;
-  top: var(--miso-list-item-gap);
-  right: var(--miso-list-item-gap);
-  height: var(--miso-list-item-index-size);
-  width: var(--miso-list-item-index-size);
-  line-height: var(--miso-list-item-index-size);
-  font-size: 1.5rem;
-  border: none;
-  color: #999;
-
-  &::before {
-    content: attr(data-char);
-  }
-}

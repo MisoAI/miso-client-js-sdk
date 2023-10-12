@@ -130,7 +130,7 @@
     margin: 0 auto;
   }
 
-  .citition-link {
+  .citation-link {
     position: relative;
     display: inline-block;
     height: var(--miso-markdown-citation-link-size);
@@ -157,29 +157,6 @@
     &:hover {
       background-color: var(--miso-markdown-citation-link-color);
       color: #fff;
-    }
-  }
-}
-
-.dingbat {
-  .citition-link {
-    display: inline;
-    font-size: 1.3em;
-    border: none;
-    height: auto;
-    width: auto;
-
-    &::before {
-      position: static;
-      content: attr(data-char);
-    }
-    &:hover {
-      background-color: transparent;
-      color: var(--miso-markdown-citation-link-color);
-
-      &::before {
-        content: attr(data-char-negative);
-      }
     }
   }
 }
