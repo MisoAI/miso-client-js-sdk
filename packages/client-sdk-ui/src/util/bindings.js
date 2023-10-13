@@ -4,7 +4,7 @@ export function fallbackListFunction(keyAttrName) {
   return element => Array.from(element.querySelectorAll(`[${keyAttrName}]`)).map(element => ({
     element,
     value: {
-      product_id: element.getAttribute(keyAttrName),
+      product_id: element.getAttribute(keyAttrName), // TODO: product_id is ad-hoc
     },
   }));
 }

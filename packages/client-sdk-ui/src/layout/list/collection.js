@@ -153,12 +153,20 @@ export default class CollectionLayout extends TemplateBasedLayout {
     return element ? Array.from(element.querySelectorAll(`[data-role="item"]`)) : [];
   }
 
-  _listBindings(element) {
-    return this._listItemElements(element).map(element => {
+  _listBindings(rootElement) {
+    if (!rootElement) {
+      return [];
+    }
+    const bindings = [];
+    for (const element of this._listItemElements(rootElement)) {
       const value = element[VALUE];
+      if (!value) {
+        continue;
+      }
       const key = this.options.itemType === 'product' ? value.product_id : value;
-      return { element, key, value };
-    });
+      bindings.push({ element, key, value });
+    }
+    return bindings;
   }
 
   _onClick(event) {

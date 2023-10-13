@@ -108,16 +108,21 @@ export default class OptionListLayout extends TemplateBasedLayout {
     }
   }
 
-  _listBindings(element) {
-    if (!element) {
+  _listBindings(rootElement) {
+    if (!rootElement) {
       return [];
     }
-    const optionsElement = this._getOptionsElement(element);
-    return this._listOptionElements(optionsElement).map(element => {
+    const optionsElement = this._getOptionsElement(rootElement);
+    const bindings = [];
+    for (const element of this._listOptionElements(optionsElement)) {
       const value = element[OPTION_VALUE];
+      if (!value) {
+        continue;
+      }
       const key = value.text || value;
-      return { key, value, element };
-    });
+      bindings.push({ key, value, element });
+    }
+    return bindings;
   }
 
   _getOptionsElement(element) {

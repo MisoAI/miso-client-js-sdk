@@ -59,7 +59,7 @@
 </section>
 </script>
 <script id="follow-up-template" type="text/plain">
-<div class="follow-up">
+<div class="follow-up" data-miso-pqid="{{parentQuestionId}}">
   <hr>
   <miso-ask visible-when="initial" parent-question-id="{{parentQuestionId}}">
     <div class="phrase">Related questions you can explore</div>
@@ -81,6 +81,7 @@
 </script>
 <script>
 const rootContainer = document.getElementById('root-container');
+let followUpsSection, relatedResourcesContainer;
 const TEMPLATES = {
   ROOT: document.getElementById('root-template').innerHTML,
   FOLLOW_UP: document.getElementById('follow-up-template').innerHTML,
@@ -122,14 +123,14 @@ function clearWorkflow() {
 }
 function startDom(html) {
   rootContainer.innerHTML = html || TEMPLATES.ROOT;
+  followUpsSection = document.getElementById('follow-ups');
+  relatedResourcesContainer = document.getElementById('related-resources');
 }
 function start() {
   startDom();
   startWorkflow();
 }
 function startWorkflow() {
-  const followUpsSection = document.getElementById('follow-ups');
-  const relatedResourcesContainer = document.getElementById('related-resources');
   const client = MisoClient.instances[0] || new MisoClient({
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
@@ -140,6 +141,10 @@ function startWorkflow() {
     relatedResourcesContainer.workflow = workflow;
   });
   context.on('done', ({ workflow }) => {
+    if (followUpsSection.querySelector(`[data-miso-pqid="${workflow.questionId}"]`)) {
+      // already rendered
+      return;
+    }
     followUpsSection.insertAdjacentHTML('beforeend', render(TEMPLATES.FOLLOW_UP, { parentQuestionId: workflow.questionId }));
   });
   // root workflow
