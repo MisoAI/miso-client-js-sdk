@@ -97,10 +97,9 @@ export default class Recommendation extends Workflow {
   }
 
   // destroy //
-  _destroy() {
+  _destroy(options) {
     this._context._members.delete(this.id);
-    this._tracker._destroy();
-    super._destroy();
+    super._destroy(options);
   }
 
 }

@@ -39,4 +39,24 @@ export default class Asks extends WorkflowContext {
     return workflow;
   }
 
+  reset({ root = true, events, ...options } = {}) {
+    // clear event listeners on context
+    if (events === undefined) {
+      events = !!root; // events are default to be true only when root = true
+    }
+    if (events) {
+      this._events.clear();
+    }
+
+    // destroy all follow-up workflows
+    for (const workflow of this._byPqid.values()) {
+      workflow.destroy(options);
+    }
+
+    // reset root workflow
+    if (root) {
+      this._root.reset();
+    }
+  }
+
 }

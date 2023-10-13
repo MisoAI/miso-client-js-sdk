@@ -44,7 +44,7 @@
   </div>
 </div>
 
-## Unicode
+## Circled
 
 <div class="miso-circled-citation-index">
   <div class="miso-markdown">

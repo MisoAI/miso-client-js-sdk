@@ -20,6 +20,8 @@ sections:
     path: /ask/customize-element
   - title: No tracking
     path: /ask/no-tracking
+  - title: SPA
+    path: /ask/spa
   - title: Error
     path: /ask/error
 - title: Explore

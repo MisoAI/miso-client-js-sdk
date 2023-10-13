@@ -219,7 +219,7 @@ export default class Ask extends Workflow {
     return payload;
   }
 
-  _destroy() {
+  _destroy(options) {
     const { parentQuestionId, questionId } = this;
     if (parentQuestionId) {
       this._context._byPqid.delete(parentQuestionId);
@@ -228,7 +228,7 @@ export default class Ask extends Workflow {
       this._context._byQid.delete(questionId);
     }
     this._feedback._destroy();
-    super._destroy();
+    super._destroy(options);
   }
 
 }

@@ -150,9 +150,10 @@ export default class ViewsActor {
     console.error(e);
   }
 
-  destroy() {
+  _destroy({ dom } = {}) {
     // destroy components, and then containers
     for (const view of this._getViews(false)) {
+      // TODO: handle dom option
       view._destroy();
     }
     for (const unsubscribe of this._unsubscribes) {

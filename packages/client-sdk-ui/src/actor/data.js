@@ -92,7 +92,7 @@ export default class DataActor {
     console.error(error);
   }
 
-  destroy() {
+  _destroy() {
     // abort ongoing data fetch if any
     this._ac && this._ac.abort({
       type: 'data-actor-destroy',

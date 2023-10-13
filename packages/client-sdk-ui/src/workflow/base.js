@@ -239,20 +239,20 @@ export default class Workflow extends Component {
   }
 
   // destroy //
-  destroy() {
+  destroy(options) {
     this._events.emit('destroy');
-    this._destroy();
+    this._destroy(options);
   }
 
-  _destroy() {
+  _destroy({ dom } = {}) {
     for (const unsubscribe of this._unsubscribes || []) {
       unsubscribe();
     }
     this._unsubscribes = [];
 
     this._trackers._destroy();
-    this._views.destroy();
-    this._data.destroy();
+    this._views._destroy({ dom });
+    this._data._destroy();
   }
 
   // helper //

@@ -52,6 +52,12 @@ export default class EventEmitter {
     });
   }
 
+  clear() {
+    this._namedCallbacks = {};
+    this._unnamedCallbacks = [];
+    this._pastEvents = {};
+  }
+
   // helper //
   _checkName(name) {
     if (typeof name !== 'string') {
