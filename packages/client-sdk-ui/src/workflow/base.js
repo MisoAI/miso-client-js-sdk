@@ -44,17 +44,13 @@ export default class Workflow extends Component {
 
     const extensions = this._extensions = plugin._getExtensions(client);
     const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
-
-    const source = this._source = sources.api(client);
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
+    const source = this._source = sources.api(client);
 
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source, options });
     this._views = new ViewsActor(hub, { extensions, layouts: plugin.layouts, roles, options });
     this._interactions = new InteractionsActor(hub, { client, options });
-
-    this._customProcessData = IDF;
-
     this._trackers = new Trackers(this._hub, this._views, trackers);
 
     this._unsubscribes = [
@@ -114,7 +110,10 @@ export default class Workflow extends Component {
 
     this._sessions.start(); // in case session not started yet
 
-    data = this._customProcessData(this._defaultProcessData(data));
+    data = this._defaultProcessData(data);
+    for (const process of this._options.resolved.dataProcessor) {
+      data = process(data);
+    }
 
     this._hub.update(fields.data(), data);
 
@@ -136,14 +135,6 @@ export default class Workflow extends Component {
     };
   }
 
-  useDataProcessor(fn) {
-    if (fn && typeof fn !== 'function') {
-      throw new Error(`Data processor must be a function or undefined.`);
-    }
-    this._customProcessData = fn || IDF;
-    return this;
-  }
-
   notifyViewUpdate(role, state) {
     this._assertActive();
     state = {
@@ -163,6 +154,11 @@ export default class Workflow extends Component {
 
   useLayouts(options = {}) {
     this._options.layouts = options;
+    return this;
+  }
+
+  useDataProcessor(fn) {
+    this._options.dataProcessor = fn;
     return this;
   }
 

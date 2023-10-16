@@ -20,6 +20,11 @@ export default class WorkflowContext extends Component {
     return this;
   }
 
+  useDataProcessor(fn) {
+    this._options.dataProcessor = fn;
+    return this;
+  }
+
   useInteractions(options) {
     this._options.interactions = options;
     return this;

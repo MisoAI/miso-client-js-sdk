@@ -50,8 +50,8 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
-  const workflow = client.ui.ask;
-  workflow.useDataProcessor(data => {
+  //const workflow = client.ui.ask;
+  client.ui.asks.useDataProcessor(data => {
     const { value } = data;
     if (!value) {
       return data;

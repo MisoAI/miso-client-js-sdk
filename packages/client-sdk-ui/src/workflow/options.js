@@ -70,6 +70,16 @@ export function normalizeInteractionsOptions(options) {
   return { ...options, preprocess };
 }
 
+export function normalizeDataProcessorOptions(fns) {
+  fns = asArray(fns);
+  for (const fn of fns) {
+    if (typeof fn !== 'function') {
+      throw new Error(`Expect data processor options to be a function: ${fn}`);
+    }
+  }
+  return fns;
+}
+
 // merge //
 export function mergeApiOptions(...optionsList) {
   if (optionsList[optionsList.length - 1] === false) {
@@ -111,6 +121,10 @@ export function mergeInteractionsOptions(...optionsList) {
   }));
 }
 
+export function mergeDataProcessorOptions(...optionsList) {
+  return optionsList.flat().filter(Boolean);
+}
+
 
 
 // manifest //
@@ -130,6 +144,11 @@ const FEATURES = [
     normalize: normalizeInteractionsOptions,
     merge: mergeInteractionsOptions,
   },
+  {
+    key: 'dataProcessor',
+    normalize: normalizeDataProcessorOptions,
+    merge: mergeDataProcessorOptions,
+  }
 ];
 
 
@@ -216,12 +235,6 @@ for (const { key, normalize, merge } of FEATURES) {
 }
 
 // helpers //
-/*
-function concatFunctions(fn0, fn1) {
-  return fn0 ? fn1 ? (...args) => fn1(fn0(...args)) : fn0 : fn1;
-}
-*/
-
 function concatArrays(a0, a1) {
   return (a0 && a0.length) ? (a1 && a1.length) ? [...a0, ...a1] : a0 : a1;
 }
