@@ -108,6 +108,7 @@ export default class Tracker {
   _handleEvent(data) {
     const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
     const misoId = this._getMisoId();
+    // TODO: should trigger 'tracker' and let workflow translate to interactions
     this._hub.trigger(fields.interaction(), toInteraction({ property, misoId }, data));
   }
 

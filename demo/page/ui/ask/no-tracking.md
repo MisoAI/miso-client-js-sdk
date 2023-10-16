@@ -79,12 +79,6 @@ const template = (data) => {
   }
   return html;
 };
-function setup(workflow) {
-  //workflow.useTrackers(false);
-  workflow.useInteractions({
-    handle: () => {},
-  });
-}
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   // TODO: better timing management
@@ -97,24 +91,18 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const context = client.ui.asks;
+  context.useInteractions(false);
   context.on('loading', ({ workflow }) => {
     relatedResourcesContainer.workflow = workflow;
   });
   context.on('done', ({ workflow }) => {
     followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
   });
-  context.on('create', setup);
-  const rootWorkflow = client.ui.ask;
-  setup(rootWorkflow);
-  rootWorkflow.on('loading', () => {
+  client.ui.ask.on('loading', () => {
     // clean up the entire follow-ups section
     followUpsSection.innerHTML = '';
-    // destroy all follow-up workflows
-    for (const workflow of client.ui.asks.workflows) {
-      if (workflow !== rootWorkflow) {
-        workflow.destroy();
-      }
-    }
+    // clear workflows except for the root one
+    context.reset({ root: false });
   });
 });
 </script>

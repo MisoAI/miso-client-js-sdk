@@ -15,8 +15,13 @@ export default class WorkflowContext extends Component {
     return this;
   }
 
-  useLayouts(layouts = {}) {
-    this._options.layouts = layouts;
+  useLayouts(options) {
+    this._options.layouts = options;
+    return this;
+  }
+
+  useInteractions(options) {
+    this._options.interactions = options;
     return this;
   }
 

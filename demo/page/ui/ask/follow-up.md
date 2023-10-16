@@ -99,16 +99,11 @@ misocmd.push(async () => {
   context.on('done', ({ workflow }) => {
     followUpsSection.insertAdjacentHTML('beforeend', template({ parentQuestionId: workflow.questionId }));
   });
-  const rootWorkflow = client.ui.ask;
-  rootWorkflow.on('loading', () => {
+  client.ui.ask.on('loading', () => {
     // clean up the entire follow-ups section
     followUpsSection.innerHTML = '';
-    // destroy all follow-up workflows
-    for (const workflow of client.ui.asks.workflows) {
-      if (workflow !== rootWorkflow) {
-        workflow.destroy();
-      }
-    }
+    // clear workflows except for the root one
+    context.reset({ root: false });
   });
 });
 </script>

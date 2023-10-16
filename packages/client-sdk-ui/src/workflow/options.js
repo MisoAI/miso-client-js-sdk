@@ -1,4 +1,4 @@
-import { EventEmitter, asArray, trimObj } from '@miso.ai/commons';
+import { EventEmitter, defineValues, asArray, trimObj } from '@miso.ai/commons';
 import { ROLE } from '../constants.js';
 
 // normalize //
@@ -47,47 +47,71 @@ function normalizeLayoutOptions(args) {
   return [name, options];
 }
 
+export function normalizeInteractionsOptions(options) {
+  if (options === undefined) {
+    return undefined;
+  }
+  if (options === false) {
+    return {
+      handle: () => {},
+    };
+  }
+  // preprocess
+  const preprocess = asArray(options.preprocess);
+  for (const p of preprocess) {
+    if (typeof p !== 'function') {
+      throw new Error(`Expect preprocess options to be a function: ${p}`);
+    }
+  }
+  // handle
+  if (options.handle && typeof options.handle !== 'function') {
+    throw new Error(`Expect handle options to be a function: ${options.handle}`);
+  }
+  return { ...options, preprocess };
+}
+
 // merge //
 export function mergeApiOptions(...optionsList) {
   if (optionsList[optionsList.length - 1] === false) {
     return false;
   }
-  let merged = {};
-  for (const options of optionsList) {
-    if (!options) {
-      continue;
-    }
-    Object.assign(merged, {
-      ...options,
-      payload: {
-        ...merged.payload,
-        ...options.payload,
-      },
-    });
-  }
-  return merged;
+  return mergeOptions(optionsList, (merged, options) => Object.assign(merged, {
+    ...options,
+    payload: {
+      ...merged.payload,
+      ...options.payload,
+    },
+  }));
 }
 
 export function mergeLayoutsOptions(...optionsList) {
   if (optionsList[optionsList.length - 1] === false) {
     return false;
   }
-  let merged = {};
-  for (const options of optionsList) {
-    if (!options) {
-      continue;
-    }
+  return mergeOptions(optionsList, (merged, options) => {
     for (const [role, args] of Object.entries(options)) {
       merged[role] = mergeLayoutOptions(merged[role], args);
     }
-  }
-  return merged;
+    return merged;
+  });
 }
 
 function mergeLayoutOptions(base, overrides) {
   overrides = normalizeLayoutOptions(overrides);
   return base && overrides ? [overrides[0] || base[0], { ...base[1], ...overrides[1] }] : (overrides || base);
 }
+
+export function mergeInteractionsOptions(...optionsList) {
+  if (optionsList[optionsList.length - 1] === false) {
+    return false;
+  }
+  return mergeOptions(optionsList, (merged, options) => Object.assign(merged, {
+    ...options,
+    preprocess: concatArrays(merged.preprocess, options.preprocess),
+  }));
+}
+
+
 
 // manifest //
 const FEATURES = [
@@ -100,6 +124,11 @@ const FEATURES = [
     key: 'layouts',
     normalize: normalizeLayoutsOptions,
     merge: mergeLayoutsOptions,
+  },
+  {
+    key: 'interactions',
+    normalize: normalizeInteractionsOptions,
+    merge: mergeInteractionsOptions,
   },
 ];
 
@@ -122,12 +151,13 @@ export class WorkflowOptions {
 
   constructor(globals = {}, defaults = {}) {
     this._events = new EventEmitter({ target: this });
-    this._defaults = defaults; // TODO: expose defaults
+    this._defaults = defaults;
     this._globals = globals || {};
     this._locals = {};
 
-    Object.defineProperty(this, 'resolved', {
-      value: new ResolvedWorkflowOptions(this),
+    defineValues(this, {
+      resolved: new ResolvedWorkflowOptions(this),
+      defaults,
     });
 
     if (globals && globals.on) {
@@ -183,4 +213,26 @@ for (const { key, normalize, merge } of FEATURES) {
       return merge(options._defaults[key], options._globals[key], options._locals[key]);
     },
   });
+}
+
+// helpers //
+/*
+function concatFunctions(fn0, fn1) {
+  return fn0 ? fn1 ? (...args) => fn1(fn0(...args)) : fn0 : fn1;
+}
+*/
+
+function concatArrays(a0, a1) {
+  return (a0 && a0.length) ? (a1 && a1.length) ? [...a0, ...a1] : a0 : a1;
+}
+
+function mergeOptions(optionsList, merge) {
+  let merged = {};
+  for (const options of optionsList) {
+    if (!options) {
+      continue;
+    }
+    merged = merge(merged, options);
+  }
+  return trimObj(merged);
 }

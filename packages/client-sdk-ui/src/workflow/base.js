@@ -3,8 +3,8 @@ import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, Trackers, 
 import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
-import { mergeInteractionsOptions, injectLogger } from './utils.js';
-import { WorkflowOptions } from './options.js';
+import { injectLogger } from './utils.js';
+import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions } from './options.js';
 
 const IDF = v => v;
 
@@ -13,13 +13,14 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.ERROR]: ErrorLayout.type,
 });
 
-function mergeDefaults({ layouts, ...defaults } = {}) {
+function mergeDefaults(workflow, { layouts, interactions, ...defaults } = {}) {
+  const DEFAULT_INTERACTIONS = {
+    preprocess: [payload => workflow._preprocessInteraction(payload)],
+  };
   return {
-    layouts: {
-      ...DEFAULT_LAYOUTS,
-      ...layouts,
-    },
     ...defaults,
+    layouts: mergeLayoutsOptions(DEFAULT_LAYOUTS, layouts),
+    interactions: mergeInteractionsOptions(DEFAULT_INTERACTIONS, interactions),
   };
 }
 
@@ -32,7 +33,6 @@ export default class Workflow extends Component {
     client,
     roles,
     trackers = {},
-    interactionsOptions,
     defaults,
   }) {
     super(name || 'workflow', plugin);
@@ -42,13 +42,8 @@ export default class Workflow extends Component {
     this._name = name;
     this._roles = roles;
 
-    const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(defaults));
-
-    const extensions = plugin._getExtensions(client);
-
-    this._defaultInteractionsOptions = interactionsOptions = mergeInteractionsOptions({
-      preprocess: payload => this._preprocessInteraction(payload),
-    }, interactionsOptions);
+    const extensions = this._extensions = plugin._getExtensions(client);
+    const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
 
     const source = this._source = sources.api(client);
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
@@ -56,7 +51,7 @@ export default class Workflow extends Component {
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source, options });
     this._views = new ViewsActor(hub, { extensions, layouts: plugin.layouts, roles, options });
-    this._interactions = new InteractionsActor(hub, { client, options: interactionsOptions });
+    this._interactions = new InteractionsActor(hub, { client, options });
 
     this._customProcessData = IDF;
 
@@ -160,15 +155,19 @@ export default class Workflow extends Component {
     return this;
   }
 
-  // source //
+  // configuration //
   useApi(...args) {
     this._options.api = args;
     return this;
   }
 
-  // layout //
-  useLayouts(layouts = {}) {
-    this._options.layouts = layouts;
+  useLayouts(options = {}) {
+    this._options.layouts = options;
+    return this;
+  }
+
+  useInteractions(options) {
+    this._options.interactions = options;
     return this;
   }
 
@@ -179,12 +178,6 @@ export default class Workflow extends Component {
 
   useTrackers(options) {
     this._trackers.config(options);
-    return this;
-  }
-
-  // interactions //
-  useInteractions(options) {
-    this._interactions.config(mergeInteractionsOptions(this._defaultInteractionsOptions, options));
     return this;
   }
 

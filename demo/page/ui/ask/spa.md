@@ -148,12 +148,11 @@ function startWorkflow() {
     followUpsSection.insertAdjacentHTML('beforeend', render(TEMPLATES.FOLLOW_UP, { parentQuestionId: workflow.questionId }));
   });
   // root workflow
-  const rootWorkflow = client.ui.ask;
-  rootWorkflow.on('loading', () => {
+  client.ui.ask.on('loading', () => {
     // clean up the entire follow-ups section
     followUpsSection.innerHTML = '';
     // clear workflows except for the root one
-    client.ui.asks.reset({ root: false });
+    context.reset({ root: false });
   });
 }
 // kick off //
