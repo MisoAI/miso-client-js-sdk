@@ -1,6 +1,6 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApi } from './options.js';
+import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
@@ -24,6 +24,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 
 const DEFAULT_OPTIONS = Object.freeze({
   api: DEFAULT_API_OPTIONS,
+  layouts: DEFAULT_LAYOUTS,
 });
 
 export default class Search extends Workflow {
@@ -56,7 +57,7 @@ export default class Search extends Workflow {
   query(payload) {
     this.restart();
     const { session } = this;
-    this._hub.update(fields.request(), mergeApi(this.options.api, { payload, session }));
+    this._hub.update(fields.request(), mergeApiOptions(this.options.resolved.api, { payload, session }));
     return this;
   }
 

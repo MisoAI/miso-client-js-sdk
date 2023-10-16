@@ -1,6 +1,6 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApi } from './options.js';
+import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
@@ -23,6 +23,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 
 const DEFAULT_OPTIONS = Object.freeze({
   api: DEFAULT_API_OPTIONS,
+  layouts: DEFAULT_LAYOUTS,
 });
 
 export default class Recommendation extends Workflow {
@@ -59,7 +60,7 @@ export default class Recommendation extends Workflow {
     // in recommendation workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     const { session } = this;
-    this._hub.update(fields.request(), mergeApi(this._options.api, { session }));
+    this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { session }));
     return this;
   }
 

@@ -2,7 +2,7 @@ import * as fields from './fields.js';
 
 export default class DataActor {
 
-  constructor(hub, source, options) {
+  constructor(hub, { source, options }) {
     this._hub = hub;
     this._source = source;
     this._options = options;
@@ -13,7 +13,7 @@ export default class DataActor {
   }
 
   get active() {
-    return this._options.api.actor !== false;
+    return this._options.resolved.api.actor !== false;
   }
 
   get source() {

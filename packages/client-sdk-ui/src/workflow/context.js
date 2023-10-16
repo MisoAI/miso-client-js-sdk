@@ -1,5 +1,5 @@
 import { Component } from '@miso.ai/commons';
-import { WorkflowContextOptions, normalizeApiOptions } from './options.js';
+import { WorkflowContextOptions } from './options.js';
 
 export default class WorkflowContext extends Component {
 
@@ -10,8 +10,13 @@ export default class WorkflowContext extends Component {
     this._options = new WorkflowContextOptions();
   }
 
-  useApi(name, payload) {
-    this._options.api = normalizeApiOptions(name, payload);
+  useApi(...args) {
+    this._options.api = args;
+    return this;
+  }
+
+  useLayouts(layouts = {}) {
+    this._options.layouts = layouts;
     return this;
   }
 

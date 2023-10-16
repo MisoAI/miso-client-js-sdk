@@ -1,19 +1,10 @@
-import { Component, asArray, trimObj } from '@miso.ai/commons';
+import { Component } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, Trackers, fields } from '../actor/index.js';
 import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { mergeInteractionsOptions, injectLogger } from './utils.js';
-import { WorkflowOptions, normalizeApiOptions } from './options.js';
-
-function normalizeLayoutOptions(args) {
-  let [name, options] = asArray(args);
-  if (typeof name === 'object') {
-    options = name;
-    name = undefined;
-  }
-  return [name, options];
-}
+import { WorkflowOptions } from './options.js';
 
 const IDF = v => v;
 
@@ -21,6 +12,16 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
   [ROLE.ERROR]: ErrorLayout.type,
 });
+
+function mergeDefaults({ layouts, ...defaults } = {}) {
+  return {
+    layouts: {
+      ...DEFAULT_LAYOUTS,
+      ...layouts,
+    },
+    ...defaults,
+  };
+}
 
 export default class Workflow extends Component {
 
@@ -30,7 +31,6 @@ export default class Workflow extends Component {
     plugin,
     client,
     roles,
-    layouts = {},
     trackers = {},
     interactionsOptions,
     defaults,
@@ -42,14 +42,10 @@ export default class Workflow extends Component {
     this._name = name;
     this._roles = roles;
 
-    const options = this._options = new WorkflowOptions(context && context._options, defaults);
+    const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(defaults));
 
     const extensions = plugin._getExtensions(client);
 
-    this._defaultLayouts = {
-      ...DEFAULT_LAYOUTS,
-      ...layouts,
-    };
     this._defaultInteractionsOptions = interactionsOptions = mergeInteractionsOptions({
       preprocess: payload => this._preprocessInteraction(payload),
     }, interactionsOptions);
@@ -58,12 +54,9 @@ export default class Workflow extends Component {
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
 
     this._sessions = new SessionMaker(hub);
-    this._data = new DataActor(hub, source, options);
-    this._views = new ViewsActor(hub, extensions, {
-      roles,
-      layouts: this._generateLayoutFactoryFunctions(this._defaultLayouts),
-    });
-    this._interactions = new InteractionsActor(hub, client, interactionsOptions);
+    this._data = new DataActor(hub, { source, options });
+    this._views = new ViewsActor(hub, { extensions, layouts: plugin.layouts, roles, options });
+    this._interactions = new InteractionsActor(hub, { client, options: interactionsOptions });
 
     this._customProcessData = IDF;
 
@@ -168,34 +161,15 @@ export default class Workflow extends Component {
   }
 
   // source //
-  useApi(name, payload) {
-    this._options.api = normalizeApiOptions(name, payload);
+  useApi(...args) {
+    this._options.api = args;
     return this;
   }
 
   // layout //
   useLayouts(layouts = {}) {
-    this._views.layouts = this._generateLayoutFactoryFunctions(layouts);
+    this._options.layouts = layouts;
     return this;
-  }
-
-  _generateLayoutFactoryFunctions(config) {
-    const fns = {};
-    for (const [role, args] of Object.entries(config)) {
-      if (args === false) {
-        fns[role] = () => false;
-        continue;
-      }
-      let [ defaultName, defaultOptions ] = normalizeLayoutOptions(this._defaultLayouts[role]);
-      let [ name, options ] = normalizeLayoutOptions(args);
-      name = name || defaultName;
-      options = { ...defaultOptions, ...options };
-      if (!name) {
-        throw new Error(`Layout name is required for role ${role}`);
-      }
-      fns[role] = (overrides) => this._plugin.layouts.create(name, { ...options, ...overrides, role });
-    }
-    return fns;
   }
 
   // trackers //
@@ -224,7 +198,7 @@ export default class Workflow extends Component {
     const {
       group: api_group,
       name: api_name,
-    } = this._options.api;
+    } = this._options.resolved.api;
     return {
       ...payload,
       context: {

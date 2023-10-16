@@ -5,21 +5,22 @@ import ViewActor from './view.js';
 
 export default class ViewsActor {
 
-  constructor(hub, extensions, {
+  constructor(hub, {
+    extensions,
+    layouts,
     roles = [],
-    layouts = {},
+    options,
   }) {
     this._hub = hub;
     this._extensions = extensions;
+    this._layoutFactory = layouts;
+    this._options = options;
     this._containers = new Map();
     this._views = {};
 
     for (const role of roles) {
       this._views[role] = new ViewActor(this, role);
     }
-
-    this._layoutFns = new Map();
-    this.layouts = layouts;
 
     defineValues(this, {
       interface: new Views(this),
@@ -31,7 +32,10 @@ export default class ViewsActor {
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
       hub.on(fields.data(), () => this.refresh()),
+      options.on('layouts', () => this._requestSyncLayouts()),
     ];
+
+    this._requestSyncLayouts();
   }
 
   // elements //
@@ -40,8 +44,7 @@ export default class ViewsActor {
       return;
     }
     const view = new ViewActor(this, ROLE.CONTAINER);
-    // TODO: layout options overrides
-    view.layout = this._layoutFns.get(ROLE.CONTAINER)();
+    view.layout = this._createLayout(ROLE.CONTAINER);
     view.element = element;
     this._containers.set(element, view);
 
@@ -89,18 +92,51 @@ export default class ViewsActor {
     return this.get(role);
   }
 
-  set layouts(layouts) {
-    for (let [role, fn] of Object.entries(layouts)) {
-      this._layoutFns.set(role, fn);
-      if (role === ROLE.CONTAINER) {
-        for (const view of this._containers.values()) {
-          // TODO: layout options overrides
-          view.layout = fn();
+  _requestSyncLayouts() {
+    this._setLayoutRequested = true;
+    setTimeout(() => {
+      if (!this._setLayoutRequested) {
+        return;
+      }
+      this._setLayoutRequested = false;
+      this._syncLayouts();
+    });
+  }
+
+  _syncLayouts() {
+    // TODO: put a debug event here
+    const { layouts } = this._options.resolved;
+    if (layouts === false) {
+      // containers
+      for (const view of this._containers.values()) {
+        view.layout = undefined;
+      }
+      // components
+      for (const view of Object.values(this._views)) {
+        view.layout = undefined;
+      }
+    } else {
+      for (let [role, [name, options]] of Object.entries(layouts)) {
+        // TODO: try to omit if unchanged
+        const fn = () => this._layoutFactory.create(name, { ...options, role });
+        if (role === ROLE.CONTAINER) {
+          for (const view of this._containers.values()) {
+            view.layout = fn();
+          }
+        } else {
+          this.get(role).layout = fn();
         }
-      } else {
-        this.get(role).layout = fn();
       }
     }
+  }
+
+  _createLayout(role) {
+    const args = this._options.resolved.layouts[role];
+    if (!args) {
+      return undefined;
+    }
+    const [name, options] = args;
+    return this._layoutFactory.create(name, { ...options, role });
   }
 
   get(role) {

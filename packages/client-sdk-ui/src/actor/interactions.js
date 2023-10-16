@@ -3,7 +3,7 @@ import * as fields from './fields.js';
 
 export default class InteractionsActor {
 
-  constructor(hub, client, options = {}) {
+  constructor(hub, { client, options = {} }) {
     this._client = client;
     this.config(options);
     this._unsubscribes = [
