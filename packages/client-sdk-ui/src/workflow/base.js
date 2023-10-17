@@ -32,7 +32,6 @@ export default class Workflow extends Component {
     plugin,
     client,
     roles,
-    trackers = {},
     defaults,
   }) {
     super(name || 'workflow', plugin);
@@ -46,12 +45,13 @@ export default class Workflow extends Component {
     const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
     const source = this._source = sources.api(client);
+    const layouts = plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source, options });
-    this._views = new ViewsActor(hub, { extensions, layouts: plugin.layouts, roles, options });
+    const views = this._views = new ViewsActor(hub, { extensions, layouts, roles, options });
     this._interactions = new InteractionsActor(hub, { client, options });
-    this._trackers = new Trackers(this._hub, this._views, trackers);
+    this._trackers = new Trackers(hub, { views, options });
 
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
@@ -135,6 +135,8 @@ export default class Workflow extends Component {
     };
   }
 
+  // TODO: notifyViewUpdateAll()
+
   notifyViewUpdate(role, state) {
     this._assertActive();
     state = {
@@ -162,6 +164,11 @@ export default class Workflow extends Component {
     return this;
   }
 
+  useTrackers(options) {
+    this._options.trackers = options;
+    return this;
+  }
+
   useInteractions(options) {
     this._options.interactions = options;
     return this;
@@ -170,11 +177,6 @@ export default class Workflow extends Component {
   // trackers //
   get trackers() {
     return this._trackers;
-  }
-
-  useTrackers(options) {
-    this._trackers.config(options);
-    return this;
   }
 
   _preprocessInteraction({

@@ -25,6 +25,11 @@ export default class WorkflowContext extends Component {
     return this;
   }
 
+  useTrackers(options) {
+    this._options.trackers = options;
+    return this;
+  }
+
   useInteractions(options) {
     this._options.interactions = options;
     return this;

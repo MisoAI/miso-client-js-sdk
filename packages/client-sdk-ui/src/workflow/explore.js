@@ -21,6 +21,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 const DEFAULT_OPTIONS = Object.freeze({
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
+  trackers: DEFAULT_TRACKERS,
 });
 
 export default class Explore extends Workflow {
@@ -31,8 +32,6 @@ export default class Explore extends Workflow {
       plugin,
       client,
       roles: Object.keys(DEFAULT_LAYOUTS),
-      layouts: DEFAULT_LAYOUTS,
-      trackers: DEFAULT_TRACKERS,
       defaults: DEFAULT_OPTIONS,
     });
     this._productId = undefined;

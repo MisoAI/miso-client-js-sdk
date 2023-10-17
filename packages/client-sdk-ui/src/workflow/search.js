@@ -25,6 +25,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 const DEFAULT_OPTIONS = Object.freeze({
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
+  trackers: DEFAULT_TRACKERS,
 });
 
 export default class Search extends Workflow {
@@ -35,22 +36,10 @@ export default class Search extends Workflow {
       plugin,
       client,
       roles: Object.keys(DEFAULT_LAYOUTS),
-      layouts: DEFAULT_LAYOUTS,
-      trackers: DEFAULT_TRACKERS,
       defaults: DEFAULT_OPTIONS,
     });
 
     this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
-  }
-
-  // layout //
-  useLayouts({ [ROLE.RESULTS]: results, ...layouts } = {}) {
-    // fallback
-    if (results !== undefined) {
-      console.warn(`useLayouts({ ${[ROLE.RESULTS]}: ... }) is deprecated, use useLayouts({ ${[ROLE.PRODUCTS]}: ... }) instead`);
-      layouts[ROLE.PRODUCTS] = results;
-    }
-    super.useLayouts(layouts);
   }
 
   // lifecycle //

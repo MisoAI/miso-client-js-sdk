@@ -16,11 +16,15 @@ export function normalizeApiOptions([name, payload] = []) {
   return trimObj({ name, payload });
 }
 
-export function normalizeLayoutsOptions({ [ROLE.RESULTS]: results, ...options } = {}) {
-  // fallback
+export function normalizeLayoutsOptions(options = {}) {
+  if (options === false) {
+    return false;
+  }
+  // fallback: results -> products
+  const { [ROLE.RESULTS]: results, ...rest } = options;
   if (results !== undefined) {
     console.warn(`useLayouts({ ${[ROLE.RESULTS]}: ... }) is deprecated, use useLayouts({ ${[ROLE.PRODUCTS]}: ... }) instead`);
-    options[ROLE.PRODUCTS] = results;
+    options = { ...rest, [ROLE.PRODUCTS]: results };
   }
   const normalize = {};
   for (const [role, args] of Object.entries(options)) {
@@ -47,6 +51,31 @@ function normalizeLayoutOptions(args) {
   return [name, options];
 }
 
+export function normalizeDataProcessorOptions(fns) {
+  fns = asArray(fns);
+  for (const fn of fns) {
+    if (typeof fn !== 'function') {
+      throw new Error(`Expect data processor options to be a function: ${fn}`);
+    }
+  }
+  return fns;
+}
+
+export function normalizeTrackers(options) {
+  if (options === undefined || options === false) {
+    return options;
+  }
+  const normalized = {};
+  for (const [role, args] of Object.entries(options)) {
+    normalized[role] = normalizeTrackerOptions(args);
+  }
+  return normalized;
+}
+
+function normalizeTrackerOptions(options) {
+  return options;
+}
+
 export function normalizeInteractionsOptions(options) {
   if (options === undefined) {
     return undefined;
@@ -68,16 +97,6 @@ export function normalizeInteractionsOptions(options) {
     throw new Error(`Expect handle options to be a function: ${options.handle}`);
   }
   return { ...options, preprocess };
-}
-
-export function normalizeDataProcessorOptions(fns) {
-  fns = asArray(fns);
-  for (const fn of fns) {
-    if (typeof fn !== 'function') {
-      throw new Error(`Expect data processor options to be a function: ${fn}`);
-    }
-  }
-  return fns;
 }
 
 // merge //
@@ -108,7 +127,30 @@ export function mergeLayoutsOptions(...optionsList) {
 
 function mergeLayoutOptions(base, overrides) {
   overrides = normalizeLayoutOptions(overrides);
+  if (overrides[0] === false) {
+    return overrides;
+  }
   return base && overrides ? [overrides[0] || base[0], { ...base[1], ...overrides[1] }] : (overrides || base);
+}
+
+export function mergeDataProcessorOptions(...optionsList) {
+  return optionsList.flat().filter(Boolean);
+}
+
+export function mergeTrackersOptions(...optionsList) {
+  if (optionsList[optionsList.length - 1] === false) {
+    return false;
+  }
+  return mergeOptions(optionsList, (merged, options) => Object.assign(merged, {
+    ...options,
+    impression: mergeTrackerEventOptions(merged.impression, options.impression),
+    viewable: mergeTrackerEventOptions(merged.viewable, options.viewable),
+    click: mergeTrackerEventOptions(merged.click, options.click),
+  }));
+}
+
+function mergeTrackerEventOptions(base = {}, overrides = {}) {
+  return (overrides === false || base === false) ? overrides : { ...base, ...overrides };
 }
 
 export function mergeInteractionsOptions(...optionsList) {
@@ -119,10 +161,6 @@ export function mergeInteractionsOptions(...optionsList) {
     ...options,
     preprocess: concatArrays(merged.preprocess, options.preprocess),
   }));
-}
-
-export function mergeDataProcessorOptions(...optionsList) {
-  return optionsList.flat().filter(Boolean);
 }
 
 
@@ -140,15 +178,20 @@ const FEATURES = [
     merge: mergeLayoutsOptions,
   },
   {
+    key: 'dataProcessor',
+    normalize: normalizeDataProcessorOptions,
+    merge: mergeDataProcessorOptions,
+  },
+  {
+    key: 'trackers',
+    normalize: normalizeTrackerOptions,
+    merge: mergeTrackersOptions,
+  },
+  {
     key: 'interactions',
     normalize: normalizeInteractionsOptions,
     merge: mergeInteractionsOptions,
   },
-  {
-    key: 'dataProcessor',
-    normalize: normalizeDataProcessorOptions,
-    merge: mergeDataProcessorOptions,
-  }
 ];
 
 

@@ -32,10 +32,10 @@ export default class ViewsActor {
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
       hub.on(fields.data(), () => this.refresh()),
-      options.on('layouts', () => this._requestSyncLayouts()),
+      options.on('layouts', () => this._syncLayouts()),
     ];
 
-    this._requestSyncLayouts();
+    this._syncLayouts();
   }
 
   // elements //
@@ -92,6 +92,7 @@ export default class ViewsActor {
     return this.get(role);
   }
 
+  /*
   _requestSyncLayouts() {
     this._setLayoutRequested = true;
     setTimeout(() => {
@@ -102,6 +103,7 @@ export default class ViewsActor {
       this._syncLayouts();
     });
   }
+  */
 
   _syncLayouts() {
     // TODO: put a debug event here

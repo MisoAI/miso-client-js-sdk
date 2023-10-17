@@ -49,14 +49,9 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
-  const trackerOptions = {
-    click: {
-      lenient: true,
-    }
-  };
   const workflow = client.ui.recommendations.get('unit-1');
   window.helpers.unit.monitorEvents(workflow);
-  workflow.useTracker(trackerOptions).startTracker();
+  workflow.useTrackers({ products: { click: { lenient: true } } }).startTracker();
 });
 </script>
 {% endraw %}

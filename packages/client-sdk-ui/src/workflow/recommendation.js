@@ -24,6 +24,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 const DEFAULT_OPTIONS = Object.freeze({
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
+  trackers: DEFAULT_TRACKERS,
 });
 
 export default class Recommendation extends Workflow {
@@ -33,8 +34,6 @@ export default class Recommendation extends Workflow {
       name: 'recommendation',
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
-      layouts: DEFAULT_LAYOUTS,
-      trackers: DEFAULT_TRACKERS,
       defaults: DEFAULT_OPTIONS,
     });
 
@@ -42,16 +41,6 @@ export default class Recommendation extends Workflow {
     this._context = context;
 
     context._members.set(id, this);
-  }
-
-  // layout //
-  useLayouts({ [ROLE.RESULTS]: results, ...layouts } = {}) {
-    // fallback
-    if (results !== undefined) {
-      console.warn(`useLayouts({ ${[ROLE.RESULTS]}: ... }) is deprecated, use useLayouts({ ${[ROLE.PRODUCTS]}: ... }) instead`);
-      layouts[ROLE.PRODUCTS] = results;
-    }
-    super.useLayouts(layouts);
   }
 
   // lifecycle //
@@ -66,10 +55,9 @@ export default class Recommendation extends Workflow {
 
   startTracker() {
     this.useApi(false);
-    this.useLayouts({
-      [ROLE.PRODUCTS]: false,
-    });
+    this.useLayouts(false);
     this._sessions.start();
+    this.notifyViewUpdate(ROLE.CONTAINER);
     this.notifyViewUpdate(ROLE.PRODUCTS);
     return this;
   }

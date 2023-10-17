@@ -55,7 +55,7 @@ misocmd.push(() => {
   const client = new MisoClient('...');
   const workflow = client.ui.recommendations.get('unit-1');
   window.helpers.unit.monitorEvents(workflow);
-  workflow.useTracker({ watch: true }).startTracker();
+  workflow.useTrackers({ products: { watch: true }}).startTracker();
 });
 </script>
 {% endraw %}

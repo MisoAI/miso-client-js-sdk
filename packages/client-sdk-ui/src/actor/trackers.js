@@ -2,24 +2,33 @@ import Tracker from './tracker.js';
 
 export default class Trackers {
 
-  constructor(hub, views, params) {
+  constructor(hub, { views, options }) {
     this._hub = hub;
     this._views = views;
+    this._options = options;
     this._trackers = {};
-    for (const [name, options] of Object.entries(params)) {
-      this._trackers[name] = new Tracker(hub, views.get(name), options);
-      Object.defineProperty(this, name, {
-        get: () => this._trackers[name],
-      });
+    options.on('trackers', () => this._syncConfig());
+    this._syncConfig();
+  }
+
+  _syncConfig() {
+    for (const [role, options] of Object.entries(this._options.resolved.trackers)) {
+      this._createOrConfigTracker(role, options);
     }
   }
 
-  config(options = {}) {
-    for (const [name, tracker] of Object.entries(this._trackers)) {
-      const op = options === false ? false : options[name];
-      if (op !== undefined) {
-        tracker.config(op);
-      }
+  _createOrConfigTracker(role, options) {
+    if (options === undefined) {
+      return;
+    }
+    let tracker = this._trackers[role];
+    if (!tracker) {
+      tracker = this._trackers[role] = new Tracker(this._hub, this._views.get(role), options);
+      Object.defineProperty(this, role, {
+        get: () => this._trackers[role],
+      });
+    } else {
+      tracker.config(options);
     }
   }
 
