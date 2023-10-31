@@ -17,7 +17,9 @@ misocmd.push(() => {
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.explore;
-  workflow.productId = 'aaa';
+  workflow.useApi({
+    product_id: 'aaa',
+  });
   workflow.useLink(question => `https://dummy.miso.ai/ask?q=${encodeURIComponent(question)}`);
   workflow.start();
 });

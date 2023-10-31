@@ -39,12 +39,17 @@ export default class Explore extends Workflow {
     this._unsubscribes.push(this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleQuestionClick(event)));
   }
 
+  /*
   get productId() {
     return this._productId;
   }
+  */
 
   set productId(value) {
-    this._productId = value;
+    console.warning('DEPRECATED: use useApi() instead');
+    this.useApi({
+      product_id: value,
+    });
   }
 
   useLink(fn) {
@@ -57,20 +62,16 @@ export default class Explore extends Workflow {
 
   // lifecycle //
   start() {
-    if (!this._productId) {
-      throw new Error('Set productId before calling start()');
-    }
     if (this._linkFn === undefined) {
       throw new Error('Define link mapping function before calling start()');
     }
+    const payload = this._options.resolved.api;
+    // TODO: verify payload
     this._sessions.start();
     // in explore workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     const { session } = this;
-    const payload = {
-      product_id: this._productId,
-    };
-    this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
+    this._hub.update(fields.request(), mergeApiOptions(payload, { session }));
     return this;
   }
 

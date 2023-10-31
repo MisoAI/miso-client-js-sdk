@@ -38,10 +38,12 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.explore;
-  workflow.productId = 'aaa';
+  workflow.useApi({
+    product_id: 'aaa',
+  });
   workflow.useLink(false);
   workflow.on('select', ({ question }) => {
-    workflow.tracker.click([question.text]);
+    workflow.trackers.related_questions.click([question.text]);
     alert(`You selected: ${question.text}`);
   });
   workflow.start();
