@@ -227,6 +227,12 @@ table.miso-diagram .arrow.left {
   color: var(--color-primary);
 }
 
+.since {
+  color: #777;
+  font-style: italic;
+  font-weight: bold;
+}
+
 /* home */
 body.home main {
   padding: 0 !important;

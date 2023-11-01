@@ -49,38 +49,13 @@ async function start(apiKey) {
   }
   const client = new MisoClient(options);
   const rootWorkflow = client.ui.ask;
+  const workflows = client.ui.asks;
 
-  setup(rootWorkflow, { lorem });
-  client.ui.asks.on('create', workflow => setup(workflow, { lorem }));
-
-  // follow-up questions:
-  // if user starts over, clean up current follow-up questions
-  rootWorkflow.on('loading', () => {
-    // clean up the entire follow-ups section
-    elements.followUpsSection.innerHTML = '';
-    // destroy all follow-up workflows
-    for (const workflow of client.ui.asks.workflows) {
-      if (workflow !== rootWorkflow) {
-        workflow.destroy();
-      }
-    }
-  });
-
-  // start query if specified in URL
-  if (paramsFromUrl.q) {
-    elements.mainInput.value = paramsFromUrl.q;
-    rootWorkflow.query({ q: paramsFromUrl.q });
-  } else {
-    elements.mainInput.focus();
-  }
-}
-
-function setup(workflow, { lorem }) {
   // API parameters (from URL)
-  workflow.useApi('questions', apiParams);
+  workflows.useApi('questions', apiParams);
 
   if (lorem) {
-    workflow.useDataProcessor(data => {
+    workflows.useDataProcessor(data => {
       const { value } = data;
       if (!value) {
         return data;
@@ -98,15 +73,32 @@ function setup(workflow, { lorem }) {
 
   // follow-up questions:
   // when a answer is fully populated, insert a new section for the follow-up question
-  workflow.on('done', () => {
+  workflows.on('done', ({ workflow }) => {
     elements.followUpsSection.insertAdjacentHTML('beforeend', render({ parentQuestionId: workflow.questionId }));
   });
 
   // follow-up questions:
   // when a new query starts, associate the last section container (for related resources) to that workflow
-  workflow.on('loading', () => {
+  workflows.on('loading', ({ workflow }) => {
     elements.relatedResourcesContainer.workflow = workflow;
   });
+
+  // follow-up questions:
+  // if user starts over, clean up current follow-up questions
+  rootWorkflow.on('loading', () => {
+    // clean up the entire follow-ups section
+    elements.followUpsSection.innerHTML = '';
+    // destroy all follow-up workflows
+    workflows.reset({ root: false });
+  });
+
+  // start query if specified in URL
+  if (paramsFromUrl.q) {
+    elements.mainInput.value = paramsFromUrl.q;
+    rootWorkflow.query({ q: paramsFromUrl.q });
+  } else {
+    elements.mainInput.focus();
+  }
 }
 
 function render({ parentQuestionId }) {

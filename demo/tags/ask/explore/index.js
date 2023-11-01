@@ -41,7 +41,7 @@ async function start(product_id) {
   }
   const client = new MisoClient(options);
   const workflow = client.ui.explore;
-  workflow.productId = product_id;
+  workflow.useApi({ product_id });
   workflow.useLink(getLink);
   workflow.start();
 }
