@@ -22,10 +22,21 @@ export default class LoremPlugin {
   }
 
   install(MisoClient, { setCustomFetch, setCustomSendBeacon }) {
+    this._bypassApiKeyCheck(MisoClient);
     MisoClient.lorem = new Lorem(this);
     setCustomFetch(this._fetch.bind(this));
     setCustomSendBeacon(this._sendBeacon.bind(this));
     interceptDummyLinkClick();
+  }
+
+  _bypassApiKeyCheck(MisoClient) {
+    const _normalizeOptions = MisoClient.prototype._normalizeOptions;
+    MisoClient.prototype._normalizeOptions = function(options) {
+      if (typeof options === 'string') {
+        options = {};
+      }
+      return _normalizeOptions.call(this, { ...options, apiKey: 'lorem' });
+    };
   }
 
   _fetch(url, options) {
