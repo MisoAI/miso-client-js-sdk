@@ -6,12 +6,14 @@ import ViewActor from './view.js';
 export default class ViewsActor {
 
   constructor(hub, {
+    workflow,
     extensions,
     layouts,
     roles = [],
     options,
   }) {
     this._hub = hub;
+    this._workflowName = workflow;
     this._extensions = extensions;
     this._layoutFactory = layouts;
     this._options = options;
@@ -120,7 +122,7 @@ export default class ViewsActor {
     } else {
       for (let [role, [name, options]] of Object.entries(layouts)) {
         // TODO: try to omit if unchanged
-        const fn = () => this._layoutFactory.create(name, { ...options, role });
+        const fn = () => this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
         if (role === ROLE.CONTAINER) {
           for (const view of this._containers.values()) {
             view.layout = fn();
@@ -138,7 +140,7 @@ export default class ViewsActor {
       return undefined;
     }
     const [name, options] = args;
-    return this._layoutFactory.create(name, { ...options, role });
+    return this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
   }
 
   get(role) {

@@ -1,20 +1,12 @@
 .miso-list {
-  &, * {
-    box-sizing: border-box;
-  }
-
-  // the height of a list item
-  --miso-list-item-height: 11rem;
   // the gap between list items
-  --miso-list-item-gap: 1rem;
+  --miso-list-item-gap: 1.25rem;
+  // the spacing among list item content
+  --miso-list-item-content-spacing: 0.75rem;
   // the aspect ratio of cover image
   --miso-list-image-aspect-ratio: 1;
-  // how many lines to show for title text
-  --miso-list-title-lines: 1;
-  // how many lines to show for description text
-  --miso-list-description-lines: 3;
-  // currency symbol for price properties
-  --miso-currency-symbol: "$";
+  // the height of cover image
+  --miso-list-image-height: 7.25rem;
   // the size of list item index number
   --miso-list-item-index-size: 1.2rem;
 
@@ -28,22 +20,22 @@
 
       li.miso-list__item {
         margin: var(--miso-list-item-gap) 0;
-        border: 1px solid #e3e5e8;
-        border-radius: .5rem;
+        border: 1px solid var(--miso-border-color-light);
+        border-radius: 0.75rem;
         background-color: #fff;
 
         &:hover {
-          border-color: #8f96a3;
-          box-shadow: 0 0 3px rgba(0, 0, 0, .1);
+          border-color: var(--miso-border-color-medium);
+          box-shadow: 0 0 3px var(--miso-box-shadow-hover);
         }
       }
       .miso-list__item-body {
         display: flex;
         justify-content: space-between;
-        gap: var(--miso-list-item-gap);
+        gap: var(--miso-list-item-content-spacing);
         position: relative;
-        height: var(--miso-list-item-height);
-        padding: var(--miso-list-item-gap);
+        height: auto;
+        padding: var(--miso-list-item-content-spacing);
         user-select: none;
       }
       a.miso-list__item-body {
@@ -60,7 +52,7 @@
     display: block;
     line-height: var(--miso-list-item-index-size);
     font-size: 1rem;
-    color: #8f96a3;
+    color: var(--miso-border-color-medium);
     text-align: center;
   }
   ul li .miso-list__item-index {
@@ -69,11 +61,12 @@
 
   .miso-list__item-cover-image-container {
     position: relative;
-    height: 100%;
+    height: var(--miso-list-image-height);
     aspect-ratio: var(--miso-list-image-aspect-ratio);
     flex-shrink: 0;
-    border-radius: .4rem 0 0 .4rem;
+    border-radius: 0.5rem;
     overflow: hidden;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
 
     &::before {
       content: " ";
@@ -95,7 +88,8 @@
   }
 
   .miso-list__item-date {
-    font-size: 0.75rem;
+    // TODO: parameterize
+    font-size: 0.8rem;
     margin-bottom: 0.25rem;
     color: #777;
   }
@@ -104,7 +98,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    color: #5c6370;
+    color: var(--miso-text-color);
+    margin-top: -0.3rem; // to align text and image
 
     > hr {
       display: none;
@@ -122,25 +117,23 @@
 
   .miso-list__item-title {
     flex-shrink: 0;
-    -webkit-line-clamp: var(--miso-list-title-lines);
-    font-weight: 500;
+    font-weight: 600;
     font-size: 1rem;
     line-height: 1.5;
     margin-bottom: .25rem;
-    color: #23262b;
+    color: var(--miso-text-color);
   }
 
   .miso-list__item-snippet,
   .miso-list__item-desc {
-    -webkit-line-clamp: var(--miso-list-description-lines);
     font-weight: 400;
-    font-size: .75rem;
+    font-size: 0.9rem;
     line-height: 1.35;
     margin-bottom: .5rem;
   }
 
   .miso-list__item-price {
-    color: #23262b;
+    color: var(--miso-text-color);
 
     &::before {
       content: var(--miso-currency-symbol);

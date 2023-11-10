@@ -2,8 +2,8 @@ import { defineValues, requestAnimationFrame as raf, capture } from '@miso.ai/co
 
 export default class RafLayout {
 
-  constructor({ role, ...options } = {}) {
-    defineValues(this, { role, options });
+  constructor({ role, workflow, ...options } = {}) {
+    defineValues(this, { role, workflow, options });
     this._unsubscribes = [];
     this._rendered = new WeakMap();
     this._element = undefined;

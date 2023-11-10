@@ -1,4 +1,4 @@
-import { delegateGetters, Component } from '@miso.ai/commons';
+import { delegateGetters, Component, Resolution } from '@miso.ai/commons';
 import version from './version.js';
 import PluginRoot from './plugin/plugin-root.js';
 
@@ -17,6 +17,7 @@ class Root extends Component {
     this._customFetch = undefined;
     this._customSendBeacon = undefined;
     this.version = version || 'dev';
+    this._cmdRes = new Resolution();
   }
 
   get instances() {
@@ -27,6 +28,10 @@ class Root extends Component {
     return this._clients[0] || this._any || (this._any = (await this._events.once('create')).data);
   }
 
+  get cmdDone() {
+    return this._cmdRes.promise;
+  }
+
 }
 
 export const root = new Root();
@@ -34,7 +39,7 @@ export const root = new Root();
 export function init(MisoClient) {
   const pluginRoot = root._pluginRoot;
   root.MisoClient = pluginRoot.MisoClient = MisoClient;
-  delegateGetters(MisoClient, root, ['version', 'instances', 'any', 'meta', 'on', 'once']);
+  delegateGetters(MisoClient, root, ['version', 'instances', 'any', 'meta', 'on', 'once', 'cmdDone']);
   delegateGetters(MisoClient, pluginRoot, ['plugins']);
   return MisoClient;
 }
@@ -42,4 +47,8 @@ export function init(MisoClient) {
 export function register(client) {
   root._clients.push(client);
   root._events.emit('create', client);
+}
+
+export function setCmdDone() {
+  root._cmdRes.resolve();
 }

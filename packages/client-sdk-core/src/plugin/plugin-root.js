@@ -203,7 +203,7 @@ export default class PluginRoot extends Registry {
 
   async _registerStdRemotely(id) {
     const { version } = this._root;
-    const request = version === 'dev' ? `plugin:${id}@dev:${MisoClient.uuid}` : `plugin:${id}@${version}`;
+    const request = version === 'dev' ? `plugin:${id}@dev:${this.MisoClient.uuid}` : `plugin:${id}@${version}`;
 
     // check if such script already exists
     if (!document.querySelector(`script[data-request="${request}"]`)) {

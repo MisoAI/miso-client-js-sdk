@@ -1,4 +1,9 @@
 sections:
+- title: Ask (Combo)
+  path: /ask-combo
+  pages:
+  - title: Default
+    path: /ask-combo/default
 - title: Ask
   path: /ask
   pages:

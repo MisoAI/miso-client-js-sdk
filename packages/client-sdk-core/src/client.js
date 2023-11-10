@@ -4,6 +4,8 @@ import { Api } from './api/index.js';
 import Context from './context';
 import * as helpers from './utils';
 
+const { currentScript } = document;
+
 class MisoClient extends Component {
 
   static attach() {
@@ -58,8 +60,7 @@ class MisoClient extends Component {
   }
 
   _readConfigFromScriptUrl() {
-    const me = document.currentScript;
-    const url = me.src || me.href; // might be <link> as well
+    const url = currentScript.src || currentScript.href; // might be <link> as well
     const params = new URL(new Request(url).url).searchParams;
     return trimObj({
       apiKey: params.get('api_key') || undefined,

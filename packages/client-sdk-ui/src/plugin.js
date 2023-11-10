@@ -1,11 +1,13 @@
 import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
 import { Asks, Explore, Search, Recommendations } from './workflow/index.js';
+import { AskCombo } from './combo/index.js';
 import Layouts from './layouts.js';
 import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
 import * as sources from './source/index.js';
 
-import MisoContainerElement from './element/container/miso-container';
+import MisoContainerElement from './element/container/miso-container.js';
+import MisoComboElement from './element/combo/miso-combo.js';
 
 const PLUGIN_ID = 'std:ui';
 
@@ -29,9 +31,12 @@ export default class UiPlugin extends Component {
     MisoClient.on('create', this._injectClient.bind(this));
 
     const ui = {};
-    delegateGetters(ui, this, ['layouts']);
+    delegateGetters(ui, this, ['layouts', 'combo']);
     defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });
+
+    // combo
+    this.combo = new Combo(this, MisoClient);
 
     // layouts
     const LayoutClasses = Object.values(layouts).filter(LayoutClass => LayoutClass.type);
@@ -43,14 +48,16 @@ export default class UiPlugin extends Component {
     }
 
     // custom elements
-    const { containers, roles, ...others } = elements;
+    const { containers, roles, combos, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
     const ElementClasses = [
+      ...Object.values(combos),
       ...Object.values(containers),
       ...Object.values(roles),
       ...Object.values(others),
     ];
     MisoContainerElement.MisoClient = MisoClient;
+    MisoComboElement.MisoClient = MisoClient;
     for (const ElementClass of ElementClasses) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }
@@ -129,7 +136,7 @@ class Ui {
     defineValues(this, {
       sources: {
         api: sources.api(client),
-      }
+      },
     });
   }
 
@@ -162,5 +169,18 @@ class Ui {
     // TODO
   }
   */
+
+}
+
+class Combo {
+
+  constructor(plugin, MisoClient) {
+    this._plugin = plugin;
+    this._MisoClient = MisoClient;
+  }
+
+  get ask() {
+    return this._ask || (this._ask = new AskCombo(this._plugin, this._MisoClient));
+  }
 
 }

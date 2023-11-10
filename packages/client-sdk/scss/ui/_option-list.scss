@@ -1,7 +1,9 @@
 .miso-option-list {
-  &, * {
-    box-sizing: border-box;
-  }
+  --miso-option-list-border-radius: 9999px;
+  --miso-option-list-background: #f1f7ff;
+  --miso-option-list-item-gap: 0.75rem;
+  --miso-option-list-item-padding: 0.75rem;
+  --miso-option-list-font-size: 0.9rem;
 
   position: relative;
 
@@ -9,21 +11,24 @@
     padding: 0;
     margin: 0;
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--miso-option-list-item-gap);
   }
   .miso-option-list__option {
-    border: 1px solid #e3e5e8;
-    border-radius: 0.5rem;
-    line-height: 1.5;
-    padding: 0.5rem 0.8rem;
-    margin-bottom: 0.25rem;
-    color: #23262b;
+    border: 1px solid transparent;
+    border-radius: var(--miso-option-list-border-radius);
+    background: var(--miso-option-list-background);
+    padding: var(--miso-option-list-item-padding) calc(var(--miso-option-list-item-padding) + var(--miso-option-list-font-size) * 0.5);
+    font-size: 0.9rem;
     user-select: none;
     text-decoration: none;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+    transition: var(--miso-transition);
     cursor: pointer;
 
     &:hover {
-      border-color: #8f96a3;
-      box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+      border-color: var(--miso-border-color-light);
     }
   }
 }

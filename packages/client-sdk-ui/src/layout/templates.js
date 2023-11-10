@@ -65,7 +65,7 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
     content += `<div class="${className}__item-title">${title}</div>`;
   }
   if (date) {
-    content += `<div class="${className}__item-date">${(templates.date || renderDate)(date)}</div>`;
+    content += `<div class="${className}__item-date">${renderDate(date, templates.date)}</div>`;
   }
   if (snippet) {
     content += `<div class="${className}__item-snippet">${snippet}</div>`;
@@ -96,6 +96,17 @@ function renderIndexBlock({ className }, data, { index }) {
   return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}"></span></div>`;
 }
 
-function renderDate(date) {
-  return new Date(date).toLocaleDateString();
+const DEFAULT_DATE_OPTIONS = Object.freeze({ locale: 'en-US', year: 'numeric', month: 'short', day: 'numeric' });
+
+function renderDate(date, fn = DEFAULT_DATE_OPTIONS) {
+  switch (typeof fn) {
+    case 'function':
+      return fn(date);
+    case 'string':
+      return new Date(date).toLocaleDateString(fn);
+    case 'object':
+      return new Date(date).toLocaleDateString(fn.locale || DEFAULT_DATE_OPTIONS.locale, fn);
+    default:
+      throw new Error(`Invalid date format: ${fn}`);
+  }
 }

@@ -1,0 +1,16 @@
+:root {
+  // content text color
+  --miso-text-color: #33323e;
+  // background for <mark> element
+  --miso-mark-background: rgba(26, 76, 227, .09804);
+  // lighter border color
+  --miso-border-color-light: #c1c8db;
+  // medium border color
+  --miso-border-color-medium: #8f96a3;
+  // box shadow when hovered, applied to input and card-like elements
+  --miso-box-shadow-hover: 0 0 3px rgba(0, 0, 0, 0.1);
+  // general transition properties
+  --miso-transition: .15s;
+  // currency symbol for price properties
+  --miso-currency-symbol: "$";
+}

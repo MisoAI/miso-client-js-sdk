@@ -1,8 +1,9 @@
+import { setCmdDone } from '@miso.ai/client-sdk-core';
 import MisoClient from './detached/index.js';
 import cmd from './cmd.js';
 
 MisoClient.attach();
 
-cmd();
+cmd(setCmdDone);
 
 export default MisoClient;

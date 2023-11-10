@@ -1,20 +1,21 @@
 import { LAYOUT_CATEGORY } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
+import { SEND, SEARCH } from '../../asset/svgs.js';
 
 const TYPE = 'search-box';
 const DEFAULT_CLASSNAME = 'miso-search-box';
 
 function root(layout) {
-  const { className, role, templates, options } = layout;
-  const { autocomplete, placeholder, buttonText = 'Search' } = options;
+  const { className, role, templates, options, workflow } = layout;
+  const { autocomplete, placeholder, buttonText } = options;
   const roleAttr = role ? `data-role="${role}"` : '';
-  // TODO: button icon
+  const buttonContent = buttonText || workflow === 'search' ? SEARCH : SEND;
   return `
 <div class="${className}" ${roleAttr}>
   <div class="${className}__input-group">
     <input class="${className}__input" type="text" data-role="input" ${placeholder ? `placeholder="${placeholder}"` : ''}>
-    <button class="${className}__button" type="submit">${buttonText}</button>
+    <button class="${className}__button" type="submit" data-role="button">${buttonContent}</button>
   </div>
   ${autocomplete ? templates.autocomplete(layout) : ''}
 </div>

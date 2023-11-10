@@ -6,8 +6,6 @@ import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
 import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions } from './options.js';
 
-const IDF = v => v;
-
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
   [ROLE.ERROR]: ErrorLayout.type,
@@ -49,7 +47,7 @@ export default class Workflow extends Component {
 
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source, options });
-    const views = this._views = new ViewsActor(hub, { extensions, layouts, roles, options });
+    const views = this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
     this._interactions = new InteractionsActor(hub, { client, options });
     this._trackers = new Trackers(hub, { views, options });
 

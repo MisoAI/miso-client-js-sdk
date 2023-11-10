@@ -1,6 +1,6 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApiOptions } from './options.js';
+import { mergeApiOptions, mergeLayoutsOptions } from './options.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
@@ -18,7 +18,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.QUERY]: [SearchBoxLayout.type, { buttonText: 'Ask' }],
+  [ROLE.QUERY]: [SearchBoxLayout.type],
   [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
   [ROLE.ANSWER]: TypewriterLayout.type,
   [ROLE.FEEDBACK]: FeedbackLayout.type,
@@ -44,6 +44,17 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
+function mergeDefaults({ layouts, ...defaults }, parentQuestionId) {
+  return {
+    ...defaults,
+    layouts: mergeLayoutsOptions(layouts, {
+      [ROLE.QUERY]: [SearchBoxLayout.type, {
+        placeholder: parentQuestionId ? 'Ask a follow-up question' : 'Ask anything',
+      }],
+    }),
+  };
+}
+
 export default class Ask extends Workflow {
 
   constructor(context, parentQuestionId) {
@@ -51,7 +62,7 @@ export default class Ask extends Workflow {
       name: 'ask',
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
-      defaults: DEFAULT_OPTIONS,
+      defaults: mergeDefaults(DEFAULT_OPTIONS, parentQuestionId),
     });
     this._context = context;
     defineValues(this, { parentQuestionId });
