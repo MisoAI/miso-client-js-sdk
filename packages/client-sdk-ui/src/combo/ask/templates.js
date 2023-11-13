@@ -16,8 +16,8 @@ export const root = (options) => `
 <div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups">
 </div>
 <section id="${PREFIX}__related-resources" class="${PREFIX}__section ${PREFIX}__related-resources">
-  <miso-ask visible-when="ready" logo="true">
-    <h2 class="${PREFIX}__related-resources-phrase"></h2>
+  <miso-ask visible-when="nonempty" logo="true">
+    <h2 class="${PREFIX}__phrase ${PREFIX}__related-resources-phrase"></h2>
     <miso-related-resources></miso-related-resources>
   </miso-ask>
 </section>
@@ -26,7 +26,7 @@ export const root = (options) => `
 export const followUp = (options, { parentQuestionId }) => `
 <section class="${PREFIX}__section ${PREFIX}__follow-up">
   <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="nonempty" parent-question-id="${parentQuestionId}">
-    <h3 class="${PREFIX}__related-questions-phrase"></h3>
+    <h3 class="${PREFIX}__phrase ${PREFIX}__related-questions-phrase"></h3>
     <miso-query-suggestions></miso-query-suggestions>
   </miso-ask>
   <miso-ask class="${PREFIX}__query-container" visible-when="initial loading" parent-question-id="${parentQuestionId}">
@@ -44,7 +44,7 @@ export const answer = (options, { parentQuestionId } = {}) => {
   return `
 ${openTag}
   ${ parentQuestionId ? '<hr>' : '' }
-  <div class="${PREFIX}__question-phrase"></div>
+  <div class="${PREFIX}__phrase ${PREFIX}__question-phrase"></div>
   <miso-question></miso-question>
   <miso-answer></miso-answer>
   <miso-feedback></miso-feedback>
@@ -59,7 +59,7 @@ export const sources = (options, { parentQuestionId } = {}) => {
   return `
 ${openTag}
   <hr>
-  <h3 class="${PREFIX}__sources-phrase"></h3>
+  <h3 class="${PREFIX}__phrase ${PREFIX}__sources-phrase"></h3>
   <miso-sources></miso-sources>
 ${closeTag}
 `.trim();
