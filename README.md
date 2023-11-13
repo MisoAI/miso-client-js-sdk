@@ -5,7 +5,7 @@
     </a>
   </div>
   <p>
-    <strong>Engage your users with trustworthy answers.</strong>
+    <strong>Private AI for the Open Web.</strong>
   </p>
   <p>
     <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
@@ -17,7 +17,7 @@
 
 ----
 
-Miso is an innovative API platform that empowers you to engage your users with trustworthy LLM search, recommendation, and answers service tailored to your specific needs:
+Miso is an innovative API platform that empowers you to engage your users with trustworthy LLM answers service tailored to your specific needs:
 
 ### Trustworthy
 
@@ -30,7 +30,7 @@ Miso is an innovative API platform that empowers you to engage your users with t
 - Straightforward data upload
 - Fast model training
 - Bootstrapped with small initial data
-- SDKs to integrate into your sites
+- SDKs to integrate into your sites in 5 minutes
 
 <div align="center">
   <a href="https://miso.ai">
@@ -58,7 +58,7 @@ Miso is an innovative API platform that empowers you to engage your users with t
 
 ## Highlights
 * Simple, easy to integrate.
-* Bundled in UMD format. Can be loaded as a CJS/AMD module or by a script tag.
+* Can be added into websites by a script tag.
 * UI tools for fast prototyping.
 * For browser.
 
