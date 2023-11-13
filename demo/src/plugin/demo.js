@@ -3,6 +3,7 @@ import * as helpers from './helpers';
 
 // inject with .env or process.env
 const DEFAULT_API_KEY = __DEFAULT_API_KEY__;
+const DEFAULT_ASK_API_KEY = __DEFAULT_ASK_API_KEY__;
 //const DEFAULT_USER_ID = __DEFAULT_USER_ID__;
 const ID = 'demo';
 
@@ -22,7 +23,7 @@ export default class DemoPlugin {
     this._selection = new LocalStorageProperty({
       key: 'miso-sdk-demo::apps-selection',
       createDefaultValue: () => ({
-        apiKey: DEFAULT_API_KEY,
+        //apiKey: DEFAULT_API_KEY,
         //userId: DEFAULT_USER_ID,
       }),
     });
@@ -48,7 +49,7 @@ export default class DemoPlugin {
         options = { apiKey: options };
       }
       return _normalizeOptions.call(this, {
-        apiKey: DEFAULT_API_KEY,
+        apiKey: options && options.type !== 'ask' ? DEFAULT_API_KEY : DEFAULT_ASK_API_KEY,
         //apiKey: selection.value.apiKey,
         ...options,
       });

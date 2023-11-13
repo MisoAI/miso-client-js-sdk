@@ -69,9 +69,6 @@ miso-ask-combo {
   .miso-ask-combo__answer-container {
     margin-bottom: calc(var(--miso-search-box-padding) + var(--miso-search-box-font-size) * 0.5 + var(--miso-ask-combo-content-spacing));
   }
-  .miso-ask-combo__follow-up:last-child {
-    //margin-bottom: 0;
-  }
   .miso-ask-combo__follow-up miso-ask > hr:first-child {
     margin: 0 calc(0px - var(--miso-ask-combo-content-padding)) var(--miso-ask-combo-content-spacing);
   }

@@ -1,3 +1,5 @@
+require ('dotenv/config');
+
 const { EleventyRenderPlugin } = require("@11ty/eleventy");
 const markdownIt = require('markdown-it');
 const markdownItAnchor = require('markdown-it-anchor');
@@ -25,6 +27,7 @@ module.exports = function(config) {
 
   config.addNunjucksGlobal('helpers', new Helpers());
   config.addGlobalData('layout', 'base.njk');
+  config.addGlobalData('DEFAULT_ASK_API_KEY', process.env.DEFAULT_ASK_API_KEY);
 
   return {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain

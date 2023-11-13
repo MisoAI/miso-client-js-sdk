@@ -1,3 +1,4 @@
+import { trimObj } from '@miso.ai/commons';
 import * as templates from './templates.js';
 
 // TODO: generalize
@@ -17,7 +18,7 @@ export default class AskComboOptions {
   }
 
   resolve(options) {
-    return mergeOptions(this._defaults, this._scriptSrc, options, this._pageUrl);
+    return normalizeOptions(mergeOptions(this._defaults, this._scriptSrc, options, this._pageUrl));
   }
 
 }
@@ -36,6 +37,14 @@ function mergeTwoOptions(merged, overrides) {
   return Object.assign(merged, {
     ...overrides,
     templates: { ...merged.templates, ...overrides.templates },
+  });
+}
+
+function normalizeOptions({ api_key: apiKey, api_host: apiHost, ...options } = {}) {
+  return trimObj({
+    apiKey,
+    apiHost,
+    ...options,
   });
 }
 
