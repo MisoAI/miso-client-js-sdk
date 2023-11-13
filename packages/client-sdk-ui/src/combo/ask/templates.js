@@ -13,8 +13,7 @@ export const root = (options) => `
   ${options.templates.answer(options)}
   ${options.templates.sources(options)}
 </section>
-<div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups">
-</div>
+<div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups"></div>
 <section id="${PREFIX}__related-resources" class="${PREFIX}__section ${PREFIX}__related-resources">
   <miso-ask visible-when="nonempty" logo="true">
     <h2 class="${PREFIX}__phrase ${PREFIX}__related-resources-phrase"></h2>

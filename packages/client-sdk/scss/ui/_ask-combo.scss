@@ -122,9 +122,10 @@ miso-ask-combo {
   }
 
   // related resources //
-  .miso-ask-combo__related-resources {
+  .miso-ask-combo__follow-ups:not(:empty) + .miso-ask-combo__related-resources {
     min-height: 8rem;
-
+  }
+  .miso-ask-combo__related-resources {
     .miso-list__item {
       margin: 0 !important;
       border-radius: 0 !important;
