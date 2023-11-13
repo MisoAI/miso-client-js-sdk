@@ -1,4 +1,4 @@
-import { ROLE, LAYOUT_CATEGORY } from '../../constants.js';
+import { ROLE, STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import RafLayout from '../raf.js';
 import MisoBannerElement from '../../element/miso-banner.js';
 
@@ -49,9 +49,12 @@ export default class ContainerLayout extends RafLayout {
     if (!element) {
       return;
     }
-    const { status, meta: { miso_id } = {} } = state;
-    // TODO: add "ongoing" status
-    element.setAttribute('status', status);
+    const { status, ongoing, meta: { miso_id, empty = false } = {} } = state;
+    const statuses = [status, empty ? STATUS.EMPTY : STATUS.NONEMPTY];
+    if (status === STATUS.READY) {
+      statuses.push(ongoing ? STATUS.ONGOING : STATUS.DONE);
+    }
+    element.setAttribute('status', statuses.join(' '));
     if (miso_id) {
       element.setAttribute('miso-id', miso_id);
     } else {

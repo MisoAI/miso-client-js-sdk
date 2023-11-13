@@ -1,6 +1,9 @@
-$statuses: "initial", "loading", "erroneous", "ready";
+$statuses: "initial", "loading", "erroneous", "ready", "ongoing", "done", "empty", "nonempty";
+$statuses_x: "ongoing", "done";
+$statuses_y: "empty", "nonempty";
 
 miso-ask,
+miso-explore,
 miso-search,
 miso-recommendation {
   display: block;
@@ -10,14 +13,23 @@ miso-recommendation {
     display: none !important;
   }
   @each $status in $statuses {
-    &[status="#{$status}"] {
+    &[status~="#{$status}"] {
       &[visible-when~="#{$status}"],
       [visible-when~="#{$status}"] {
         display: block !important;
       }
     }
   }
-  // TODO: add "ongoing", "done" to match "ongoing" status
+  @each $status_x in $statuses_x {
+    @each $status_y in $statuses_y {
+      &[status~="#{$status_x}"][status~="#{$status_y}"] {
+        &[visible-when~="#{$status_x}-#{$status_y}"],
+        [visible-when~="#{$status_x}-#{$status_y}"] {
+          display: block !important;
+        }
+      }
+    }
+  }
 }
 
 miso-ask-combo {

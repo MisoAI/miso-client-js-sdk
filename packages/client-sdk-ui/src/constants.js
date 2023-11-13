@@ -21,6 +21,24 @@ export const ROLE = Object.freeze({
   ERROR: 'error',
 });
 
+const DATA_ROLE_SET = new Set([
+  ROLE.PRODUCTS,
+  ROLE.CATEGORIES,
+  ROLE.ATTRIBUTES,
+  ROLE.RESULTS,
+  ROLE.ITEMS,
+  ROLE.QUESTION,
+  ROLE.ANSWER,
+  ROLE.SOURCES,
+  ROLE.RELATED_RESOURCES,
+  ROLE.QUERY_SUGGESTIONS,
+  ROLE.RELATED_QUESTIONS,
+]);
+
+export function isDataRole(role) {
+  return DATA_ROLE_SET.has(role);
+}
+
 export const LAYOUT_CATEGORY = Object.freeze({
   CONTAINER: 'container',
   BANNER: 'banner',
@@ -48,6 +66,10 @@ export const STATUS = Object.freeze({
   LOADING: 'loading',
   ERRONEOUS: 'erroneous',
   READY: 'ready',
+  ONGOING: 'ongoing',
+  DONE: 'done',
+  EMPTY: 'empty',
+  NONEMPTY: 'nonempty',
 });
 
 export function validateEventType(value) {

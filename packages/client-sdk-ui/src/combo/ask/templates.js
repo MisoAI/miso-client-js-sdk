@@ -11,6 +11,7 @@ export const root = (options) => `
 </section>
 <section class="${PREFIX}__section ${PREFIX}__answer">
   ${options.templates.answer(options)}
+  ${options.templates.sources(options)}
 </section>
 <div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups">
 </div>
@@ -24,7 +25,7 @@ export const root = (options) => `
 
 export const followUp = (options, { parentQuestionId }) => `
 <section class="${PREFIX}__section ${PREFIX}__follow-up">
-  <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="initial" parent-question-id="${parentQuestionId}">
+  <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="nonempty" parent-question-id="${parentQuestionId}">
     <h3 class="${PREFIX}__related-questions-phrase"></h3>
     <miso-query-suggestions></miso-query-suggestions>
   </miso-ask>
@@ -32,6 +33,7 @@ export const followUp = (options, { parentQuestionId }) => `
     <miso-query></miso-query>
   </miso-ask>
   ${options.templates.answer(options, { parentQuestionId })}
+  ${options.templates.sources(options, { parentQuestionId })}
 </section>
 `.trim();
 
@@ -46,6 +48,16 @@ ${openTag}
   <miso-question></miso-question>
   <miso-answer></miso-answer>
   <miso-feedback></miso-feedback>
+${closeTag}
+`.trim();
+};
+
+export const sources = (options, { parentQuestionId } = {}) => {
+  // TODO: include/omit miso-circled-citation-index by options
+  const openTag = `<miso-ask class="${PREFIX}__sources-container miso-circled-citation-index" visible-when="nonempty" logo="false"${parentQuestionId ? ` parent-question-id="${parentQuestionId}"` : ''}>`;
+  const closeTag = '</miso-ask>';
+  return `
+${openTag}
   <hr>
   <h3 class="${PREFIX}__sources-phrase"></h3>
   <miso-sources></miso-sources>

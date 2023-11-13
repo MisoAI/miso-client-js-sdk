@@ -1,5 +1,5 @@
 import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/commons';
-import { STATUS, ROLE } from '../constants.js';
+import { STATUS, ROLE, isDataRole } from '../constants.js';
 import * as fields from './fields.js';
 import ProxyElement from '../util/proxy.js';
 
@@ -135,11 +135,45 @@ export default class ViewActor {
   }
 
   _sliceData(data) {
-    const { value, error, ...rest } = data;
-    return trimObj({
+    const { value, error, status, meta, ...rest } = data;
+    const sliced = {
       value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
+      status,
+      meta,
       ...rest,
-    });
+    };
+    if (this.role === ROLE.CONTAINER) {
+      // pass empty/nonempty information
+      sliced.meta = {
+        ...meta,
+        empty: this._isContainerEmpty(value),
+      };
+    }
+    return trimObj(sliced);
+  }
+
+  _isContainerEmpty(value) {
+    const { element } = this;
+    if (!element) {
+      return false;
+    }
+    // iterate over all member components' roles
+    for (const { role } of element.components) {
+      // not a data role -> nonempty
+      if (!isDataRole(role)) {
+        return false;
+      }
+      let sliced = value && value[role];
+      if (role === ROLE.QUERY_SUGGESTIONS) {
+        // special case: query suggestions -> look up value from hub
+        const data = this.hub.states[fields.suggestions()];
+        sliced = data && data.value;
+      }
+      if (sliced && sliced.length !== 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   _syncSize() {
