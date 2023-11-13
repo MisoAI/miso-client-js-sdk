@@ -1,4 +1,4 @@
-import { defineValues } from '@miso.ai/commons';
+import { defineValues, waitForDomContentLoaded } from '@miso.ai/commons';
 import { fields } from '../../actor/index.js';
 import { ROLE } from '../../constants.js';
 import Combo from '../base.js';
@@ -41,6 +41,9 @@ export default class AskCombo extends Combo {
   }
 
   async _start() {
+    await waitForDomContentLoaded();
+    await this.MisoClient.cmdDone;
+
     // setup MisoClient
     await this._setupMisoClient();
     
@@ -48,7 +51,7 @@ export default class AskCombo extends Combo {
     this._renderRootContent();
 
     // create client instance
-    await this._createClientInstance();
+    this._createClientInstance();
 
     // setup workflows
     this._setupWorkflows();
@@ -87,7 +90,6 @@ export default class AskCombo extends Combo {
   }
 
   async _createClientInstance() {
-    await this.MisoClient.cmdDone;
     this._client = new MisoClient(this.resolvedOptions);
   }
 

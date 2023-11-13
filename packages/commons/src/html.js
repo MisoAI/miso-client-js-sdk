@@ -99,3 +99,12 @@ export async function viewable(element, {
     }
   });
 }
+
+export async function waitForDomContentLoaded() {
+  if (document.readyState !== 'loading') {
+    return;
+  }
+  await new Promise(resolve => {
+    document.addEventListener('DOMContentLoaded', resolve, { once: true });
+  });
+}
