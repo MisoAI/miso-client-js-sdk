@@ -1,7 +1,8 @@
 :root {
   --miso-ask-combo-section-padding: 2rem;
-  --miso-ask-combo-content-padding: 2rem;
   --miso-ask-combo-section-spacing: 4rem;
+  --miso-ask-combo-content-max-width: none; 
+  --miso-ask-combo-content-padding: 2rem;
   --miso-ask-combo-content-spacing: 2rem;
   --miso-ask-combo-question-phrase-text: 'You asked...';
   --miso-ask-combo-question-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
@@ -33,18 +34,20 @@ miso-ask-combo {
   }
   
   // section //
-  .miso-ask-combo__question,
-  .miso-ask-combo__answer,
-  .miso-ask-combo__follow-up,
-  .miso-ask-combo__related-resources {
+  .miso-ask-combo__section {
     padding: 0 var(--miso-ask-combo-section-padding);
+
+    > miso-ask {
+      max-width: var(--miso-ask-combo-content-max-width);
+      margin: 0 auto;
+    }
   }
   .miso-ask-combo__answer-container,
   .miso-ask-combo__query-suggestions-container {
     padding: 0 var(--miso-ask-combo-content-padding);
   }
   .miso-ask-combo__follow-up {
-    margin: var(--miso-ask-combo-content-spacing) 0;
+    margin-top: var(--miso-ask-combo-content-spacing);
   }
   .miso-ask-combo__query-suggestions-container + .miso-ask-combo__query-container {
     margin-top: var(--miso-ask-combo-section-spacing);
@@ -67,7 +70,7 @@ miso-ask-combo {
     margin-bottom: calc(var(--miso-search-box-padding) + var(--miso-search-box-font-size) * 0.5 + var(--miso-ask-combo-content-spacing));
   }
   .miso-ask-combo__follow-up:last-child {
-    margin-bottom: 0;
+    //margin-bottom: 0;
   }
   .miso-ask-combo__follow-up miso-ask > hr:first-child {
     margin: 0 calc(0px - var(--miso-ask-combo-content-padding)) var(--miso-ask-combo-content-spacing);

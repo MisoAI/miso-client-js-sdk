@@ -4,17 +4,17 @@ import { PREFIX } from './constants.js';
 // TODO: placeholder
 
 export const root = (options) => `
-<section id="${PREFIX}__question" class="${PREFIX}__question">
+<section id="${PREFIX}__question" class="${PREFIX}__section ${PREFIX}__question">
   <miso-ask class="${PREFIX}__query-container">
     <miso-query></miso-query>
   </miso-ask>
 </section>
-<section class="${PREFIX}__answer">
+<section class="${PREFIX}__section ${PREFIX}__answer">
   ${options.templates.answer(options)}
 </section>
-<section id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups">
-</section>
-<section id="${PREFIX}__related-resources" class="${PREFIX}__related-resources">
+<div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups">
+</div>
+<section id="${PREFIX}__related-resources" class="${PREFIX}__section ${PREFIX}__related-resources">
   <miso-ask visible-when="ready" logo="true">
     <h2 class="${PREFIX}__related-resources-phrase"></h2>
     <miso-related-resources></miso-related-resources>
@@ -23,7 +23,7 @@ export const root = (options) => `
 `.trim();
 
 export const followUp = (options, { parentQuestionId }) => `
-<div class="${PREFIX}__follow-up">
+<section class="${PREFIX}__section ${PREFIX}__follow-up">
   <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="initial" parent-question-id="${parentQuestionId}">
     <h3 class="${PREFIX}__related-questions-phrase"></h3>
     <miso-query-suggestions></miso-query-suggestions>
@@ -32,7 +32,7 @@ export const followUp = (options, { parentQuestionId }) => `
     <miso-query></miso-query>
   </miso-ask>
   ${options.templates.answer(options, { parentQuestionId })}
-</div>
+</section>
 `.trim();
 
 export const answer = (options, { parentQuestionId } = {}) => {
