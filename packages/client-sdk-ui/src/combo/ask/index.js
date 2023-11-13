@@ -87,9 +87,8 @@ export default class AskCombo extends Combo {
   }
 
   async _createClientInstance() {
-    const { MisoClient, resolvedOptions: options } = this;
-    await MisoClient.cmdDone;
-    this._client = new MisoClient(options);
+    await this.MisoClient.cmdDone;
+    this._client = new MisoClient(this.resolvedOptions);
   }
 
   async _setupWorkflows() {
