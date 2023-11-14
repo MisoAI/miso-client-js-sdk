@@ -17,20 +17,33 @@
 
 ----
 
-Miso is an innovative API platform that empowers you to engage your users with trustworthy LLM answers service tailored to your specific needs:
+With LLM technology today, your users want to engage your content in smarter ways in place of the traditional keyword search. Miso offers LLM answer API services with our private models and your controlled content source.
 
-### Trustworthy
+// TODO: screenshot
+
+// TODO: talk more
+
+// TODO: make an image button
+
+<div align="center">
+  <a href="https://answers.miso.ai/">Play demo</a>
+</div>
+
+// TODO: diagram
+
+### Why Miso
 
 - Citation-driven, i.e. no AI hallucinations
-- Your own AI search engine tuned to your content
+- Your own AI answer engine tuned to your content
 - Designed to comply with your content guidelines
 
 ### Easy to integrate
 
 - Straightforward data upload
 - Fast model training
-- Bootstrapped with small initial data
 - SDKs to integrate into your sites in 5 minutes
+
+// TODO: update CTA
 
 <div align="center">
   <a href="https://miso.ai">
@@ -39,6 +52,8 @@ Miso is an innovative API platform that empowers you to engage your users with t
 </div>
 
 ----
+
+// TODO: revise this (with screenshots and code)
 
 # Getting started
 
