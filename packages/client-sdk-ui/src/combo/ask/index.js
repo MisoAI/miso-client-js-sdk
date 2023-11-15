@@ -105,6 +105,8 @@ export default class AskCombo extends Combo {
     const context = client.ui.asks;
     const rootWorkflow = client.ui.ask;
 
+    // TODO: set placeholder is present in options
+
     // when a answer is fully populated, insert a new section for the follow-up question
     context.on('done', ({ workflow }) => {
       elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp(options, { parentQuestionId: workflow.questionId }));

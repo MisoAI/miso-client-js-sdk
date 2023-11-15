@@ -16,34 +16,38 @@ export const root = (options) => `
 <div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups"></div>
 <section id="${PREFIX}__related-resources" class="${PREFIX}__section ${PREFIX}__related-resources">
   <miso-ask visible-when="nonempty" logo="true">
-    <h2 class="${PREFIX}__phrase ${PREFIX}__related-resources-phrase"></h2>
+    <h2 class="${PREFIX}__phrase ${PREFIX}__related-resources-phrase">${options.phrases.relatedResources(options)}</h2>
     <miso-related-resources></miso-related-resources>
   </miso-ask>
 </section>
 `.trim();
 
-export const followUp = (options, { parentQuestionId }) => `
+export const followUp = (options, session = {}) => {
+  const { parentQuestionId } = session;
+  return `
 <section class="${PREFIX}__section ${PREFIX}__follow-up">
   <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="initial+nonempty" parent-question-id="${parentQuestionId}">
-    <h3 class="${PREFIX}__phrase ${PREFIX}__related-questions-phrase"></h3>
+    <h3 class="${PREFIX}__phrase ${PREFIX}__related-questions-phrase">${options.phrases.relatedQuestions(options, session)}</h3>
     <miso-query-suggestions></miso-query-suggestions>
   </miso-ask>
   <miso-ask class="${PREFIX}__query-container" visible-when="initial loading" parent-question-id="${parentQuestionId}">
     <miso-query></miso-query>
   </miso-ask>
-  ${options.templates.answer(options, { parentQuestionId })}
-  ${options.templates.sources(options, { parentQuestionId })}
+  ${options.templates.answer(options, session)}
+  ${options.templates.sources(options, session)}
 </section>
 `.trim();
+};
 
-export const answer = (options, { parentQuestionId } = {}) => {
+export const answer = (options, session = {}) => {
   // TODO: include/omit miso-circled-citation-index by options
+  const { parentQuestionId } = session;
   const openTag = `<miso-ask class="${PREFIX}__answer-container miso-circled-citation-index" visible-when="ready" logo="false"${parentQuestionId ? ` parent-question-id="${parentQuestionId}"` : ''}>`;
   const closeTag = '</miso-ask>';
   return `
 ${openTag}
   ${ parentQuestionId ? '<hr>' : '' }
-  <div class="${PREFIX}__phrase ${PREFIX}__question-phrase"></div>
+  <div class="${PREFIX}__phrase ${PREFIX}__question-phrase">${options.phrases.question(options, session)}</div>
   <miso-question></miso-question>
   <miso-answer></miso-answer>
   <miso-feedback></miso-feedback>
@@ -51,14 +55,15 @@ ${closeTag}
 `.trim();
 };
 
-export const sources = (options, { parentQuestionId } = {}) => {
+export const sources = (options, session = {}) => {
   // TODO: include/omit miso-circled-citation-index by options
+  const { parentQuestionId } = session;
   const openTag = `<miso-ask class="${PREFIX}__sources-container miso-circled-citation-index" visible-when="nonempty" logo="false"${parentQuestionId ? ` parent-question-id="${parentQuestionId}"` : ''}>`;
   const closeTag = '</miso-ask>';
   return `
 ${openTag}
   <hr>
-  <h3 class="${PREFIX}__phrase ${PREFIX}__sources-phrase"></h3>
+  <h3 class="${PREFIX}__phrase ${PREFIX}__sources-phrase">${options.phrases.sources(options, session)}</h3>
   <miso-sources></miso-sources>
 ${closeTag}
 `.trim();

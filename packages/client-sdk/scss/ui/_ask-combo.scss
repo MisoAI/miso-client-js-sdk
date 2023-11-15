@@ -4,11 +4,7 @@
   --miso-ask-combo-content-max-width: none; 
   --miso-ask-combo-content-padding: 2rem;
   --miso-ask-combo-content-spacing: 2rem;
-  --miso-ask-combo-question-phrase-text: 'You asked...';
   --miso-ask-combo-question-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
-  --miso-ask-combo-sources-phrase-text: 'My reply is based on the following';
-  --miso-ask-combo-related-questions-phrase-text: 'Related questions you can explore';
-  --miso-ask-combo-related-resources-phrase-text: 'Go beyond, and learn more about this topic';
   --miso-ask-combo-related-resources-background: #fffaf5;
 }
 
@@ -96,32 +92,16 @@ miso-ask-combo {
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--miso-ask-combo-question-phrase-color);
-
-    &::before {
-      content: var(--miso-ask-combo-question-phrase-text);
-    }
   }
   .miso-ask-combo__sources-phrase {
     margin-bottom: 1rem;
-
-    &::before {
-      content: var(--miso-ask-combo-sources-phrase-text);
-    }
   }
   .miso-ask-combo__related-questions-phrase {
     margin-bottom: 1.25rem;
-
-    &::before {
-      content: var(--miso-ask-combo-related-questions-phrase-text);
-    }
   }
   .miso-ask-combo__related-resources-phrase {
     margin-top: 0;
     margin-bottom: 0.5rem;
-
-    &::before {
-      content: var(--miso-ask-combo-related-resources-phrase-text);
-    }
   }
 
   // related resources //

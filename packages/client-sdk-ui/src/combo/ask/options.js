@@ -1,5 +1,6 @@
 import { trimObj } from '@miso.ai/commons';
 import * as templates from './templates.js';
+import * as phrases from './phrases.js';
 
 // TODO: generalize
 
@@ -7,6 +8,7 @@ const { currentScript } = document;
 
 const DEFAULT_OPTIONS = Object.freeze({
   templates,
+  phrases,
   autostart: true,
 });
 
@@ -41,10 +43,12 @@ function mergeTwoOptions(merged, overrides) {
   });
 }
 
-function normalizeOptions({ api_key: apiKey, api_host: apiHost, ...options } = {}) {
+function normalizeOptions({ api_key: apiKey, api_host: apiHost, templates, phrases, ...options } = {}) {
   return trimObj({
     apiKey,
     apiHost,
+    templates: templateAsFunction(templates),
+    phrases: templateAsFunction(phrases),
     ...options,
   });
 }
@@ -89,4 +93,29 @@ function readFromPageUrl() {
 
 function coerceValue(value) {
   return value === '' ? true : value === 'false' ? false : value;
+}
+
+function templateAsFunction(value) {
+  if (value === undefined || value === null) {
+    return value;
+  }
+  switch (typeof value) {
+    case 'function':
+      return value;
+    case 'string':
+    case 'number':
+      return () => value;
+    case 'object':
+      return Array.isArray(value) ? value.map(templateAsFunction) : mappingObjectValues(value, templateAsFunction);
+    default:
+      throw new Error(`Unsupported template type: ${value}`);
+  }
+}
+
+function mappingObjectValues(obj, fn) {
+  const mapped = {};
+  for (const [key, value] of Object.entries(obj)) {
+    mapped[key] = fn(value);
+  }
+  return mapped;
 }
