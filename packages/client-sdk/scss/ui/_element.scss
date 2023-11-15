@@ -8,6 +8,9 @@ miso-search,
 miso-recommendation {
   display: block;
 
+  &, * {
+    box-sizing: border-box;
+  }
   &[visible-when],
   [visible-when] {
     display: none !important;

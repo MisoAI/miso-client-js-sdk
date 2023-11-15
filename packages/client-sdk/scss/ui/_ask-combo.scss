@@ -13,6 +13,10 @@
 }
 
 miso-ask-combo {
+  &, * {
+    box-sizing: border-box;
+  }
+
   // general //
   miso-ask > hr {
     height: 1px;
@@ -49,6 +53,10 @@ miso-ask-combo {
   }
   .miso-ask-combo__follow-up {
     margin-top: var(--miso-ask-combo-content-spacing);
+
+    miso-ask.miso-ask-combo__answer-container > hr:first-child {
+      margin: 0 calc(0px - var(--miso-ask-combo-content-padding)) var(--miso-ask-combo-content-spacing);
+    }
   }
   .miso-ask-combo__query-suggestions-container + .miso-ask-combo__query-container {
     margin-top: var(--miso-ask-combo-section-spacing);
@@ -67,13 +75,8 @@ miso-ask-combo {
       padding-bottom: var(--miso-ask-combo-content-spacing);
     }
   }
-  //.miso-ask-combo__answer-container,
   .miso-ask-combo__sources-container {
     margin-bottom: calc(var(--miso-search-box-padding) + var(--miso-search-box-font-size) * 0.5 + var(--miso-ask-combo-content-spacing));
-  }
-  .miso-ask-combo__follow-up miso-ask > hr:first-child {
-    // TODO: put this outside
-    margin: 0 calc(0px - var(--miso-ask-combo-content-padding)) var(--miso-ask-combo-content-spacing);
   }
   
   // phrase //

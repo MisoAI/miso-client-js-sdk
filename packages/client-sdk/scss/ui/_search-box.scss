@@ -16,9 +16,8 @@
     display: flex;
     border: 1px solid var(--miso-border-color-light);
     border-radius: var(--miso-search-box-border-radius);
-    font-size: var(--miso-search-box-input-font-size);
+    font-size: var(--miso-search-box-font-size);
     background-color: #fff;
-    //color: #8f96a3;
     outline: none;
     overflow: hidden;
     transition: var(--miso-transition);

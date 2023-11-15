@@ -3,9 +3,6 @@
 .miso-list,
 .miso-cards,
 .miso-carousel {
-  &, * {
-    box-sizing: border-box;
-  }
   mark {
     background-color: var(--miso-mark-background);
     padding: 0.125rem 0.25rem;
