@@ -6,16 +6,49 @@ body, button, input, optgroup, select, textarea {
   font-family: "Inter", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
+/* hero */
 .hero {
-  padding: 2rem 0;
+  --miso-ask-combo-half-input-height: calc(1px + var(--miso-search-box-font-size) * 0.5 + var(--miso-search-box-padding));
+
+  position: relative;
+  padding-bottom: var(--miso-ask-combo-half-input-height);
+  margin-bottom: calc(0px - var(--miso-ask-combo-half-input-height));
+  height: 10rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-hero-background);
+  color: var(--theme-hero-color);
 }
-.hero h1 {
-  text-align: center;
-  margin: 0 auto;
-  font-size: 3rem;
-  line-height: 2;
-  font-weight: 500;
+.hero .miso-logo {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
 }
+.hero .site-logo {
+  object-fit: contain;
+  max-height: 3.75rem;
+  width: 64%;
+}
+.hero #sdk-version {
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--theme-hero-sdk-version-color);
+}
+
+/* ask-combo */
 :root {
   --miso-ask-combo-content-max-width: 48rem;
+}
+
+/* site */
+body {
+  --theme-hero-background: #304153;
+  --theme-hero-color: #fff;
+  --theme-hero-sdk-version-color: #ccc;
+}
+body .hero .site-logo {
+  content: url(/miso-client-js-sdk/demo/asset/img/propublica.svg);
 }

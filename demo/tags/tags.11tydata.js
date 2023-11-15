@@ -9,7 +9,8 @@ module.exports = {
       const path = filePathStem.replace('/index', '');
       return paginationData.map(sdk_version => ({
         sdk_version,
-        asset_path: `/miso-client-js-sdk${path}`,
+        asset_path: `/miso-client-js-sdk/demo/asset`,
+        src_path: `/miso-client-js-sdk${path}`,
         url: path.replace('/tags/', `/${sdk_version}/`).replace('/intro', ''),
       }));
     },

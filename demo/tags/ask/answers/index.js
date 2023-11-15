@@ -1,6 +1,8 @@
 const DEFAULT_API_KEY = btoa(atob('u4Qhcz3WeixHNAkq40LULp5005W8rvsxhNdlJ0R4').split('').reverse().join(''));
 const { api_key: apiKey = DEFAULT_API_KEY, api_host: apiHost, debug } = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 
+document.body.classList.add('propublica');
+
 (window.misocmd || (window.misocmd = [])).push(async () => {
 
   const MisoClient = window.MisoClient;
