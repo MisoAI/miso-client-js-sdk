@@ -26,7 +26,7 @@ export default class MisoComboElement extends HTMLElement {
     }
     this._combo = combo;
     combo.element = this;
-    combo.start();
+    combo.autoStart();
   }
 
 }

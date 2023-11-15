@@ -13,6 +13,7 @@ export default class AskCombo extends Combo {
       plugin,
       MisoClient,
     });
+    // TODO: extract options to super class
     this._options = new AskComboOptions();
     this._localOptions = {};
   }
@@ -38,6 +39,10 @@ export default class AskCombo extends Combo {
 
   get elements() {
     return this._elements;
+  }
+
+  autoStart() {
+    this.resolvedOptions.autostart && this.start();
   }
 
   async _start() {

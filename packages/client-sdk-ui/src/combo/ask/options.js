@@ -7,6 +7,7 @@ const { currentScript } = document;
 
 const DEFAULT_OPTIONS = Object.freeze({
   templates,
+  autostart: true,
 });
 
 export default class AskComboOptions {
@@ -64,7 +65,7 @@ function readFromScriptSrc() {
     if (key === 'q') {
       continue;
     }
-    params[key] = value === '' ? true : value;
+    params[key] = coerceValue(value);
   }
   return params;
 }
@@ -78,10 +79,14 @@ function readFromPageUrl() {
   const params = {};
   for (const [key, value] of new URLSearchParams(window.location.search)) {
     if (key.startsWith('miso_') && key.length > 5 && key !== 'miso_api_key') {
-      params[key.substring(5)] = value === '' ? true : value;
+      params[key.substring(5)] = coerceValue(value);
     } else if (key === 'q') {
       params.q = value;
     }
   }
   return params;
+}
+
+function coerceValue(value) {
+  return value === '' ? true : value === 'false' ? false : value;
 }

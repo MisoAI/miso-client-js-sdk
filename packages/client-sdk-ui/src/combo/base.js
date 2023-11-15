@@ -27,11 +27,14 @@ export default class Combo extends Component {
     this._element = element;
   }
 
-  start() {
+  start(options) {
     if (this._started) {
       return;
     }
     this._started = true;
+    if (options) {
+      this.config(options);
+    }
     this._start();
   }
 
