@@ -24,7 +24,7 @@ export const root = (options) => `
 
 export const followUp = (options, { parentQuestionId }) => `
 <section class="${PREFIX}__section ${PREFIX}__follow-up">
-  <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="initial" parent-question-id="${parentQuestionId}">
+  <miso-ask class="${PREFIX}__query-suggestions-container" visible-when="initial+nonempty" parent-question-id="${parentQuestionId}">
     <h3 class="${PREFIX}__phrase ${PREFIX}__related-questions-phrase"></h3>
     <miso-query-suggestions></miso-query-suggestions>
   </miso-ask>

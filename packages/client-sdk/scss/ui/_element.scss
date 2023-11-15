@@ -1,6 +1,5 @@
-$statuses: "initial", "loading", "erroneous", "ready", "ongoing", "done", "empty", "nonempty";
-$statuses_x: "ongoing", "done";
-$statuses_y: "empty", "nonempty";
+$statuses_stage: "initial", "loading", "erroneous", "ready", "ongoing", "done";
+$statuses_content: "empty", "nonempty";
 
 miso-ask,
 miso-explore,
@@ -15,7 +14,7 @@ miso-recommendation {
   [visible-when] {
     display: none !important;
   }
-  @each $status in $statuses {
+  @each $status in $statuses_stage {
     &[status~="#{$status}"] {
       &[visible-when~="#{$status}"],
       [visible-when~="#{$status}"] {
@@ -23,11 +22,19 @@ miso-recommendation {
       }
     }
   }
-  @each $status_x in $statuses_x {
-    @each $status_y in $statuses_y {
-      &[status~="#{$status_x}"][status~="#{$status_y}"] {
-        &[visible-when~="#{$status_x}-#{$status_y}"],
-        [visible-when~="#{$status_x}-#{$status_y}"] {
+  @each $status in $statuses_content {
+    &[status~="#{$status}"] {
+      &[visible-when~="#{$status}"],
+      [visible-when~="#{$status}"] {
+        display: block !important;
+      }
+    }
+  }
+  @each $status_s in $statuses_stage {
+    @each $status_c in $statuses_content {
+      &[status~="#{$status_s}"][status~="#{$status_c}"] {
+        &[visible-when~="#{$status_s}+#{$status_c}"],
+        [visible-when~="#{$status_s}+#{$status_c}"] {
           display: block !important;
         }
       }
