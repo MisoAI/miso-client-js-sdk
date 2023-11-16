@@ -1,4 +1,6 @@
 {% switch dependency %}
+  {% case 'none' %}
+    <!-- none -->
   {% case 'sdk' %}
     <!-- sdk -->
     <script src="{{ '/js/sdk.js' | url }}"></script>
@@ -8,13 +10,10 @@
   {% case 'ui' %}
     <!-- ui -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
-    <link rel="stylesheet" href="http://localhost:10099/dist/css/ui.css">
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" data-manual></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script async src="http://localhost:10099/dist/umd/miso.js"></script>
     <script src="{{ '/js/ui.js' | url }}"></script>
-  {% case 'ui:combo' %}
-    <link rel="stylesheet" href="http://localhost:10099/dist/css/ui.css">
   {% case 'algolia' %}
     <!-- algolia -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/satellite-min.css">

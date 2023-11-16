@@ -5,6 +5,7 @@ import Layouts from './layouts.js';
 import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
 import * as sources from './source/index.js';
+import { loadStylesIfNecessary } from './styles.js';
 
 import MisoContainerElement from './element/container/miso-container.js';
 import MisoComboElement from './element/combo/miso-combo.js';
@@ -17,16 +18,15 @@ export default class UiPlugin extends Component {
     return PLUGIN_ID;
   }
 
-  constructor({ loadStyles = true } = {}) {
+  constructor() {
     super('ui');
     this.layouts = new Layouts(this);
     this._recommendations = new WeakMap();
     this._asks = new WeakMap();
     this._extensions = new WeakMap();
-    // TODO: load CSS
   }
 
-  install(MisoClient, context) {
+  async install(MisoClient, context) {
     context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
 
@@ -61,6 +61,11 @@ export default class UiPlugin extends Component {
     for (const ElementClass of ElementClasses) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }
+
+    // load styles
+    await loadStylesIfNecessary();
+
+    // define custom elements
     for (const ElementClass of ElementClasses) {
       defineAndUpgrade(ElementClass);
     }
