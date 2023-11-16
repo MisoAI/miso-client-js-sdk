@@ -12,6 +12,7 @@ export const root = (options) => `
 <section class="${PREFIX}__section ${PREFIX}__answer">
   ${options.templates.answer(options)}
   ${options.templates.sources(options)}
+  <miso-ask class="${PREFIX}__bottom-spacing-container" visible-when="ongoing"></miso-ask>
 </section>
 <div id="${PREFIX}__follow-ups" class="${PREFIX}__follow-ups"></div>
 <section id="${PREFIX}__related-resources" class="${PREFIX}__section ${PREFIX}__related-resources">
@@ -35,6 +36,7 @@ export const followUp = (options, session = {}) => {
   </miso-ask>
   ${options.templates.answer(options, session)}
   ${options.templates.sources(options, session)}
+  <miso-ask class="${PREFIX}__bottom-spacing-container" visible-when="ongoing" parent-question-id="${parentQuestionId}"></miso-ask>
 </section>
 `.trim();
 };

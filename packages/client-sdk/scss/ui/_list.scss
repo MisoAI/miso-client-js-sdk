@@ -19,7 +19,7 @@
       margin: 0;
 
       li.miso-list__item {
-        margin: var(--miso-list-item-gap) 0;
+        margin: var(--miso-list-item-gap) 0 0;
         border: 1px solid var(--miso-border-color-light);
         border-radius: 0.75rem;
         background-color: #fff;
@@ -27,6 +27,9 @@
         &:hover {
           border-color: var(--miso-border-color-medium);
           box-shadow: 0 0 3px var(--miso-box-shadow-hover);
+        }
+        &:first-child {
+          margin-top: 0;
         }
       }
       .miso-list__item-body {
