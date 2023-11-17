@@ -40,7 +40,7 @@ body, button, input, optgroup, select, textarea {
 
 /* ask-combo */
 :root {
-  --miso-ask-combo-content-max-width: 48rem;
+  --miso-ask-combo-content-max-width: 48rem !important;
 }
 
 /* site */
