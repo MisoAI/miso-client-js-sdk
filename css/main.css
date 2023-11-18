@@ -238,8 +238,13 @@ body.home main {
   padding: 0 !important;
   font-size: 1.1rem;
 }
-body.home main #hero h1 {
+body.home main #hero {
+  padding: 6rem 0 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+body.home main #hero .hero-title {
   font-size: 2.5rem;
+  line-height: 1.35;
 }
 body.home main a {
   text-decoration: none !important;
@@ -262,32 +267,37 @@ body.home main .cta:hover {
   background: #1a4ce3;
   color: #fff !important;
 }
+body.home main .component-desc {
+  font-style: italic;
+  color: #666;
+}
 body.home main #components ul {
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 0 10%;
   list-style: none;
 }
 body.home main #components ul > li {
   position: relative;
   display: block;
-  padding: 1.5rem;
-}
-body.home main #components ul > li:nth-child(odd) {
-  margin-right: 10%;
-}
-body.home main #components ul > li:nth-child(even) {
-  margin-left: 10%;
-}
-body.home main #components ul > li:nth-child(3n) .card {
-  background-color: #eff;
-}
-body.home main #components ul > li:nth-child(3n+1) .card {
-  background-color: #fef;
-}
-body.home main #components ul > li:nth-child(3n+2) .card {
-  background-color: #ffe;
+  margin-bottom: 1.5rem;
+  /*
+  &:nth-child(odd) {
+    margin-right: 10%;
+  }
+  &:nth-child(even) {
+    margin-left: 10%;
+  }
+  &:nth-child(3n) .card {
+    background-color: #eff;
+  }
+  &:nth-child(3n + 1) .card {
+    background-color: #fef;
+  }
+  &:nth-child(3n + 2) .card {
+    background-color: #ffe;
+  }
+  */
 }
 body.home main #components ul .card {
   position: relative;
@@ -341,12 +351,12 @@ body:not(.__preview__) .__preview__ {
     display: grid;
     gap: 1.5rem;
     grid-template-areas: "sidebar main";
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: minmax(13rem, 1fr) minmax(0, 3fr);
   }
 }
 @media (min-width: 992px) {
   body.base .miso-body-container {
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: minmax(13rem, 1fr) minmax(0, 5fr);
   }
 }
 
@@ -478,6 +488,11 @@ main > .content h4, main > .content h5 {
 main > .content > h4:nth-child(n+2),
 main > .content > h5:nth-child(n+2) {
   margin-top: 1.5rem;
+}
+
+.intro-desc {
+  font-style: italic;
+  color: #666;
 }
 
 /* footer */

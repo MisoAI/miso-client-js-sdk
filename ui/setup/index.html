@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Miso SDK for JavaScript - UI - Setup</title>
 <link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/ui/setup/" />
-<meta name="description" content="How to setup the UI plugin." />
+<meta name="description" content="How to setup the UI plugin" />
 
 <meta property="og:title" content="Miso SDK for JavaScript - UI - Setup" />
-<meta property="og:description" content="How to setup the UI plugin." />
+<meta property="og:description" content="How to setup the UI plugin" />
 <meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/ui/setup/" />
 <meta property="og:type" content="documentation" />
 
@@ -16,7 +16,7 @@
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
 <meta name="twitter:title" content="Miso SDK for JavaScript - UI - Setup">
-<meta name="twitter:description" content="How to setup the UI plugin.">
+<meta name="twitter:description" content="How to setup the UI plugin">
 <meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/ui/setup/">
 
 
@@ -36,7 +36,7 @@
   <body class="base ">
     <header class="navbar navbar-expand-md navbar-dark">
       <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
-        <a class="navbar-brand brand p-0 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
+        <a class="navbar-brand brand p-0 ms-md-3 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
   <svg xmlns="http://www.w3.org/2000/svg" role="img"
     height="28" viewbox="0 0 500 200"
     class="bi d-block my-1" fill="currentColor">
@@ -56,11 +56,7 @@
   <ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
   
     <li class="nav-item col-6 col-md-auto">
-      <a class="nav-link p-2" href="/miso-client-js-sdk/sdk/">SDK</a>
-    </li>
-  
-    <li class="nav-item col-6 col-md-auto">
-      <a class="nav-link p-2" href="/miso-client-js-sdk/ui/">UI</a>
+      <a class="nav-link p-2" href="/miso-client-js-sdk/answers/">Answers</a>
     </li>
   
     <li class="nav-item col-6 col-md-auto">
@@ -81,7 +77,7 @@
       </a>
     </li>
   </ul>
-  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3 me-md-2" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
 </div>
 
       </nav>
@@ -169,9 +165,11 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1>Setup</h1><hr>
+          <h1 class="intro-title">Setup</h1>
           
+          <hr>
         </div>
+        
         
         <div class="content ps-lg-4">
           <p>The UI plugin is shipped with the SDK and requires no extra dependency. To use the plugin, simply:</p>
@@ -183,12 +181,12 @@
 <p>Add the SDK JavaScript and stylesheet to your webpage:</p>
 <p>The <code>version</code> parameter can be one of the following:</p>
 <ul>
-<li>A specific version. For example: <code>1.8.1</code>. (recommended)</li>
+<li>A specific version. For example: <code>1.9.0</code>. (recommended)</li>
 <li>A tag: either <code>latest</code> or <code>beta</code>.</li>
 </ul>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@{{version}}/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@{{version}}/dist/css/ui.css<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></code></pre>
 <p>For example:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.8.1/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.8.1/dist/css/ui.css<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.9.0/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.9.0/dist/css/ui.css<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></code></pre>
 <p>To install the SDK as an NPM dependency in your JavaScript project, see SDK <a href="/miso-client-js-sdk/sdk/installation/" target="_blank" rel="noopener">Installation</a> section for details.</p>
 <h3 id="turn-on-the-plugin" tabindex="-1">Turn on the plugin</h3>
 <p>In your application, turn on the UI plugin before creating an SDK client.</p>
