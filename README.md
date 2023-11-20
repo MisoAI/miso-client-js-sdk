@@ -12,21 +12,40 @@
     <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/bundlephobia/minzip/@miso.ai/client-sdk"></a>
     <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
   </p>
-  <a href="https://miso.ai/">Home</a> | <a href="https://docs.miso.ai/">Docs</a> | <a href="https://misoai.github.io/miso-client-js-sdk/sdk">SDK Reference</a> | <a href="https://api.askmiso.com/">API Reference</a> | <a href="https://docs.miso.ai/recipes">Recipes</a>
+  <a href="https://miso.ai/">Home</a> | <a href="https://answers.miso.ai/">Demo</a> | <a href="https://docs.miso.ai/">Docs</a> | <a href="https://misoai.github.io/miso-client-js-sdk/answers">SDK Reference</a> | <a href="https://api.askmiso.com/">API Reference</a>
 </div>
 
 ----
 
 With LLM technology today, your users want to engage your content in smarter ways in place of the traditional keyword search. Miso offers LLM answer API services with our private models and your controlled content source.
 
-// TODO: screenshot
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <img src=".github/img/screenshot-01.png">
+      </td>
+      <td>
+        <img src=".github/img/screenshot-02.png">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src=".github/img/screenshot-03.png">
+      </td>
+      <td>
+        <img src=".github/img/screenshot-04.png">
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 // TODO: talk more
 
-// TODO: make an image button
-
 <div align="center">
-  <a href="https://answers.miso.ai/">Play demo</a>
+  <a href="https://misoai.github.io/miso-client-js-sdk/demo/latest/answers/ask/">
+    <img src=".github/img/demo.svg" width="160px">
+  </a>
 </div>
 
 // TODO: diagram
@@ -42,14 +61,6 @@ With LLM technology today, your users want to engage your content in smarter way
 - Straightforward data upload
 - Fast model training
 - SDKs to integrate into your sites in 5 minutes
-
-// TODO: update CTA
-
-<div align="center">
-  <a href="https://miso.ai">
-    <img src=".github/img/cta.svg" height="48px">
-  </a>
-</div>
 
 ----
 
