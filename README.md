@@ -19,26 +19,7 @@
 
 With LLM technology today, your users want to engage your content in smarter ways in place of the traditional keyword search. Miso offers LLM answer API services with our private models and your controlled content source.
 
-<table>
-  <tbody>
-    <tr>
-      <td>
-        <img src=".github/img/screenshot-01.png">
-      </td>
-      <td>
-        <img src=".github/img/screenshot-02.png">
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <img src=".github/img/screenshot-03.png">
-      </td>
-      <td>
-        <img src=".github/img/screenshot-04.png">
-      </td>
-    </tr>
-  </tbody>
-</table>
+https://github.com/MisoAI/miso-client-js-sdk/assets/785058/2255a32f-37e4-456b-bc4c-ec908cdc3c93
 
 ### Why Miso
 
