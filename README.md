@@ -40,7 +40,15 @@ With LLM technology today, your users want to engage your content in smarter way
   </tbody>
 </table>
 
-// TODO: talk more
+### Why Miso
+
+- Citation-driven, i.e. no AI hallucinations
+- Your own AI answer engine tuned to your content
+- Designed to comply with your content guidelines
+
+# Miso JavaScript SDK
+
+Miso provides a JavaScript SDK for browser that gives you the power to integrate the full Miso Answers solution to your website in 10 minutes.
 
 <div align="center">
   <a href="https://misoai.github.io/miso-client-js-sdk/demo/latest/answers/ask/">
@@ -48,57 +56,27 @@ With LLM technology today, your users want to engage your content in smarter way
   </a>
 </div>
 
-// TODO: diagram
+## Quick start
 
-### Why Miso
+1. Log in Miso [dashboard](https://dojo.askmiso.com/) to obtain your publishable API key.
+2. Add the SDK and element to your website.
 
-- Citation-driven, i.e. no AI hallucinations
-- Your own AI answer engine tuned to your content
-- Designed to comply with your content guidelines
-
-### Easy to integrate
-
-- Straightforward data upload
-- Fast model training
-- SDKs to integrate into your sites in 5 minutes
-
-----
-
-// TODO: revise this (with screenshots and code)
-
-# Getting started
-
-1. [Submit](https://miso.ai/get-answers) your domain to get your own private search engine.
-2. Optionally add in more data to fine-tune your engine.
-3. Add it to your site using our JavaScript SDK and flexible APIs.
+```html
+<head>
+  <script async src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.9.0/dist/umd/miso.min.js?api_key={{api_key}}"></script>
+</head>
+<body>
+  ...
+  <miso-ask-combo></miso-ask-combo>
+  ...
+</body>
+```
 
 <div align="center">
-  <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.7/ui/ask/showcase-1">
+  <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.9/answers/ask/standard/basic">
     <img src=".github/img/live-demo.svg" height="48px">
   </a>
 </div>
-
-----
-
-# Miso JavaScript SDK
-
-## Highlights
-* Simple, easy to integrate.
-* Can be added into websites by a script tag.
-* UI tools for fast prototyping.
-* For browser.
-
-## Packages
-This monorepo contains the following packages:
-
-| Name | Docs | NPM | Description |
-| --- | --- | --- | --- |
-| [client-sdk](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk) | [Docs](https://misoai.github.io/miso-client-js-sdk/sdk/) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk) | The standard bundle of JavaScript SDK. |
-| [client-sdk-core](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-core) | | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-core) | The SDK core. |
-| [client-sdk-ui](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-ui) | [Docs](https://misoai.github.io/miso-client-js-sdk/ui/) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-ui) | A UI Plugin for fast prototyping, bundled in the standard package. |
-| [client-sdk-algolia](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-algolia) | [Docs](https://misoai.github.io/miso-client-js-sdk/plugins/algolia/) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-algolia) | A Plugin to integrate with InstantSearch.js and Autocomplete |
-| [client-sdk-gtm](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-gtm) | [Docs](https://misoai.github.io/miso-client-js-sdk/plugins/gtm/) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-gtm) | A Plugin to capture Google Tag Manager Ecommerce events |
-| [client-sdk-shopify](https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-shopify) | [Docs](https://misoai.github.io/miso-client-js-sdk/plugins/shopify/) | [npm](https://www.npmjs.com/package/@miso.ai/client-sdk-shopify) | A prebuilt script to integrate with Shopify stores |
 
 ## Other SDKs
 * [Node.js SDK](https://misoai.github.io/miso-server-js-sdk/sdk/)
