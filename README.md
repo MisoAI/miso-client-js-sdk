@@ -1,6 +1,6 @@
 <div align="center">
   <div>
-    <a href="https://miso.ai">
+    <a href="https://miso.ai" target="_blank">
       <img src=".github/img/logo.svg" width="160px">
     </a>
   </div>
@@ -8,11 +8,11 @@
     <strong>Private AI for the Open Web.</strong>
   </p>
   <p>
-    <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
-    <a href="https://www.npmjs.com/package/@miso.ai/client-sdk"><img src="https://img.shields.io/bundlephobia/minzip/@miso.ai/client-sdk"></a>
-    <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
+    <a href="https://www.npmjs.com/package/@miso.ai/client-sdk" target="_blank"><img src="https://img.shields.io/npm/v/@miso.ai/client-sdk"></a>
+    <a href="https://www.npmjs.com/package/@miso.ai/client-sdk" target="_blank"><img src="https://img.shields.io/bundlephobia/minzip/@miso.ai/client-sdk"></a>
+    <a href="/LICENSE" target="_blank"><img src="https://img.shields.io/npm/l/@miso.ai/client-sdk"></a>
   </p>
-  <a href="https://miso.ai/">Home</a> | <a href="https://answers.miso.ai/">Demo</a> | <a href="https://docs.miso.ai/">Docs</a> | <a href="https://misoai.github.io/miso-client-js-sdk/answers">SDK Reference</a> | <a href="https://api.askmiso.com/">API Reference</a>
+  <a href="https://miso.ai/" target="_blank">Home</a> | <a href="https://answers.miso.ai/" target="_blank">Demo</a> | <a href="https://docs.miso.ai/" target="_blank">Docs</a> | <a href="https://misoai.github.io/miso-client-js-sdk/answers" target="_blank">SDK Reference</a> | <a href="https://api.askmiso.com/" target="_blank">API Reference</a>
 </div>
 
 ----
@@ -32,7 +32,7 @@ https://github.com/MisoAI/miso-client-js-sdk/assets/785058/2255a32f-37e4-456b-bc
 Miso provides a JavaScript SDK for browser that gives you the power to integrate the full Miso Answers solution to your website in 10 minutes.
 
 <div align="center">
-  <a href="https://misoai.github.io/miso-client-js-sdk/demo/latest/answers/ask/">
+  <a href="https://misoai.github.io/miso-client-js-sdk/demo/latest/answers/ask/" target="_blank">
     <img src=".github/img/demo.svg" width="160px">
   </a>
 </div>
@@ -54,7 +54,7 @@ Miso provides a JavaScript SDK for browser that gives you the power to integrate
 ```
 
 <div align="center">
-  <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.9/answers/ask/standard/basic">
+  <a href="https://stackblitz.com/github/MisoAI/miso-sdk-docs/tree/main/examples/client/1.9/answers/ask/standard/basic" target="_blank">
     <img src=".github/img/live-demo.svg" height="48px">
   </a>
 </div>
