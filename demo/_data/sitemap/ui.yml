@@ -4,6 +4,8 @@ sections:
   pages:
   - title: Default
     path: /ask-combo/default
+  - title: Custom
+    path: /ask-combo/custom
   - title: Production
     path: /ask-combo/production
 - title: Ask
@@ -11,12 +13,12 @@ sections:
   pages:
   - title: Basic
     path: /ask/basic
+  - title: Full
+    path: /ask/full
   - title: Lorem (client)
     path: /ask/lorem-client
   - title: Plaintext
     path: /ask/plaintext
-  - title: Follow up
-    path: /ask/follow-up
   - title: Syntax highlight
     path: /ask/syntax-highlight
   - title: Custom data

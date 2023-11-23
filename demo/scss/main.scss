@@ -40,10 +40,10 @@ aside {
 }
 main {
   grid-area: main;
-  padding: 1rem;
+  //padding: 1rem;
 
   @media (min-width: 768px) {
-    padding: 1rem 1.5rem;
+    //padding: 1rem 1.5rem;
   }
 }  
 
@@ -140,6 +140,12 @@ main {
     > h5:nth-child(n+2) {
       margin-top: 1.5rem;
     }
+  }
+  .hero-title {
+    text-align: center;
+    margin: 2rem 0;
+    font-size: 3rem;
+    line-height: 2;
   }
 }
 

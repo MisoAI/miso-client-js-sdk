@@ -162,7 +162,6 @@ misocmd.push(async () => {
   window.helpers.doggo.config({
     answer: { sampling: 0.5 }, speedRate: 2
   });
-  MisoClient.plugins.use('std:ui');
   restart();
 });
 </script>

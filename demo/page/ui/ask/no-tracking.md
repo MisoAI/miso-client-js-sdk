@@ -85,7 +85,6 @@ misocmd.push(async () => {
   window.helpers.doggo.config({
     answer: { sampling: 0.5 }, speedRate: 2
   });
-  MisoClient.plugins.use('std:ui');
   const client = new MisoClient({
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
@@ -104,6 +103,8 @@ misocmd.push(async () => {
     // clear workflows except for the root one
     context.reset({ root: false });
   });
+  await client.ui.ready;
+  window.rootElement.innerHTML = window.templates.root();
 });
 </script>
 {% endraw %}
