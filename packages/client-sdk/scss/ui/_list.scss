@@ -14,7 +14,7 @@
   ul.miso-list__list {
     &[data-item-type="product"],
     &[data-item-type="article"] {
-      list-style: none;
+      list-style: none !important;
       padding: 0;
       margin: 0;
 

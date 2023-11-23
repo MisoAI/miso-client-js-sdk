@@ -8,7 +8,8 @@
   --miso-ask-combo-related-resources-background: #fffaf5;
 }
 
-miso-ask-combo {
+miso-ask-combo,
+.miso-ask-combo {
   &, * {
     box-sizing: border-box;
   }
