@@ -1,4 +1,4 @@
-import { Component, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
+import { Component, Resolution, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
 import { Asks, Explore, Search, Recommendations } from './workflow/index.js';
 import { AskCombo } from './combo/index.js';
 import Layouts from './layouts.js';
@@ -24,6 +24,7 @@ export default class UiPlugin extends Component {
     this._recommendations = new WeakMap();
     this._asks = new WeakMap();
     this._extensions = new WeakMap();
+    this._ready = new Resolution();
   }
 
   async install(MisoClient, context) {
@@ -69,6 +70,8 @@ export default class UiPlugin extends Component {
     for (const ElementClass of ElementClasses) {
       defineAndUpgrade(ElementClass);
     }
+
+    this._ready.resolve();
   }
 
   async requireExtension(name) {
@@ -78,6 +81,13 @@ export default class UiPlugin extends Component {
       default:
         throw new Error(`Unknown extension: ${name}`);
     }
+  }
+
+  get ready() {
+    return Promise.all([
+      this._ready.promise,
+      MisoClient.any(), // TODO: we need to wait for element connection
+    ]).then(() => {});
   }
 
   _injectClient(client) {
@@ -169,11 +179,9 @@ class Ui {
     return this._explore || (this._explore = new Explore(this._plugin, this._client));
   }
 
-  /*
-  async whenStylesLoaded() {
-    // TODO
+  get ready() {
+    return this._plugin._ready.promise;
   }
-  */
 
 }
 
