@@ -18,7 +18,6 @@ misocmd.push(async () => {
   const rootElement = document.querySelector('#miso-ask-combo');
   rootElement.innerHTML = templates.root();
   const elements = {
-    rootQuery: rootElement.querySelector(`#miso-ask-combo__question miso-query`),
     followUpsSection: rootElement.querySelector(`#miso-ask-combo__follow-ups`),
     relatedResourcesContainer: rootElement.querySelector(`#miso-ask-combo__related-resources miso-ask`),
   };
@@ -38,16 +37,8 @@ misocmd.push(async () => {
     // destroy all follow-up workflows
     context.reset({ root: false });
   });
-  // miso-query auto focus/value
-  const queryLayout = rootWorkflow.views.get('query').layout;
-  const q = new URLSearchParams(window.location.search).get('q');
-  if (q) {
-    queryLayout.value = q;
-    // start query if specified in URL
-    rootWorkflow.query({ q });
-  } else {
-    queryLayout.focus();
-  }
+  // start query if specified in URL
+  rootWorkflow.autoQuery();
 });
 </script>
 {% endraw %}

@@ -108,6 +108,22 @@ export default class Ask extends Workflow {
   }
 
   // lifecycle //
+  autoQuery({ setValue = true, focus = true } = {}) {
+    const q = new URLSearchParams(window.location.search).get('q');
+    const { layout } = this._views.get(ROLE.QUERY);
+    if (layout) {
+      if (q && setValue) {
+        layout.value = q;
+      }
+      if (!q && focus) {
+        layout.focus();
+      }
+    }
+    if (q) {
+      this.query({ q });
+    }
+  }
+
   query({ q: question, ...payload } = {}) {
     payload = { ...payload, question };
     if (this.parentQuestionId) {
