@@ -91,6 +91,23 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     }
   }
 
+  focus() {
+    if (this._element) {
+      this._context().focus();
+    } else {
+      // take a rain check, wait for render
+      this._focusRequested = true;
+    }
+  }
+
+  set value(value) {
+    if (this._element) {
+      this._context().value = value;
+    } else {
+      this._valueRequested = value;
+    }
+  }
+
   _preprocess({ state }) {
     state = super._preprocess({ state });
     const { autocomplete } = this.options;
@@ -108,6 +125,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     }
     this._setupAutocomplete(element);
     this._renderSuggestions(element, data, controls);
+    this._fullfillFocusRequest(element);
+    this._fullfillValueRequest(element);
   }
 
   _setupAutocomplete(element) {
@@ -140,6 +159,22 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     for (const itemElement of suggestionListElement.children) {
       this._suggestionItems.set(itemElement, suggestionItems[i++]);
     }
+  }
+
+  _fullfillFocusRequest(element) {
+    if (!element || !this._focusRequested) {
+      return;
+    }
+    this._focusRequested = false;
+    this._context(element).focus();
+  }
+
+  _fullfillValueRequest(element) {
+    if (!element || !this._valueRequested) {
+      return;
+    }
+    this._context(element).value = this._valueRequested;
+    this._valueRequested = undefined;
   }
 
   _context(element) {
@@ -238,6 +273,22 @@ class Context {
         autocompleteElement.classList.remove('open');
       });
     }
+  }
+
+  focus() {
+    if (!this._element) {
+      return;
+    }
+    const { inputElement } = this;
+    inputElement && inputElement.focus();
+  }
+
+  set value(value) {
+    if (!this._element) {
+      return;
+    }
+    const { inputElement } = this;
+    inputElement && (inputElement.value = value);
   }
 
   _get(role) {

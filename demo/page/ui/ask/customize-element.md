@@ -18,7 +18,9 @@ misocmd.push(async () => {
     },
   });
   await client.ui.ready;
-  window.rootElement.innerHTML = window.templates.root();
+  const { templates } = MisoClient.ui.defaults.ask;
+  const rootElement = document.querySelector('#miso-ask-combo');
+  rootElement.innerHTML = templates.root();
 });
 function renderSourceContent(layout, state, data) {
   const { url, cover_image, title, created_at, snippet } = data;

@@ -109,7 +109,7 @@ export default class AskCombo extends Combo {
 
     // when a answer is fully populated, insert a new section for the follow-up question
     context.on('done', ({ workflow }) => {
-      elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp(options, { parentQuestionId: workflow.questionId }));
+      elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ ...options, parentQuestionId: workflow.questionId }));
     });
 
     // when a new query starts, associate the last section container (for related resources) to that workflow

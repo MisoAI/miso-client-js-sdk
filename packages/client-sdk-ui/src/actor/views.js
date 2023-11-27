@@ -215,7 +215,7 @@ class Views {
     return this._actor.get(role).interface;
   }
 
-  get views() {
+  get all() {
     return this._actor.views.map(view => view.interface);
   }
 

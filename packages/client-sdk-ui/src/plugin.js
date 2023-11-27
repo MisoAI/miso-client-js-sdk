@@ -5,6 +5,7 @@ import Layouts from './layouts.js';
 import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
 import * as sources from './source/index.js';
+import * as defaults from './defaults/index.js';
 import { loadStylesIfNecessary } from './styles.js';
 
 import MisoContainerElement from './element/container/miso-container.js';
@@ -31,7 +32,7 @@ export default class UiPlugin extends Component {
     context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
 
-    const ui = {};
+    const ui = { defaults };
     delegateGetters(ui, this, ['layouts', 'combo']);
     defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });

@@ -1,6 +1,5 @@
 import { trimObj } from '@miso.ai/commons';
-import * as templates from './templates.js';
-import * as phrases from './phrases.js';
+import { templates } from '../../defaults/ask/index.js';
 
 // TODO: generalize
 
@@ -8,7 +7,6 @@ const { currentScript } = document;
 
 const DEFAULT_OPTIONS = Object.freeze({
   templates,
-  phrases,
   autostart: true,
 });
 
@@ -48,7 +46,7 @@ function normalizeOptions({ api_key: apiKey, api_host: apiHost, templates, phras
     apiKey,
     apiHost,
     templates: templateAsFunction(templates),
-    phrases: templateAsFunction(phrases),
+    phrases,
     ...options,
   });
 }

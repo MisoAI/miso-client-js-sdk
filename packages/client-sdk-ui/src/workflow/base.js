@@ -73,6 +73,10 @@ export default class Workflow extends Component {
     return this._hub.states;
   }
 
+  get views() {
+    return this._views.interface;
+  }
+
   // lifecycle //
   reset() {
     this._sessions.new();
