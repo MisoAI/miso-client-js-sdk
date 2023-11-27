@@ -6,8 +6,9 @@
   Use <code>workflow.useDataProcessor()</code> to add a "Wooof!" string to the answer.
 </p>
 {% endraw %}
-{% include './_root.md' %}
 {% raw %}
+<h1 class="hero-title">Miso Answers</h1>
+<div id="miso-ask-combo" class="miso-ask-combo"></div>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {

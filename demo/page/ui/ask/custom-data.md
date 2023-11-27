@@ -1,8 +1,9 @@
 ---
 ---
 
-{% include './_root.md' %}
 {% raw %}
+<h1 class="hero-title">Miso Answers</h1>
+<div id="miso-ask-combo" class="miso-ask-combo"></div>
 <script src="https://www.unpkg.com/@miso.ai/doggoganger@beta/dist/umd/doggoganger-browser.min.js"></script>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
