@@ -12,6 +12,16 @@ misocmd.push(async () => {
   });
   const context = client.ui.asks;
   const rootWorkflow = client.ui.ask;
+  // render DOM and get elements
+  await client.ui.ready;
+  const { templates } = MisoClient.ui.defaults.ask;
+  const rootElement = document.querySelector('#miso-ask-combo');
+  rootElement.innerHTML = templates.root();
+  const elements = {
+    rootQuery: rootElement.querySelector(`#miso-ask-combo__question miso-query`),
+    followUpsSection: rootElement.querySelector(`#miso-ask-combo__follow-ups`),
+    relatedResourcesContainer: rootElement.querySelector(`#miso-ask-combo__related-resources miso-ask`),
+  };
   // setup workflows
   // 1. when a answer is fully populated, insert a new section for the follow-up question
   context.on('done', ({ workflow }) => {
@@ -28,16 +38,6 @@ misocmd.push(async () => {
     // destroy all follow-up workflows
     context.reset({ root: false });
   });
-  // render DOM and find elements
-  await client.ui.ready;
-  const { templates } = MisoClient.ui.defaults.ask;
-  const rootElement = document.querySelector('#miso-ask-combo');
-  rootElement.innerHTML = templates.root();
-  const elements = {
-    rootQuery: rootElement.querySelector(`#miso-ask-combo__question miso-query`),
-    followUpsSection: rootElement.querySelector(`#miso-ask-combo__follow-ups`),
-    relatedResourcesContainer: rootElement.querySelector(`#miso-ask-combo__related-resources miso-ask`),
-  };
   // miso-query auto focus/value
   const queryLayout = rootWorkflow.views.get('query').layout;
   const q = new URLSearchParams(window.location.search).get('q');
