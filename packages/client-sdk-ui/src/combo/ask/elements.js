@@ -9,24 +9,16 @@ export default class AskComboElements {
     }
     defineValues(this, {
       root,
-      rootQuery: root.querySelector(`#${PREFIX}__question miso-query`),
       followUpsSection: root.querySelector(`#${PREFIX}__follow-ups`),
       relatedResourcesContainer: root.querySelector(`#${PREFIX}__related-resources miso-ask`),
     });
 
-    if (!this.rootQuery) {
-      throw new Error(`Root question query element not found.`);
-    }
     if (!this.followUpsSection) {
       throw new Error(`Follow-ups section element not found.`);
     }
     if (!this.relatedResourcesContainer) {
       throw new Error(`Related resources container element not found.`);
     }
-  }
-
-  get rootInput() {
-    return this.rootQuery.querySelector(`[data-role="input"]`);
   }
 
 }

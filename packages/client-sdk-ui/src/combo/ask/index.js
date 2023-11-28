@@ -1,6 +1,4 @@
 import { defineValues, waitForDomContentLoaded } from '@miso.ai/commons';
-import { fields } from '../../actor/index.js';
-import { ROLE } from '../../constants.js';
 import Combo from '../base.js';
 import AskComboOptions from './options.js';
 import AskComboElements from './elements.js';
@@ -125,20 +123,8 @@ export default class AskCombo extends Combo {
       context.reset({ root: false });
     });
 
-    // wait for miso-query content to be populated
-    const QUERY = fields.view(ROLE.QUERY);
-    if (!rootWorkflow.states[QUERY]) {
-      await rootWorkflow._hub.once(QUERY);
-    }
-
     // start query if specified in URL
-    const { q } = options;
-    if (q) {
-      elements.rootInput.value = q;
-      rootWorkflow.query({ q });
-    } else {
-      elements.rootInput.focus();
-    }
+    rootWorkflow.autoQuery();
   }
 
 }
