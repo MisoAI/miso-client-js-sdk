@@ -33,7 +33,7 @@ export default class UiPlugin extends Component {
     MisoClient.on('create', this._injectClient.bind(this));
 
     const ui = { defaults };
-    delegateGetters(ui, this, ['layouts', 'combo']);
+    delegateGetters(ui, this, ['layouts', 'combo', 'ready']);
     defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });
 

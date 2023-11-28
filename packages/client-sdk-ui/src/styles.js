@@ -12,17 +12,13 @@ export async function loadStylesIfNecessary() {
 export async function loadStyles() {
   try {
     let link = getExistedLinkElement();
-    if (link) {
-      return waitForLinkLoaded(link)
-    }
-    link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = getCssUrl();
-    return new Promise((resolve, reject) => {
-      link.onload = resolve;
-      link.onerror = reject;
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = getCssUrl();
       document.head.appendChild(link);
-    });
+    }
+    return waitForStylesApplied(link);
   } catch(e) {
     console.error(e);
   }
@@ -50,25 +46,52 @@ function getExistedLinkElement() {
   return document.head.querySelector(`link[href="${getCssUrl()}"]`);
 }
 
-async function waitForLinkLoaded(element) {
+async function waitForStylesApplied(element) {
+  await waitForSheetAvailable(element);
+  await waitForSheetIncluded(element);
+}
+
+async function waitForSheetAvailable(element) {
   if (element.sheet) {
     return;
   }
   return new Promise((resolve, reject) => {
     let intervalId;
-    element.onload = () => {
-      intervalId && clearInterval(intervalId);
-      resolve();
-    };
     element.onerror = () => {
       intervalId && clearInterval(intervalId);
       reject();
     };
     intervalId = setInterval(() => {
-      if (element.sheet) {
-        intervalId && clearInterval(intervalId);
-        resolve();
+      if (!element.sheet) {
+        return;
       }
-    }, 100);
+      intervalId && clearInterval(intervalId);
+      resolve();
+  }, 100);
   });
+}
+
+async function waitForSheetIncluded(element) {
+  if (isSheetIncluded(element)) {
+    return;
+  }
+  return new Promise((resolve) => {
+    let intervalId;
+    intervalId = setInterval(() => {
+      if (!isSheetIncluded(element)) {
+        return;
+      }
+      intervalId && clearInterval(intervalId);
+      resolve();
+  }, 100);
+  });
+}
+
+function isSheetIncluded(element) {
+  for (const sheet of document.styleSheets) {
+    if (sheet.ownerNode === element) {
+      return true;
+    }
+  }
+  return false;
 }
