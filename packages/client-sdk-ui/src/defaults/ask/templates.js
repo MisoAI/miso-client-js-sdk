@@ -1,73 +1,92 @@
 import { CLASS_PREFIX } from './constants.js';
 import * as DEFAULT_PHRASES from './phrases.js';
 
-// TODO: refactor
-// TODO: make ids constants
 // TODO: placeholder
 
 export function root(options = {}) {
-  const { classPrefix = CLASS_PREFIX } = options;
-  return `
-<section id="${classPrefix}__question" class="${classPrefix}__section ${classPrefix}__question">
-  <miso-ask class="${classPrefix}__query-container">
-    <miso-query></miso-query>
-  </miso-ask>
-</section>
-<section class="${classPrefix}__section ${classPrefix}__answer">
-  ${answer(options)}
-  ${sources(options)}
-  <miso-ask class="${classPrefix}__bottom-spacing-container" visible-when="ongoing"></miso-ask>
-</section>
-<div id="${classPrefix}__follow-ups" class="${classPrefix}__follow-ups"></div>
-<section id="${classPrefix}__related-resources" class="${classPrefix}__section ${classPrefix}__related-resources">
-  <miso-ask visible-when="nonempty" logo="true">
-    <h2 class="${classPrefix}__phrase ${classPrefix}__related-resources-phrase">${phraseText(options, 'relatedResources')}</h2>
-    <miso-related-resources></miso-related-resources>
-  </miso-ask>
-</section>`.trim();
+  options = normalizeOptions(options);
+  return [
+    section(options, { name: 'question' }, [
+      container(options, { name: 'query' }, '<miso-query></miso-query>'),
+    ]),
+    section(options, { name: 'answer' }, answerGroup(options)),
+    followUps(options),
+    relatedResources(options),
+  ].join('');
 };
 
 export function followUp(options = {}) {
-  const { classPrefix = CLASS_PREFIX, parentQuestionId } = options;
-  return `
-<section class="${classPrefix}__section ${classPrefix}__follow-up">
-  <miso-ask class="${classPrefix}__query-suggestions-container" visible-when="initial+nonempty" parent-question-id="${parentQuestionId}">
-    <h3 class="${classPrefix}__phrase ${classPrefix}__related-questions-phrase">${phraseText(options, 'relatedQuestions')}</h3>
-    <miso-query-suggestions></miso-query-suggestions>
-  </miso-ask>
-  <miso-ask class="${classPrefix}__query-container" visible-when="initial loading" parent-question-id="${parentQuestionId}">
-    <miso-query></miso-query>
-  </miso-ask>
-  ${answer(options)}
-  ${sources(options)}
-  <miso-ask class="${classPrefix}__bottom-spacing-container" visible-when="ongoing" parent-question-id="${parentQuestionId}"></miso-ask>
-</section>`.trim();
+  options = normalizeOptions(options);
+  return section(options, { name: 'follow-up' }, [
+    container(options, { name: 'query-suggestions', visibleWhen: 'initial+nonempty' }, [
+      phrase(options, { name: 'related-questions', tag: 'h3' }),
+      '<miso-query-suggestions></miso-query-suggestions>',
+    ]),
+    container(options, { name: 'query', visibleWhen: 'initial loading' }, '<miso-query></miso-query>'),
+    ...answerGroup(options),
+  ]);
 };
 
 
 
-// helpers //
+// options //
+function normalizeOptions({
+  classPrefix = CLASS_PREFIX,
+  circledCitationIndex = true,
+  ...options
+} = {}) {
+  return { classPrefix, circledCitationIndex, ...options };
+}
+
+// sections & containers //
+function followUps(options) {
+  const { classPrefix, features = {} } = options;
+  return features.followUpQuestions === false ? '' : `<div id="${classPrefix}__follow-ups" class="${classPrefix}__follow-ups"></div>`;
+}
+
+function relatedResources(options) {
+  const { classPrefix, features = {}, logo = true } = options;
+  if (features.relatedResources === false) {
+    return '';
+  }
+  return section(options, { name: 'related-resources' }, [
+    container(options, { name: 'related-resources', visibleWhen: 'nonempty', logo }, [
+      phrase(options, { name: 'related-resources', tag: 'h2' }),
+      '<miso-related-resources></miso-related-resources>',
+    ]),
+  ]);
+}
+
+function answerGroup(options) {
+  return [
+    answer(options),
+    sources(options),
+    container(options, { name: 'bottom-spacing', visibleWhen: 'ongoing' }),
+  ];
+}
+
 function answer(options) {
-  const { classPrefix = CLASS_PREFIX } = options;
-  return `
-${containerOpenTag('answer', { ...options, visibleWhen: 'ready' })}
-  ${ options.parentQuestionId ? '<hr>' : '' }
-  <div class="${classPrefix}__phrase ${classPrefix}__question-phrase">${phraseText(options, 'question')}</div>
-  <miso-question></miso-question>
-  <miso-answer></miso-answer>
-  <miso-feedback></miso-feedback>
-</miso-ask>`.trim();
+  return container(options, { name: 'answer', visibleWhen: 'ready' }, [
+    options.parentQuestionId ? '<hr>' : '',
+    phrase(options, { name: 'question', tag: 'div' }),
+    '<miso-question></miso-question>',
+    '<miso-answer></miso-answer>',
+    '<miso-feedback></miso-feedback>',
+  ]);
 };
 
 function sources(options) {
-  const { classPrefix = CLASS_PREFIX } = options;
-  return `
-${containerOpenTag('sources', { ...options, visibleWhen: 'nonempty' })}
-  <hr>
-  <h3 class="${classPrefix}__phrase ${classPrefix}__sources-phrase">${phraseText(options, 'sources')}</h3>
-  <miso-sources></miso-sources>
-</miso-ask>`.trim();
+  return container(options, { name: 'sources', visibleWhen: 'nonempty' }, [
+    '<hr>',
+    phrase(options, { name: 'sources', tag: 'h3' }),
+    '<miso-sources></miso-sources>',
+  ]);
 };
+
+function phrase(options, { name, tag = 'div' }) {
+  const { classPrefix } = options;
+  return `<${tag} class="${classPrefix}__phrase ${classPrefix}__${name}-phrase">${phraseText(options, kebabToLowerCamel(name))}</${tag}>`;
+}
 
 function phraseText(options, key) {
   const { phrases = {} } = options;
@@ -82,26 +101,52 @@ function phraseText(options, key) {
   }
 }
 
-function containerOpenTag(name, {
-  visibleWhen,
-  classPrefix = CLASS_PREFIX,
-  logo = false,
-  circledCitationIndex = true,
+function section({ classPrefix }, { name }, body) {
+  return element('section', {
+    classes: [`${classPrefix}__section`, `${classPrefix}__${name}`],
+  }, body);
+}
+
+function container({
+  classPrefix,
+  circledCitationIndex,
   parentQuestionId,
-}) {
-  let className = `${classPrefix}__${name}-container`;
-  if (circledCitationIndex) {
-    className += ` miso-circled-citation-index`;
+}, {
+  name,
+  visibleWhen,
+  logo = false,
+}, body) {
+  const classes = [`${classPrefix}__${name}-container`];
+  circledCitationIndex && classes.push('miso-circled-citation-index');
+  return element('miso-ask', { classes, visibleWhen, logo, parentQuestionId }, body);
+}
+
+function element(tag, attributes = {}, body = '') {
+  if (typeof attributes === 'string' || Array.isArray(attributes)) {
+    body = attributes;
+    attributes = {};
   }
-  const attributes = [
-    ` class="${className}"`,
-    ` logo="${logo ? 'true' : 'false'}"`,
-  ];
-  if (visibleWhen) {
-    attributes.push(` visible-when="${visibleWhen}"`);
+  return `<${tag}${attrs(attributes)}>${Array.isArray(body) ? body.join('') : body}</${tag}>`;
+}
+
+function attrs({ classes = [], ...attributes } = {}) {
+  let str = ``;
+  if (classes.length) {
+    str += ` class="${classes.join(' ')}"`;
   }
-  if (parentQuestionId) {
-    attributes.push(` parent-question-id="${parentQuestionId}"`);
+  for (const name in attributes) {
+    const value = attributes[name];
+    if (value !== undefined) {
+      str += ` ${lowerCamelToKebab(name)}="${value}"`;
+    }
   }
-  return `<miso-ask${attributes.join('')}>`;
+  return str;
+}
+
+function kebabToLowerCamel(str) {
+  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+}
+
+function lowerCamelToKebab(str) {
+  return str.replace(/([A-Z])/g, '-$1').toLowerCase();
 }

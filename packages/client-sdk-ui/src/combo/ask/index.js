@@ -89,7 +89,7 @@ export default class AskCombo extends Combo {
     const { element, resolvedOptions: options } = this;
     const { templates = {} } = options;
     element.innerHTML = templates.root(options);
-    this._elements = new AskComboElements(element);
+    this._elements = new AskComboElements(element, options);
   }
 
   async _createClientInstance() {

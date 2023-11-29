@@ -1,16 +1,16 @@
 import { defineValues } from '@miso.ai/commons';
-import { PREFIX } from './constants.js';
+import { constants } from '../../defaults/ask/index.js';
 
 export default class AskComboElements {
 
-  constructor(root) {
+  constructor(root, { classPrefix = constants.CLASS_PREFIX } = {}) {
     if (!root) {
       throw new Error('Root element is required');
     }
     defineValues(this, {
       root,
-      followUpsSection: root.querySelector(`#${PREFIX}__follow-ups`),
-      relatedResourcesContainer: root.querySelector(`#${PREFIX}__related-resources miso-ask`),
+      followUpsSection: root.querySelector(`.${classPrefix}__follow-ups`),
+      relatedResourcesContainer: root.querySelector(`.${classPrefix}__related-resources miso-ask`),
     });
 
     if (!this.followUpsSection) {

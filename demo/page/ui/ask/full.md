@@ -17,26 +17,28 @@ misocmd.push(async () => {
   const { templates } = MisoClient.ui.defaults.ask;
   const rootElement = document.querySelector('#miso-ask-combo');
   rootElement.innerHTML = templates.root();
-  const elements = {
-    followUpsSection: rootElement.querySelector(`#miso-ask-combo__follow-ups`),
-    relatedResourcesContainer: rootElement.querySelector(`#miso-ask-combo__related-resources miso-ask`),
-  };
+  const followUpsSection = rootElement.querySelector(`.miso-ask-combo__follow-ups`);
+  const relatedResourcesContainer = rootElement.querySelector(`.miso-ask-combo__related-resources miso-ask`);
   // setup workflows
-  // 1. when a answer is fully populated, insert a new section for the follow-up question
-  context.on('done', ({ workflow }) => {
-    elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ parentQuestionId: workflow.questionId }));
-  });
-  // 2. when a new query starts, associate the last section container (for related resources) to that workflow
-  context.on('loading', ({ workflow }) => {
-    elements.relatedResourcesContainer.workflow = workflow;
-  });
-  // 3. if user starts over, clean up current follow-up questions
-  rootWorkflow.on('loading', () => {
-    // clean up the entire follow-ups section
-    elements.followUpsSection.innerHTML = '';
-    // destroy all follow-up workflows
-    context.reset({ root: false });
-  });
+  if (followUpsSection) {
+    // 1. when a answer is fully populated, insert a new section for the follow-up question
+    context.on('done', ({ workflow }) => {
+      followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ parentQuestionId: workflow.questionId }));
+    });
+    // 2. if user starts over, clean up current follow-up questions
+    rootWorkflow.on('loading', () => {
+      // clean up the entire follow-ups section
+      followUpsSection.innerHTML = '';
+      // destroy all follow-up workflows
+      context.reset({ root: false });
+    });
+  }
+  if (relatedResourcesContainer) {
+    // 3. when a new query starts, associate the last section container (for related resources) to that workflow
+    context.on('loading', ({ workflow }) => {
+      relatedResourcesContainer.workflow = workflow;
+    });
+  }
   // start query if specified in URL
   rootWorkflow.autoQuery();
 });
