@@ -18,10 +18,7 @@ export function root(options = {}) {
 export function followUp(options = {}) {
   options = normalizeOptions(options);
   return section(options, { name: 'follow-up' }, [
-    container(options, { name: 'query-suggestions', visibleWhen: 'initial+nonempty' }, [
-      phrase(options, { name: 'related-questions', tag: 'h3' }),
-      '<miso-query-suggestions></miso-query-suggestions>',
-    ]),
+    querySuggestions(options),
     container(options, { name: 'query', visibleWhen: 'initial loading' }, '<miso-query></miso-query>'),
     ...answerGroup(options),
   ]);
@@ -45,16 +42,21 @@ function followUps(options) {
 }
 
 function relatedResources(options) {
-  const { classPrefix, features = {}, logo = true } = options;
-  if (features.relatedResources === false) {
-    return '';
-  }
-  return section(options, { name: 'related-resources' }, [
-    container(options, { name: 'related-resources', visibleWhen: 'nonempty', logo }, [
-      phrase(options, { name: 'related-resources', tag: 'h2' }),
-      '<miso-related-resources></miso-related-resources>',
-    ]),
+  const { features = {}, logo = true } = options;
+  const body = features.relatedResources === false ? '' : container(options, { name: 'related-resources', visibleWhen: 'nonempty', logo }, [
+    phrase(options, { name: 'related-resources', tag: 'h2' }),
+    '<miso-related-resources></miso-related-resources>',
   ]);
+  return section(options, { name: 'related-resources' }, body);
+}
+
+function querySuggestions(options) {
+  const { features = {} } = options;
+  return features.querySuggestions === false ? '' :
+    container(options, { name: 'query-suggestions', visibleWhen: 'initial+nonempty' }, [
+      phrase(options, { name: 'related-questions', tag: 'h3' }),
+      '<miso-query-suggestions></miso-query-suggestions>',
+    ]);
 }
 
 function answerGroup(options) {

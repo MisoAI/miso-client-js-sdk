@@ -12,13 +12,6 @@ export default class AskComboElements {
       followUpsSection: root.querySelector(`.${classPrefix}__follow-ups`),
       relatedResourcesContainer: root.querySelector(`.${classPrefix}__related-resources miso-ask`),
     });
-
-    if (!this.followUpsSection) {
-      throw new Error(`Follow-ups section element not found.`);
-    }
-    if (!this.relatedResourcesContainer) {
-      throw new Error(`Related resources container element not found.`);
-    }
   }
 
 }

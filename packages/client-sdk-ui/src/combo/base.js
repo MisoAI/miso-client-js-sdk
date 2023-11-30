@@ -1,4 +1,4 @@
-import { Component } from '@miso.ai/commons';
+import { Component, Resolution } from '@miso.ai/commons';
 
 export default class Combo extends Component {
   
@@ -23,8 +23,14 @@ export default class Combo extends Component {
     return this._element;
   }
 
+  async waitForElement() {
+    return this._element || (this._elementRes || (this._elementRes = new Resolution())).promise;
+  }
+
   set element(element) {
+    // TODO: guard against multiple element assignment
     this._element = element;
+    this._elementRes && this._elementRes.resolve(element);
   }
 
   start(options) {

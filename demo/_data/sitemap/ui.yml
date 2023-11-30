@@ -4,6 +4,8 @@ sections:
   pages:
   - title: Default
     path: /ask-combo/default
+  - title: No related resources
+    path: /ask-combo/no-related-resources
   - title: Custom
     path: /ask-combo/custom
   - title: Production

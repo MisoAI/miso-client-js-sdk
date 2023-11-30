@@ -45,7 +45,7 @@ export default class AskCombo extends Combo {
 
   async _start() {
     await waitForDomContentLoaded();
-    await this.MisoClient.cmdDone;
+    await this.waitForElement();
 
     // setup MisoClient
     await this._setupMisoClient();
@@ -98,30 +98,33 @@ export default class AskCombo extends Combo {
 
   async _setupWorkflows() {
     const { client, elements, resolvedOptions: options } = this;
-    const { templates = {} } = options;
+    const { templates = {}, features = {} } = options;
 
     const context = client.ui.asks;
     const rootWorkflow = client.ui.ask;
 
-    // TODO: set placeholder is present in options
+    // TODO: set placeholder if present in options
 
-    // when a answer is fully populated, insert a new section for the follow-up question
-    context.on('done', ({ workflow }) => {
-      elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ ...options, parentQuestionId: workflow.questionId }));
-    });
+    if (elements.followUpsSection && features.followUpQuestions !== false) {
+      // when a answer is fully populated, insert a new section for the follow-up question
+      context.on('done', ({ workflow }) => {
+        elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ ...options, parentQuestionId: workflow.questionId }));
+      });
+      // if user starts over, clean up current follow-up questions
+      rootWorkflow.on('loading', () => {
+        // clean up the entire follow-ups section
+        elements.followUpsSection.innerHTML = '';
+        // destroy all follow-up workflows
+        context.reset({ root: false });
+      });
+    }
 
-    // when a new query starts, associate the last section container (for related resources) to that workflow
-    context.on('loading', ({ workflow }) => {
-      elements.relatedResourcesContainer.workflow = workflow;
-    });
-
-    // if user starts over, clean up current follow-up questions
-    rootWorkflow.on('loading', () => {
-      // clean up the entire follow-ups section
-      elements.followUpsSection.innerHTML = '';
-      // destroy all follow-up workflows
-      context.reset({ root: false });
-    });
+    if (elements.relatedResourcesContainer && features.relatedResources !== false && features.followUpQuestions !== false) {
+      // when a new query starts, associate the last section container (for related resources) to that workflow
+      context.on('loading', ({ workflow }) => {
+        elements.relatedResourcesContainer.workflow = workflow;
+      });
+    }
 
     // start query if specified in URL
     rootWorkflow.autoQuery();

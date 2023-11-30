@@ -21,11 +21,11 @@ misocmd.push(async () => {
   const relatedResourcesContainer = rootElement.querySelector(`.miso-ask-combo__related-resources miso-ask`);
   // setup workflows
   if (followUpsSection) {
-    // 1. when a answer is fully populated, insert a new section for the follow-up question
-    context.on('done', ({ workflow }) => {
-      followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ parentQuestionId: workflow.questionId }));
+    // 1. when an answer is fully populated, insert a new section for the follow-up question
+    context.on('done', (event) => {
+      followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ parentQuestionId: event.workflow.questionId }));
     });
-    // 2. if user starts over, clean up current follow-up questions
+    // 2. if user starts over, clean up existing follow-up questions
     rootWorkflow.on('loading', () => {
       // clean up the entire follow-ups section
       followUpsSection.innerHTML = '';
@@ -35,8 +35,8 @@ misocmd.push(async () => {
   }
   if (relatedResourcesContainer) {
     // 3. when a new query starts, associate the last section container (for related resources) to that workflow
-    context.on('loading', ({ workflow }) => {
-      relatedResourcesContainer.workflow = workflow;
+    context.on('loading', (event) => {
+      relatedResourcesContainer.workflow = event.workflow;
     });
   }
   // start query if specified in URL
