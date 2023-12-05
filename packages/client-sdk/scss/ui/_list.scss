@@ -46,6 +46,11 @@
         text-decoration: none;
       }
     }
+    &[data-item-type="question"] {
+      padding: 0;
+      padding-left: 1.5em;
+      margin: 0;
+    }
   }
 
   .miso-list__item-index-container {

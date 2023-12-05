@@ -4,31 +4,24 @@
 {% raw %}
 <style>
 miso-related-questions ul {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 miso-related-questions [data-role="item"] {
-  padding: 0.5rem 1rem;
-  border: 1px solid #999;
-  border-radius: 9999px;
+  padding: 0.5em !important;
+  margin: 0 !important;
   cursor: pointer;
+  border-radius: 0.5em;
 }
 miso-related-questions [data-role="item"]:hover {
   color: var(--color-primary);
-  border-color: var(--color-primary);
   background-color: var(--color-primary-l7);
 }
 </style>
-<section>
-  <h4>Related questions</h4>
-  <miso-explore>
-    <miso-related-questions></miso-related-questions>
-  </miso-explore>
-</section>
+{% endraw %}
+{% include './_root.md' %}
+{% raw %}
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
@@ -45,6 +38,9 @@ misocmd.push(async () => {
   workflow.on('select', ({ question }) => {
     workflow.trackers.related_questions.click([question.text]);
     alert(`You selected: ${question.text}`);
+  });
+  workflow.on('query', ({ q }) => {
+    alert(`Your input: ${q}`);
   });
   workflow.start();
 });

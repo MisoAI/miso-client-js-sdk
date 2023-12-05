@@ -1,13 +1,8 @@
 ---
 ---
 
+{% include './_root.md' %}
 {% raw %}
-<section>
-  <h4>Related questions</h4>
-  <miso-explore>
-    <miso-related-questions></miso-related-questions>
-  </miso-explore>
-</section>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {

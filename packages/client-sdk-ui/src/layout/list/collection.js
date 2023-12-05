@@ -176,7 +176,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
     }
     const value = element[VALUE];
     const { session } = this._view._state;
-    this._view._events.emit('click', { session, value, element });
+    this._view._events.emit('click', { session, value, element, domEvent: event });
   }
 
   destroy() {

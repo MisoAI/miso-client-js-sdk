@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
-import { ListLayout } from '../layout/index.js';
+import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -12,6 +12,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question' }],
+  [ROLE.QUERY]: [SearchBoxLayout.type],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
@@ -36,7 +37,12 @@ export default class Explore extends Workflow {
     });
     this._productId = undefined;
     this._linkFn = undefined;
-    this._unsubscribes.push(this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleQuestionClick(event)));
+
+    this._unsubscribes = [
+      ...this._unsubscribes,
+      this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleRelatedQuestionClick(event)),
+      this._hub.on(fields.query(), payload => this.query(payload)),
+    ];
   }
 
   set productId(value) {
@@ -89,8 +95,16 @@ export default class Explore extends Workflow {
     };
   }
 
-  _handleQuestionClick({ value: question, ...event }) {
+  _handleRelatedQuestionClick({ value: question, ...event }) {
     this._events.emit('select', Object.freeze({ ...event, question }));
+  }
+
+  query({ q } = {}) {
+    if (!this._linkFn) {
+      return;
+    }
+    const url = this._linkFn(q);
+    window.open(url, '_blank');
   }
 
 }
