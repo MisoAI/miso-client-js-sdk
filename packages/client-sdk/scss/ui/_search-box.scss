@@ -2,7 +2,8 @@
   --miso-search-box-border-radius: 9999px;
   //--miso-search-box-font-weight: 500;
   --miso-search-box-font-size: 1rem;
-  --miso-search-box-line-height: 1.5;
+  --miso-search-box-line-height-scale: 1.5;
+  --miso-search-box-line-height: calc(var(--miso-search-box-font-size) * var(--miso-search-box-line-height-scale));
   --miso-search-box-icon-size: 1.25rem;
   --miso-search-box-padding: 0.75rem;
 }
@@ -45,8 +46,8 @@
   }
   .miso-search-box__input {
     padding: var(--miso-search-box-padding) 0;
-    padding-left: calc(var(--miso-search-box-padding) + var(--miso-search-box-font-size) * 0.5);
-    //font-weight: var(--miso-search-box-font-weight);
+    padding-left: calc(var(--miso-search-box-padding) + var(--miso-search-box-line-height) * 0.5 - 0.25em);
+    padding-right: 0.5em;
     border: none;
     outline: none;
 

@@ -4,6 +4,8 @@
   --miso-option-list-item-gap: 0.75rem;
   --miso-option-list-item-padding: 0.75rem;
   --miso-option-list-font-size: 0.9rem;
+  --miso-option-list-line-height-scale: 1.5;
+  --miso-option-list-line-height: calc(var(--miso-option-list-font-size) * var(--miso-option-list-line-height-scale));
 
   position: relative;
 
@@ -19,8 +21,9 @@
     border: 1px solid transparent;
     border-radius: var(--miso-option-list-border-radius);
     background: var(--miso-option-list-background);
-    padding: var(--miso-option-list-item-padding) calc(var(--miso-option-list-item-padding) + var(--miso-option-list-font-size) * 0.5);
-    font-size: 0.9rem;
+    padding: var(--miso-option-list-item-padding) calc(var(--miso-option-list-item-padding) + var(--miso-option-list-line-height) * 0.5 - 0.25em);
+    line-height: var(--miso-option-list-line-height);
+    font-size: var(--miso-option-list-font-size);
     user-select: none;
     text-decoration: none;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
