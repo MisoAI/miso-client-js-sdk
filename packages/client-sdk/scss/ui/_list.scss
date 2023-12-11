@@ -1,4 +1,4 @@
-.miso-list {
+:root {
   // the gap between list items
   --miso-list-item-gap: 1.25rem;
   // the spacing among list item content
@@ -9,7 +9,9 @@
   --miso-list-image-height: 7.25rem;
   // the size of list item index number
   --miso-list-item-index-size: 1.2rem;
+}
 
+.miso-list {
   ol.miso-list__list,
   ul.miso-list__list {
     &[data-item-type="product"],

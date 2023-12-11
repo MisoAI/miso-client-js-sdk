@@ -1,19 +1,21 @@
-.miso-banner {
+:root {
   // the color of Miso logo SVG image
-  --miso-logo-color: #1a4ce3;
+  --miso-banner-color: #1a4ce3;
   // the text preceding Miso logo
   --miso-banner-text: 'Powered by ';
   --miso-banner-text-color: #666;
   --miso-banner-height: 1.7rem;
   // margin top of the banner
   --miso-banner-gap: 1rem;
+}
 
+.miso-banner {
   text-align: right;
   margin-top: var(--miso-banner-gap);
 
   .miso-banner__logo {
     display: inline-block;
-    color: var(--miso-logo-color);
+    color: var(--miso-banner-color);
     user-select: none;
 
     &::before {

@@ -1,17 +1,18 @@
+$values: "helpful", "unhelpful";
+$helpful_color: #1a4ce3;
+$unhelpful_color: #ec5974;
 
-.miso-feedback {
-  $values: "helpful", "unhelpful";
-  $helpful_color: #1a4ce3;
-  $unhelpful_color: #ec5974;
-
+:root {
   --miso-feedback-color: #a0a8be;
   --miso-feedback-color-helpful: #{$helpful_color};
   --miso-feedback-color-unhelpful: #{$unhelpful_color};
   --miso-feedback-color-helpful-hover: #{rgba($helpful_color, 0.7)};
   --miso-feedback-color-unhelpful-hover: #{rgba($unhelpful_color, 0.7)};
   --miso-feedback-background-helpful-hover: rgba(44, 141, 237, .1);
-  --miso-feedback-background-unhelpful-hover: rgba(236, 89, 116, .1);
+  --miso-feedback-background-unhelpful-hover: rgba(236, 89, 116, .1);  
+}
 
+.miso-feedback {
   display: flex;
   align-items: center;
 

@@ -1,4 +1,4 @@
-.miso-option-list {
+:root {
   --miso-option-list-border-radius: 9999px;
   --miso-option-list-background: #f1f7ff;
   --miso-option-list-item-gap: 0.75rem;
@@ -6,7 +6,8 @@
   --miso-option-list-font-size: 0.9rem;
   --miso-option-list-line-height-scale: 1.5;
   --miso-option-list-line-height: calc(var(--miso-option-list-font-size) * var(--miso-option-list-line-height-scale));
-
+}
+.miso-option-list {
   position: relative;
 
   .miso-option-list__options {

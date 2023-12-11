@@ -1,4 +1,4 @@
-.miso-carousel {
+:root {
   // the width of a carousel item
   --miso-carousel-item-min-width: 9rem;
   // the gap between carousel items
@@ -9,7 +9,9 @@
   --miso-carousel-image-aspect-ratio: 1;
   // how many lines to show for title text
   --miso-carousel-title-lines: 3;
+}
 
+.miso-carousel {
   position: relative;
   display: flex;
 

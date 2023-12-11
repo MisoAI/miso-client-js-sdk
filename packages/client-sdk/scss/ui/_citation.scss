@@ -44,6 +44,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
     font-size: 1.2em;
     margin: 0 0.1em;
     text-rendering: optimizeLegibility;
+    text-decoration: none;
 
     @for $i from 1 through length($dingbat-circled-numbers) {
       &[data-index="#{$i}"] {

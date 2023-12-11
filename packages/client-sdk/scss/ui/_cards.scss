@@ -1,4 +1,4 @@
-.miso-cards {
+:root {
   // the minimum width of a card item
   --miso-cards-item-min-width: 12rem;
   // the gap between card items
@@ -10,6 +10,9 @@
   // how many lines to show for description text
   --miso-cards-description-lines: 4;
 
+}
+
+.miso-cards {
   ol.miso-cards__list,
   ul.miso-cards__list {
     list-style: none;
