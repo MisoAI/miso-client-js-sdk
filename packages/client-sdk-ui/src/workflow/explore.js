@@ -12,7 +12,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question' }],
-  [ROLE.QUERY]: [SearchBoxLayout.type],
+  [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
