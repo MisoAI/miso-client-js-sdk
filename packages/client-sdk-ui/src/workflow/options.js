@@ -130,7 +130,15 @@ function mergeLayoutOptions(base, overrides) {
   if (overrides[0] === false) {
     return overrides;
   }
-  return base && overrides ? [overrides[0] || base[0], { ...base[1], ...overrides[1] }] : (overrides || base);
+  return base && overrides ? [overrides[0] || base[0], mergeLayoutParameters(base[1], overrides[1])] : (overrides || base);
+}
+
+function mergeLayoutParameters(base, overrides) {
+  return {
+    ...base,
+    ...overrides,
+    templates: { ...(base && base.templates), ...(overrides && overrides.templates) },
+  };
 }
 
 export function mergeDataProcessorOptions(...optionsList) {
