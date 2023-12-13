@@ -59,7 +59,7 @@ function productInfoBlock({ className }, { title, snippet, description, sale_pri
 }
 
 function articleInfoBlock({ className, templates }, { title, snippet, description, created_at, updated_at, published_at }) {
-  const date = updated_at || published_at || created_at;
+  const date = published_at || created_at || updated_at;
   let content = '';
   if (title) {
     content += `<div class="${className}__item-title">${title}</div>`;
