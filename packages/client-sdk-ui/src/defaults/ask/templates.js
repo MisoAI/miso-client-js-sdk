@@ -1,6 +1,7 @@
 import { CLASS_PREFIX } from './constants.js';
 import * as DEFAULT_PHRASES from './phrases.js';
 
+// TODO: rename classPrefix -> rootClass?
 // TODO: placeholder
 
 export function root(options = {}) {

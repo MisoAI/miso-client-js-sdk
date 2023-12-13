@@ -137,6 +137,7 @@ function mergeLayoutParameters(base, overrides) {
   return {
     ...base,
     ...overrides,
+    link: { ...(base && base.link), ...(overrides && overrides.link) },
     templates: { ...(base && base.templates), ...(overrides && overrides.templates) },
   };
 }

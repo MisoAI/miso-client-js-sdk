@@ -76,9 +76,11 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
 }
 
 // helpers //
-function renderTagPair({ className }, { product_id, url }) {
+function renderTagPair({ className, options = {} }, { product_id, url }) {
+  const { link = {} } = options;
+  const { target = '_blank', rel = 'noopener' } = link; // TODO: other properties
   const tag = url ? 'a' : 'div';
-  const urlAttrs = url ? `href="${url}" target="_blank" rel="noopener"` : '';
+  const urlAttrs = url ? `href="${url}" target="${target}" rel="${rel}"` : '';
   const productAttrs = product_id ? `${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}"` : '';
   return [`<${tag} class="${className}__item-body" data-role="item" ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
 }
