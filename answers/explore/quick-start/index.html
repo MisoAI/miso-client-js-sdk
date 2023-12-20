@@ -60,6 +60,10 @@
     </li>
   
     <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/elements/">Elements</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/">Plugins</a>
     </li>
   
@@ -106,7 +110,7 @@
       <a href="/miso-client-js-sdk/answers/ask/custom/">Ask (Custom)</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/custom/quick-start/">Quick start</a>
+            <a href="/miso-client-js-sdk/answers/ask/custom/full/">Full implementation</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -170,7 +174,7 @@
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token comment">// work with MisoClient</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="3.-place-miso-elements-in-your-webpage" tabindex="-1">3. Place Miso elements in your webpage</h3>
 <p>In an article page of your webpage, add the following elements where you want to display the related questions:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-explore</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-related-questions</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-related-questions</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-explore</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-explore</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-related-questions</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-related-questions</span><span class="token punctuation">></span></span><br>  <span class="token comment">&lt;!-- &lt;miso-query> support is available since 1.9.1 --></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-query</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-query</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-explore</span><span class="token punctuation">></span></span></code></pre>
 <h3 id="4.-configure-the-explore-workflow" tabindex="-1">4. Configure the <code>explore</code> workflow</h3>
 <p>There are two pieces of information that the <code>explore</code> workflow needs to know:</p>
 <ol>

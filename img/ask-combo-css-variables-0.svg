@@ -1,0 +1,11 @@
+<svg width="600" height="250" viewBox="0 0 600 250" fill="none" stroke="currentColor" stroke-width="1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 32 V56 M32 0 V56 M64 32 V56 M600 32 V56 M568 0 V56 M536 32 V56" />
+  <path d="M32 60 v40 M64 60 v120 M568 60 v40 M536 60 v120 M32 16 H568 M0 44 H64 M600 44 H536" stroke-dasharray="4" />
+  <g font-family="system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue','Noto Sans','Liberation Sans',Arial,sans-serif">
+    <text x="16" y="50" text-anchor="middle">A</text>
+    <text x="584" y="50" text-anchor="middle">A</text>
+    <text x="48" y="50" text-anchor="middle">C</text>
+    <text x="552" y="50" text-anchor="middle">C</text>
+    <text x="300" y="22" text-anchor="middle">B</text>
+  </g>
+</svg>
