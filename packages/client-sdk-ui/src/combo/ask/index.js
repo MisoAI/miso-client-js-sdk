@@ -1,6 +1,6 @@
 import { defineValues, waitForDomContentLoaded } from '@miso.ai/commons';
 import Combo from '../base.js';
-import AskComboOptions from './options.js';
+import { AskComboOptions, mergeOptions } from './options.js';
 import AskComboElements from './elements.js';
 
 export default class AskCombo extends Combo {
@@ -17,6 +17,7 @@ export default class AskCombo extends Combo {
   }
 
   config(options = {}) {
+    options = mergeOptions(this._localOptions, options);
     const resolvedOptions = this._options.resolve(options);
 
     // verify

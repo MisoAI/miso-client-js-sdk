@@ -10,7 +10,9 @@ const DEFAULT_OPTIONS = Object.freeze({
   autostart: true,
 });
 
-export default class AskComboOptions {
+const GROUPS = ['templates', 'phrases', 'features'];
+
+export class AskComboOptions {
 
   constructor() {
     this._defaults = DEFAULT_OPTIONS;
@@ -24,7 +26,7 @@ export default class AskComboOptions {
 
 }
 
-function mergeOptions(...optionsList) {
+export function mergeOptions(...optionsList) {
   let merged = {};
   for (const options of optionsList) {
     if (options) {
@@ -35,10 +37,16 @@ function mergeOptions(...optionsList) {
 }
 
 function mergeTwoOptions(merged, overrides) {
-  return Object.assign(merged, {
-    ...overrides,
-    templates: { ...merged.templates, ...overrides.templates },
-  });
+  if (!overrides) {
+    return merged;
+  }
+  Object.assign(merged, overrides);
+  for (const key of GROUPS) {
+    if (key in overrides) {
+      merged[key] = { ...merged[key], ...overrides[key] };
+    }
+  }
+  return merged;
 }
 
 function normalizeOptions({ api_key: apiKey, api_host: apiHost, templates, phrases, ...options } = {}) {

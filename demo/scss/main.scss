@@ -1,5 +1,4 @@
 @import './_variables.scss';
-//@import './_code.scss';
 
 /* layout */
 body.base .miso-body-container {
@@ -45,7 +44,7 @@ main {
   @media (min-width: 768px) {
     //padding: 1rem 1.5rem;
   }
-}  
+}
 
 /* navbar */
 header {

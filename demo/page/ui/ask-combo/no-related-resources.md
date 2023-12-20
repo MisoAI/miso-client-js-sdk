@@ -18,11 +18,12 @@ main {
 <miso-ask-combo></miso-ask-combo>
 <script>
 (window.misocmd || (window.misocmd = [])).push(async () => {
-  MisoClient.ui.combo.ask.start({
+  MisoClient.ui.combo.ask.config({
     features: {
       relatedResources: false,
     },
   });
+  MisoClient.ui.combo.ask.start();
 });
 </script>
 {% endraw %}
