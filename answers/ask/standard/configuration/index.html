@@ -147,6 +147,7 @@
         <div class="content ps-lg-4">
           <p>You can configure the ask module with the some options, including:</p>
 <ul>
+<li>Features</li>
 <li>Phrases</li>
 </ul>
 <h3 id="turn-off-auto-start" tabindex="-1">Turn off auto-start</h3>
@@ -157,44 +158,69 @@
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token comment">// work with MisoClient</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="access-the-configuation-method" tabindex="-1">Access the configuation method</h3>
 <p>Now you can access the configuration method:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token keyword">const</span> combo <span class="token operator">=</span> MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">.</span>combo<span class="token punctuation">;</span><br><br>  <span class="token comment">// pass the configuration options</span><br>  combo<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token comment">//...</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  <span class="token comment">// manually start the routine, since we have disabled the auto-start</span><br>  combo<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token keyword">const</span> combo <span class="token operator">=</span> MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>combo<span class="token punctuation">.</span>ask<span class="token punctuation">;</span><br><br>  <span class="token comment">// pass the configuration options</span><br>  combo<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token comment">//...</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  <span class="token comment">// manually start the routine, since we have disabled the auto-start</span><br>  combo<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h2 id="features" tabindex="-1">Features</h2>
+<p>You can configure the features of the ask module:</p>
+<pre class="language-js"><code class="language-js">combo<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">features</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">relatedResources</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">followUpQuestions</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">querySuggestions</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The following table lists the available options:</p>
+<table class="table"><thead>
+<tr>
+<th>Key</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>relatedResources</code></td>
+<td>Whether to show related resources section.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>followUpQuestions</code></td>
+<td>Whether to enable follow-up questions.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>querySuggestions</code></td>
+<td>Whether to show query suggestions for follow-up questions.</td>
+<td><code>true</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="phrases" tabindex="-1">Phrases</h2>
 <p>You can configure the phrases displayed in the ask module:</p>
-<pre class="language-js"><code class="language-js">MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">.</span>combo<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">phrases</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">question</span><span class="token operator">:</span> <span class="token string">'You asked...'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">sources</span><span class="token operator">:</span> <span class="token string">'My reply is based on the following'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">relatedQuestions</span><span class="token operator">:</span> <span class="token string">'Related questions you can explore'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">relatedResources</span><span class="token operator">:</span> <span class="token string">'Go beyond, and learn more about this topic'</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js">combo<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">phrases</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">question</span><span class="token operator">:</span> <span class="token string">'You asked...'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">sources</span><span class="token operator">:</span> <span class="token string">'My reply is based on the following'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">relatedQuestions</span><span class="token operator">:</span> <span class="token string">'Related questions you can explore'</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">relatedResources</span><span class="token operator">:</span> <span class="token string">'Go beyond, and learn more about this topic'</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>The following table lists the available options:</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Key</th>
-      <th scope="col">Description</th>
-      <th scope="col">Default</th>
-    </tr>
-  </thead>
-  <tbody>
-<p><tr>
+<table class="table"><thead>
+<tr>
+<th>Key</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
 <td><code>question</code></td>
-<td>The phrases preceeding users' question.</p>
-</td>
-      <td><code>&#39;You asked...&#39;</code></td>
-    </tr>
-    <tr>
-      <td><code>sources</code></td>
-      <td>The title for citation sources section.
-</td>
-      <td><code>&#39;My reply is based on the following&#39;</code></td>
-    </tr>
-    <tr>
-      <td><code>relatedQuestions</code></td>
-      <td>The title for related questions section.
-</td>
-      <td><code>&#39;Related questions you can explore&#39;</code></td>
-    </tr>
-    <tr>
-      <td><code>relatedResources</code></td>
-      <td>The title for related resources section.
-</td>
-      <td><code>&#39;Go beyond, and learn more about this topic&#39;</code></td>
-    </tr></tbody>
+<td>The phrases preceeding users' question.</td>
+<td><code>'You asked...'</code></td>
+</tr>
+<tr>
+<td><code>sources</code></td>
+<td>The title for citation sources section.</td>
+<td><code>'My reply is based on the following'</code></td>
+</tr>
+<tr>
+<td><code>relatedQuestions</code></td>
+<td>The title for related questions section.</td>
+<td><code>'Related questions you can explore'</code></td>
+</tr>
+<tr>
+<td><code>relatedResources</code></td>
+<td>The title for related resources section.</td>
+<td><code>'Go beyond, and learn more about this topic'</code></td>
+</tr>
+</tbody>
 </table>
 
         </div>
