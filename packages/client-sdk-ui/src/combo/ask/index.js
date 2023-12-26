@@ -99,10 +99,14 @@ export default class AskCombo extends Combo {
 
   async _setupWorkflows() {
     const { client, elements, resolvedOptions: options } = this;
-    const { templates = {}, features = {} } = options;
+    const { templates = {}, features = {}, api } = options;
 
     const context = client.ui.asks;
     const rootWorkflow = client.ui.ask;
+
+    if (api) {
+      context.useApi(api);
+    }
 
     // TODO: set placeholder if present in options
 

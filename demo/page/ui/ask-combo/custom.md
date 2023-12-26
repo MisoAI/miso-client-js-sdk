@@ -1,7 +1,7 @@
 ---
 ---
 
-<script async src="http://localhost:10099/dist/umd/miso.js?lorem&autostart=false"></script>
+<script async src="http://localhost:10099/dist/umd/miso.js?api_key={{ DEFAULT_ASK_API_KEY }}&autostart=false"></script>
 {% raw %}
 <style>
 main {
@@ -18,6 +18,11 @@ main {
 <miso-ask-combo></miso-ask-combo>
 <script>
 (window.misocmd || (window.misocmd = [])).push(async () => {
+  MisoClient.ui.combo.ask.config({
+    api: {
+      yearly_decay: 0.5,
+    },
+  });
   MisoClient.ui.combo.ask.start();
 });
 </script>
