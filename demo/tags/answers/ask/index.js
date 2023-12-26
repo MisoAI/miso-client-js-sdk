@@ -1,5 +1,11 @@
 const DEFAULT_API_KEY = btoa(atob('u4Qhcz3WeixHNAkq40LULp5005W8rvsxhNdlJ0R4').split('').reverse().join(''));
-const { api_key: apiKey = DEFAULT_API_KEY, api_host: apiHost, debug } = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+let {
+  api_key: apiKey = DEFAULT_API_KEY,
+  api_host: apiHost,
+  fq,
+  yearly_decay: yearlyDecay,
+  debug
+} = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 
 document.body.classList.add('propublica');
 
@@ -17,7 +23,17 @@ document.body.classList.add('propublica');
     delete options.apiKey;
   }
   if (apiHost) {
-    options.apiHost = `https://${envParams.api_host}/v1`;
+    options.apiHost = `https://${apiHost}/v1`;
+  }
+  yearlyDecay = asYearlyDecayValue(yearlyDecay);
+  if (fq || yearlyDecay !== undefined) {
+    const api = options.api = {};
+    if (fq) {
+      api.fq = fq;
+    }
+    if (yearlyDecay) {
+      api.yearly_decay = yearlyDecay;
+    }
   }
 
   MisoClient.ui.combo.ask.config(options);
@@ -34,4 +50,9 @@ function displayVersionInfo(MisoClient) {
     }
     versionInfo.innerHTML = `SDK ${version}`;
   }
+}
+
+function asYearlyDecayValue(str) {
+  const value = str && Number(str.trim());
+  return !isNaN(value) && value >= 0 && value <= 1 ? value : undefined;
 }
