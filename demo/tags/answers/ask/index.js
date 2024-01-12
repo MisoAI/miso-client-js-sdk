@@ -2,6 +2,8 @@ const DEFAULT_API_KEY = btoa(atob('u4Qhcz3WeixHNAkq40LULp5005W8rvsxhNdlJ0R4').sp
 let {
   api_key: apiKey = DEFAULT_API_KEY,
   api_host: apiHost,
+  user_id,
+  user_hash,
   fq,
   yearly_decay: yearlyDecay,
   debug
@@ -33,6 +35,11 @@ document.body.classList.add('propublica');
     }
     if (yearlyDecay) {
       api.yearly_decay = yearlyDecay;
+    }
+    if (user_id && user_hash) {
+      api.user_id = user_id;
+      api.user_hash = user_hash;
+      api.anonymous_id = undefined;
     }
   }
 
