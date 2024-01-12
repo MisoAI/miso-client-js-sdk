@@ -28,7 +28,7 @@ document.body.classList.add('propublica');
     options.apiHost = `https://${apiHost}/v1`;
   }
   yearlyDecay = asYearlyDecayValue(yearlyDecay);
-  if (fq || yearlyDecay !== undefined) {
+  if (fq || yearlyDecay !== undefined || user_id || user_hash) {
     const api = options.api = {};
     if (fq) {
       api.fq = fq;
@@ -36,8 +36,11 @@ document.body.classList.add('propublica');
     if (yearlyDecay) {
       api.yearly_decay = yearlyDecay;
     }
-    if (user_id && user_hash) {
+    if (user_id) {
       api.user_id = user_id;
+      api.anonymous_id = undefined;
+    }
+    if (user_hash) {
       api.user_hash = user_hash;
       api.anonymous_id = undefined;
     }
