@@ -149,6 +149,7 @@
 <ul>
 <li>Features</li>
 <li>Phrases</li>
+<li>API payload</li>
 </ul>
 <h3 id="turn-off-auto-start" tabindex="-1">Turn off auto-start</h3>
 <p>The combo element automatically starts the routine when the SDK is loaded. Thus, to configure the module in time, we want to disable the auto-start feature by setting <code>autostart</code> to <code>false</code> in the script URL:</p>
@@ -222,6 +223,11 @@
 </tr>
 </tbody>
 </table>
+<h2 id="api-payload" tabindex="-1">API payload</h2>
+<p><div class="since">Since 1.9.2</div></p>
+<p>You can pass or overwrite parameters in the API payload:</p>
+<pre class="language-js"><code class="language-js">combo<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">api</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token comment">//...</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>See <a href="https://api.askmiso.com/#tag/Ask-APIs/operation/questions_v1_ask_questions_post" target="_blank" rel="noopener">API reference</a> for the available options.</p>
 
         </div>
       </main>
