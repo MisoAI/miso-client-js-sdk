@@ -54,6 +54,7 @@ export default class Ask extends Workflow {
       defaults: DEFAULT_OPTIONS,
     });
     this._context = context;
+    this._autoQuery = false;
     defineValues(this, { parentQuestionId });
 
     this._feedback = new FeedbackActor(this._hub);
@@ -62,7 +63,6 @@ export default class Ask extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), payload => this.query(payload)),
-      this._hub.on(fields.data(), data => this._onDataUpdate(data)),
       this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
       this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
     ];
@@ -97,7 +97,8 @@ export default class Ask extends Workflow {
   }
 
   // lifecycle //
-  autoQuery({ setValue = true, focus = true } = {}) {
+  autoQuery(options = {}) {
+    const { setValue = true, focus = true } = this._autoQuery = options;
     const q = new URLSearchParams(window.location.search).get('q');
     const { layout } = this._views.get(ROLE.QUERY);
     if (layout) {
@@ -151,6 +152,24 @@ export default class Ask extends Workflow {
     if (!value) {
       return data;
     }
+    const { question_id: questionId, question } = value;
+
+    // capture question ID and register at context
+    if (!this._questionId && questionId) {
+      this._questionId = questionId;
+      this._context._byQid.set(questionId, this);
+    }
+
+    // update URL if autoQuery.updateUrl is not false
+    if (this._autoQuery && this._autoQuery.updateUrl !== false) {
+      const url = new URL(window.location);
+      const currentQuestion = url.searchParams.get('q');
+      if (question !== currentQuestion) {
+        url.searchParams.set('q', question);
+        window.history.replaceState({}, '', url);
+      }
+    }
+
     // 1. put answer_stage to meta
     // 2. mark ongoing flag
     return {
