@@ -164,7 +164,7 @@ export default class Ask extends Workflow {
     if (this._autoQuery && this._autoQuery.updateUrl !== false) {
       const url = new URL(window.location);
       const currentQuestion = url.searchParams.get('q');
-      if (question !== currentQuestion) {
+      if (question !== currentQuestion && (currentQuestion || this._autoQuery.updateUrl === true)) {
         url.searchParams.set('q', question);
         window.history.replaceState({}, '', url);
       }
