@@ -31,12 +31,12 @@ export default class States {
   getFullState(productId) {
     // when we receive a bind event, impression is trigger, making an entry here
     // so if the state is not found, the product is not present yet => all untracked
-    const state = this._states.get(productId);
+    const state = this._states.get(getKey(productId));
     return state ? { ...state } : STATES.UNTRACKED;
   }
 
   get(productId, type) {
-    const state = this._states.get(productId);
+    const state = this._states.get(getKey(productId));
     return state && state[type] || UNTRACKED;
   }
 
@@ -44,7 +44,7 @@ export default class States {
     validateEventType(type);
     validateTrackingStatus(status);
     for (const productId of asArray(productIds)) {
-      this._setOne(productId, type, status);
+      this._setOne(getKey(productId), type, status);
     }
   }
 
@@ -57,4 +57,9 @@ export default class States {
     return productIds.filter(productId => this.get(productId, type) !== TRIGGERED);
   }
 
+}
+
+function getKey(value) {
+  // TODO: ad-hoc!
+  return value.product_id || value.text || value;
 }
