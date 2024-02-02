@@ -1,3 +1,4 @@
+import { escapeHtml } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 
@@ -7,7 +8,7 @@ const DEFAULT_CLASSNAME = 'miso-text';
 function root(layout, state) {
   const { className, role, options: { tag } } = layout;
   const roleAttr = role ? `data-role="${role}"` : '';
-  return `<${tag} class="${className}" ${roleAttr}>${state.value || ''}</${tag}>`;
+  return `<${tag} class="${className}" ${roleAttr}>${escapeHtml(state.value || '')}</${tag}>`;
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
