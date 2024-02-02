@@ -110,7 +110,7 @@ export async function waitForDomContentLoaded() {
 }
 
 export function escapeHtml(text) {
-  return text
+  return text && text
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
