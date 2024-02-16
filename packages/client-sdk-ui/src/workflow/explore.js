@@ -52,6 +52,14 @@ export default class Explore extends Workflow {
     });
   }
 
+  useApi(options) {
+    const { product_id } = options;
+    if (product_id) {
+      this._productId = product_id;
+    }
+    return super.useApi(options);
+  }
+
   useLink(fn) {
     if (typeof fn !== 'function' && fn !== false) {
       throw new Error('useLink(fn) expects fn to be a function or false');
@@ -85,7 +93,7 @@ export default class Explore extends Workflow {
       return data;
     }
     // patch value with links
-    const related_questions = value.related_questions.map(this._linkFn ? (text => ({ text, url: this._linkFn(text) })) : (text => ({ text })));
+    const related_questions = value.related_questions.map(this._linkFn ? (text => ({ text, url: this._getAnswersUrl(text) })) : (text => ({ text })));
     return {
       ...data,
       value: {
@@ -103,8 +111,18 @@ export default class Explore extends Workflow {
     if (!this._linkFn) {
       return;
     }
-    const url = this._linkFn(q);
+    const url = this._getAnswersUrl(q);
     window.open(url, '_blank');
+  }
+
+  _getAnswersUrl(text) {
+    if (!this._linkFn) {
+      return;
+    }
+    const url = this._linkFn(text);
+    if (this._productId) {
+      return `${url}&s=${encodeURIComponent(this._productId)}`;
+    }
   }
 
 }

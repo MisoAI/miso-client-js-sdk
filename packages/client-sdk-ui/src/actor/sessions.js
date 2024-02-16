@@ -41,6 +41,7 @@ export default class SessionMaker {
       active: false,
       uuid: uuidv4(),
       index: this._sessionIndex++,
+      meta: {},
     });
   }
 

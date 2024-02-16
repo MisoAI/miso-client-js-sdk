@@ -106,11 +106,23 @@ export function mergeApiOptions(...optionsList) {
   }
   return mergeOptions(optionsList, (merged, options) => Object.assign(merged, {
     ...options,
-    payload: {
-      ...merged.payload,
-      ...options.payload,
-    },
+    payload: mergeApiPayloads(merged.payload, options.payload),
   }));
+}
+
+function mergeApiPayloads(base, overrides) {
+  return {
+    ...base,
+    ...overrides,
+    ...mergeObjectValueIfPresent('_meta', base, overrides),
+  };
+}
+
+function mergeObjectValueIfPresent(key, base, overrides) {
+  const baseValue = base && base[key];
+  const overridesValue = overrides && overrides[key];
+  const value = baseValue ? (overridesValue ? { ...baseValue, ...overridesValue } : baseValue) : overridesValue;
+  return value !== undefined ? { [key]: value } : {};
 }
 
 export function mergeLayoutsOptions(...optionsList) {

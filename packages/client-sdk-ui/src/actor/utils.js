@@ -12,7 +12,7 @@ export function isProduct(property) {
   return PRODUCT_TYPED_PROPERTIES.has(property);
 }
 
-export function toInteraction({ property, misoId }, { event, values, manual }) {
+export function toInteraction({ property, misoId, meta }, { event, values, manual }) {
   let api_ts;
   if (misoId) {
     try {
@@ -32,6 +32,7 @@ export function toInteraction({ property, misoId }, { event, values, manual }) {
         property,
         items,
         trigger: manual ? 'manual' : 'auto',
+        ...meta,
       }),
     },
   });

@@ -99,7 +99,9 @@ export default class Ask extends Workflow {
   // lifecycle //
   autoQuery(options = {}) {
     const { setValue = true, focus = true } = this._autoQuery = options;
-    const q = new URLSearchParams(window.location.search).get('q');
+    const searchParams = new URLSearchParams(window.location.search);
+    const q = searchParams.get('q');
+    const s = searchParams.get('s');
     const { layout } = this._views.get(ROLE.QUERY);
     if (layout) {
       if (q && setValue) {
@@ -110,14 +112,18 @@ export default class Ask extends Workflow {
       }
     }
     if (q) {
-      this.query({ q });
+      this.query({ q, s });
     }
   }
 
-  query({ q: question, ...payload } = {}) {
+  query({ q: question, s: source, ...payload } = {}) {
     payload = { ...payload, question };
+
     if (this.parentQuestionId) {
       payload.parent_question_id = this.parentQuestionId;
+    }
+    if (source) {
+      (payload._meta || (payload._meta = {})).question_source = source;
     }
 
     // clear question id from previous session
@@ -129,6 +135,9 @@ export default class Ask extends Workflow {
     this.restart();
 
     const { session } = this;
+    if (source) {
+      session.meta.question_source = source;
+    }
     this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
 
     return this;
@@ -164,6 +173,7 @@ export default class Ask extends Workflow {
     if (this._autoQuery && this._autoQuery.updateUrl !== false) {
       const url = new URL(window.location);
       const currentQuestion = url.searchParams.get('q');
+      // TODO: review this, handle &s=
       if (question !== currentQuestion && (currentQuestion || this._autoQuery.updateUrl === true)) {
         url.searchParams.set('q', question);
         window.history.replaceState({}, '', url);
@@ -241,6 +251,7 @@ export default class Ask extends Workflow {
       questionId = parentQuestionId;
       parentQuestionId = this.previous && this.previous.parentQuestionId;
       custom_context.property = 'suggested_followup_questions';
+      // TODO: question_source
     }
     payload.context = {
       ...context,
