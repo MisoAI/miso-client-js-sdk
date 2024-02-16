@@ -121,7 +121,7 @@ export default class Explore extends Workflow {
     }
     const url = this._linkFn(text);
     if (this._productId) {
-      return `${url}&s=${encodeURIComponent(this._productId)}`;
+      return `${url}&qs=${encodeURIComponent(this._productId)}`;
     }
   }
 

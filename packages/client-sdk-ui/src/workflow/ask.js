@@ -101,7 +101,7 @@ export default class Ask extends Workflow {
     const { setValue = true, focus = true } = this._autoQuery = options;
     const searchParams = new URLSearchParams(window.location.search);
     const q = searchParams.get('q');
-    const s = searchParams.get('s');
+    const qs = searchParams.get('qs');
     const { layout } = this._views.get(ROLE.QUERY);
     if (layout) {
       if (q && setValue) {
@@ -112,18 +112,18 @@ export default class Ask extends Workflow {
       }
     }
     if (q) {
-      this.query({ q, s });
+      this.query({ q, qs });
     }
   }
 
-  query({ q: question, s: source, ...payload } = {}) {
+  query({ q: question, qs: questionSource, ...payload } = {}) {
     payload = { ...payload, question };
 
     if (this.parentQuestionId) {
       payload.parent_question_id = this.parentQuestionId;
     }
-    if (source) {
-      (payload._meta || (payload._meta = {})).question_source = source;
+    if (questionSource) {
+      (payload._meta || (payload._meta = {})).question_source = questionSource;
     }
 
     // clear question id from previous session
@@ -135,8 +135,8 @@ export default class Ask extends Workflow {
     this.restart();
 
     const { session } = this;
-    if (source) {
-      session.meta.question_source = source;
+    if (questionSource) {
+      session.meta.question_source = questionSource;
     }
     this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
 
