@@ -101,9 +101,9 @@ export default class Tracker {
     return (state && state.meta && state.meta.miso_id) || (this._element && this._element.getAttribute('miso-id')) || undefined;
   }
 
-  _getSessionMeta() {
-    const { session } = this._getViewState() || {};
-    return session && session.meta;
+  _getRequestPayload() {
+    const { request } = this._getViewState() || {};
+    return request && request.payload;
   }
 
   getState(productId) {
@@ -113,9 +113,9 @@ export default class Tracker {
   _handleEvent(data) {
     const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
     const misoId = this._getMisoId();
-    const meta = this._getSessionMeta();
+    const request = this._getRequestPayload();
     // TODO: should trigger 'tracker' and let workflow translate to interactions
-    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId, meta }, data));
+    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId, request }, data));
   }
 
   _destroy() {

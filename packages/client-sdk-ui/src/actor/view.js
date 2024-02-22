@@ -102,7 +102,7 @@ export default class ViewActor {
     this._data = data = this._sliceData(data || this._views._getData());
 
     // protocol: no reaction until session starts
-    const { session, status, ongoing, meta } = data;
+    const { session, status, ongoing, request, meta } = data;
     const active = session && session.active;
     if (!force && !active) {
       return;
@@ -115,7 +115,7 @@ export default class ViewActor {
 
     // render
     const notifyUpdate = (state = {}, options) => {
-      state !== false && this.updateState({ session, status, ongoing, meta, ...state }, options);
+      state !== false && this.updateState({ session, status, ongoing, request, meta, ...state }, options);
     };
     try {
       await this._layout.render(element, data, { notifyUpdate });
@@ -125,17 +125,16 @@ export default class ViewActor {
     }
   }
 
-  updateState({ session, status, ongoing, meta, error }, { silent = false } = {}) {
+  updateState({ session, status, ongoing, request, meta, error }, { silent = false } = {}) {
     if (error) {
       status = STATUS.ERRONEOUS;
     }
-    const state = this._state = Object.freeze(trimObj({ session, status, ongoing, meta, error }));
+    const state = this._state = Object.freeze(trimObj({ session, status, ongoing, request, meta, error }));
     const { role } = this;
     this.hub.update(fields.view(role), state, { silent });
   }
 
-  _sliceData(data) {
-    const { value, error, status, meta, ...rest } = data;
+  _sliceData({ value, error, status, meta, ...rest }) {
     const sliced = {
       value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
       status,

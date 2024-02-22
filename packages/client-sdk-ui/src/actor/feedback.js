@@ -15,16 +15,20 @@ export default class FeedbackActor {
     if (!question_id) {
       return;
     }
-    this._hub.trigger(fields.interaction(), this._buildInteraction(question_id, state));
+    // TODO: ad-hoc
+    const { request } = data || {};
+    const { payload } = request || {};
+    const question_source = payload && payload._meta && payload._meta.question_source;
+    this._hub.trigger(fields.interaction(), this._buildInteraction(state, { question_source }));
   }
 
-  _buildInteraction(question_id, { value, unselected }) {
+  _buildInteraction({ value, unselected }, { question_source }) {
     return {
       type: 'feedback',
       context: {
         custom_context: {
           result_type: 'answer',
-          question_id,
+          question_source,
           value: unselected ? 'unselected' : value,
         },
       },

@@ -251,7 +251,7 @@ export default class Ask extends Workflow {
       questionId = parentQuestionId;
       parentQuestionId = this.previous && this.previous.parentQuestionId;
       custom_context.property = 'suggested_followup_questions';
-      // TODO: question_source
+      custom_context.question_source = this.previous && this.previous.session.meta.question_source;
     }
     payload.context = {
       ...context,

@@ -47,6 +47,11 @@ export default class DataActor {
       return;
     }
     const { session } = this._hub.states;
+    const { session: _, ...request } = event;
+
+    // emit response to update request
+    this._emitResponse({ session, request });
+
     try {
       const { signal } = this._ac || {};
       const options = { ...event.options, signal };
@@ -59,14 +64,14 @@ export default class DataActor {
           if (!this._isCurrentSession(session)) {
             break;
           }
-          this._emitResponse({ session, value });
+          this._emitResponse({ session, request, value });
         }
       } else {
-        this._emitResponseWithSessionCheck({ session, value: response });
+        this._emitResponseWithSessionCheck({ session, request, value: response });
       }
     } catch(error) {
       this._error(error);
-      this._emitResponseWithSessionCheck({ session, error });
+      this._emitResponseWithSessionCheck({ session, request, error });
     }
   }
 

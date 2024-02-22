@@ -12,17 +12,19 @@ export function isProduct(property) {
   return PRODUCT_TYPED_PROPERTIES.has(property);
 }
 
-export function toInteraction({ property, misoId, meta }, { event, values, manual }) {
+export function toInteraction({ property, misoId, request }, { event, values, manual }) {
   let api_ts;
   if (misoId) {
     try {
       api_ts = uuidToTimestamp(misoId);
     } catch (e) {}
   }
+  // TODO: ad-hoc
+  const question_source = request && request._meta && request._meta.question_source;
   const isProductType = isProduct(property);
   const product_ids = isProductType ? values.map(v => v.product_id).filter(v => v) : [];
   const items = isProductType ? undefined : values.map(v => v.text || v);
-  return trimObj({
+  const payload = trimObj({
     type: event === 'viewable' ? 'viewable_impression' : event,
     product_ids,
     miso_id: misoId,
@@ -32,8 +34,9 @@ export function toInteraction({ property, misoId, meta }, { event, values, manua
         property,
         items,
         trigger: manual ? 'manual' : 'auto',
-        ...meta,
+        question_source,
       }),
     },
   });
+  return payload;
 }
