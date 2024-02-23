@@ -73,8 +73,10 @@ export default class DebugPlugin {
 
     if (groupName === 'interactions') {
       // TODO: handle multiple interactions
-      const { type } = data.payload.data[0];
-      args.push(type);
+      const record = data.payload.data[0];
+      const { type, context: { custom_context = {} } = {} } = record;
+      const { property } = custom_context;
+      args.push(property ? `${type} (${property})` : `${type}`);
     }
 
     args.push([{ ...data, url }]);
