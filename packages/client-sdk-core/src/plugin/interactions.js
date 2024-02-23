@@ -1,4 +1,5 @@
 import { uuidv4 } from '@miso.ai/commons';
+import sdk_version from '../version.js';
 
 const ID = 'std:interactions';
 
@@ -28,7 +29,10 @@ export default class InteractionsPlugin {
 
 function modifyInteractionRecord(record) {
   const { context = {} } = record;
-  const custom_context = { ...context.custom_context };
+  const custom_context = {
+    ...context.custom_context,
+    sdk_version,
+  };
   if (!custom_context.uuid) {
     custom_context.uuid = uuidv4();
   }
