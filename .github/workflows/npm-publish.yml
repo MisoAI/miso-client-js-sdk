@@ -35,7 +35,7 @@ jobs:
       - run: git config --global user.email "github-action-${{ github.actor }}@users.noreply.github.com"
       - run: npm run version ${{ steps.version.outputs.version }}
       - run: npm run build
-      - run: npm publish --workspaces --tag v1.8
+      - run: npm publish --workspaces --tag v1.8-lts
         if: "!github.event.release.prerelease"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
