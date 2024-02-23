@@ -1,3 +1,4 @@
+import { escapeHtml } from '@miso.ai/commons';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
 export function requiresImplementation(...names) {
@@ -42,13 +43,13 @@ export function article(layout, state, data, meta) {
   ].join('');
 }
 
-function productInfoBlock({ className }, { title, snippet, description, sale_price, original_price }) {
+function productInfoBlock({ className }, { title, description, sale_price, original_price }) {
   let content = '';
   if (title) {
-    content += `<div class="${className}__item-title">${title}</div>`;
+    content += `<div class="${className}__item-title">${escapeHtml(title)}</div>`;
   }
   if (description) {
-    content += `<div class="${className}__item-desc">${description}</div>`;
+    content += `<div class="${className}__item-desc">${escapeHtml(description)}</div>`;
   }
   const price = sale_price || original_price;
   if (price) {
@@ -62,7 +63,7 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
   const date = updated_at || published_at || created_at;
   let content = '';
   if (title) {
-    content += `<div class="${className}__item-title">${title}</div>`;
+    content += `<div class="${className}__item-title">${escapeHtml(title)}</div>`;
   }
   if (date) {
     content += `<div class="${className}__item-date">${(templates.date || renderDate)(date)}</div>`;
@@ -70,7 +71,7 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
   if (snippet) {
     content += `<div class="${className}__item-snippet">${snippet}</div>`;
   } else if (description) {
-    content += `<div class="${className}__item-desc">${description}</div>`;
+    content += `<div class="${className}__item-desc">${escapeHtml(description)}</div>`;
   }
   return `<div class="${className}__item-info-container">${content}</div>`;
 }

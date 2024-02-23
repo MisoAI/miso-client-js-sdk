@@ -1,3 +1,4 @@
+import { escapeHtml } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
@@ -37,7 +38,7 @@ function suggestionList(layout) {
 
 function suggestionItem(layout, value) {
   const { className } = layout;
-  const text = value.text || value;
+  const text = escapeHtml(value.text || value);
   return `<li class="${className}__suggestion-item" data-role="suggestion-item" tabindex="0">${text}</li>`;
 }
 

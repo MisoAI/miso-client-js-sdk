@@ -99,3 +99,12 @@ export async function viewable(element, {
     }
   });
 }
+
+export function escapeHtml(text) {
+  return text && text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
