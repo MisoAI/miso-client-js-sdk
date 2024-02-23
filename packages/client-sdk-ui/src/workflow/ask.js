@@ -2,7 +2,7 @@ import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { mergeApiOptions } from './options.js';
 import { fields, FeedbackActor } from '../actor/index.js';
-import { ROLE, STATUS } from '../constants.js';
+import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -116,7 +116,7 @@ export default class Ask extends Workflow {
     }
   }
 
-  query({ q: question, qs: questionSource, ...payload } = {}) {
+  query({ q: question, qs: questionSource = ORGANIC_QUESTION_SOURCE, ...payload } = {}) {
     payload = { ...payload, question };
 
     if (this.parentQuestionId) {
