@@ -157,11 +157,12 @@ export default class Ask extends Workflow {
 
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
-    const { value } = data;
+    const { value, request } = data;
     if (!value) {
       return data;
     }
     const { question_id: questionId, question } = value;
+    const organic = request && request.payload && request.payload._meta && request.payload._meta.question_source === ORGANIC_QUESTION_SOURCE;
 
     // capture question ID and register at context
     if (!this._questionId && questionId) {
@@ -174,7 +175,7 @@ export default class Ask extends Workflow {
       const url = new URL(window.location);
       const currentQuestion = url.searchParams.get('q');
       // TODO: review this, handle &s=
-      if (question !== currentQuestion && (currentQuestion || this._autoQuery.updateUrl === true)) {
+      if (question !== currentQuestion && (!organic || this._autoQuery.updateUrl === true)) {
         url.searchParams.set('q', question);
         window.history.replaceState({}, '', url);
       }
