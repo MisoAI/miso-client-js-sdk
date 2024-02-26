@@ -9,7 +9,7 @@
     "start:sass": "npx sass --watch scss:dist/css",
     "build:js": "rollup -c",
     "start:js": "rollup -w -c rollup.config.dev.mjs",
-    "start:service": "[[ -f \"$(npm bin -g)/doggoganger\" ]] && (\"$(npm bin -g)/doggoganger\" -w) || (npx -p @miso.ai/doggoganger doggoganger)",
+    "start:service": "[[ -f \"$(npm config get prefix)/bin/doggoganger\" ]] && (\"$(npm config get prefix)/bin/doggoganger\" -w) || (npx -p @miso.ai/doggoganger doggoganger)",
     "_build": "npm-run-all build:*",
     "start": "npm-run-all build:sass --parallel start:*",
     "debug": "DEBUG=* npx eleventy"
