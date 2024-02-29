@@ -93,7 +93,7 @@ export default class Explore extends Workflow {
       return data;
     }
     // patch value with links
-    const related_questions = value.related_questions.map(this._linkFn ? (text => ({ text, url: this._getAnswersUrl(text) })) : (text => ({ text })));
+    const related_questions = value.related_questions.map(this._linkFn ? (text => ({ text, url: this._getAnswersUrl(text, true) })) : (text => ({ text })));
     return {
       ...data,
       value: {
@@ -115,14 +115,15 @@ export default class Explore extends Workflow {
     window.open(url, '_blank');
   }
 
-  _getAnswersUrl(text) {
+  _getAnswersUrl(text, generated = false) {
     if (!this._linkFn) {
       return;
     }
     const url = this._linkFn(text);
-    if (this._productId) {
-      return `${url}&qs=${encodeURIComponent(this._productId)}`;
+    if (!generated || !this._productId) {
+      return url;
     }
+    return `${url}&qs=${encodeURIComponent(this._productId)}`;
   }
 
 }

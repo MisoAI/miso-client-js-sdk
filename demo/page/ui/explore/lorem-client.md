@@ -15,7 +15,7 @@ misocmd.push(async () => {
   workflow.useApi({
     product_id: 'aaa',
   });
-  workflow.useLink(question => `https://dummy.miso.ai/ask?q=${encodeURIComponent(question)}`);
+  workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`);
   workflow.start();
 });
 </script>
