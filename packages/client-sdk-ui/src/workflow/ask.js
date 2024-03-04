@@ -116,15 +116,14 @@ export default class Ask extends Workflow {
     }
   }
 
-  query({ q: question, qs: questionSource = ORGANIC_QUESTION_SOURCE, ...payload } = {}) {
+  query({ q: question, qs: questionSource, ...payload } = {}) {
     payload = { ...payload, question };
+    questionSource = questionSource || ORGANIC_QUESTION_SOURCE;
 
     if (this.parentQuestionId) {
       payload.parent_question_id = this.parentQuestionId;
     }
-    if (questionSource) {
-      (payload._meta || (payload._meta = {})).question_source = questionSource;
-    }
+    (payload._meta || (payload._meta = {})).question_source = questionSource;
 
     // clear question id from previous session
     if (this._questionId) {
@@ -135,9 +134,7 @@ export default class Ask extends Workflow {
     this.restart();
 
     const { session } = this;
-    if (questionSource) {
-      session.meta.question_source = questionSource;
-    }
+    session.meta.question_source = questionSource;
     this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
 
     return this;
