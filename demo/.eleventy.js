@@ -17,10 +17,12 @@ module.exports = function(config) {
   config.addPassthroughCopy({
     'asset': '/'
   });
+  config.addPassthroughCopy('page/**/*.js');
   config.addWatchTarget('./scss/');
   config.addWatchTarget('./src/');
   config.setServerOptions({
-    domDiff: false
+    liveReload: false, // for AMP
+    domDiff: false,
   });
 
   config.addNunjucksFilter('markdown', value => markdown.renderInline(value));
@@ -37,7 +39,7 @@ module.exports = function(config) {
       layouts: '../_layouts',
       data: '../_data',
       output: 'dist'
-    }
+    },
   }
 };
 

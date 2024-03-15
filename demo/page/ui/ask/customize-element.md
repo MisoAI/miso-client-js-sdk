@@ -32,7 +32,7 @@ function renderSourceContent(layout, state, data) {
   </div>
   <div class="miso-list__item-info-container">
     <div class="miso-list__item-title">[Customized!] ${title}</div>
-    <div class="miso-list__item-date">${new Date(created_at).toLocaleDateString()}</div>
+    <div class="miso-list__item-date">${created_at}</div>
     <div class="miso-list__item-snippet">${snippet}</div>
   </div>
 </a>`;
