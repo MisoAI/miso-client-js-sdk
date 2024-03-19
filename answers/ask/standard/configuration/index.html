@@ -60,6 +60,14 @@
     </li>
   
     <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/search/">Search</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/recommendation/">Recommendation</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/elements/">Elements</a>
     </li>
   
@@ -157,7 +165,7 @@
 </ul>
 <h3 id="turn-off-auto-start" tabindex="-1">Turn off auto-start</h3>
 <p>The combo element automatically starts the routine when the SDK is loaded. Thus, to configure the module in time, we want to disable the auto-start feature by setting <code>autostart</code> to <code>false</code> in the script URL:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.9.1/dist/umd/miso.min.js?api_key=...&amp;autostart=false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.9.7/dist/umd/miso.min.js?api_key=...&amp;autostart=false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
 <h3 id="access-misoclient" tabindex="-1">Access MisoClient</h3>
 <p><code>MisoClient</code>, the entry point of the SDK is available on <code>window</code> object. However, it won't be available until the SDK is loaded. The SDK provides a way to access <code>MisoClient</code> regardless of the loading status:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token comment">// work with MisoClient</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>

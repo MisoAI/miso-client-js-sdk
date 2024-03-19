@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miso SDK for JavaScript - Recommendation - Product to products</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/recommendation/api/product_to_products/" />
+<meta name="description" content="Recommend products based on a product and user interests." />
+
+<meta property="og:title" content="Miso SDK for JavaScript - Recommendation - Product to products" />
+<meta property="og:description" content="Recommend products based on a product and user interests." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/recommendation/api/product_to_products/" />
+<meta property="og:type" content="documentation" />
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@askmiso">
+<meta name="twitter:creator" content="@askmiso">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Recommendation - Product to products">
+<meta name="twitter:description" content="Recommend products based on a product and user interests.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/recommendation/api/product_to_products/">
+
+
+
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-16x16.png" sizes="16x16">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-32x32.png" sizes="32x32">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon.ico" sizes="48x48">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-512x512.png" sizes="192x192">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-192x192.png" sizes="512x512">
+<link rel="apple-touch-icon" href="/miso-client-js-sdk/favicon/apple-touch-icon.png" sizes="180x180">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/variables.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
+
+  </head>
+  <body class="base ">
+    <header class="navbar navbar-expand-md navbar-dark">
+      <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand brand p-0 ms-md-3 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    height="28" viewbox="0 0 500 200"
+    class="bi d-block my-1" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+  </svg>
+</a>
+<button type="button" class="navbar-toggler"
+  data-bs-toggle="collapse" data-bs-target="#navbar"
+  aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    width="32" height="32" viewbox="0 0 16 16"
+    class="bi" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#list"/>
+  </svg>
+</button>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/answers/">Answers</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/search/">Search</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/recommendation/">Recommendation</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/elements/">Elements</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/">Plugins</a>
+    </li>
+  
+  </ul>
+  <hr class="d-md-none text-white-50">
+  <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="https://github.com/MisoAI/miso-client-js-sdk" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          viewbox="0 0 16 16"
+          class="bi navbar-nav-svg d-inline-block align-text-top" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#github"/>
+        </svg>
+        <small class="d-md-none ms-2">GitHub</small>
+      </a>
+    </li>
+  </ul>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3 me-md-2" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
+</div>
+
+      </nav>
+    </header>
+    <div class="container-xxl my-md-4 miso-body-container">
+      <aside>
+        <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
+          <div>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/recommendation/">Recommendation UI</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/ui/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/ui/api/">Configure API</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/ui/multiple/">Multiple units</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/recommendation/api/">API</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/api/setup/">Setup</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/recommendation/api/product_to_products/">Product to products</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/api/user_to_products/">User to products</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/api/user_to_attributes/">User to attributes</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/api/user_to_trending/">User to trending</a>
+          </li></ul>
+      </div>
+    </li></ul>
+</div>
+
+        </nav>
+      </aside>
+      <main class="order-1">
+        <div class="intro ps-lg-4">
+          <h1 class="intro-title">Product to products</h1>
+          <p class="intro-desc">Returns the products that are related to an anchor product (often the product the user is currently engaging with) and are also likely to drive conversions by connecting with the user’s interests.</p>
+          <hr>
+        </div>
+        
+        
+        <div class="content ps-lg-4">
+          <h4 id="syntax" tabindex="-1">Syntax</h4>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">productToProducts</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="payload" tabindex="-1">Payload</h4>
+<p>The <code>payload</code> parameter is an object with the following properties:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><code>engine_id</code></td>
+      <td>string</td>
+      <td>The engine you want to get results from. If not specified, the default engine will be used.
+</td>
+    </tr><tr>
+      <td><code>user_id</code></td>
+      <td>string</td>
+      <td>The user who made the query and for whom Miso will personalize the results. Either <code>user_id</code> or <code>anonymous_id</code> needs to be specified.
+</td>
+    </tr><tr>
+      <td><code>anonymous_id</code></td>
+      <td>string</td>
+      <td>The anonymous visitor who made the query and for whom Miso will personalize the results. Either <code>user_id</code> or <code>anonymous_id</code> needs to be specified for personalization to work.
+</td>
+    </tr><tr>
+      <td><code>user_hash</code></td>
+      <td>string</td>
+      <td>The hash of <code>user_id</code> (or <code>anonymous_id</code>) encrypted by your <a href="https://api.askmiso.com/#section/Authentication/Secret%20API%20Key" target="_blank" rel="noopener">Secret API Key</a>.
+</td>
+    </tr><tr>
+      <td><code>product_id</code></td>
+      <td>string</td>
+      <td>The <code>product_id</code> of the anchor product to recommend against.
+</td>
+    </tr><tr>
+      <td><code>product_ids</code></td>
+      <td>array of strings</td>
+      <td>An array of <code>product_id</code> of the anchor products to recommend against.
+</td>
+    </tr><tr>
+      <td><code>product_group_id</code></td>
+      <td>string</td>
+      <td>The <code>product_group_id</code> of the anchor product to recommend against.
+</td>
+    </tr><tr>
+      <td><code>buy_together</code></td>
+      <td>boolean</td>
+      <td>Whether to focus on the Products that are frequently bought together.
+Default: <code>false</code>.
+</td>
+    </tr><tr>
+      <td><code>fq</code></td>
+      <td>string</td>
+      <td>A query string in Solr syntax which restricts the superset of products to return, without influencing the overall ranking.
+</td>
+    </tr><tr>
+      <td><code>fl</code></td>
+      <td>array of strings</td>
+      <td>List of fields to retrieve. The field <code>product_id</code> is always included.
+When not specified, only <code>product_id</code> will be retrieved.
+You can retrieve all fields with <code>[&quot;*&quot;]</code>. Default: <code>[&quot;*&quot;]</code>.
+</td>
+    </tr><tr>
+      <td><code>type</code></td>
+      <td>string</td>
+      <td>Specify the type of product to return.
+</td>
+    </tr><tr>
+      <td><code>pagination_id</code></td>
+      <td>string</td>
+      <td>A unique identifier to enable pagination in Recommendation APIs.
+To enable pagination, you generate a <code>pagination_id</code> and set it in the first and subsequent requests in the same browsing session where you want to enable pagination.
+</td>
+    </tr><tr>
+      <td><code>start</code></td>
+      <td>integer</td>
+      <td>The offset of records to retrieve. You can only set it when <code>pagination_id</code> is specified.
+Default: <code>0</code>.
+</td>
+    </tr><tr>
+      <td><code>rows</code></td>
+      <td>integer</td>
+      <td>Number of records to retrieve.
+Default: <code>5</code>.
+</td>
+    </tr></tbody>
+</table>
+<h4 id="options" tabindex="-1">Options</h4>
+<p>The <code>options</code> parameter is an optional object with the following properties:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><code>timeout</code></td>
+      <td>integer</td>
+      <td>Request timeout in milliseconds.
+</td>
+    </tr><tr>
+      <td><code>bulk</code></td>
+      <td>boolean</td>
+      <td>Bulked API requests froms the same event loop is packed into a single HTTP request.
+Default: <code>false</code>.
+</td>
+    </tr></tbody>
+</table>
+<p>See the <a href="/miso-client-js-sdk/sdk/request-options/" target="_blank" rel="noopener">request options page</a> for more details.</p>
+<h4 id="return-value" tabindex="-1">Return value</h4>
+<p>A <code>Promise</code> of response object with the following properties:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><code>products</code></td>
+      <td>array of objects</td>
+      <td>An array of Product records. Use <code>fl</code> parameter to specify what fields are returned.
+</td>
+    </tr></tbody>
+</table>
+<h4 id="examples" tabindex="-1">Examples</h4>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">buy_together</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">productToProducts</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="learn-more" tabindex="-1">Learn more</h4>
+<p>For advanced usage, see <a href="https://api.askmiso.com/#tag/Recommendation-APIs/operation/product_to_products_v1_recommendation_product_to_products_post" target="_blank" rel="noopener">REST API</a>.</p>
+
+        </div>
+      </main>
+    </div>
+    <footer class="py-5 bg-light">
+      <div class="container-lg">
+  <div class="row gx-4">
+    <div id="footer-notes" class="col-md-4">
+      <div class="brand mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          height="32" viewbox="0 0 500 200"
+          class="bi d-block" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+        </svg>
+      </div>
+      <p>
+        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
+        <br>
+        Documentation <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+        <br>
+        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>
+      </p>
+    </div>
+    <div class="col-md-8">
+      <h5 class="link-group-title mb-3">Learn More</h5>
+      <div class="link-list"><div class="link">
+          <a href="https://miso.ai" target="_blank" rel="noopener">Home</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai" target="_blank" rel="noopener">Documentation</a>
+        </div><div class="link">
+          <a href="https://api.askmiso.com" target="_blank" rel="noopener">REST API</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai/recipes" target="_blank" rel="noopener">Miso Recipes<sup>TM</sup></a>
+        </div></div>
+    </div>
+  </div>
+</div>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

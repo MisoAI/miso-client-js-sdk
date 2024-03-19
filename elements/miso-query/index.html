@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/search-box/" />
-<meta name="description" content="" />
+<title>Miso SDK for JavaScript - Elements - &lt;miso-query&gt;</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/miso-query/" />
+<meta name="description" content="Search box element" />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/search-box/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Elements - &lt;miso-query&gt;" />
+<meta property="og:description" content="Search box element" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/miso-query/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/search-box/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Elements - &lt;miso-query&gt;">
+<meta name="twitter:description" content="Search box element">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/miso-query/">
 
 
 
@@ -57,6 +57,14 @@
   
     <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/answers/">Answers</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/search/">Search</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/recommendation/">Recommendation</a>
     </li>
   
     <li class="nav-item col-6 col-md-auto">
@@ -102,6 +110,19 @@
             <a href="/miso-client-js-sdk/elements/miso-ask/">&lt;miso-ask&gt;</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/elements/miso-explore/">&lt;miso-explore&gt;</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/elements/miso-search/">&lt;miso-search&gt;</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/elements/miso-recommendation/">&lt;miso-recommendation&gt;</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/elements/components/">Components</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active ">
+            <a href="/miso-client-js-sdk/elements/miso-query/">&lt;miso-query&gt;</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/elements/collections/">Collections</a>
           </li></ul>
       </div>
     </li></ul>
@@ -111,14 +132,14 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Elements - search box</h1>
+          <h1 class="intro-title">Elements - &lt;miso-query&gt;</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>The following elements are classified as search box elements:</p>
+          <p><code>&lt;miso-query&gt;</code> is the element for search or question input.</p>
 <table class="table">
   <thead>
     <tr>
@@ -130,16 +151,13 @@
     <tr>
       <td><code>&lt;miso-query&gt;</code></td>
       <td>
-        <a href="/miso-client-js-sdk/ui/search/elements/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a>
+        <a href="/miso-client-js-sdk/search/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/answers/ask/custom/">Ask</a>
       </td>
     </tr>
   </tbody>
 </table>
 <h3 id="layouts" tabindex="-1">Layouts</h3>
 <p>The only and default layout for this category is <code>search-box</code>.</p>
-<h4 id="autocomplete" tabindex="-1">Autocomplete</h4>
-<p>The search box elements enable autocomplete feature with <code>ask</code> workflow. You can disable it by:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">autocomplete</span><span class="token operator">:</span> <span class="token boolean">false</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="placeholder-text" tabindex="-1">Placeholder text</h4>
 <p>You can specify the placeholder text of the search box input element by:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">placeholder</span><span class="token operator">:</span> <span class="token string">'Ask anything!'</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
@@ -166,13 +184,11 @@
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'my-miso-search-box'</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="customize-dom-structure" tabindex="-1">Customize DOM structure</h4>
 <p>Simply leave elements inside <code>&lt;miso-query&gt;</code> element:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-query</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span> <span class="token attr-name">data-role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>input<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>submit<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">data-role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>autocomplete<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ol</span> <span class="token attr-name">data-role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>suggestion-list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ol</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-query</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-query</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span> <span class="token attr-name">data-role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>input<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>submit<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-query</span><span class="token punctuation">></span></span></code></pre>
 <p>The layout handles DOM events by the following rules:</p>
 <ol>
 <li>The first <code>&lt;input&gt;</code> element with attribute <code>data-role=&quot;input&quot;</code> holds the query text.</li>
 <li>When clicking on an element with attribute <code>type=&quot;submit&quot;</code> or <code>data-role=&quot;button&quot;</code>, it submits the query.</li>
-<li>If present, the element with attribute <code>data-role=&quot;autocomplete&quot;</code> works an autocomplete container.</li>
-<li>If present, the element with attribute <code>data-role=&quot;suggestion-list&quot;</code> holds option items of autocomplete suggestions.</li>
 </ol>
 
         </div>

@@ -3,20 +3,20 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
+<title>Miso SDK for JavaScript - Elements - Collections</title>
 <link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/collections/" />
-<meta name="description" content="" />
+<meta name="description" content="Collection elements" />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
+<meta property="og:title" content="Miso SDK for JavaScript - Elements - Collections" />
+<meta property="og:description" content="Collection elements" />
 <meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/collections/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Elements - Collections">
+<meta name="twitter:description" content="Collection elements">
 <meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/collections/">
 
 
@@ -57,6 +57,14 @@
   
     <li class="nav-item col-6 col-md-auto">
       <a class="nav-link p-2" href="/miso-client-js-sdk/answers/">Answers</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/search/">Search</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/recommendation/">Recommendation</a>
     </li>
   
     <li class="nav-item col-6 col-md-auto">
@@ -102,6 +110,19 @@
             <a href="/miso-client-js-sdk/elements/miso-ask/">&lt;miso-ask&gt;</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/elements/miso-explore/">&lt;miso-explore&gt;</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/elements/miso-search/">&lt;miso-search&gt;</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/elements/miso-recommendation/">&lt;miso-recommendation&gt;</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/elements/components/">Components</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/elements/miso-query/">&lt;miso-query&gt;</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/elements/collections/">Collections</a>
           </li></ul>
       </div>
     </li></ul>
@@ -118,7 +139,7 @@
         
         
         <div class="content ps-lg-4">
-          <p>The following elements are classified as collection elements:</p>
+          <p>The following elements are classified as collection elements, which are used to display a collection of items in a list format.</p>
 <table class="table">
   <thead>
     <tr>
@@ -130,23 +151,23 @@
     <tr>
       <td><code>&lt;miso-products&gt;</code></td>
       <td>
-        <a href="/miso-client-js-sdk/ui/search/elements/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/ui/recommendation/elements/">Recommendation</a>
+        <a href="/miso-client-js-sdk/search/">Search</a>&nbsp; | &nbsp;<a href="/miso-client-js-sdk/recommendation/">Recommendation</a>
       </td>
     </tr>
     <tr>
       <td><code>&lt;miso-sources&gt;</code></td>
-      <td><a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a></td>
+      <td><a href="/miso-client-js-sdk/answers/ask/custom/">Ask</a></td>
     </tr>
     <tr>
       <td><code>&lt;miso-related-resources&gt;</code></td>
-      <td><a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a></td>
+      <td><a href="/miso-client-js-sdk/answers/ask/custom/">Ask</a></td>
     </tr>
   </tbody>
 </table>
 <p>They are bound to different parts of API response data, but they share the same layout options.</p>
 <h3 id="layouts" tabindex="-1">Layouts</h3>
 <p>To choose a layout for specified element:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">products</span><span class="token operator">:</span> <span class="token string">'carousel'</span> <span class="token comment">// or sources, related_resources</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token comment">// Choose a layout for &lt;miso-products></span><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">products</span><span class="token operator">:</span> <span class="token string">'carousel'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// Choose a layout for &lt;miso-sources></span><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">sources</span><span class="token operator">:</span> <span class="token string">'carousel'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// Choose a layout for &lt;miso-related-resources></span><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">related_resources</span><span class="token operator">:</span> <span class="token string">'carousel'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>Available built-in layouts are:</p>
 <ul>
 <li><code>list</code> (default)</li>
@@ -179,7 +200,7 @@
 </table>
 <p>If you want to change the base class name of the elements, specify it in the options:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">products</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'my-miso-list'</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h4 id="customize-dom-structure" tabindex="-1">Customize DOM structure</h4>
+<h4 id="customize-dom-structure-(products)" tabindex="-1">Customize DOM structure (products)</h4>
 <p>In addition, to customize product item DOM structure, you can override the template function:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">products</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">product</span><span class="token operator">:</span> renderProduct<br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">function</span> <span class="token function">renderProduct</span><span class="token punctuation">(</span><span class="token parameter">layout<span class="token punctuation">,</span> state<span class="token punctuation">,</span> product</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> html <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> html<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
 <p>The render function takes the following arguments and should return an HTML string.</p>
@@ -187,6 +208,15 @@
 <li><code>layout</code>: the layout implementation widget</li>
 <li><code>state</code>: the whole data state in this rendering process</li>
 <li><code>product</code>: the product record to display</li>
+</ul>
+<h4 id="customize-dom-structure-(sources%2C-related-resources)" tabindex="-1">Customize DOM structure (sources, related resources)</h4>
+<p>to customize product item DOM structure, you can override the template function:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">sources</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">article</span><span class="token operator">:</span> renderArticle<br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">related_resources</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">article</span><span class="token operator">:</span> renderArticle<br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">function</span> <span class="token function">renderArticle</span><span class="token punctuation">(</span><span class="token parameter">layout<span class="token punctuation">,</span> state<span class="token punctuation">,</span> article</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> html <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> html<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<p>The render function takes the following arguments and should return an HTML string.</p>
+<ul>
+<li><code>layout</code>: the layout implementation widget</li>
+<li><code>state</code>: the whole data state in this rendering process</li>
+<li><code>article</code>: the article record to display</li>
 </ul>
 <p>See also: <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/templates.js" target="_blank" rel="noopener">default templates</a>.</p>
 
