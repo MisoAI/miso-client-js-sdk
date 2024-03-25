@@ -3,11 +3,11 @@ import { visit } from 'unist-util-visit';
 export default function rehypeLinkClass(options = {}) {
   // TODO: may need to offer some options like rel, className, etc.
   return tree => {
-    visit(tree, 'element', visitor);
+    visit(tree, 'element', node => visitor(node, options));
   };
 }
 
-function visitor(node) {
+function visitor(node, options) {
   const { tagName, properties, children } = node;
   // need to be an anchor with href and have only one child
   if (tagName !== 'a' || !properties || !properties.href || !children || children.length !== 1) {
@@ -31,6 +31,22 @@ function visitor(node) {
   node.properties.target = '_blank';
   node.properties.rel = 'noopener';
 
-  // remove square brackets from the text
-  child.value = '';
+  // remove original text node & add tooltip node
+  const tooltip = {
+    type: 'element',
+    tagName: 'span',
+    properties: { className: ['miso-citation-tooltip'] },
+  };
+  node.children = [tooltip];
+  //child.value = '';
+
+  // customize the node
+  if (typeof options === 'function') {
+    try {
+      const index = Number(value) - 1;
+      options({ node, tooltip, index });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }

@@ -311,7 +311,7 @@ function propsEquals(tagName, prevProps, nextProps) {
   if (SKIP_PROP_COMPARISON.has(tagName)) {
     return true;
   }
-  // TODO: compare props seriously
+  // TODO: compare props seriously but ignore data-tooltip
   return true;
 }
 

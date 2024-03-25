@@ -4,6 +4,7 @@ $dingbat-circled-numbers: ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉;
 $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
 
 .miso-citation-link {
+  position: relative;
   margin: 0 0.15em;
   text-decoration: none;
 
@@ -12,6 +13,46 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
   }
   &::before {
     content: '[' attr(data-index) ']';
+  }
+
+  > .miso-citation-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65em;
+    padding: 0.325em 0.65em;
+    border-radius: 0.5em;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+    color: var(--miso-text-color);
+    pointer-events: none;
+
+    &::before {
+      content: attr(data-value);
+      display: inline-block;
+      white-space: pre;
+      overflow: hidden;
+      max-width: 16rem;
+      text-overflow: ellipsis;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      top: calc(100% - 0.4em);
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      border: 0.4em solid transparent;
+      border-bottom-color: #fff;
+      border-right-color: #fff;
+      box-shadow: 2px 2px 2px rgba(0, 0, 0, .125);
+      background: transparent;
+      z-index: 10;
+    }
+  }
+  &:hover > .miso-citation-tooltip {
+    display: inline-block;
   }
 }
 .miso-list,

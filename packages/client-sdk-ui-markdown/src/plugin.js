@@ -14,6 +14,15 @@ const DEFAULT_RENDERER_OPTIONS = Object.freeze({
   parser: DEFAULT_PARSER_OPTIONS,
 });
 
+function createBaseRendererOptions({ handleCitationLink } = {}) {
+  return {
+    parser: {
+      remark: [remarkGfm],
+      rehype: [rehypeMinifyWhitespace, () => rehypeLinkClass(handleCitationLink)],
+    },
+  };
+}
+
 export default class UiMarkdownPlugin extends Component {
 
   static get id() {
@@ -64,8 +73,10 @@ class MarkdownContext extends Component {
     this._options = options;
   }
 
-  createRenderer(options) {
-    return new Renderer(mergeRendererOptions(DEFAULT_RENDERER_OPTIONS, (this._options && this._options.renderer), options));
+  createRenderer(options = {}) {
+    const contextOptions = this._options && this._options.renderer || {};
+    const baseRendererOptions = createBaseRendererOptions({ ...contextOptions, ...options });
+    return new Renderer(mergeRendererOptions(baseRendererOptions, contextOptions, options));
   }
 
 }

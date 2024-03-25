@@ -138,6 +138,7 @@ export default class ViewActor {
     const sliced = {
       value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
       status,
+      data: value,
       meta,
       ...rest,
     };

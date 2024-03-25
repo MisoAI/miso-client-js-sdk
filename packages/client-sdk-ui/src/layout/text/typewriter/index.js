@@ -1,4 +1,4 @@
-import { trimObj, defineValues, Resolution } from '@miso.ai/commons';
+import { trimObj, defineValues, Resolution, escapeHtml } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY, STATUS } from '../../../constants.js';
 import ProgressiveLayout from '../../progressive.js';
 import ProgressController from './progress.js';
@@ -26,11 +26,13 @@ export default class TypewriterLayout extends ProgressiveLayout {
     className = DEFAULT_CLASSNAME,
     tag = 'auto',
     format = 'markdown',
+    tooltip = false,
     ...options
   } = {}) {
     super({
       tag,
       format,
+      tooltip,
       ...options,
     });
     defineValues(this, {
@@ -70,6 +72,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
   async _setupForMarkdown() {
     const context = await this._view._views._extensions.require('markdown');
     const cursorClass = cursorClassName(this.className);
+    const { onDebug, tooltip } = this.options;
     // TODO: options
     this._renderer = context.createRenderer({
       onRefChange: (oldRef, newRef) => {
@@ -79,10 +82,34 @@ export default class TypewriterLayout extends ProgressiveLayout {
       onDone: (element) => {
         element.classList.add('done');
       },
-      onDebug: this.options.onDebug || undefined,
+      onDebug,
+      handleCitationLink: tooltip ? this._handleCitationLink.bind(this) : undefined,
     });
     // capture citation link click if necessary
     this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._handleClick(e)));
+  }
+
+  _handleCitationLink({ tooltip, index }) {
+    const { tooltip: options } = this.options;
+    if (!options || !tooltip || tooltip.properties['data-value']) {
+      return;
+    }
+    const { data = {} } = this._view._data;
+    const { sources = [] } = data;
+    const source = sources[index];
+    if (!source) {
+      return;
+    }
+    let value;
+    try {
+      value = typeof options === 'function' ? options(source) : source.title;
+    } catch (e) {
+      console.error(e);
+    }
+    if (!value) {
+      return;
+    }
+    tooltip.properties['data-value'] = escapeHtml(value);
   }
 
   async _setupForPlaintext() {
