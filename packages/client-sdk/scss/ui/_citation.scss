@@ -22,21 +22,13 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.65em;
-    padding: 0.325em 0.65em;
+    padding: 0.5em 1em;
     border-radius: 0.5em;
     background-color: #fff;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
     color: var(--miso-text-color);
     pointer-events: none;
 
-    &::before {
-      content: attr(data-value);
-      display: inline-block;
-      white-space: pre;
-      overflow: hidden;
-      max-width: 16rem;
-      text-overflow: ellipsis;
-    }
     &::after {
       content: "";
       position: absolute;
@@ -52,7 +44,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
     }
   }
   &:hover > .miso-citation-tooltip {
-    display: inline-block;
+    display: block;
   }
 }
 .miso-list,

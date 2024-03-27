@@ -10,6 +10,8 @@ sections:
     path: /ask-combo/custom
   - title: Production
     path: /ask-combo/production
+  - title: Tooltip
+    path: /ask-combo/tooltip
 - title: Ask
   path: /ask
   pages:

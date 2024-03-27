@@ -67,8 +67,10 @@ function patchNodeBounds(node, options) {
   const { parent, previousSibling, lastChild } = node;
   const left = previousSibling ? previousSibling.bounds.right : parent ? parent.bounds.left : 0;
   node.bounds = { left };
-  patchNodesBounds(node.children, options);
-  node.bounds.right = lastChild ? lastChild.bounds.right : left + options.size(node);
+  if (!node._atomic) {
+    patchNodesBounds(node.children, options);
+  }
+  node.bounds.right = !node._atomic && lastChild ? lastChild.bounds.right : left + options.size(node);
 }
 
 function patchNodesBounds(nodes, options) {
@@ -125,7 +127,7 @@ function searchNode(node, index) {
     return undefined;
   }
   const { children } = node;
-  return children && children.length > 0 ? searchNodes(children, index) :
+  return children && children.length > 0 && !node._atomic ? searchNodes(children, index) :
     !isAtomic(node) ? Position.interior(index, node) :
     node.type === 'root' ? Position.empty(node) :
     Position.intermediate(index, node.previousSibling, node);
@@ -256,14 +258,14 @@ function findConflictInNode(prevNode, nextNode) {
     return prefixLen === 0 ?
       Position.intermediate(leftBound, nextNode.previousSibling, nextNode) :
       Position.interior(leftBound + prefixLen, nextNode);
-  } else {
+  } else if (!prevNode._atomic) {
     // dive into children
     return findConflictInNodes(prevNode.children, nextNode.children);
   }
 }
 
 function isSameNode(prevNode, nextNode) {
-  if (prevNode.type !== nextNode.type) {
+  if (prevNode.type !== nextNode.type || prevNode._atomic !== nextNode._atomic) {
     return false;
   }
   if (prevNode.type === 'text') {

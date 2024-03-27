@@ -2,6 +2,9 @@
  * Remove the specified item from array.
  */
 export function removeItem(array, item) {
+  if (!array) {
+    return;
+  }
   const i = array.indexOf(item);
   if (i > -1) {
     array.splice(i, 1);
@@ -9,6 +12,9 @@ export function removeItem(array, item) {
 }
 
 export function findAndRemoveItem(array, test) {
+  if (!array) {
+    return;
+  }
   const i = array.findIndex(test);
   if (i > -1) {
     array.splice(i, 1);

@@ -14,11 +14,11 @@ const DEFAULT_RENDERER_OPTIONS = Object.freeze({
   parser: DEFAULT_PARSER_OPTIONS,
 });
 
-function createBaseRendererOptions({ handleCitationLink } = {}) {
+function createBaseRendererOptions({ onCitationLink } = {}) {
   return {
     parser: {
       remark: [remarkGfm],
-      rehype: [rehypeMinifyWhitespace, () => rehypeLinkClass(handleCitationLink)],
+      rehype: [rehypeMinifyWhitespace, () => rehypeLinkClass(onCitationLink)],
     },
   };
 }
