@@ -30,7 +30,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
     pointer-events: none;
 
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: calc(100% - 0.4em);
       left: 50%;
@@ -57,7 +57,8 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
   }
 }
 
-.miso-circled-citation-index {
+.miso-circled-citation-index,
+.miso-circled-citation-index-dark {
   .miso-citation-link,
   .miso-citation-index {
     font-family: 'Noto Sans Symbols', sans-serif;
@@ -98,6 +99,18 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓;
   .miso-carousel {
     .miso-citation-index {
       font-size: 1.25rem;
+    }
+  }
+}
+.miso-circled-citation-index-dark {
+  .miso-citation-link,
+  .miso-citation-index {
+    @for $i from 1 through length($dingbat-circled-numbers) {
+      &[data-index="#{$i}"] {
+        &::before {
+          content: '#{nth($dingbat-negative-circled-numbers, $i)}' !important;
+        }
+      }
     }
   }
 }
