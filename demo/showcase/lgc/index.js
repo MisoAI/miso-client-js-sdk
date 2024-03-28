@@ -22,7 +22,7 @@ function getType(source) {
       // determine source type by some logic
       const type = getType(source);
       setAttribute('data-type', type.id);
-      setTooltipHtml(`<div class="title">${escapeHtml(source.title)}</div><div class="type">${type.label}</div>`);
+      //setTooltipHtml(`<div class="title">${escapeHtml(source.title)}</div><div class="type">${type.label}</div>`);
     }
   }
   function escapeHtml(text) {
