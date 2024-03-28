@@ -7,6 +7,9 @@ body, button, input, optgroup, select, textarea {
 }
 
 /* hero */
+body {
+  --miso-logo-color: #334bcc;
+}
 .hero {
   --miso-ask-combo-half-input-height: calc(1px + var(--miso-search-box-font-size) * 0.5 + var(--miso-search-box-padding));
 
@@ -24,10 +27,11 @@ body, button, input, optgroup, select, textarea {
   position: absolute;
   top: 1.5rem;
   left: 2rem;
+  color: var(--miso-logo-color);
 }
 .hero .site-logo {
   object-fit: contain;
-  max-height: 3.75rem;
+  max-height: 7.5rem;
   width: 64%;
 }
 .hero #sdk-version {
@@ -45,7 +49,7 @@ body, button, input, optgroup, select, textarea {
 
 /* site */
 body {
-  --theme-hero-background: #00788a;
+  --theme-hero-background: #f0f0f0;
   --theme-hero-color: #fff;
   --theme-hero-sdk-version-color: #ccc;
 }
