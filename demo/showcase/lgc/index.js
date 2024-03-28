@@ -50,7 +50,7 @@ function getType(source) {
     }
     content += `<div class="${className}__item-date-type">`;
     if (date) {
-      content += `<div class="${className}__item-date">${new Date(date).toLocaleDateString()}</div>`;
+      content += `<div class="${className}__item-date">${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</div>`;
     }
     if (type) {
       content += `<div class="${className}__item-type" data-type="${type.id}">${type.label}</div>`;
