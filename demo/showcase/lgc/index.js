@@ -22,7 +22,7 @@ function getType(source) {
       // determine source type by some logic
       const type = getType(source);
       setAttribute('data-type', type.id);
-      //setTooltipHtml(`<div class="title">${escapeHtml(source.title)}</div><div class="type">${type.label}</div>`);
+      setTooltipHtml(`<span class="title">${escapeHtml(source.title)}</span><span class="type">${type.label}</span>`);
     }
   }
   function escapeHtml(text) {
@@ -75,35 +75,33 @@ function getType(source) {
           indexBlock: renderArticleIndexBlock,
         },
       }],
-      /*
-      related_resources: ['list', {
-        templates: {
-          infoBlock: renderArticleInfoBlock,
-        },
-      }],
-      */
     });
-    client.ui.asks.on('ready', (event) => {
+    client.ui.asks.on('data', (event) => {
       const workflow = event.workflow;
-      // workflow.states.data.value
+      const data = event.value;
+      if (!data) {
+        return;
+      }
+      const sources = data.sources;
+      if (!sources || sources.length === 0) {
+        return;
+      }
       const parentQuestionId = workflow.parentQuestionId;
       const comboElement = document.querySelector('miso-ask-combo');
       const containerSelector = parentQuestionId ? `miso-ask[parent-question-id="${parentQuestionId}"]` : `miso-ask`;
-      if (comboElement.querySelector(`${containerSelector} .miso-type-defs`)) {
-        return;
+      // insert type definitions block if not already present
+      if (!comboElement.querySelector(`${containerSelector} .miso-type-defs`)) {
+        const questionElement = comboElement.querySelector(`${containerSelector} miso-question`);
+        questionElement.insertAdjacentHTML('afterend', `<div class="miso-type-defs"><ul></ul></div>`);
       }
-      const questionElement = comboElement.querySelector(`${containerSelector} miso-question`);
-      questionElement.insertAdjacentHTML('afterend', `
-        <div class="miso-type-defs">
-          <ul>
-            <li data-type="type-a">Type A</li>
-            <li data-type="type-b">Type B</li>
-            <li data-type="type-c">Type C</li>
-            <li data-type="type-d">Type D</li>
-            <li data-type="type-e">Type E</li>
-          </ul>
-        </div>
-      `);
+      const typeDefsListElement = comboElement.querySelector(`${containerSelector} .miso-type-defs ul`);
+      for (const type of sources.map(getType)) {
+        // add to <ul> if not already present
+        if (typeDefsListElement.querySelector(`li[data-type="${type.id}"]`)) {
+          continue;
+        }
+        typeDefsListElement.insertAdjacentHTML('beforeend', `<li data-type="${type.id}">${type.label}</li>`);
+      }
     });
   });
 

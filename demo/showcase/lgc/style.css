@@ -114,6 +114,7 @@ body {
   text-overflow: ellipsis;
 }
 .miso-citation-tooltip .type {
+  display: block;
   margin-top: 0.5em;
 }
 .miso-citation-index[data-type="type-a"],
