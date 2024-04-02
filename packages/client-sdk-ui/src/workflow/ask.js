@@ -190,19 +190,6 @@ export default class Ask extends Workflow {
     };
   }
 
-  _onDataUpdate(data) {
-    // TODO: can we just put this in _defaultProcessData?
-    if (this._questionId) {
-      return;
-    }
-    const questionId = data && data.value && data.value.question_id;
-    // capture question ID and register at context
-    if (questionId) {
-      this._questionId = questionId;
-      this._context._byQid.set(questionId, this);
-    }
-  }
-
   _onAnswerViewUpdate({ session, status, ongoing }) {
     if (status === STATUS.INITIAL) {
       return;
