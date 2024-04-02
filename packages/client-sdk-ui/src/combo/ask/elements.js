@@ -10,6 +10,7 @@ export default class AskComboElements {
     defineValues(this, {
       root,
       followUpsSection: root.querySelector(`.${classPrefix}__follow-ups`),
+      relatedResourcesSection: root.querySelector(`.${classPrefix}__related-resources`),
       relatedResourcesContainer: root.querySelector(`.${classPrefix}__related-resources miso-ask`),
     });
   }

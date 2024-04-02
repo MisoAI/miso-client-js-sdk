@@ -98,7 +98,8 @@ export default class AskCombo extends Combo {
   }
 
   async _setupWorkflows() {
-    const { client, elements, resolvedOptions: options } = this;
+    const { MisoClient, client, elements, resolvedOptions: options } = this;
+    const { wireFollowUps, wireRelatedResources } = MisoClient.ui.defaults.ask;
     const { templates = {}, features = {}, api } = options;
 
     const context = client.ui.asks;
@@ -110,25 +111,11 @@ export default class AskCombo extends Combo {
 
     // TODO: set placeholder if present in options
 
-    if (elements.followUpsSection && features.followUpQuestions !== false) {
-      // when a answer is fully populated, insert a new section for the follow-up question
-      context.on('done', ({ workflow }) => {
-        elements.followUpsSection.insertAdjacentHTML('beforeend', templates.followUp({ ...options, parentQuestionId: workflow.questionId }));
-      });
-      // if user starts over, clean up current follow-up questions
-      rootWorkflow.on('loading', () => {
-        // clean up the entire follow-ups section
-        elements.followUpsSection.innerHTML = '';
-        // destroy all follow-up workflows
-        context.reset({ root: false });
-      });
+    if (features.followUpQuestions !== false) {
+      wireFollowUps(client, elements.followUpsSection, { template: templates.followUp });
     }
-
-    if (elements.relatedResourcesContainer && features.relatedResources !== false && features.followUpQuestions !== false) {
-      // when a new query starts, associate the last section container (for related resources) to that workflow
-      context.on('loading', ({ workflow }) => {
-        elements.relatedResourcesContainer.workflow = workflow;
-      });
+    if (features.relatedResources !== false && features.followUpQuestions !== false) {
+      wireRelatedResources(client, elements.relatedResourcesSection);
     }
 
     // start query if specified in URL
