@@ -7,7 +7,7 @@
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
-  const client = new MisoClient('...');
+  const client = new MisoClient(window.DEFAULT_ASK_API_KEY);
   await client.ui.ready;
   const { templates } = MisoClient.ui.defaults.ask;
   const rootElement = document.querySelector('#miso-ask-combo');

@@ -5,45 +5,47 @@ import { THUMB } from '../svgs.js';
 const TYPE = 'feedback';
 const DEFAULT_CLASSNAME = 'miso-feedback';
 
-function root(layout) {
-  const { className, role, templates, options } = layout;
-  const roleAttr = role ? `data-role="${role}"` : '';
-  return `
-<div class="${className}" ${roleAttr}>
-  ${options.options.map((option) => templates.option(layout, option))}
-</div>
-`;
-}
-
-const OPTIONS = [
-  {
-    text: 'Helpful',
-    value: 'helpful',
-    icon: THUMB,
-  },
-  {
-    text: 'Not helpful',
-    value: 'unhelpful',
-    icon: THUMB,
-  },
-];
+const OPTIONS = [ 'helpful', 'unhelpful' ];
 
 function options(layout) {
   const { templates } = layout;
-  return OPTIONS.map((data) => templates.option(layout, data)).join('');
+  return OPTIONS.map(value => templates.option(layout, { value })).join('');
 }
 
-function content(layout, { text, icon }) {
-  const { className, options = {} } = layout;
+function content(layout, { value }) {
+  const { className, templates, options = {} } = layout;
   return `
-${options.icon !== false ? `<i class="${className}__icon">${icon}</i>` : ''}
-${options.text !== false ? `<span class="${className}__text">${text}</span>` : ''}
+${options.icon !== false ? `<i class="${className}__icon">${templates.icon(layout, value)}</i>` : ''}
+${options.text !== false ? `<span class="${className}__text">${templates.text(layout, value)}</span>` : ''}
 `;
+}
+
+function icon(layout, value) {
+  switch (value) {
+    case 'helpful':
+    case 'unhelpful':
+      return THUMB;
+    default:
+      return '';
+  }
+}
+
+function text(layout, value) {
+  switch (value) {
+    case 'helpful':
+      return 'Helpful';
+    case 'unhelpful':
+      return 'Not helpful';
+    default:
+      return '';
+  }
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
   options,
   content,
+  icon,
+  text,
 });
 
 export default class FeedbackLayout extends RadioLayout {
