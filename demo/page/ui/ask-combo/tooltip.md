@@ -23,6 +23,7 @@
   text-overflow: ellipsis;
 }
 .miso-citation-tooltip .date {
+  display: block;
   margin-top: 0.5em;
 }
 </style>
@@ -35,12 +36,18 @@
     if (source) {
       setAttribute('data-title', source.title);
       const date = new Date(source.published_at).toLocaleDateString();
-      setTooltipHtml(`<div class="title">${escapeHtml(source.title)}</div><div class="date">${date}</div>`);
+      setTooltipHtml(`<span class="title">${escapeHtml(source.title)}</span><span class="date">${date}</span>`);
     }
   }
+  //const start = Date.now();
   MisoClient.on('create', (client) => {
     client.ui.asks.useLayouts({
       answer: {
+        /*
+        onDebug: ({ summary, timestamp, elapsed, ref, operation, conflict }) => {
+          console.log(`[${(timestamp - start) / 1000}](${elapsed[0] / 1000}, ${elapsed[1] / 1000})`, summary, ref, `${operation}`, conflict);
+        },
+        */
         onCitationLink,
       },
     });
