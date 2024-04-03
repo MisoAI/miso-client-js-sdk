@@ -8,9 +8,8 @@ const TYPES = [
   'type-a', 'type-b', 'type-c', 'type-d', 'type-e',
 ];
 function getType(source) {
-  const id = TYPES[source.title.codePointAt(0) % 5];
-  const label = id.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-  return { id, label };
+  const custom_attributes = source.custom_attributes || {};
+  return custom_attributes.type && custom_attributes.type[0] || undefined;
 }
 
 (window.misocmd || (window.misocmd = [])).push(async () => {
@@ -21,8 +20,12 @@ function getType(source) {
     if (source) {
       // determine source type by some logic
       const type = getType(source);
-      setAttribute('data-type', type.id);
-      setTooltipHtml(`<span class="title">${escapeHtml(source.title)}</span><span class="type">${type.label}</span>`);
+      if (type) {
+        setAttribute('data-type', type);
+        setTooltipHtml(`<span class="title">${escapeHtml(source.title)}</span><span class="type">${type}</span>`);
+      } else {
+        setTooltipHtml(`<span class="title">${escapeHtml(source.title)}</span>`);
+      }
     }
   }
   function escapeHtml(text) {
@@ -53,7 +56,7 @@ function getType(source) {
       content += `<div class="${className}__item-date">${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</div>`;
     }
     if (type) {
-      content += `<div class="${className}__item-type" data-type="${type.id}">${type.label}</div>`;
+      content += `<div class="${className}__item-type" data-type="${type}">${type}</div>`;
     }
     content += `</div>`;
     return `<div class="${className}__item-info-container">${content}</div>`;
@@ -62,10 +65,14 @@ function getType(source) {
     const { className } = layout;
     const i = index + 1;
     const type = getType(article);
-    return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}" data-type="${type.id}"></span></div>`;
+    return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}" data-type="${type}"></span></div>`;
   }
   MisoClient.on('create', (client) => {
-    client.ui.asks.useLayouts({
+    const context = client.ui.asks;
+    context.useApi({
+      source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'custom_attributes.type'],
+    });
+    context.useLayouts({
       answer: {
         onCitationLink,
       },
@@ -76,7 +83,7 @@ function getType(source) {
         },
       }],
     });
-    client.ui.asks.on('data', (event) => {
+    context.on('data', (event) => {
       const workflow = event.workflow;
       const data = event.value;
       if (!data) {
@@ -97,10 +104,10 @@ function getType(source) {
       const typeDefsListElement = comboElement.querySelector(`${containerSelector} .miso-type-defs ul`);
       for (const type of sources.map(getType)) {
         // add to <ul> if not already present
-        if (typeDefsListElement.querySelector(`li[data-type="${type.id}"]`)) {
+        if (!type || typeDefsListElement.querySelector(`li[data-type="${type}"]`)) {
           continue;
         }
-        typeDefsListElement.insertAdjacentHTML('beforeend', `<li data-type="${type.id}">${type.label}</li>`);
+        typeDefsListElement.insertAdjacentHTML('beforeend', `<li data-type="${type}">${type}</li>`);
       }
     });
   });

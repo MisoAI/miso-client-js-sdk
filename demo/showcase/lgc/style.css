@@ -59,11 +59,10 @@ body .hero .site-logo {
 
 /* definition */
 body {
-  --type-a-color: #7F90AF;
-  --type-b-color: #27517E;
-  --type-c-color: #04111E;
-  --type-d-color: #7E2751;
-  --type-e-color: #517E27;
+  --type-default-color: #04111E;
+  --type-news-color: #27517E;
+  --type-opinion-color: #517E27;
+  --type-investment-color: #7E2751;
 }
 .miso-type-defs ul {
   display: flex;
@@ -86,20 +85,17 @@ body {
   width: 1rem;
   border-radius: 50%;
 }
-.miso-type-defs ul li[data-type="type-a"]::before {
-  background: var(--type-a-color);
+.miso-type-defs ul li::before {
+  background: var(--type-default-color);
 }
-.miso-type-defs ul li[data-type="type-b"]::before {
-  background: var(--type-b-color);
+.miso-type-defs ul li[data-type="News"]::before {
+  background: var(--type-news-color);
 }
-.miso-type-defs ul li[data-type="type-c"]::before {
-  background: var(--type-c-color);
+.miso-type-defs ul li[data-type="Opinion"]::before {
+  background: var(--type-opinion-color);
 }
-.miso-type-defs ul li[data-type="type-d"]::before {
-  background: var(--type-d-color);
-}
-.miso-type-defs ul li[data-type="type-e"]::before {
-  background: var(--type-e-color);
+.miso-type-defs ul li[data-type="Investment"]::before {
+  background: var(--type-investment-color);
 }
 
 /* link & tooltip */
@@ -117,25 +113,21 @@ body {
   display: block;
   margin-top: 0.5em;
 }
-.miso-citation-index[data-type="type-a"],
-.miso-citation-link[data-type="type-a"] {
-  color: var(--type-a-color) !important;
+.miso-citation-index,
+.miso-citation-link {
+  color: var(--type-default-color) !important;
 }
-.miso-citation-index[data-type="type-b"],
-.miso-citation-link[data-type="type-b"] {
-  color: var(--type-b-color) !important;
+.miso-citation-index[data-type="News"],
+.miso-citation-link[data-type="News"] {
+  color: var(--type-news-color) !important;
 }
-.miso-citation-index[data-type="type-c"],
-.miso-citation-link[data-type="type-c"] {
-  color: var(--type-c-color) !important;
+.miso-citation-index[data-type="Opinion"],
+.miso-citation-link[data-type="Opinion"] {
+  color: var(--type-opinion-color) !important;
 }
-.miso-citation-index[data-type="type-d"],
-.miso-citation-link[data-type="type-d"] {
-  color: var(--type-d-color) !important;
-}
-.miso-citation-index[data-type="type-e"],
-.miso-citation-link[data-type="type-e"] {
-  color: var(--type-e-color) !important;
+.miso-citation-index[data-type="Investment"],
+.miso-citation-link[data-type="Investment"] {
+  color: var(--type-investment-color) !important;
 }
 
 /* sources */
@@ -150,23 +142,17 @@ body {
 }
 .miso-list__item-type {
   font-size: 0.8rem;
-  background: var(--type-c-color);
+  background: var(--type-default-color);
   color: #fff;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
 }
-.miso-list__item-type[data-type="type-a"] {
-  background: var(--type-a-color);
+.miso-list__item-type[data-type="News"] {
+  background: var(--type-news-color);
 }
-.miso-list__item-type[data-type="type-b"] {
-  background: var(--type-b-color);
+.miso-list__item-type[data-type="Opinion"] {
+  background: var(--type-opinion-color);
 }
-.miso-list__item-type[data-type="type-c"] {
-  background: var(--type-c-color);
-}
-.miso-list__item-type[data-type="type-d"] {
-  background: var(--type-d-color);
-}
-.miso-list__item-type[data-type="type-e"] {
-  background: var(--type-e-color);
+.miso-list__item-type[data-type="Investment"] {
+  background: var(--type-investment-color);
 }
