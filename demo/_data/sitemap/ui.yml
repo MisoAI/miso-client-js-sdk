@@ -33,6 +33,8 @@ sections:
     path: /ask/customize-element
   - title: No tracking
     path: /ask/no-tracking
+  - title: I18n
+    path: /ask/i18n
   - title: SPA
     path: /ask/spa
   - title: Error
