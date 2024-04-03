@@ -5,11 +5,35 @@ if (!apiKey) {
 }
 
 const TYPES = [
-  'type-a', 'type-b', 'type-c', 'type-d', 'type-e',
+  {
+    type: 'Sponsored',
+    alternatives: ['Advertorial', 'Sponsor news'],
+  },
+  {
+    type: 'News',
+    alternatives: ['Analysis', 'Investment', 'Investment and news'],
+  },
+  {
+    type: 'Idea exchange',
+  },
+  {
+    type: 'Opinion',
+    alternatives: ['Leader', 'LGC Briefing', 'Round Table'],
+  },
 ];
+
+const TYPE_INDEX = TYPES.reduce((map, { type, alternatives }) => {
+  map.set(type.toLowerCase(), type);
+  for (const alt of alternatives || []) {
+    map.set(alt.toLowerCase(), type);
+  }
+  return map;
+}, new Map());
+
 function getType(source) {
   const custom_attributes = source.custom_attributes || {};
-  return custom_attributes.type && custom_attributes.type[0] || undefined;
+  const type = custom_attributes.type && custom_attributes.type[0] || undefined;
+  return type && TYPE_INDEX.get(type.toLowerCase()) || 'Other';
 }
 
 (window.misocmd || (window.misocmd = [])).push(async () => {
@@ -67,8 +91,21 @@ function getType(source) {
     const type = getType(article);
     return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}" data-type="${type}"></span></div>`;
   }
+  function getElements(workflow) {
+    const parentQuestionId = workflow.parentQuestionId;
+    const comboElement = document.querySelector('miso-ask-combo');
+    const containerSelector = parentQuestionId ? `miso-ask[parent-question-id="${parentQuestionId}"]` : `miso-ask`;
+    // insert type definitions block if not already present
+    if (!comboElement.querySelector(`${containerSelector} .miso-type-defs`)) {
+      const questionElement = comboElement.querySelector(`${containerSelector} miso-question`);
+      questionElement.insertAdjacentHTML('afterend', `<div class="miso-type-defs"><ul></ul></div>`);
+    }
+    const typeDefsListElement = comboElement.querySelector(`${containerSelector} .miso-type-defs ul`);
+    return { comboElement, typeDefsListElement };
+  }
   MisoClient.on('create', (client) => {
     const context = client.ui.asks;
+    // Tell the API to include custom_attributes.type for source items in response
     context.useApi({
       source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'custom_attributes.type'],
     });
@@ -83,6 +120,11 @@ function getType(source) {
         },
       }],
     });
+    context.on('loading', (event) => {
+      const { typeDefsListElement } = getElements(event.workflow);
+      // clean up type definitions block
+      typeDefsListElement.innerHTML = '';
+    });
     context.on('data', (event) => {
       const workflow = event.workflow;
       const data = event.value;
@@ -93,15 +135,8 @@ function getType(source) {
       if (!sources || sources.length === 0) {
         return;
       }
-      const parentQuestionId = workflow.parentQuestionId;
-      const comboElement = document.querySelector('miso-ask-combo');
-      const containerSelector = parentQuestionId ? `miso-ask[parent-question-id="${parentQuestionId}"]` : `miso-ask`;
+      const { typeDefsListElement } = getElements(workflow);
       // insert type definitions block if not already present
-      if (!comboElement.querySelector(`${containerSelector} .miso-type-defs`)) {
-        const questionElement = comboElement.querySelector(`${containerSelector} miso-question`);
-        questionElement.insertAdjacentHTML('afterend', `<div class="miso-type-defs"><ul></ul></div>`);
-      }
-      const typeDefsListElement = comboElement.querySelector(`${containerSelector} .miso-type-defs ul`);
       for (const type of sources.map(getType)) {
         // add to <ul> if not already present
         if (!type || typeDefsListElement.querySelector(`li[data-type="${type}"]`)) {

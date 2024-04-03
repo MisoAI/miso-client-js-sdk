@@ -59,10 +59,11 @@ body .hero .site-logo {
 
 /* definition */
 body {
-  --type-default-color: #04111E;
-  --type-news-color: #27517E;
-  --type-opinion-color: #517E27;
-  --type-investment-color: #7E2751;
+  --type-sponsored-color: #04111E;
+  --type-news-color: #4e596e;
+  --type-opinion-color: #27517E;
+  --type-ideaexchange-color: #7E2751;
+  --type-other-color: #517E27;
 }
 .miso-type-defs ul {
   display: flex;
@@ -86,7 +87,10 @@ body {
   border-radius: 50%;
 }
 .miso-type-defs ul li::before {
-  background: var(--type-default-color);
+  background: var(--type-other-color);
+}
+.miso-type-defs ul li[data-type="Sponsored"]::before {
+  background: var(--type-sponsored-color);
 }
 .miso-type-defs ul li[data-type="News"]::before {
   background: var(--type-news-color);
@@ -94,8 +98,8 @@ body {
 .miso-type-defs ul li[data-type="Opinion"]::before {
   background: var(--type-opinion-color);
 }
-.miso-type-defs ul li[data-type="Investment"]::before {
-  background: var(--type-investment-color);
+.miso-type-defs ul li[data-type="Idea exchange"]::before {
+  background: var(--type-ideaexchange-color);
 }
 
 /* link & tooltip */
@@ -115,7 +119,11 @@ body {
 }
 .miso-citation-index,
 .miso-citation-link {
-  color: var(--type-default-color) !important;
+  color: var(--type-other-color) !important;
+}
+.miso-citation-index[data-type="Sponsored"],
+.miso-citation-link[data-type="Sponsored"] {
+  color: var(--type-sponsored-color) !important;
 }
 .miso-citation-index[data-type="News"],
 .miso-citation-link[data-type="News"] {
@@ -125,9 +133,9 @@ body {
 .miso-citation-link[data-type="Opinion"] {
   color: var(--type-opinion-color) !important;
 }
-.miso-citation-index[data-type="Investment"],
-.miso-citation-link[data-type="Investment"] {
-  color: var(--type-investment-color) !important;
+.miso-citation-index[data-type="Idea exchange"],
+.miso-citation-link[data-type="Idea exchange"] {
+  color: var(--type-ideaexchange-color) !important;
 }
 
 /* sources */
@@ -142,10 +150,13 @@ body {
 }
 .miso-list__item-type {
   font-size: 0.8rem;
-  background: var(--type-default-color);
+  background: var(--type-other-color);
   color: #fff;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
+}
+.miso-list__item-type[data-type="Sponsored"] {
+  background: var(--type-sponsored-color);
 }
 .miso-list__item-type[data-type="News"] {
   background: var(--type-news-color);
@@ -153,6 +164,6 @@ body {
 .miso-list__item-type[data-type="Opinion"] {
   background: var(--type-opinion-color);
 }
-.miso-list__item-type[data-type="Investment"] {
-  background: var(--type-investment-color);
+.miso-list__item-type[data-type="Idea exchange"] {
+  background: var(--type-ideaexchange-color);
 }
