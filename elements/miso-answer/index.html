@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/_main-components-inline/" />
-<meta name="description" content="" />
+<title>Miso SDK for JavaScript - Elements - &lt;miso-answer&gt;</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/miso-answer/" />
+<meta name="description" content="Answer text element" />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/_main-components-inline/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Elements - &lt;miso-answer&gt;" />
+<meta property="og:description" content="Answer text element" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/miso-answer/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/_main-components-inline/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Elements - &lt;miso-answer&gt;">
+<meta name="twitter:description" content="Answer text element">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/miso-answer/">
 
 
 
@@ -121,7 +121,7 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/elements/miso-query/">&lt;miso-query&gt;</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/elements/miso-answer/">&lt;miso-answer&gt;</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/elements/collections/">Collections</a>
@@ -134,14 +134,34 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
+          <h1 class="intro-title">Elements - &lt;miso-answer&gt;</h1>
           
-          
-          
+          <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>``</p>
+          <p><code>&lt;miso-answer&gt;</code> is the element for answer text in ask workflow.</p>
+<table class="table"><thead>
+<tr>
+<th>Tag</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;miso-answer&gt;</code></td>
+<td><a href="/miso-client-js-sdk/answers/ask/custom/" target="_blank" rel="noopener">Ask</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="layouts" tabindex="-1">Layouts</h3>
+<h4 id="customize-citation-links" tabindex="-1">Customize citation links</h4>
+<p>You can customize the element of citation links, as well as adding a tooltip:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">onCitationLink</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> addClass<span class="token punctuation">,</span> setAttribute<span class="token punctuation">,</span> setTooltipHtml<span class="token punctuation">,</span> escapeHtml <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> source<span class="token punctuation">,</span> index <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token function">addClass</span><span class="token punctuation">(</span><span class="token string">'my-custom-class'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token keyword">if</span> <span class="token punctuation">(</span>source<span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">'data-title'</span><span class="token punctuation">,</span> source<span class="token punctuation">.</span>title<span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token keyword">const</span> date <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span>source<span class="token punctuation">.</span>published_at<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toLocaleDateString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token function">setTooltipHtml</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">&lt;span class="title"></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">escapeHtml</span><span class="token punctuation">(</span>source<span class="token punctuation">.</span>title<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/span>&lt;span class="date"></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>date<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">answer</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    onCitationLink<br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>For tooltip HTML, you should avoid using element tags that are natively block elements (i.e. <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, etc.), even though in HTML5 elements are sementically neutral. This is due to the specification that <code>&lt;p&gt;</code> tags cannot contain block elements when setting its innerHTML. Instead, use inline elements like <code>&lt;span&gt;</code> and modify their display properties with CSS.</li>
+</ul>
 
         </div>
       </main>

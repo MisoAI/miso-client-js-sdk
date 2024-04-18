@@ -105,10 +105,6 @@ function getType(source) {
   }
   MisoClient.on('create', (client) => {
     const context = client.ui.asks;
-    // Tell the API to include custom_attributes.type for source items in response
-    context.useApi({
-      source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'custom_attributes.type'],
-    });
     context.useLayouts({
       answer: {
         onCitationLink,
@@ -126,7 +122,6 @@ function getType(source) {
       typeDefsListElement.innerHTML = '';
     });
     context.on('data', (event) => {
-      const workflow = event.workflow;
       const data = event.value;
       if (!data) {
         return;
@@ -135,7 +130,7 @@ function getType(source) {
       if (!sources || sources.length === 0) {
         return;
       }
-      const { typeDefsListElement } = getElements(workflow);
+      const { typeDefsListElement } = getElements(event.workflow);
       // insert type definitions block if not already present
       for (const type of sources.map(getType)) {
         // add to <ul> if not already present
@@ -147,7 +142,13 @@ function getType(source) {
     });
   });
 
-  const options = { apiKey };
+  const options = {
+    apiKey,
+    api: {
+      // Tell the API to include custom_attributes.type for source items in response
+      source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'custom_attributes.type'],
+    },
+  };
   const combo = MisoClient.ui.combo.ask;
   combo.config(options);
   combo.start();
