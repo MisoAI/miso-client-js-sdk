@@ -150,6 +150,40 @@ table.miso-diagram .arrow.left {
   border-right-width: 12px;
 }
 
+.miso-tech-stack .layer-info-cell {
+  vertical-align: top;
+  border: 2px dashed #333;
+}
+.miso-tech-stack .layer:last-child .layer-info-cell {
+  border-color: transparent;
+}
+.miso-tech-stack .layer-row-spacing {
+  height: 2rem;
+}
+.miso-tech-stack .layer-column-spacing {
+  width: 3rem;
+}
+.miso-tech-stack .layer-features-cell {
+  vertical-align: top;
+  padding-bottom: 1rem;
+}
+.miso-tech-stack .layer-box {
+  border: 2px solid #333;
+  margin: -3px;
+  padding: 1rem;
+}
+.miso-tech-stack .layer-title {
+  text-align: center;
+}
+.miso-tech-stack .layer-desc {
+  margin-bottom: 0;
+  font-weight: bold;
+}
+.miso-tech-stack .layer-features-list {
+  margin-bottom: 0;
+  padding-left: 1em;
+}
+
 /* reset */
 .btn-primary {
   color: #fff;

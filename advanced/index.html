@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Recommendation - Interactions</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/recommendation/api/interactions/" />
-<meta name="description" content="Send user interaction events for analytics." />
+<title>Miso SDK for JavaScript - Advanced topics - Advanced topics</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/advanced/" />
+<meta name="description" content="Advanced topics" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Recommendation - Interactions" />
-<meta property="og:description" content="Send user interaction events for analytics." />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/recommendation/api/interactions/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Advanced topics - Advanced topics" />
+<meta property="og:description" content="Advanced topics" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/advanced/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Recommendation - Interactions">
-<meta name="twitter:description" content="Send user interaction events for analytics.">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/recommendation/api/interactions/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Advanced topics - Advanced topics">
+<meta name="twitter:description" content="Advanced topics">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/advanced/">
 
 
 
@@ -98,34 +98,13 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/recommendation/">Recommendation UI</a>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3 active ">
+      <a href="/miso-client-js-sdk/advanced/">Advanced topics</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/ui/quick-start/">Quick start</a>
+            <a href="/miso-client-js-sdk/advanced/technology/">Tecknology stack</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/ui/api/">Configure API</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/ui/multiple/">Multiple units</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/ui/tracking/">Tracking</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/recommendation/api/">API</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/api/setup/">Setup</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/api/product_to_products/">Product to products</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/api/user_to_products/">User to products</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/api/user_to_attributes/">User to attributes</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/recommendation/api/user_to_trending/">User to trending</a>
-          </li><li class="page active ">
-            <a href="/miso-client-js-sdk/recommendation/api/interactions/">Interactions</a>
+            <a href="/miso-client-js-sdk/advanced/performance/">Performance measurement</a>
           </li></ul>
       </div>
     </li></ul>
@@ -135,23 +114,32 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Recommendation API - interactions</h1>
+          <h1 class="intro-title">Advanced topics</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>To generate performance measurement data for analytics, you can send the following events to Miso API:</p>
-<ul>
-<li>Impression</li>
-<li>Viewable impression</li>
-<li>Click</li>
-</ul>
-<p>See <a href="/miso-client-js-sdk/advanced/performance/" target="_blank" rel="noopener">Performance measurement</a> for detailed definitions.</p>
-<h4 id="syntax" tabindex="-1">Syntax</h4>
-<p>To send an event with SDK that works analytics, specifying <code>api_group</code>, <code>api_name</code>, and <code>property</code> in <code>custom_context</code> is required.</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'impression'</span><span class="token punctuation">,</span> <span class="token comment">// or 'viewable_impression', 'click'</span><br>  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">context</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">custom_context</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">api_group</span><span class="token operator">:</span> <span class="token string">'recommendation'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">api_name</span><span class="token operator">:</span> <span class="token string">'recommendation'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">property</span><span class="token operator">:</span> <span class="token string">'user_to_products'</span><span class="token punctuation">,</span> <span class="token comment">// or 'products_to_products', 'user_to_attributes', 'user_to_trending'</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+          <h3>Table of Content</h3>
+<div class="chapter-toc">
+  <ul class="section-list list-unstyled"><li class="section mb-4 "><h5 class="title mb-2">
+        Advanced topics
+      </h5>
+      <div>
+        <ul class="page-list list-unstyled ps-3"><li class="page ">
+            <div>
+              <a href="/miso-client-js-sdk/advanced/technology/">Tecknology stack</a>
+            </div><p class="mb-0 ps-3">
+              The technology stack of the SDK solution
+            </p></li><li class="page ">
+            <div>
+              <a href="/miso-client-js-sdk/advanced/performance/">Performance measurement</a>
+            </div><p class="mb-0 ps-3">
+              How SDK measures performance events (impression, viewable impression, and click)
+            </p></li></ul>
+      </div></li></ul>
+</div>
 
         </div>
       </main>
