@@ -11,7 +11,7 @@ export const sources = 'My reply is based on the following';
 /**
  * The phrase displayed right before <miso-query-suggestions>
  */
-export const relatedQuestions = 'Related questions you can explore';
+export const querySuggestions = 'Related questions you can explore';
 
 /**
  * The phrase displayed right before <miso-related-resources>

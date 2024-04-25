@@ -1,4 +1,4 @@
-import { EventEmitter, defineValues, asArray, trimObj } from '@miso.ai/commons';
+import { EventEmitter, defineValues, asArray, trimObj, lowerCamelToSnake, kebabToSnake } from '@miso.ai/commons';
 import { ROLE } from '../constants.js';
 
 // normalize //
@@ -28,9 +28,15 @@ export function normalizeLayoutsOptions(options = {}) {
   }
   const normalize = {};
   for (const [role, args] of Object.entries(options)) {
-    normalize[role] = normalizeLayoutOptions(args);
+    normalize[normalizeRole(role)] = normalizeLayoutOptions(args);
   }
   return normalize;
+}
+
+function normalizeRole(role) {
+  role = lowerCamelToSnake(role);
+  role = kebabToSnake(role);
+  return role;
 }
 
 function normalizeLayoutOptions(args) {

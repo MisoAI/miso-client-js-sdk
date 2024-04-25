@@ -1,3 +1,4 @@
+import { lowerCamelToKebab, kebabToLowerCamel, kebabOrSnakeToLowerCamel } from '@miso.ai/commons';
 import { CLASS_PREFIX } from './constants.js';
 import * as DEFAULT_PHRASES from './phrases.js';
 
@@ -31,9 +32,30 @@ export function followUp(options = {}) {
 function normalizeOptions({
   classPrefix = CLASS_PREFIX,
   circledCitationIndex = true,
+  phrases,
   ...options
 } = {}) {
-  return { classPrefix, circledCitationIndex, ...options };
+  phrases = normalizePhraseOptions(phrases);
+  return { classPrefix, circledCitationIndex, phrases, ...options };
+}
+
+function normalizePhraseOptions(options = {}) {
+  if (!options) {
+    return {};
+  }
+  const normalized = {};
+  for (const key in options) {
+    normalized[normalizePhraseOptionKey(key)] = options[key];
+  }
+  return normalized;
+}
+
+function normalizePhraseOptionKey(key) {
+  key = kebabOrSnakeToLowerCamel(key);
+  if (key === 'relatedQuestions') {
+    return 'querySuggestions'; // legacy key
+  }
+  return key;
 }
 
 // sections & containers //
@@ -55,7 +77,7 @@ function querySuggestions(options) {
   const { features = {} } = options;
   return features.querySuggestions === false ? '' :
     container(options, { name: 'query-suggestions', visibleWhen: 'initial+nonempty' }, [
-      phrase(options, { name: 'related-questions', tag: 'h3' }),
+      phrase(options, { name: 'query-suggestions', tag: 'h3' }),
       '<miso-query-suggestions></miso-query-suggestions>',
     ]);
 }
@@ -144,12 +166,4 @@ function attrs({ classes = [], ...attributes } = {}) {
     }
   }
   return str;
-}
-
-function kebabToLowerCamel(str) {
-  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-}
-
-function lowerCamelToKebab(str) {
-  return str.replace(/([A-Z])/g, '-$1').toLowerCase();
 }

@@ -112,7 +112,7 @@ export default class AskCombo extends Combo {
     // TODO: set placeholder if present in options
 
     if (features.followUpQuestions !== false) {
-      wireFollowUps(client, elements.followUpsSection, { template: templates.followUp });
+      wireFollowUps(client, elements.followUpsSection, { ...options, template: templates.followUp });
     }
     if (features.relatedResources !== false && features.followUpQuestions !== false) {
       wireRelatedResources(client, elements.relatedResourcesSection);

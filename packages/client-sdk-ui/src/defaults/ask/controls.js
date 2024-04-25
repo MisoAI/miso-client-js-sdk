@@ -1,6 +1,6 @@
 import { followUp as followUpTemplate } from './templates.js';
 
-export function wireFollowUps(client, element, { template = followUpTemplate } = {}) {
+export function wireFollowUps(client, element, { template = followUpTemplate, ...options } = {}) {
   if (!client) {
     throw new Error('client is required');
   }
@@ -15,7 +15,7 @@ export function wireFollowUps(client, element, { template = followUpTemplate } =
 
   // 1. when an answer is fully populated, insert a new section for the follow-up question
   context.on('done', (event) => {
-    element.insertAdjacentHTML('beforeend', template({ parentQuestionId: event.workflow.questionId }));
+    element.insertAdjacentHTML('beforeend', template({ ...options, parentQuestionId: event.workflow.questionId }));
   });
   // 2. if user starts over, clean up existing follow-up questions
   rootWorkflow.on('loading', () => {

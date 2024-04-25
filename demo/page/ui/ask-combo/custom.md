@@ -19,6 +19,7 @@ main {
 <script>
 (window.misocmd || (window.misocmd = [])).push(async () => {
   MisoClient.on('create', (client) => {
+    // TODO: clean up on another input
     client.ui.asks.on('ready', (event) => {
       const comboElement = document.querySelector('miso-ask-combo');
       const feedbackElement = comboElement.querySelector('miso-feedback');
@@ -58,6 +59,10 @@ main {
   combo.config({
     api: {
       yearly_decay: 0.5,
+    },
+    phrases: {
+      relatedQuestions: `[Modified!] Related questions you can explore`,
+      related_resources: `[Modified!] Go beyond, and learn more about this topic`,
     },
   });
   combo.start();

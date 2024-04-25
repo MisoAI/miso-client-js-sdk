@@ -3,6 +3,7 @@ import * as API from './apis.js';
 
 export * from './arrays.js';
 export * from './objects.js';
+export * from './strings.js';
 export * from './iterables.js';
 export * from './html.js';
 export * from './uuid.js';

@@ -20,6 +20,7 @@ misocmd.push(async () => {
   wireFollowUps(client, rootElement.querySelector(`.miso-ask-combo__follow-ups`));
   wireRelatedResources(client, rootElement.querySelector(`.miso-ask-combo__related-resources`));
   // start query if specified in URL
-  rootWorkflow.autoQuery();});
+  rootWorkflow.autoQuery();
+});
 </script>
 {% endraw %}
