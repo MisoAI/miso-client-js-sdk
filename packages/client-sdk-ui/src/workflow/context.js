@@ -1,5 +1,5 @@
 import { Component } from '@miso.ai/commons';
-import { WorkflowContextOptions } from './options.js';
+import { WorkflowContextOptions, makeConfigurable } from './options.js';
 
 export default class WorkflowContext extends Component {
 
@@ -10,29 +10,6 @@ export default class WorkflowContext extends Component {
     this._options = new WorkflowContextOptions();
   }
 
-  useApi(...args) {
-    this._options.api = args;
-    return this;
-  }
-
-  useLayouts(options) {
-    this._options.layouts = options;
-    return this;
-  }
-
-  useDataProcessor(fn) {
-    this._options.dataProcessor = fn;
-    return this;
-  }
-
-  useTrackers(options) {
-    this._options.trackers = options;
-    return this;
-  }
-
-  useInteractions(options) {
-    this._options.interactions = options;
-    return this;
-  }
-
 }
+
+makeConfigurable(WorkflowContext.prototype);

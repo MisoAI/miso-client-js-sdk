@@ -238,10 +238,10 @@ export class WorkflowContextOptions {
 
 export class WorkflowOptions {
 
-  constructor(globals = {}, defaults = {}) {
+  constructor(context = {}, defaults = {}) {
     this._events = new EventEmitter({ target: this });
     this._defaults = defaults;
-    this._globals = globals || {};
+    this._context = context || {};
     this._locals = {};
 
     defineValues(this, {
@@ -249,9 +249,9 @@ export class WorkflowOptions {
       defaults,
     });
 
-    if (globals && globals.on) {
+    if (context && context.on) {
       this._unsubscribes = [
-        globals.on('*', event => this._notify(event.name)),
+        context.on('*', event => this._notify(event.name)),
       ];
     }
   }
@@ -269,6 +269,35 @@ export class WorkflowOptions {
 
 }
 
+class WorkflowFeature {
+
+  constructor(options, store, key, normalize, merge) {
+    this._options = options;
+    this._store = store;
+    this._key = key;
+    this._normalize = value => value !== undefined ? normalize(value) : undefined;
+    this._merge = merge;
+  }
+
+  get() {
+    return this._store[this._key];
+  }
+
+  set(value) {
+    this._set(this._normalize(value));
+  }
+
+  merge(value) {
+    this._set(this._merge(this.get(), this._normalize(value)));
+  }
+
+  _set(value) {
+    this._store[this._key] = value;
+    this._options._notify(this._key);
+  }
+
+}
+
 class ResolvedWorkflowOptions {
 
   constructor(options) {
@@ -279,32 +308,58 @@ class ResolvedWorkflowOptions {
 
 for (const { key, normalize, merge } of FEATURES) {
   Object.defineProperty(WorkflowContextOptions.prototype, key, {
-    set: function(value) {
-      this._globals[key] = normalize(value);
-      this._notify(key);
-    },
     get: function() {
-      return this._globals[key];
+      const _key = `_${key}`;
+      return this[_key] || (this[_key] = new WorkflowFeature(this, this._globals, key, normalize, merge));
     },
   });
   Object.defineProperty(WorkflowOptions.prototype, key, {
-    set: function(value) {
-      this._locals[key] = normalize(value);
-      this._notify(key);
-    },
     get: function() {
-      return this._locals[key];
+      const _key = `_${key}`;
+      return this[_key] || (this[_key] = new WorkflowFeature(this, this._locals, key, normalize, merge));
     },
   });
   Object.defineProperty(ResolvedWorkflowOptions.prototype, key, {
     get: function() {
       const options = this._options;
-      return merge(options._defaults[key], options._globals[key], options._locals[key]);
+      return merge(options._defaults[key], options._context[key].get(), options._locals[key]);
     },
   });
 }
 
+export function makeConfigurable(prototype) {
+  Object.assign(prototype, {
+    useApi(...args) {
+      this._options.api.merge(args);
+      return this;
+    },
+    clearApi() {
+      this._options.api.set();
+      return this;
+    },
+  });
+  for (const feature of ['layouts', 'dataProcessor', 'trackers', 'interactions']) {
+    const upperCased = upperCase(feature);
+    Object.assign(prototype, {
+      [`use${upperCased}`](value) {
+        (this._options[feature]).merge(value);
+        return this;
+      },
+      [`clear${upperCased}`]() {
+        (this._options[feature]).set();
+        return this;
+      },
+    });
+  }
+}
+
+
+
 // helpers //
+function upperCase(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function concatArrays(a0, a1) {
   return (a0 && a0.length) ? (a1 && a1.length) ? [...a0, ...a1] : a0 : a1;
 }

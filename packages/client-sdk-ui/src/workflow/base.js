@@ -4,7 +4,7 @@ import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
-import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions } from './options.js';
+import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
@@ -150,32 +150,6 @@ export default class Workflow extends Component {
     return this;
   }
 
-  // configuration //
-  useApi(...args) {
-    this._options.api = args;
-    return this;
-  }
-
-  useLayouts(options = {}) {
-    this._options.layouts = options;
-    return this;
-  }
-
-  useDataProcessor(fn) {
-    this._options.dataProcessor = fn;
-    return this;
-  }
-
-  useTrackers(options) {
-    this._options.trackers = options;
-    return this;
-  }
-
-  useInteractions(options) {
-    this._options.interactions = options;
-    return this;
-  }
-
   // trackers //
   get trackers() {
     return this._trackers;
@@ -241,3 +215,5 @@ export default class Workflow extends Component {
   }
 
 }
+
+makeConfigurable(Workflow.prototype);
