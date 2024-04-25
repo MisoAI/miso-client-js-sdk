@@ -24,7 +24,7 @@ function loadSvgSprites() {
 loadSvgSprites();
 
 function getSvg(name) {
-  return `<svg class="miso-ui-icon miso-ui-icon-${name}"><use xlink:href="#${PREFIX}-${name}"></use></svg>`;
+  return `<svg class="miso-ui-icon miso-ui-icon-${name}"><use href="#${PREFIX}-${name}"></use></svg>`;
 }
 
 export const SEND = getSvg('send');
