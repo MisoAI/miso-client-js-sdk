@@ -322,7 +322,8 @@ for (const { key, normalize, merge } of FEATURES) {
   Object.defineProperty(ResolvedWorkflowOptions.prototype, key, {
     get: function() {
       const options = this._options;
-      return merge(options._defaults[key], options._context[key].get(), options._locals[key]);
+      const contextFeature = options._context[key];
+      return merge(options._defaults[key], contextFeature && contextFeature.get(), options._locals[key]);
     },
   });
 }
