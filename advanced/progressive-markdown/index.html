@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miso SDK for JavaScript - Advanced topics - Progressive markdown</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/advanced/progressive-markdown/" />
+<meta name="description" content="How SDK handles progressive markdown rendering" />
+
+<meta property="og:title" content="Miso SDK for JavaScript - Advanced topics - Progressive markdown" />
+<meta property="og:description" content="How SDK handles progressive markdown rendering" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/advanced/progressive-markdown/" />
+<meta property="og:type" content="documentation" />
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@askmiso">
+<meta name="twitter:creator" content="@askmiso">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Advanced topics - Progressive markdown">
+<meta name="twitter:description" content="How SDK handles progressive markdown rendering">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/advanced/progressive-markdown/">
+
+
+
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-16x16.png" sizes="16x16">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon-32x32.png" sizes="32x32">
+<link rel="icon" href="/miso-client-js-sdk/favicon/favicon.ico" sizes="48x48">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-512x512.png" sizes="192x192">
+<link rel="shortcut icon" href="/miso-client-js-sdk/favicon/android-chrome-192x192.png" sizes="512x512">
+<link rel="apple-touch-icon" href="/miso-client-js-sdk/favicon/apple-touch-icon.png" sizes="180x180">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/variables.css">
+<link rel="stylesheet" href="/miso-client-js-sdk/css/main.css">
+
+  </head>
+  <body class="base ">
+    <header class="navbar navbar-expand-md navbar-dark">
+      <nav class="container-xxl flex-wrap flex-md-nowrap" aria-label="Main navigation">
+        <a class="navbar-brand brand p-0 ms-md-3 me-4" href="/miso-client-js-sdk/" aria-label="Miso">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    height="28" viewbox="0 0 500 200"
+    class="bi d-block my-1" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+  </svg>
+</a>
+<button type="button" class="navbar-toggler"
+  data-bs-toggle="collapse" data-bs-target="#navbar"
+  aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <svg xmlns="http://www.w3.org/2000/svg" role="img"
+    width="32" height="32" viewbox="0 0 16 16"
+    class="bi" fill="currentColor">
+    <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#list"/>
+  </svg>
+</button>
+<div id="navbar" class="collapse navbar-collapse">
+  <ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/answers/">Answers</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/search/">Search</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/recommendation/">Recommendation</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/elements/">Elements</a>
+    </li>
+  
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="/miso-client-js-sdk/plugins/">Plugins</a>
+    </li>
+  
+  </ul>
+  <hr class="d-md-none text-white-50">
+  <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+    <li class="nav-item col-6 col-md-auto">
+      <a class="nav-link p-2" href="https://github.com/MisoAI/miso-client-js-sdk" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          viewbox="0 0 16 16"
+          class="bi navbar-nav-svg d-inline-block align-text-top" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/bootstrap-icons.svg#github"/>
+        </svg>
+        <small class="d-md-none ms-2">GitHub</small>
+      </a>
+    </li>
+  </ul>
+  <a class="btn try-miso-btn d-lg-inline-block my-2 my-md-0 ms-md-3 me-md-2" href="https://miso.ai" target="_blank" rel="noopener">Try Miso</a>
+</div>
+
+      </nav>
+    </header>
+    <div class="container-xxl my-md-4 miso-body-container">
+      <aside>
+        <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
+          <div>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/advanced/">Advanced topics</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/advanced/technology/">Tecknology stack</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/advanced/performance/">Performance measurement</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/advanced/progressive-markdown/">Progressive markdown</a>
+          </li></ul>
+      </div>
+    </li></ul>
+</div>
+
+        </nav>
+      </aside>
+      <main class="order-1">
+        <div class="intro ps-lg-4">
+          <h1 class="intro-title">Progressive markdown rendering</h1>
+          
+          <hr>
+        </div>
+        
+        
+        <div class="content ps-lg-4">
+          <p>In this page, we are going to explain how the SDK handles progressive markdown rendering in <code>ask</code> workflow.</p>
+<h2 id="architecture" tabindex="-1">Architecture</h2>
+<table class="miso-diagram">
+  <tr>
+    <td>
+      <div class="box">
+        API Response
+      </div>
+    </td>
+    <td>
+      <div style="min-width: 36px;"></div>
+      <span class="line hor green"></span>
+      <span class="arrow right green"></span>
+      <div class="label top">markdown</div>
+    </td>
+    <td>
+      <div class="box">
+        Parser
+      </div>
+    </td>
+    <td>
+      <div style="min-width: 36px;"></div>
+      <span class="line hor green"></span>
+      <span class="arrow right green"></span>
+      <div class="label top">HTML AST</div>
+    </td>
+    <td>
+      <div class="box">
+        Query
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>
+      <div style="min-height: 36px;"></div>
+      <span class="line ver blue" style="left: 35%;"></span>
+      <span class="arrow top blue" style="left: 35%;"></span>
+      <div class="label left" style="left: 35%; white-space: nowrap;">cursors<br>(from, to)</div>
+      <span class="line ver blue" style="left: 65%;"></span>
+      <span class="arrow bottom blue" style="left: 65%;"></span>
+      <div class="label right" style="left: 65%;">operations</div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="box">
+        Animation Frame
+      </div>
+    </td>
+    <td>
+      <div style="min-width: 36px;"></div>
+      <span class="line hor blue"></span>
+      <span class="arrow right blue"></span>
+    </td>
+    <td>
+      <div class="box">
+        Pacer
+      </div>
+    </td>
+    <td>
+      <div style="min-width: 36px;"></div>
+      <span class="line hor blue"></span>
+      <span class="arrow right blue"></span>
+      <div class="label top">cursor</div>
+    </td>
+    <td>
+      <div class="box">
+        Renderer
+      </div>
+    </td>
+    <td>
+      <div style="min-width: 36px;"></div>
+      <span class="line hor blue"></span>
+      <span class="arrow right blue"></span>
+      <div class="label top">DOM operation</div>
+    </td>
+    <td>
+      <div class="box">
+        DOM
+      </div>
+    </td>
+  </tr>
+</table>
+<h2 id="components-and-data-objects" tabindex="-1">Components and data objects</h2>
+<h4 id="api-response" tabindex="-1">API Response</h4>
+<ul>
+<li>The response from Miso ask API.</li>
+</ul>
+<h4 id="parser" tabindex="-1">Parser</h4>
+<ul>
+<li>Converts markdown to HTML AST.</li>
+<li>Uses <a href="https://remark.js.org/" target="_blank" rel="noopener">remark</a> and <a href="https://github.com/rehypejs/rehype" target="_blank" rel="noopener">rehype</a> under the hood.</li>
+<li>See <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/progressive-markdown/src/parser.js" target="_blank" rel="noopener">source code</a>.</li>
+</ul>
+<h4 id="html-ast" tabindex="-1">HTML AST</h4>
+<ul>
+<li>A rehype AST (abstract syntax tree) of HTML produced by the parser.</li>
+</ul>
+<h4 id="query" tabindex="-1">Query</h4>
+<ul>
+<li>Keeps track of the latest HTML AST.</li>
+<li>Given the previous cursor and a new cursor, computes the operations to update the DOM tree from previous state to a new state.</li>
+<li>See <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/progressive-markdown/src/query.js" target="_blank" rel="noopener">source code</a>.</li>
+</ul>
+<h4 id="cursor" tabindex="-1">Cursor</h4>
+<ul>
+<li>An index number to indicate a position in the HTML AST.</li>
+<li>Each character in a text node has size 1.</li>
+<li>Each element node without children has size 1.</li>
+</ul>
+<h4 id="animation-frame" tabindex="-1">Animation frame</h4>
+<ul>
+<li>The event loop acquired by calling <code>window.requestAnimationFrame()</code>.</li>
+</ul>
+<h4 id="pacer" tabindex="-1">Pacer</h4>
+<ul>
+<li>A module to compute cursor based on the time elapsed.</li>
+<li>See <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/text/typewriter/progress.js" target="_blank" rel="noopener">source code</a>.</li>
+</ul>
+<h4 id="operation" tabindex="-1">Operation</h4>
+<ul>
+<li>A set of operations to update the DOM tree, including <code>append</code>, <code>set</code>, <code>ascend</code>, <code>descend</code>.</li>
+<li>See <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/progressive-markdown/src/model/operation.js" target="_blank" rel="noopener">source code</a>.</li>
+</ul>
+<h4 id="renderer" tabindex="-1">Renderer</h4>
+<ul>
+<li>Applies the operations to the DOM tree and keeps tracks of the element at the current cursor position.</li>
+<li>Offers additional hooks to customize the rendering process.</li>
+</ul>
+<h4 id="typewriter-element" tabindex="-1">Typewriter element</h4>
+<ul>
+<li>The controller of SDK UI typewriter element, which glues all the other parts.</li>
+<li>See <a href="https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-ui/src/layout/text/typewriter/index.js" target="_blank" rel="noopener">source code</a>.</li>
+</ul>
+<h2 id="data-flow" tabindex="-1">Data flow</h2>
+<h4 id="update-markdown-from-api-response-(the-green-path)" tabindex="-1">Update markdown from API response (the green path)</h4>
+<ol>
+<li>The SDK UI workflow periodically receives the API response.</li>
+<li>The parser converts the markdown to HTML AST.</li>
+<li>The query keeps track of the latest HTML AST.</li>
+</ol>
+<h4 id="update-dom-progressively-(the-blue-path)" tabindex="-1">Update DOM progressively (the blue path)</h4>
+<ol>
+<li>An event loop is acquired by calling <code>window.requestAnimationFrame()</code>.</li>
+<li>The pacer computes the cursor based on current timestamp.</li>
+<li>The query computes the operations to update the DOM tree from the previous state to the new state, given the previous cursor and the new cursor.</li>
+<li>The renderer applies the operations to the DOM tree.</li>
+</ol>
+<h2 id="details" tabindex="-1">Details</h2>
+<p>There are some details additional to the main architecture that you may want to know:</p>
+<ul>
+<li>Sometimes the HTML AST results a conflict with the previous tree as the markdown content is gradually revealed. (i.e. if markdown A is a prefix of markdown B, the HTML AST of A may NOT be a subtree of tree B.). In such case we simply overwrites the entire DOM tree.</li>
+<li>The API response tells you whether the markdown content is finished or not. The flag is passed to <code>Query</code> for a reason to minimize tree conflicts. It is also passed to <code>Pacer</code> for a speed-up effect.</li>
+<li>There are different <code>answer_stage</code> in the API response for showing placeholding text like <code>Checking question and fetching relevant contents...</code>. When the <code>answer_stage</code> is changed, the cursor is reset to 0.</li>
+<li>If user starts another question, the current context is reset and the DOM tree is cleared.</li>
+<li>The SDK acquires animation frames aggresively to keep the rendering smooth.</li>
+</ul>
+<p>You can find all the details in the source code mentioned above.</p>
+<h2 id="build-your-own-progressive-markdown-renderer" tabindex="-1">Build your own progressive markdown renderer</h2>
+<p>If you don't use the built-in UI elements in SDK, you may want to build your own progressive markdown renderer. The following parts are available in a separate NPM package <a href="https://www.npmjs.com/package/@miso.ai/progressive-markdown" target="_blank" rel="noopener">@miso.ai/progressive-markdown</a>:</p>
+<ul>
+<li>Parser</li>
+<li>Query</li>
+<li>Operations</li>
+<li>Renderer</li>
+</ul>
+<p>Some other parts are available in the SDK UI package that you could read as a reference:</p>
+<ul>
+<li><a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/text/typewriter/progress.js" target="_blank" rel="noopener">Pacer</a></li>
+<li><a href="https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-ui/src/layout/text/typewriter/index.js" target="_blank" rel="noopener">Typewriter element</a>.</li>
+</ul>
+<h4 id="a-potential-react-adaption" tabindex="-1">A potential React adaption</h4>
+<p>In case you want to build a React component/hook, you may want to update the DOM through React's virtual DOM. In that case, you could reuse the <code>Parser</code> and extend <code>Query</code> so that instead of computing DOM operations, it computes the left slice of the AST by the cursor, and then you can transform the AST slice to React components and pass to the React renderer. However, you may need to mind the performance.</p>
+
+        </div>
+      </main>
+    </div>
+    <footer class="py-5 bg-light">
+      <div class="container-lg">
+  <div class="row gx-4">
+    <div id="footer-notes" class="col-md-4">
+      <div class="brand mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img"
+          height="32" viewbox="0 0 500 200"
+          class="bi d-block" fill="currentColor">
+          <use xlink:href="/miso-client-js-sdk/img/miso-logo.svg#index"/>
+        </svg>
+      </div>
+      <p>
+        Code licensed <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
+        <br>
+        Documentation <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+        <br>
+        Examples <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>
+      </p>
+    </div>
+    <div class="col-md-8">
+      <h5 class="link-group-title mb-3">Learn More</h5>
+      <div class="link-list"><div class="link">
+          <a href="https://miso.ai" target="_blank" rel="noopener">Home</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai" target="_blank" rel="noopener">Documentation</a>
+        </div><div class="link">
+          <a href="https://api.askmiso.com" target="_blank" rel="noopener">REST API</a>
+        </div><div class="link">
+          <a href="https://docs.miso.ai/recipes" target="_blank" rel="noopener">Miso Recipes<sup>TM</sup></a>
+        </div></div>
+    </div>
+  </div>
+</div>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

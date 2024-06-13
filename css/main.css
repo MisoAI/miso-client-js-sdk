@@ -115,18 +115,36 @@ table.miso-diagram .box {
   color: var(--color-diagram-text);
   border-color: var(--color-diagram-line);
   box-shadow: 0 0 5px var(--color-diagram-shadow);
+  text-align: center;
 }
 table.miso-diagram td {
   position: relative;
 }
-table.miso-diagram .line.hor {
+table.miso-diagram .line.green,
+table.miso-diagram .arrow.green {
+  --color-diagram-line: #009900;
+}
+table.miso-diagram .line.blue,
+table.miso-diagram .arrow.blue {
+  --color-diagram-line: #000099;
+}
+table.miso-diagram .line {
   position: absolute;
+  background-color: var(--color-diagram-line);
+}
+table.miso-diagram .line.hor {
   left: 2px;
   right: 2px;
   top: 50%;
   transform: translateY(-50%);
   height: 2px;
-  background-color: var(--color-diagram-line);
+}
+table.miso-diagram .line.ver {
+  top: 2px;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
 }
 table.miso-diagram .arrow {
   position: absolute;
@@ -148,6 +166,50 @@ table.miso-diagram .arrow.left {
   left: 0;
   border-right-color: var(--color-diagram-line);
   border-right-width: 12px;
+}
+table.miso-diagram .arrow.top, table.miso-diagram .arrow.bottom {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 12px;
+  border-width: 0 4px;
+}
+table.miso-diagram .arrow.top {
+  top: 0;
+  border-bottom-color: var(--color-diagram-line);
+  border-bottom-width: 12px;
+}
+table.miso-diagram .arrow.bottom {
+  bottom: 0;
+  border-top-color: var(--color-diagram-line);
+  border-top-width: 12px;
+}
+table.miso-diagram .label {
+  font-size: 0.8rem;
+  text-align: center;
+}
+table.miso-diagram .label.top, table.miso-diagram .label.bottom {
+  display: block;
+  padding: 0.5em 1rem;
+}
+table.miso-diagram .label.top {
+  transform: translateY(-50%);
+}
+table.miso-diagram .label.bottom {
+  transform: translateY(50%);
+}
+table.miso-diagram .label.left, table.miso-diagram .label.right {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-block;
+  padding: 1rem 0.9em;
+}
+table.miso-diagram .label.left {
+  transform: translate(-100%, -50%);
+}
+table.miso-diagram .label.right {
+  transform: translateY(-50%);
 }
 
 .miso-tech-stack .layer-info-cell {
