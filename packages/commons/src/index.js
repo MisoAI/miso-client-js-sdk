@@ -17,6 +17,7 @@ export * from './cmd.js';
 
 export { signals, API };
 
+export { default as pacer } from './pacer.js';
 export { default as Resources } from './resources.js';
 export { default as Resolution } from './resolution.js';
 export { default as Bulk } from './bulk.js';

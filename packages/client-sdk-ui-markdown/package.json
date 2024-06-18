@@ -27,10 +27,6 @@
   },
   "dependencies": {
     "@miso.ai/commons": "file:packages/commons",
-    "@miso.ai/progressive-markdown": "file:packages/progressive-markdown",
-    "hast-util-from-html": "^2.0.1",
-    "rehype-minify-whitespace": "^5.0.1",
-    "remark-gfm": "^3.0.1",
-    "unist-util-visit": "^5.0.0"
+    "@miso.ai/progressive-markdown": "file:packages/progressive-markdown"
   }
 }

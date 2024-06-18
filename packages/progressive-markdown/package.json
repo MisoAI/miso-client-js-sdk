@@ -30,10 +30,15 @@
     "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
   },
   "dependencies": {
+    "@miso.ai/commons": "file:packages/commons",
+    "hast-util-from-html": "^2.0.1",
     "hast-util-to-html": "^8.0.4",
+    "rehype-minify-whitespace": "^5.0.1",
+    "remark-gfm": "^3.0.1",
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
-    "unified": "^10.1.2"
+    "unified": "^10.1.2",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "rehype-minify-whitespace": "^5.0.1",

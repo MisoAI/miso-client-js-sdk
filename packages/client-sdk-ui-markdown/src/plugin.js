@@ -1,27 +1,11 @@
 import { Component } from '@miso.ai/commons';
-import { Renderer, mergeRendererOptions } from '@miso.ai/progressive-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
-import rehypeLinkClass from './rehype-link-class.js';
+import { Renderer, mergeRendererOptions, resolvePresets, presetMiso } from '@miso.ai/progressive-markdown';
 
 const PLUGIN_ID = 'std:ui-markdown';
 
-const DEFAULT_PARSER_OPTIONS = Object.freeze({
-  remark: [remarkGfm],
-  rehype: [rehypeMinifyWhitespace, rehypeLinkClass],
-});
 const DEFAULT_RENDERER_OPTIONS = Object.freeze({
-  parser: DEFAULT_PARSER_OPTIONS,
+  presets: [presetMiso],
 });
-
-function createBaseRendererOptions({ onCitationLink } = {}) {
-  return {
-    parser: {
-      remark: [remarkGfm],
-      rehype: [rehypeMinifyWhitespace, () => rehypeLinkClass(onCitationLink)],
-    },
-  };
-}
 
 export default class UiMarkdownPlugin extends Component {
 
@@ -75,8 +59,7 @@ class MarkdownContext extends Component {
 
   createRenderer(options = {}) {
     const contextOptions = this._options && this._options.renderer || {};
-    const baseRendererOptions = createBaseRendererOptions({ ...contextOptions, ...options });
-    return new Renderer(mergeRendererOptions(baseRendererOptions, contextOptions, options));
+    return new Renderer(resolvePresets(mergeRendererOptions(DEFAULT_RENDERER_OPTIONS, contextOptions, options)));
   }
 
 }
