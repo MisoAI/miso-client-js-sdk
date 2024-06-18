@@ -18,7 +18,7 @@ const client = new MisoClient('...');
 input.addEventListener('keyup', (event) => (event.key === 'Enter') && handleSubmit(event));
 submit.addEventListener('click', handleSubmit);
 
-function handleSubmit() {
+function handleSubmit(event) {
   if (event.defaultPrevented) {
     return;
   }
