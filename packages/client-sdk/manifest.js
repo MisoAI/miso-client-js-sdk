@@ -25,6 +25,15 @@ export default [
     },
   },
   {
+    input: 'src/markdown.js',
+    output: {
+      filename: 'miso-markdown',
+      format: 'umd',
+      name: 'misomarkdown',
+      exports: 'named',
+    },
+  },
+  {
     input: 'src/plugins/ui-markdown.js',
     output: {
       filename: 'plugins/ui-markdown',
