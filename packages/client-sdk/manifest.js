@@ -28,9 +28,7 @@ export default [
     input: 'src/markdown.js',
     output: {
       filename: 'miso-markdown',
-      format: 'umd',
-      name: 'misomarkdown',
-      exports: 'named',
+      format: 'iife',
     },
   },
   {

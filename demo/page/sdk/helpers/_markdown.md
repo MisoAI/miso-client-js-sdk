@@ -1,7 +1,3 @@
----
-dependency: 'markdown'
----
-
 {% raw %}
 <style>
 #main {
@@ -33,4 +29,3 @@ dependency: 'markdown'
   <div id="answer"></div>
 </div>
 {% endraw %}
-<script src="{{ '/js/markdown.js' | url }}"></script>

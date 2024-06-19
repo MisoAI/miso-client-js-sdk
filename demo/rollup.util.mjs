@@ -11,7 +11,7 @@ import yaml from '@rollup/plugin-yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cwd = join(__dirname, 'src/entry');
-export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3));
+export const entries = glob.sync('*.js', { cwd }).map(s => s.substring(0, s.length - 3)).filter(s => !s.startsWith('_'));
 
 function _config(name, env = 'prod') {
   const prod = env === 'prod';
