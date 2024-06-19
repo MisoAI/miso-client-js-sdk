@@ -3,7 +3,7 @@ const DEFAULT_ACCELERATION = 4; // characters per second
 
 export default function pacer(options) {
   const speedFn = normalizeSpeedFunction(options);
-  return (previousTimestamp, doneAt, previousCursor, newTimestamp) => {
+  return (previousCursor, doneAt, previousTimestamp, newTimestamp) => {
     const cps = speedFn(previousTimestamp, doneAt);
     return previousCursor + Math.floor((newTimestamp - previousTimestamp) * cps / 1000);
   };

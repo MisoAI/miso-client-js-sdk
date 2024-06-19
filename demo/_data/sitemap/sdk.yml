@@ -32,3 +32,5 @@ sections:
     path: /helpers/debug
   - title: Lorem
     path: /helpers/lorem
+  - title: Markdown
+    path: /helpers/markdown

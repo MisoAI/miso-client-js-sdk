@@ -72,63 +72,23 @@ export default class TypewriterLayout extends ProgressiveLayout {
   async _setupForMarkdown() {
     const context = await this._view._views._extensions.require('markdown');
     const cursorClass = cursorClassName(this.className);
-    const { onDebug } = this.options;
+    const { onDebug, onCitationLink } = this.options;
     // TODO: options
     this._renderer = context.createRenderer({
-      onRefChange: (oldRef, newRef) => {
-        oldRef && oldRef.classList.remove(cursorClass);
-        newRef && newRef.classList.add(cursorClass);
-      }, 
-      onDone: (element) => {
-        element.classList.add('done');
-      },
+      cursorClass,
+      getSource: index => this._getSource(index),
+      onCitationLink,
       onDebug,
-      onCitationLink: this._handleCitationLink.bind(this),
     });
     // capture citation link click if necessary
     this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._handleClick(e)));
   }
 
-  _handleCitationLink(methods, index) {
-    const { onCitationLink } = this.options;
-    if (typeof onCitationLink !== 'function') {
-      return;
-    }
+  _getSource(index) {
     const { data = {} } = this._view._data;
     const { sources = [] } = data;
-    const source = sources[index];
-    try {
-      onCitationLink(methods, { source, index });
-    } catch (e) {
-      console.error(e);
-    }
+    return sources[index];
   }
-
-  /*
-  _handleCitationTooltip({ node, tooltip, index }) {
-    const { tooltip: tooltipOptions } = this.options;
-    if (!tooltipOptions || !tooltip || tooltip.properties['data-value']) {
-      return;
-    }
-    const { data = {} } = this._view._data;
-    const { sources = [] } = data;
-    const source = sources[index];
-    if (!source) {
-      return;
-    }
-    // TODO: allow HTML
-    let value;
-    try {
-      value = typeof tooltipOptions === 'function' ? tooltipOptions(source) : source.title;
-    } catch (e) {
-      console.error(e);
-    }
-    if (!value) {
-      return;
-    }
-    tooltip.properties['data-value'] = escapeHtml(value);
-  }
-  */
 
   async _setupForPlaintext() {
     this._renderer = new PlaintextRenderer();

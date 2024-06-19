@@ -17,7 +17,7 @@ function _config(name, env = 'prod') {
   const prod = env === 'prod';
   let plugins = [
     commonjs(),
-    nodeResolve(),
+    nodeResolve({ browser: true }),
     yaml(),
     replace({
       preventAssignment: true,

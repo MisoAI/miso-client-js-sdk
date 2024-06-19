@@ -14,6 +14,7 @@ export * from './url.js';
 export * from './capture.js';
 export * from './polling.js';
 export * from './cmd.js';
+export * from './styles.js';
 
 export { signals, API };
 
@@ -27,3 +28,5 @@ export { default as Registry } from './registry.js';
 export { default as ContinuityObserver } from './continuity.js';
 export { default as ValueBuffer } from './value-buffer.js';
 export { default as StallTimeoutAbortController } from './stall-timeout.js';
+
+export { default as version } from './version.js';
