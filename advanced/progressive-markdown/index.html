@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Advanced topics - Progressive markdown</title>
+<title>Miso SDK for JavaScript - Advanced topics - Progressive markdown mechanism</title>
 <link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/advanced/progressive-markdown/" />
 <meta name="description" content="How SDK handles progressive markdown rendering" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Advanced topics - Progressive markdown" />
+<meta property="og:title" content="Miso SDK for JavaScript - Advanced topics - Progressive markdown mechanism" />
 <meta property="og:description" content="How SDK handles progressive markdown rendering" />
 <meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/advanced/progressive-markdown/" />
 <meta property="og:type" content="documentation" />
@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Advanced topics - Progressive markdown">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Advanced topics - Progressive markdown mechanism">
 <meta name="twitter:description" content="How SDK handles progressive markdown rendering">
 <meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/advanced/progressive-markdown/">
 
@@ -106,7 +106,9 @@
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/advanced/performance/">Performance measurement</a>
           </li><li class="page active ">
-            <a href="/miso-client-js-sdk/advanced/progressive-markdown/">Progressive markdown</a>
+            <a href="/miso-client-js-sdk/advanced/progressive-markdown/">Progressive markdown mechanism</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/advanced/progressive-markdown-tools/">Progressive markdown tools</a>
           </li></ul>
       </div>
     </li></ul>
@@ -116,7 +118,7 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Progressive markdown rendering</h1>
+          <h1 class="intro-title">Progressive markdown rendering mechanism</h1>
           
           <hr>
         </div>
@@ -285,21 +287,6 @@
 <li>The SDK acquires animation frames aggresively to keep the rendering smooth.</li>
 </ul>
 <p>You can find all the details in the source code mentioned above.</p>
-<h2 id="build-your-own-progressive-markdown-renderer" tabindex="-1">Build your own progressive markdown renderer</h2>
-<p>If you don't use the built-in UI elements in SDK, you may want to build your own progressive markdown renderer. The following parts are available in a separate NPM package <a href="https://www.npmjs.com/package/@miso.ai/progressive-markdown" target="_blank" rel="noopener">@miso.ai/progressive-markdown</a>:</p>
-<ul>
-<li>Parser</li>
-<li>Query</li>
-<li>Operations</li>
-<li>Renderer</li>
-</ul>
-<p>Some other parts are available in the SDK UI package that you could read as a reference:</p>
-<ul>
-<li><a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/text/typewriter/progress.js" target="_blank" rel="noopener">Pacer</a></li>
-<li><a href="https://github.com/MisoAI/miso-client-js-sdk/tree/main/packages/client-sdk-ui/src/layout/text/typewriter/index.js" target="_blank" rel="noopener">Typewriter element</a>.</li>
-</ul>
-<h4 id="a-potential-react-adaption" tabindex="-1">A potential React adaption</h4>
-<p>In case you want to build a React component/hook, you may want to update the DOM through React's virtual DOM. In that case, you could reuse the <code>Parser</code> and extend <code>Query</code> so that instead of computing DOM operations, it computes the left slice of the AST by the cursor, and then you can transform the AST slice to React components and pass to the React renderer. However, you may need to mind the performance.</p>
 
         </div>
       </main>
