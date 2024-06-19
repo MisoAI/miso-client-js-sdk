@@ -1,6 +1,9 @@
 import version from './version.js';
 
-const { currentScript } = document;
+let currentScript;
+try {
+  currentScript = document.currentScript;
+} catch(e) {}
 
 export async function loadStyles(url) {
   try {
@@ -20,6 +23,9 @@ export async function loadStyles(url) {
 export function resolveCssUrl(name) {
   // TODO: refactor with getPluginScriptUrl() in core
   if (version === 'dev') {
+    if (!currentScript) {
+      throw new Error(`Cannot resolve css url for ${name} in dev mode`);
+    }
     const src = currentScript.src;
     const searchIndex = src.indexOf('?');
     const k = searchIndex < 0 ? src.length : searchIndex;
