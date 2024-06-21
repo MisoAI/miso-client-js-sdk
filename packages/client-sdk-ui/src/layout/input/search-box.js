@@ -122,7 +122,6 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       autocomplete: { ...DEFAULT_AUTOCOMPLETE_OPTIONS, ...autocomplete },
     });
     this._contexts = new WeakMap();
-    this._suggestionItems = new WeakMap(); // TODO: put them on elements as layout can be potentially replaced
   }
 
   initialize(view) {
