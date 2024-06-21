@@ -1,4 +1,6 @@
-import { uuidv4, asString, trimObj, Component, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
+import { API, uuidv4, asString, trimObj, Component, delegateProperties, getOrComputeFromStorage } from '@miso.ai/commons';
+
+const { GROUP, NAME } = API;
 
 const PLUGIN_ID = 'std:user';
 
@@ -26,13 +28,27 @@ export default class UserPlugin extends Component {
   }
 
   _modifyPayload({ client, apiGroup, apiName, payload }) {
-    return apiGroup === 'interactions' && apiName === 'upload' ?
-      this._modifyPayloadForInteractions(client, payload) : this._modifyPayloadForOthers(client, payload);
+    if (apiGroup === GROUP.INTERACTIONS && apiName === NAME.UPLOAD) {
+      return this._modifyPayloadForInteractions(client, payload);
+    }
+    if (apiGroup === GROUP.ASK && apiName === NAME.QUESTIONS) {
+      return this._modifyPayloadForAsk(client, payload);
+    }
+    return this._modifyPayloadForOthers(client, payload);
   }
 
   _modifyPayloadForOthers(client, payload) {
     const { user_id, user_hash, anonymous_id } = client.context;
     const userInfo = user_id ? { user_id, user_hash } : { anonymous_id };
+    return { ...userInfo, ...payload };
+  }
+
+  _modifyPayloadForAsk(client, payload) {
+    const { user_id, user_hash, user_type, anonymous_id } = client.context;
+    const userInfo = user_id ? { user_id, user_hash } : { anonymous_id };
+    if (user_id && user_type) {
+      userInfo.user_type = user_type;
+    }
     return { ...userInfo, ...payload };
   }
 
@@ -85,6 +101,15 @@ class UserContext {
     }
     this._userHash = value;
     this._plugin._events.emit('set', `user_hash = '${value}'`);
+  }
+
+  get user_type() {
+    return this._userType;
+  }
+
+  set user_type(value) {
+    this._userType = value;
+    this._plugin._events.emit('set', `user_type = '${value}'`);
   }
 
 }

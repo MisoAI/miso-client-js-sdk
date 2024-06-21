@@ -11,6 +11,8 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const rootWorkflow = client.ui.ask;
+  //client.context.user_id = 'id';
+  //client.context.user_type = 'test';
   // render DOM and get elements
   await client.ui.ready;
   const { templates, wireFollowUps, wireRelatedResources } = MisoClient.ui.defaults.ask;
