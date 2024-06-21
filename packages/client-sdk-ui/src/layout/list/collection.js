@@ -1,7 +1,7 @@
 import { defineValues } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
-import { product, article, question } from '../templates.js';
+import { product, article, question, productInfoBlock, articleInfoBlock, imageBlock, indexBlock, helpers } from '../templates.js';
 
 const VALUE = Symbol.for('miso.value');
 
@@ -57,6 +57,11 @@ const DEFAULT_TEMPLATES = Object.freeze({
   ordered: false,
   items,
   item,
+  productInfoBlock,
+  articleInfoBlock,
+  imageBlock,
+  indexBlock,
+  helpers,
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {

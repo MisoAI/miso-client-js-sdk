@@ -2,7 +2,7 @@ import { defineValues, escapeHtml, findInAncestors } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY, STATUS } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
-import { blocks, helpers } from '../templates.js';
+import { helpers, imageBlock, productInfoBlock } from '../templates.js';
 import { SEND, SEARCH } from '../../asset/svgs.js';
 
 const TYPE = 'search-box';
@@ -60,15 +60,18 @@ function product(layout, { product }) {
   const [openTag, closeTag] = helpers.tagPair(layout, product, { role: false });
   return [
     openTag,
-    (templates.productImageBlock || blocks.image)(layout, product),
-    (templates.productInfoBlock || blocks.productInfo)(layout, product),
+    templates.imageBlock(layout, product),
+    templates.productInfoBlock(layout, product),
     closeTag,
   ].join('');
 }
 
 function completionList(layout, type, items) {
   const { className, templates } = layout;
-  return `<ul class="${className}__${type}-list" data-role="${type}-list">${items.map(item => templates.completionItem(layout, type, item)).join('')}</ul>`;
+  return `
+<ul class="${className}__${type}-list" data-role="${type}-list">
+  ${items.map(item => templates.completionItem(layout, type, item)).join('')}
+</ul>`.trim();
 }
 
 function completionItem(layout, type, item) {
@@ -88,6 +91,9 @@ const DEFAULT_TEMPLATES = Object.freeze({
   products,
   query,
   product,
+  imageBlock,
+  productInfoBlock,
+  helpers,
 });
 
 const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
