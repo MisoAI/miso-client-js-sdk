@@ -1,53 +1,97 @@
-import { escapeHtml } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY } from '../../constants.js';
+import { defineValues, escapeHtml, findInAncestors } from '@miso.ai/commons';
+import { LAYOUT_CATEGORY, STATUS } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
+import { blocks, helpers } from '../templates.js';
 import { SEND, SEARCH } from '../../asset/svgs.js';
 
 const TYPE = 'search-box';
 const DEFAULT_CLASSNAME = 'miso-search-box';
+const DEFAULT_AUTOCOMPLETE_CLASSNAME = 'miso-autocomplete';
 
 function root(layout) {
-  const { className, role, templates, options, workflow } = layout;
-  const { autocomplete, placeholder, buttonText } = options;
+  const { className, role, options, workflow, autocomplete } = layout;
+  const { placeholder, buttonText } = options;
   const roleAttr = role ? `data-role="${role}"` : '';
   const buttonContent = buttonText || workflow === 'search' ? SEARCH : SEND;
   return `
 <div class="${className}" ${roleAttr}>
   <div class="${className}__input-group">
     <input class="${className}__input" type="text" data-role="input" ${placeholder ? `placeholder="${placeholder}"` : ''}>
-    <button class="${className}__button" type="submit" data-role="button">${buttonContent}</button>
+    <button class="${className}__button" type="submit" data-role="submit">${buttonContent}</button>
   </div>
-  ${autocomplete ? templates.autocomplete(layout) : ''}
-</div>
-`;
+  <div class="${autocomplete.className}" data-role="autocomplete"></div>
+</div>`.trim();
 }
 
-function autocomplete(layout) {
+function completions(layout, items) {
+  const { templates, workflow, autocomplete } = layout;
+  // use options under layout.autocomplete from now on
+  layout = {
+    templates,
+    workflow,
+    ...autocomplete,
+  };
+
+  const products = [], queries = [];
+  for (const item of items) {
+    (item.product ? products : queries).push(item);
+  }
+
+  return templates.queries(layout, queries) + (queries.length > 0 && products.length > 0 ? `<hr>` : '') + templates.products(layout, products);
+}
+
+function queries(layout, items) {
+  const { templates } = layout;
+  return templates.completionList(layout, 'query', items);
+}
+
+function products(layout, items) {
+  const { templates } = layout;
+  return templates.completionList(layout, 'product', items);
+}
+
+function query(layout, { text, text_with_inverted_markups } = {}) {
+  return text_with_inverted_markups || escapeHtml(text);
+}
+
+function product(layout, { product }) {
+  const { templates } = layout;
+  const [openTag, closeTag] = helpers.tagPair(layout, product, { role: false });
+  return [
+    openTag,
+    (templates.productImageBlock || blocks.image)(layout, product),
+    (templates.productInfoBlock || blocks.productInfo)(layout, product),
+    closeTag,
+  ].join('');
+}
+
+function completionList(layout, type, items) {
+  const { className, templates } = layout;
+  return `<ul class="${className}__${type}-list" data-role="${type}-list">${items.map(item => templates.completionItem(layout, type, item)).join('')}</ul>`;
+}
+
+function completionItem(layout, type, item) {
   const { className, templates } = layout;
   return `
-<div class="${className}__autocomplete" data-role="autocomplete">
-  ${templates.suggestionList(layout)}
-</div>
-`;
-}
-
-function suggestionList(layout) {
-  const { className } = layout;
-  return `<ol class="${className}__suggestion-list" data-role="suggestion-list"></ol>`;
-}
-
-function suggestionItem(layout, value) {
-  const { className } = layout;
-  const text = escapeHtml(value.text || value);
-  return `<li class="${className}__suggestion-item" data-role="suggestion-item" tabindex="0">${text}</li>`;
+<li class="${className}__${type}-item" data-role="${type}-item" data-index="${item._index}" tabindex="0">
+  ${templates[type](layout, item)}
+</li>`.trim();
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
   root,
-  autocomplete,
-  suggestionList,
-  suggestionItem,
+  completions,
+  completionList,
+  completionItem,
+  queries,
+  products,
+  query,
+  product,
+});
+
+const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
+  className: DEFAULT_AUTOCOMPLETE_CLASSNAME,
 });
 
 export default class SearchBoxLayout extends TemplateBasedLayout {
@@ -68,37 +112,49 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+  constructor({ className = DEFAULT_CLASSNAME, templates, autocomplete, ...options } = {}) {
     super({
       className,
       templates: { ...DEFAULT_TEMPLATES, ...templates },
       ...options,
+    });
+    defineValues(this, {
+      autocomplete: { ...DEFAULT_AUTOCOMPLETE_OPTIONS, ...autocomplete },
     });
     this._contexts = new WeakMap();
     this._suggestionItems = new WeakMap(); // TODO: put them on elements as layout can be potentially replaced
   }
 
   initialize(view) {
-    const { autocomplete } = this.options;
     this._view = view;
     const { proxyElement, hub } = view;
     this._unsubscribes = [
       ...this._unsubscribes,
+      proxyElement.on('input', (e) => this._syncInput(e)),
       proxyElement.on('keydown', (e) => this._handleKeyDown(e)),
       proxyElement.on('click', (e) => this._handleClick(e)),
+      proxyElement.on('focusin', (e) => this._handleFocusIn(e)),
+      proxyElement.on('focusout', (e) => this._handleFocusOut(e)),
     ];
-    if (autocomplete) {
-      this._unsubscribes.push(hub.on(fields.suggestions(), () => this._handleInput()));
-    }
+    this._unsubscribes.push(hub.on(fields.completions(), () => view.refresh({ force: true })));
   }
 
   focus() {
+    // TODO: support blur as well
     if (this._element) {
       this._context().focus();
     } else {
       // take a rain check, wait for render
       this._focusRequested = true;
     }
+  }
+
+  open() {
+    this._element.classList.add('open');
+  }
+
+  close() {
+    this._element.classList.remove('open');
   }
 
   set value(value) {
@@ -111,12 +167,10 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
 
   _preprocess({ state }) {
     state = super._preprocess({ state });
-    const { autocomplete } = this.options;
-    if (!autocomplete) {
-      return state;
-    }
-    const suggestions = this._view.hub.states[fields.suggestions()];
-    return { ...state, suggestions };
+    return {
+      ...state,
+      completions: this._view.hub.states[fields.completions()],
+    };
   }
 
   _render(element, data, controls) {
@@ -124,42 +178,32 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       // only render the template once, and also skip if there are children already to allow customized DOM
       super._render(element, data, controls);
     }
-    this._setupAutocomplete(element);
-    this._renderSuggestions(element, data, controls);
+    this._updateCompletions(element, data, controls);
     this._fullfillFocusRequest(element);
     this._fullfillValueRequest(element);
   }
 
-  _setupAutocomplete(element) {
-    const { autocomplete } = this.options;
-    if (!autocomplete) {
+  _updateCompletions(element, { state, rendered }, { writeToState }) {
+    if (!state.completions) {
       return;
     }
-    this._context(element).setupAutocomplete();
-  }
-
-  _renderSuggestions(element, { state }, { writeToState } = {}) {
-    const { autocomplete } = this.options;
-    if (!autocomplete) {
+    const { status = STATUS.INITIAL, index, value: completions } = state.completions;
+    if (rendered && rendered.completions.index === index && rendered.completions.status === status) {
       return;
     }
-
-    const { suggestionListElement, autocompleteElement } = this._context(element);
-    if (!suggestionListElement) {
-      // not actually rendered
-      writeToState && writeToState({ suggestions: { value: [] } });
+    const context = this._context(element);
+    const { autocompleteElement } = context;
+    if (!autocompleteElement) {
       return;
     }
 
-    // TODO: incremental
-    const { suggestions = {} } = state;
-    const suggestionItems = suggestions.value || [];
-    autocompleteElement.classList[suggestionItems.length === 0 ? 'add' : 'remove']('empty');
-    suggestionListElement.innerHTML = suggestionItems.map((suggestion) => this.templates.suggestionItem(this, suggestion)).join('');
-    let i = 0;
-    for (const itemElement of suggestionListElement.children) {
-      this._suggestionItems.set(itemElement, suggestionItems[i++]);
-    }
+    const items = context.trackItems(completions);
+
+    element.classList[items.length > 0 ? 'add' : 'remove']('nonempty');
+    autocompleteElement.setAttribute('data-status', status);
+    autocompleteElement.innerHTML = this.templates.completions(this, items);
+
+    writeToState({ completions: { index, status } });
   }
 
   _fullfillFocusRequest(element) {
@@ -190,39 +234,71 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     return context;
   }
 
+  _syncInput() {
+    const { inputElement } = this._context();
+    if (!inputElement) {
+      return;
+    }
+    const value = inputElement.value.trim();
+    const currentInput = this._view.hub.states[fields.input()];
+    if (!currentInput || currentInput.value !== value) {
+      this._view.hub.update(fields.input(), { value });
+    }
+  }
+
+  _handleFocusIn({ target }) {
+    if (!this._element) {
+      return;
+    }
+    if (target.matches('[data-role="input"]')) {
+      this._syncInput();
+      this.open();
+    }
+  }
+
+  _handleFocusOut({ relatedTarget }) {
+    if (!this._element) {
+      return;
+    }
+    if (!relatedTarget || !findInAncestors(relatedTarget, element => element === this._element || undefined)) {
+      this.close();
+    }
+  }
+
   _handleKeyDown({ key, target, isComposing }) {
     if (!isComposing && key === 'Enter' && target.matches('input')) {
       this._submit(target.value);
       target.blur();
     }
+    // TODO: select completion items with arrow keys
   }
 
   _handleClick({ target }) {
     const { inputElement } = this._context();
-    for (let element = target; element && element !== this._view.element; element = element.parentElement) {
-      if (element.matches('[type="submit"]') || element.matches('[data-role="button"]')) {
+    for (let element = target; element && element !== this._element; element = element.parentElement) {
+      if (element.matches('[data-role="submit"]') || element.matches('[data-role="button"]') || element.matches('[type="submit"]')) {
         if (inputElement) {
           inputElement.blur();
           this._submit(inputElement.value);
         }
         return;
       }
-    }
-    const { autocomplete } = this.options;
-    if (!autocomplete) {
-      return;
-    }
-    for (let element = target; element && element !== this._view.element; element = element.parentElement) {
-      const suggestion = this._suggestionItems.get(element);
-      if (!suggestion) {
-        continue;
+      if (element.matches('[data-role="query-item"]')) {
+        const index = element.getAttribute('data-index');
+        const item = this._context().data.get(parseInt(index));
+        const value = item && item.text;
+        if (value) {
+          if (inputElement) {
+            inputElement.value = value;
+          }
+          this._submit(value);
+        }
+        this.close();
+        return;
       }
-      const value = suggestion.text || suggestion;
-      if (inputElement) {
-        inputElement.value = value;
+      if (element.matches('[data-role="product-item"]')) {
+        return;
       }
-      this._submit(value);
-      return;
     }
   }
 
@@ -230,6 +306,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (!value) {
       return;
     }
+    this.close();
     // TODO: q -> value
     this._view.hub.trigger(fields.query(), { q: value });
   }
@@ -245,6 +322,7 @@ class Context {
   constructor(element) {
     this._element = element;
     this._cache = {};
+    this._data = new Map();
   }
 
   get inputElement() {
@@ -255,25 +333,27 @@ class Context {
     return this._get('autocomplete');
   }
 
-  get suggestionListElement() {
-    return this._get('suggestion-list');
+  get data() {
+    return this._data;
   }
 
-  setupAutocomplete() {
-    if (!this._element || this._autocompleteSetup) {
-      return;
+  trackItems(completions) {
+    let index = 0;
+    const data = this._data = new Map();
+    const items = [];
+    for (const field in completions) {
+      for (const item of completions[field]) {
+        if (item.product && !item.product.url) {
+          continue; // product without URL is not clickable
+        }
+        item._index = index;
+        item._field = field;
+        data.set(index, item);
+        items.push(item);
+        index++;
+      }
     }
-    this._autocompleteSetup = true;
-    const { inputElement, autocompleteElement } = this;
-    if (inputElement && autocompleteElement) {
-      // TODO: should we clean up
-      inputElement.addEventListener('focus', () => {
-        autocompleteElement.classList.add('open');
-      });
-      inputElement.addEventListener('blur', () => {
-        autocompleteElement.classList.remove('open');
-      });
-    }
+    return items;
   }
 
   focus() {

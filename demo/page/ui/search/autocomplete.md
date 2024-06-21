@@ -54,6 +54,7 @@ misocmd.push(() => {
   const client = new MisoClient('...');
   const workflow = client.ui.search;
   workflow.useApi('search', { rows: 10 });
+  workflow.useAutocomplete(true);
   window.onSelectLayout = value => workflow.useLayouts({ products: value });
   window.onSelectLayout(window.selectedLayout);
 });

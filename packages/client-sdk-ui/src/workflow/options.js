@@ -3,6 +3,7 @@ import { ROLE } from '../constants.js';
 
 // normalize //
 export function normalizeApiOptions([name, payload] = []) {
+  // TODO: take object form as well
   if (name === false) {
     return { actor: false };
   }
@@ -105,6 +106,17 @@ export function normalizeInteractionsOptions(options) {
   return { ...options, preprocess };
 }
 
+export function normalizeAutocompleteOptions(options) {
+  if (options === undefined) {
+    throw new Error(`Expect autocomplete options to be an object or a boolean value: ${options}`);
+  }
+  if (typeof options === 'boolean') {
+    options = { actor: options };
+  }
+  const processData = normalizeDataProcessorOptions(options.processData);
+  return { ...options, processData };
+}
+
 // merge //
 export function mergeApiOptions(...optionsList) {
   if (optionsList[optionsList.length - 1] === false) {
@@ -190,6 +202,17 @@ export function mergeInteractionsOptions(...optionsList) {
   }));
 }
 
+export function mergeAutocompleteOptions(...optionsList) {
+  if (optionsList[optionsList.length - 1] === false) {
+    return false;
+  }
+  return mergeOptions(optionsList, (merged, options) => Object.assign(merged, {
+    ...options,
+    api: mergeApiOptions(merged.api, options.api),
+    processData: mergeDataProcessorOptions(merged.processData, options.processData),
+  }));
+}
+
 
 
 // manifest //
@@ -218,6 +241,11 @@ const FEATURES = [
     key: 'interactions',
     normalize: normalizeInteractionsOptions,
     merge: mergeInteractionsOptions,
+  },
+  {
+    key: 'autocomplete',
+    normalize: normalizeAutocompleteOptions,
+    merge: mergeAutocompleteOptions,
   },
 ];
 
@@ -328,18 +356,27 @@ for (const { key, normalize, merge } of FEATURES) {
   });
 }
 
-export function makeConfigurable(prototype) {
-  Object.assign(prototype, {
-    useApi(...args) {
-      this._options.api.merge(args);
-      return this;
-    },
-    clearApi() {
-      this._options.api.set();
-      return this;
-    },
-  });
-  for (const feature of ['layouts', 'dataProcessor', 'trackers', 'interactions']) {
+const DEFAULT_FEATURES = ['api', 'layouts', 'dataProcessor', 'trackers', 'interactions'];
+
+export function makeConfigurable(prototype, features = DEFAULT_FEATURES) {
+  for (const feature of features) {
+    injectConfigurableFeature(prototype, feature);
+  }
+}
+
+function injectConfigurableFeature(prototype, feature) {
+  if (feature === 'api') {
+    Object.assign(prototype, {
+      useApi(...args) {
+        this._options.api.merge(args);
+        return this;
+      },
+      clearApi() {
+        this._options.api.set();
+        return this;
+      },
+    });
+  } else {
     const upperCased = upperCase(feature);
     Object.assign(prototype, {
       [`use${upperCased}`](value) {

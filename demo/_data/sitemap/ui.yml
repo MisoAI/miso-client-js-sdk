@@ -53,6 +53,8 @@ sections:
   pages:
   - title: Basic
     path: /search/basic
+  - title: Autocomplete
+    path: /search/autocomplete
   - title: Lorem (server)
     path: /search/lorem-server
   - title: Lorem (client)

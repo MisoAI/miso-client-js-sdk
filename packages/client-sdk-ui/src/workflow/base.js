@@ -42,11 +42,10 @@ export default class Workflow extends Component {
     const extensions = this._extensions = plugin._getExtensions(client);
     const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
-    const source = this._source = sources.api(client);
     const layouts = plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
-    this._data = new DataActor(hub, { source, options });
+    this._data = new DataActor(hub, { source: sources.api(client), options });
     const views = this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
     this._interactions = new InteractionsActor(hub, { client, options });
     this._trackers = new Trackers(hub, { views, options });

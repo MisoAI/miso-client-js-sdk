@@ -1,4 +1,5 @@
 import * as fields from './fields.js';
+import { isCurrentSession } from './utils.js';
 
 export default class DataActor {
 
@@ -61,7 +62,7 @@ export default class DataActor {
         let value;
         for await (value of response) {
           // A new session invalidates ongoing data fetch for the old session, terminating the loop
-          if (!this._isCurrentSession(session)) {
+          if (!isCurrentSession(this._hub, session)) {
             break;
           }
           this._emitResponse({ session, request, value });
@@ -77,15 +78,7 @@ export default class DataActor {
 
   _emitResponseWithSessionCheck(response) {
     // A new session invalidates ongoing data fetch
-    this._isCurrentSession(response.session) && this._emitResponse(response);
-  }
-
-  _isCurrentSession(session) {
-    if (!session) {
-      return false;
-    }
-    const { session: currentSession } = this._hub.states;
-    return currentSession && currentSession.index === session.index;
+    isCurrentSession(this._hub, response.session) && this._emitResponse(response);
   }
 
   _emitResponse(response) {

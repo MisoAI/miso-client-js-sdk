@@ -37,3 +37,11 @@ export function interaction() {
 export function feedback() {
   return 'feedback';
 }
+
+export function input() {
+  return 'input';
+}
+
+export function completions() {
+  return 'completions';
+}

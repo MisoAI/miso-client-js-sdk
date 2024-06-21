@@ -21,7 +21,6 @@ export function product(layout, state, data, meta) {
     openTag,
     (templates.imageBlock || imageBlock)(layout, data, meta),
     (templates.infoBlock || productInfoBlock)(layout, data, meta),
-    //(templates.indexBlock || renderIndexBlock)(layout, data, meta),
     closeTag,
   ].join('');
 }
@@ -77,13 +76,14 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
 }
 
 // helpers //
-function tagPair({ className, options = {} }, { product_id, url }) {
+function tagPair({ className, options = {} }, { product_id, url }, { classSuffix = 'item-body', role = 'item' } = {}) {
   const { link = {} } = options;
   const { target = '_blank', rel = 'noopener' } = link; // TODO: other properties
   const tag = url ? 'a' : 'div';
   const urlAttrs = url ? `href="${url}" target="${target}" rel="${rel}"` : '';
   const productAttrs = product_id ? `${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}"` : '';
-  return [`<${tag} class="${className}__item-body" data-role="item" ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
+  const roleAttrs = role ? `data-role="${role}"` : '';
+  return [`<${tag} class="${className}__${classSuffix}" ${roleAttrs} ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
 }
 
 function imageBlock({ className }, { cover_image }) {

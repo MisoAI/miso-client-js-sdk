@@ -1,0 +1,149 @@
+:root {
+  // the minimum width of a card item
+  --miso-autocomplete-item-min-width: 20rem;
+  // the gap between card items
+  --miso-autocomplete-item-gap: 1rem;
+  // the aspect ratio of cover image
+  --miso-autocomplete-image-aspect-ratio: 1;
+  // how many lines to show for title text
+  --miso-autocomplete-title-lines: 3;
+}
+
+.miso-autocomplete {
+  display: none;
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  border: 1px solid var(--miso-border-color-medium);
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0;
+  background-color: #fff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  overflow-y: auto;
+  //transition: opacity .2s ease-in-out; // TODO
+
+  .miso-autocomplete__query-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .miso-autocomplete__query-item {
+    padding: 0.375rem 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+  > hr {
+    margin: var(--miso-autocomplete-padding) 0;
+    border: none;
+    border-top: 1px solid var(--miso-border-color-medium);
+  }
+  .miso-autocomplete__product-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--miso-autocomplete-item-min-width), 1fr));
+    gap: var(--miso-autocomplete-item-gap);
+    padding: var(--miso-autocomplete-item-gap);
+    margin: 0;
+  }
+  .miso-autocomplete__product-item {
+    place-self: stretch;
+    border: 1px solid #e3e5e8;
+    border-radius: .5rem;
+    background-color: #fff;
+
+    &:hover {
+      border-color: #8f96a3;
+      box-shadow: 0 0 3px rgba(0, 0, 0, .1);
+    }
+  }
+  .miso-autocomplete__item-body {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    gap: 0.5rem;
+    position: relative;
+    height: 6rem;
+    padding: 0.5rem;
+    user-select: none;
+  }
+  a.miso-autocomplete__item-body {
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .miso-autocomplete__item-cover-image-container {
+    position: relative;
+    aspect-ratio: var(--miso-autocomplete-image-aspect-ratio);
+    border-radius: .4rem .4rem 0 0;
+    overflow: hidden;
+    height: 100%;
+
+    &::before {
+      content: " ";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: radial-gradient(50% 50% at 50% 50%, transparent 0, rgba(0, 0, 0, .004) 82.81%, rgba(0, 0, 0, .016) 100%);
+      background-blend-mode: normal, luminosity;
+    }
+  }
+  img.miso-autocomplete__item-cover-image {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    border-style: none;
+  }
+
+  .miso-autocomplete__item-info-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 0;
+    width: 100%;
+    color: #5c6370;
+
+    > hr {
+      margin-bottom: 0.5rem;
+      margin-top: auto;
+    }
+  }
+
+  .miso-autocomplete__item-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: var(--miso-autocomplete-title-lines);
+    font-weight: 500;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin-bottom: .25rem;
+    color: #23262b;
+  }
+
+  .miso-autocomplete__item-desc {
+    display: none;
+  }
+
+  .miso-autocomplete__item-price {
+    color: #23262b;
+
+    &::before {
+      content: var(--miso-currency-symbol);
+    }
+  }
+}
+
+miso-query.open.nonempty {
+  .miso-autocomplete {
+    display: block;
+  }
+}

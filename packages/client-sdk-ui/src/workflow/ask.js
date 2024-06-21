@@ -1,9 +1,11 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { mergeApiOptions } from './options.js';
-import { fields, FeedbackActor } from '../actor/index.js';
+import * as sources from '../source/index.js';
+import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
+import { makeConfigurable } from './options.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -14,6 +16,14 @@ const DEFAULT_API_OPTIONS = Object.freeze({
     cite_link: 1,
     cite_start: '[',
     cite_end: ']',
+  },
+});
+
+const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
+  actor: false,
+  api: {
+    group: API.GROUP.ASK,
+    name: API.NAME.AUTOCOMPLETE,
   },
 });
 
@@ -40,6 +50,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 
 const DEFAULT_OPTIONS = Object.freeze({
   api: DEFAULT_API_OPTIONS,
+  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
 });
@@ -59,6 +70,13 @@ export default class Ask extends Workflow {
 
     this._feedback = new FeedbackActor(this._hub);
     this._setSuggestedQuestions();
+
+    /*
+    this._autocomplete = new AutocompleteActor(this._hub, {
+      source: sources.api(this._client),
+      options: this._options,
+    });
+    */
 
     this._unsubscribes = [
       ...this._unsubscribes,
@@ -151,6 +169,17 @@ export default class Ask extends Workflow {
     }
     super.restart();
   }
+
+  /*
+  updateCompletions(event) {
+    // TODO: verify
+    this._hub.update(fields.completions(), {
+      ...event,
+      source: 'manual',
+    });
+    return this;
+  }
+  */
 
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
@@ -259,6 +288,7 @@ export default class Ask extends Workflow {
       this._context._byQid.delete(questionId);
     }
     this._feedback._destroy();
+    this._autocomplete._destroy();
     super._destroy(options);
   }
 
