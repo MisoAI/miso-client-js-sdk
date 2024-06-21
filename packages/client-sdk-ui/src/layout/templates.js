@@ -16,29 +16,29 @@ export function unimplemented(name) {
 
 export function product(layout, state, data, meta) {
   const { templates } = layout;
-  const [openTag, closeTag] = renderTagPair(layout, data);
+  const [openTag, closeTag] = tagPair(layout, data);
   return [
     openTag,
-    (templates.imageBlock || renderImageBlock)(layout, data, meta),
+    (templates.imageBlock || imageBlock)(layout, data, meta),
     (templates.infoBlock || productInfoBlock)(layout, data, meta),
-    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
+    //(templates.indexBlock || renderIndexBlock)(layout, data, meta),
     closeTag,
   ].join('');
 }
 
 export function question(layout, state, data) {
-  const [openTag, closeTag] = renderTagPair(layout, data);
+  const [openTag, closeTag] = tagPair(layout, data);
   return `${openTag}${data.value || data.text || data}${closeTag}`;
 }
 
 export function article(layout, state, data, meta) {
   const { templates } = layout;
-  const [openTag, closeTag] = renderTagPair(layout, data);
+  const [openTag, closeTag] = tagPair(layout, data);
   return [
     openTag,
-    (templates.imageBlock || renderImageBlock)(layout, data, meta),
+    (templates.imageBlock || imageBlock)(layout, data, meta),
     (templates.infoBlock || articleInfoBlock)(layout, data, meta),
-    (templates.indexBlock || renderIndexBlock)(layout, data, meta),
+    (templates.indexBlock || indexBlock)(layout, data, meta),
     closeTag,
   ].join('');
 }
@@ -66,7 +66,7 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
     content += `<div class="${className}__item-title">${escapeHtml(title)}</div>`;
   }
   if (date) {
-    content += `<div class="${className}__item-date">${renderDate(date, templates.date)}</div>`;
+    content += `<div class="${className}__item-date">${formatDate(date, templates.date)}</div>`;
   }
   if (snippet) {
     content += `<div class="${className}__item-snippet">${snippet}</div>`;
@@ -77,7 +77,7 @@ function articleInfoBlock({ className, templates }, { title, snippet, descriptio
 }
 
 // helpers //
-function renderTagPair({ className, options = {} }, { product_id, url }) {
+function tagPair({ className, options = {} }, { product_id, url }) {
   const { link = {} } = options;
   const { target = '_blank', rel = 'noopener' } = link; // TODO: other properties
   const tag = url ? 'a' : 'div';
@@ -86,7 +86,7 @@ function renderTagPair({ className, options = {} }, { product_id, url }) {
   return [`<${tag} class="${className}__item-body" data-role="item" ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
 }
 
-function renderImageBlock({ className }, { cover_image }) {
+function imageBlock({ className }, { cover_image }) {
   if (!cover_image) {
     return '';
   }
@@ -94,14 +94,14 @@ function renderImageBlock({ className }, { cover_image }) {
   return `<div class="${className}__item-cover-image-container">${img}</div>`;
 }
 
-function renderIndexBlock({ className }, data, { index }) {
+function indexBlock({ className }, data, { index }) {
   const i = index + 1;
   return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}"></span></div>`;
 }
 
 const DEFAULT_DATE_OPTIONS = Object.freeze({ locale: 'en-US', year: 'numeric', month: 'short', day: 'numeric' });
 
-function renderDate(date, fn = DEFAULT_DATE_OPTIONS) {
+function formatDate(date, fn = DEFAULT_DATE_OPTIONS) {
   switch (typeof fn) {
     case 'function':
       return fn(date);
@@ -113,3 +113,16 @@ function renderDate(date, fn = DEFAULT_DATE_OPTIONS) {
       throw new Error(`Invalid date format: ${fn}`);
   }
 }
+
+export const blocks = Object.freeze({
+  productInfo: productInfoBlock,
+  articleInfo: articleInfoBlock,
+  image: imageBlock,
+  index: indexBlock,
+});
+
+export const helpers = Object.freeze({
+  tagPair,
+  formatDate,
+  escapeHtml,
+});
