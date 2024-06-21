@@ -11,7 +11,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question' }],
+  [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question', link: { rel: 'noopener nofollow' } }],
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
 });
 
