@@ -3,6 +3,8 @@
   --miso-autocomplete-item-min-width: 20rem;
   // the gap between card items
   --miso-autocomplete-item-gap: 1rem;
+  --miso-autocomplete-item-border-radius: 0.5rem;
+  --miso-autocomplete-border-radius: calc(var(--miso-autocomplete-item-border-radius) / 2 + var(--miso-autocomplete-item-gap) + 1px);
   // the aspect ratio of cover image
   --miso-autocomplete-image-aspect-ratio: 1;
   // how many lines to show for title text
@@ -17,7 +19,7 @@
   right: 0;
   z-index: 1;
   border: 1px solid var(--miso-border-color-medium);
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0 0 var(--miso-autocomplete-border-radius) var(--miso-autocomplete-border-radius);
   padding: 0;
   background-color: #fff;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -32,6 +34,7 @@
   }
   .miso-autocomplete__query-item {
     padding: 0.375rem 0.5rem;
+    padding-left: var(--miso-search-box-padding-left);
     cursor: pointer;
 
     &:hover {
@@ -54,7 +57,7 @@
   .miso-autocomplete__product-item {
     place-self: stretch;
     border: 1px solid #e3e5e8;
-    border-radius: .5rem;
+    border-radius: var(--miso-autocomplete-item-border-radius);
     background-color: #fff;
 
     &:hover {

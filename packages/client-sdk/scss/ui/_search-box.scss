@@ -6,6 +6,7 @@
   --miso-search-box-line-height: calc(var(--miso-search-box-font-size) * var(--miso-search-box-line-height-scale));
   --miso-search-box-icon-size: 1.25rem;
   --miso-search-box-padding: 0.75rem;
+  --miso-search-box-padding-left: calc(var(--miso-search-box-padding) + var(--miso-search-box-line-height) * 0.5 - 0.25em);
   --miso-search-box-border-radius-open: calc(max(var(--miso-search-box-line-height), var(--miso-search-box-icon-size)) / 2 + var(--miso-search-box-padding) + 1px);
 }
 
@@ -47,7 +48,7 @@
   }
   .miso-search-box__input {
     padding: var(--miso-search-box-padding) 0;
-    padding-left: calc(var(--miso-search-box-padding) + var(--miso-search-box-line-height) * 0.5 - 0.25em);
+    padding-left: var(--miso-search-box-padding-left);
     padding-right: 0.5em;
     border: none;
     outline: none;
