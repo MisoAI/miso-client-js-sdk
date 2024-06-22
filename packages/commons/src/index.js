@@ -15,6 +15,7 @@ export * from './capture.js';
 export * from './polling.js';
 export * from './cmd.js';
 export * from './styles.js';
+export * from './debounce.js';
 
 export { signals, API };
 

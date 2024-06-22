@@ -1,4 +1,4 @@
-import { defineValues, escapeHtml, findInAncestors } from '@miso.ai/commons';
+import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY, STATUS } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
@@ -98,6 +98,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
 
 const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
   className: DEFAULT_AUTOCOMPLETE_CLASSNAME,
+  debounce: 300,
 });
 
 export default class SearchBoxLayout extends TemplateBasedLayout {
@@ -128,6 +129,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       autocomplete: { ...DEFAULT_AUTOCOMPLETE_OPTIONS, ...autocomplete },
     });
     this._contexts = new WeakMap();
+    this._prevInput = undefined;
+    this._debounce = debounce(this.autocomplete.debounce);
   }
 
   initialize(view) {
@@ -245,10 +248,14 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       return;
     }
     const value = inputElement.value.trim();
-    const currentInput = this._view.hub.states[fields.input()];
-    if (!currentInput || currentInput.value !== value) {
-      this._view.hub.update(fields.input(), { value });
+
+    if (this._prevInput === value) {
+      return;
     }
+    this._prevInput = value;
+
+    const self = this;
+    this._debounce(() => self._view.hub.update(fields.input(), { value }));
   }
 
   _handleFocusIn({ target }) {

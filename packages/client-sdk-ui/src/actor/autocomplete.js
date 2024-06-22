@@ -31,13 +31,12 @@ export default class AutocompleteActor {
     this._sync(true);
   }
 
-  _sync(force = false) {
+  async _sync(force = false) {
     // protocol: inactive -> no reaction
     if (!this.active) {
       return;
     }
 
-    const options = this._options.resolved.autocomplete;
     const { input } = this._hub.states;
     const value = input && input.value && input.value.trim() || undefined;
 
@@ -61,18 +60,6 @@ export default class AutocompleteActor {
       return;
     }
 
-    // TODO: perhaps move this to layout?
-    // throttle
-    this._timeoutId = setTimeout(() => {
-      this._timeoutId = undefined;
-      this._request(index, input);
-    }, options.throttle);
-  }
-
-  async _request(index, input) {
-    if (this._index !== index) {
-      return; // new results loading, abort this one
-    }
     try {
       const response = await this._fetchCompletions(input);
       if (this._index !== index) {
