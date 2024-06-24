@@ -26,6 +26,27 @@ export function followUp(options = {}) {
   ]);
 };
 
+export const sections = Object.freeze({
+  followUps,
+  relatedResources,
+  querySuggestions,
+  answerGroup,
+  answer,
+  sources,
+});
+
+export const helpers = Object.freeze({
+  normalizeOptions,
+  normalizePhraseOptions,
+  normalizePhraseOptionKey,
+  phrase,
+  phraseText,
+  section,
+  container,
+  element,
+  attrs,
+});
+
 
 
 // options //
