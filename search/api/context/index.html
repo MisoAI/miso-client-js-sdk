@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/_legacy/sdk/ask/related_questions/" />
-<meta name="description" content="" />
+<title>Miso SDK for JavaScript - Search - Context</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/search/api/context/" />
+<meta name="description" content="Context values that are included by all to API payloads." />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/_legacy/sdk/ask/related_questions/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Search - Context" />
+<meta property="og:description" content="Context values that are included by all to API payloads." />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/search/api/context/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/_legacy/sdk/ask/related_questions/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Search - Context">
+<meta name="twitter:description" content="Context values that are included by all to API payloads.">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/search/api/context/">
 
 
 
@@ -98,58 +98,63 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"></ul>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/search/">Search UI</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/search/ui/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/search/ui/api/">Configure API</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/search/ui/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/search/ui/tracking/">Tracking</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/search/api/">API</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/search/api/setup/">Setup</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/search/api/search/">Search</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/search/api/autocomplete/">Autocomplete</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/search/api/interactions/">Interactions</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/search/api/context/">Context</a>
+          </li></ul>
+      </div>
+    </li></ul>
 </div>
 
         </nav>
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Related questions</h1>
-          <p class="intro-desc">Generate related questions against an article.</p>
+          <h1 class="intro-title">Search API - context</h1>
+          
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <h4 id="syntax" tabindex="-1">Syntax</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h4 id="payload" tabindex="-1">Payload</h4>
-<p>The <code>payload</code> parameter is an object with the following properties:</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Type</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td><code>product_id</code></td>
-      <td>string</td>
-      <td>The <code>product_id</code> of the article to generate questions against.
-</td>
-    </tr></tbody>
-</table>
-<h4 id="return-value" tabindex="-1">Return value</h4>
-<p>A <code>Promise</code> of response object with the following properties:</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Type</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody><tr>
-      <td><code>related_questions</code></td>
-      <td>array of strings</td>
-      <td>An array of questions.
-</td>
-    </tr></tbody>
-</table>
-<h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'...'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> related_questions <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+          <h2 id="user-context" tabindex="-1">User context</h2>
+<p>To personalize search and recommendation results or provide authorization feature, you can specify user information (anonymous and/or signed-in) in client context so they will be passed into API calls automatically.</p>
+<h3 id="user-id-and-user-hash" tabindex="-1">User ID and user hash</h3>
+<p>You can set <code>user_id</code> and <code>user_hash</code>:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_hash <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span></code></pre>
+<p>See <a href="https://api.askmiso.com/#operation/search_v1_search_search_post" target="_blank" rel="noopener">REST API</a> for more details about <code>user_hash</code>.</p>
+<h3 id="user-type" tabindex="-1">User type</h3>
+<p><div class="since">Since 1.10.0</div></p>
+<p>You can set <code>user_type</code>:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_type <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span></code></pre>
+<p>The <code>user_type</code> value is passed into API calls only when <code>user_id</code> is also set.</p>
+<h3 id="anonymous-id" tabindex="-1">Anonymous ID</h3>
+<p>The SDK takes care of <code>anonymous_id</code> automatically using session storage, so you don't need to set it manually.</p>
+<p>However, you can also override the <code>anonymous_id</code> value by yourself:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>anonymous_id <span class="token operator">=</span> <span class="token string">'my_anonymous_id'</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

@@ -128,6 +128,8 @@
             <a href="/miso-client-js-sdk/recommendation/api/user_to_trending/">User to trending</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/recommendation/api/interactions/">Interactions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/recommendation/api/context/">Context</a>
           </li></ul>
       </div>
     </li></ul>
@@ -160,21 +162,6 @@
       <td><code>engine_id</code></td>
       <td>string</td>
       <td>The engine you want to get results from. If not specified, the default engine will be used.
-</td>
-    </tr><tr>
-      <td><code>user_id</code></td>
-      <td>string</td>
-      <td>The user who made the query and for whom Miso will personalize the results. Either <code>user_id</code> or <code>anonymous_id</code> needs to be specified.
-</td>
-    </tr><tr>
-      <td><code>anonymous_id</code></td>
-      <td>string</td>
-      <td>The anonymous visitor who made the query and for whom Miso will personalize the results. Either <code>user_id</code> or <code>anonymous_id</code> needs to be specified for personalization to work.
-</td>
-    </tr><tr>
-      <td><code>user_hash</code></td>
-      <td>string</td>
-      <td>The hash of <code>user_id</code> (or <code>anonymous_id</code>) encrypted by your <a href="https://api.askmiso.com/#section/Authentication/Secret%20API%20Key" target="_blank" rel="noopener">Secret API Key</a>.
 </td>
     </tr><tr>
       <td><code>fq</code></td>
@@ -255,9 +242,12 @@ Default: <code>false</code>.
     </tr></tbody>
 </table>
 <h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">user_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">user_hash</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToTrending</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">,</span> <span class="token string">'sale_price'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.*'</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> products <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>recommendation<span class="token punctuation">.</span><span class="token function">userToTrending</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="learn-more" tabindex="-1">Learn more</h4>
-<p>For advanced usage, see <a href="https://api.askmiso.com/#tag/Recommendation-APIs/operation/trending_items_v1_recommendation_user_to_trending_post" target="_blank" rel="noopener">REST API</a>.</p>
+<ul>
+<li>For advanced usage, see <a href="https://api.askmiso.com/#tag/Recommendation-APIs/operation/trending_items_v1_recommendation_user_to_trending_post" target="_blank" rel="noopener">REST API</a>.</li>
+<li>For passing user data, see <a href="/miso-client-js-sdk/recommendation/api/context/" target="_blank" rel="noopener">Context</a>.</li>
+</ul>
 
         </div>
       </main>
