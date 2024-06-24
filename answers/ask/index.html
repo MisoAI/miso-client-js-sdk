@@ -3,20 +3,20 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
+<title>Miso SDK for JavaScript - Answers - Ask</title>
 <link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/" />
-<meta name="description" content="" />
+<meta name="description" content="UI for Miso ask API" />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Ask" />
+<meta property="og:description" content="UI for Miso ask API" />
 <meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Ask">
+<meta name="twitter:description" content="UI for Miso ask API">
 <meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/">
 
 
@@ -103,28 +103,17 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"></ul>
       </div>
-    </li><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/answers/ask/standard/">Ask (Stardard)</a>
+    </li><li class="section mb-3 active ">
+      <a href="/miso-client-js-sdk/answers/ask/">Ask</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/standard/quick-start/">Quick start</a>
+            <a href="/miso-client-js-sdk/answers/ask/quick-start/">Quick start</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/standard/configuration/">Configuration</a>
+            <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/standard/styles/">CSS styles</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/answers/ask/custom/">Ask (Custom)</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/custom/full/">Full implementation</a>
+            <a href="/miso-client-js-sdk/answers/ask/elements/">Elements</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/custom/workflow/">Workflow</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/custom/elements/">Elements</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/answers/ask/custom/data/">Data</a>
+            <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -165,21 +154,51 @@
         
         
         <div class="content ps-lg-4">
-          <p>There are three ways to build your ask module:</p>
-<h4 id="the-standard-ui-solution" tabindex="-1">The standard UI solution</h4>
-<ul>
-<li>Features are identical to the <a href="/miso-client-js-sdk/demo/latest/answers/ask/" target="_blank" rel="noopener">demo</a>.</li>
-<li>Can be done with 2 lines of HTML.</li>
-<li>Limited customization: CSS, texts.</li>
-<li>Follow the <a href="/miso-client-js-sdk/answers/ask/standard/quick-start/" target="_blank" rel="noopener">guide</a>.</li>
-</ul>
-<h4 id="the-custom-ui-solution" tabindex="-1">The custom UI solution</h4>
+          <p>There are two ways to build your ask module:</p>
+<h4 id="use-the-built-in-ui-elements" tabindex="-1">Use the built-in UI elements</h4>
 <ul>
 <li>Fully customizable: HTML, CSS, texts, logic.</li>
-<li>Follow the <a href="/miso-client-js-sdk/answers/ask/custom/full/" target="_blank" rel="noopener">guide</a>.</li>
+<li>Follow the <a href="/miso-client-js-sdk/answers/ask/quick-start/" target="_blank" rel="noopener">guide</a>.</li>
 </ul>
 <h4 id="build-from-scratch" tabindex="-1">Build from scratch</h4>
-<p>You can also build your UI from scratch, without the assistance of SDK UI elements. Read the <a href="/miso-client-js-sdk/answers/api/" target="_blank" rel="noopener">API</a> section for details.</p>
+<p>You can also build your UI from scratch, without the assistance of SDK UI elements. You may want to explore the following references:</p>
+<ul>
+<li>The SDK <a href="/miso-client-js-sdk/answers/api/" target="_blank" rel="noopener">API</a> section</li>
+<li><a href="/miso-client-js-sdk/advanced/technology/" target="_blank" rel="noopener">Technology stack</a></li>
+<li><a href="/miso-client-js-sdk/advanced/progressive-markdown-tools/" target="_blank" rel="noopener">Progressive markdown tools</a></li>
+</ul>
+<hr>
+<h4 id="legacy-combo-ui-solution" tabindex="-1">Legacy <code>combo</code> UI solution</h4>
+<p>The SDK used to offer a <code>combo</code> UI solution which aimed for simplicity. It is now deprecated due to lack for extensibility but still maintained.</p>
+<ul>
+<li>Can be done with 2 lines of HTML.</li>
+<li>Limited customization: CSS, texts.</li>
+<li>Follow the <a href="/miso-client-js-sdk/answers/ask/combo/quick-start/" target="_blank" rel="noopener">guide</a>.</li>
+</ul>
+<hr>
+<h3>Table of Content</h3><div class="section-toc">
+    <ul class="page-list list-unstyled"><li class="page mb-4 ">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/answers/ask/quick-start/">Quick start</a>
+        </h5><p class="mb-0">
+          Ask UI - quick start
+        </p></li><li class="page mb-4 ">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
+        </h5><p class="mb-0">
+          Ask UI - workflow
+        </p></li><li class="page mb-4 ">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/answers/ask/elements/">Elements</a>
+        </h5><p class="mb-0">
+          Ask UI - elements
+        </p></li><li class="page mb-4 ">
+        <h5 class="title mb-2">
+          <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
+        </h5><p class="mb-0">
+          Ask UI - data
+        </p></li></ul>
+  </div>
 
         </div>
       </main>

@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/_legacy/ui/ask/" />
-<meta name="description" content="" />
+<title>Miso SDK for JavaScript - Answers - Elements</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/elements/" />
+<meta name="description" content="Ask UI - elements" />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/_legacy/ui/ask/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Elements" />
+<meta property="og:description" content="Ask UI - elements" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/elements/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/_legacy/ui/ask/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Elements">
+<meta name="twitter:description" content="Ask UI - elements">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/elements/">
 
 
 
@@ -98,31 +98,126 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"></ul>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/">Overview</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/ask/">Ask</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/answers/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/explore/">Explore</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/api/">API</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/setup/">Setup</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/questions/">Questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/related_questions/">Related questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/interactions-explore/">Interactions (explore)</a>
+          </li></ul>
+      </div>
+    </li></ul>
 </div>
 
         </nav>
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask UI</h1>
+          <h1 class="intro-title">Ask UI - elements</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>The UI plugin provides tools to integrate Miso ask API features into your webpage. You can:</p>
-<ul>
-<li>Configure default API parameters</li>
-<li>Customize the layouts to display the result</li>
-</ul>
-<div class="my-4">
-  <a href="/miso-client-js-sdk/demo/showcase/" class="btn btn-primary" role="button" target="_blank" rel="noopener">
-    Demo
-  </a>
-</div>
-<h3>Table of Content</h3>
+          <p>You can customize the elements with the following API:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>For example, to customize the <code>miso-query</code> element:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The following elements are used in the ask workflow. See their references for customization options:</p>
+<table class="table"><thead>
+<tr>
+<th>Tag</th>
+<th>Type</th>
+<th>Property in API response</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;miso-ask&gt;</code></td>
+<td>container</td>
+<td>--</td>
+<td><a href="/miso-client-js-sdk/elements/miso-ask/" target="_blank" rel="noopener">miso-ask</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-query&gt;</code></td>
+<td>component</td>
+<td>--</td>
+<td><a href="/miso-client-js-sdk/elements/miso-query/" target="_blank" rel="noopener">miso-query</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-feedback&gt;</code></td>
+<td>component</td>
+<td>--</td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;miso-question&gt;</code></td>
+<td>component</td>
+<td><code>question</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;miso-answer&gt;</code></td>
+<td>component</td>
+<td><code>answer</code></td>
+<td><a href="/miso-client-js-sdk/elements/miso-answer/" target="_blank" rel="noopener">miso-answer</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-sources&gt;</code></td>
+<td>component</td>
+<td><code>sources</code></td>
+<td><a href="/miso-client-js-sdk/elements/collections/" target="_blank" rel="noopener">collections</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-related-resources&gt;</code></td>
+<td>component</td>
+<td><code>related_resources</code></td>
+<td><a href="/miso-client-js-sdk/elements/collections/" target="_blank" rel="noopener">collections</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-query-suggestions&gt;</code></td>
+<td>component</td>
+<td><code>followup_questions</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
         </div>
       </main>

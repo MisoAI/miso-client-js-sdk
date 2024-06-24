@@ -329,6 +329,12 @@ table.miso-diagram .label.right {
   font-weight: bold;
 }
 
+.deprecated {
+  color: #cc5522;
+  font-style: italic;
+  font-weight: bold;
+}
+
 .screenshot-container {
   display: flex;
   flex-direction: column;

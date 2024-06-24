@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/_legacy/ui/ask/workflow/" />
-<meta name="description" content="" />
+<title>Miso SDK for JavaScript - Answers - Workflow</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/workflow/" />
+<meta name="description" content="Ask UI - workflow" />
 
-<meta property="og:title" content="Miso SDK for JavaScript" />
-<meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/_legacy/ui/ask/workflow/" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Workflow" />
+<meta property="og:description" content="Ask UI - workflow" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/workflow/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript">
-<meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/_legacy/ui/ask/workflow/">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Workflow">
+<meta name="twitter:description" content="Ask UI - workflow">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/workflow/">
 
 
 
@@ -98,7 +98,49 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"></ul>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/">Overview</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/ask/">Ask</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/quick-start/">Quick start</a>
+          </li><li class="page active ">
+            <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/explore/">Explore</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/quick-start/">Quick start</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/api/">API</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/setup/">Setup</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/questions/">Questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/related_questions/">Related questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/interactions-explore/">Interactions (explore)</a>
+          </li></ul>
+      </div>
+    </li></ul>
 </div>
 
         </nav>
@@ -112,7 +154,7 @@
         
         
         <div class="content ps-lg-4">
-          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display. Use <code>ask</code> workflow to work with Miso <a href="/miso-client-js-sdk/sdk/ask/questions/" target="_blank" rel="noopener">ask/questions</a> API, which allows you:</p>
+          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display.</p>
 <ul>
 <li>Configure API default payload.</li>
 <li>Configure the look and feel of UI elements.</li>
@@ -124,70 +166,8 @@
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br><br><span class="token keyword">const</span> workflows <span class="token operator">=</span> context<span class="token punctuation">.</span>workflows<span class="token punctuation">;</span> <span class="token comment">// returns an array of workflows</span><br><span class="token keyword">const</span> workflow0 <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getByQuestionId</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> workflow1 <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getByParentQuestionId</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>You can also navigate through the question chain:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> nextWorkflow0 <span class="token operator">=</span> workflow<span class="token punctuation">.</span>next<span class="token punctuation">;</span> <span class="token comment">// undefined if there is no follow-up question</span><br><span class="token keyword">const</span> nextWorkflow1 <span class="token operator">=</span> workflow<span class="token punctuation">.</span><span class="token function">getOrCreateNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// create a new workflow if absent</span><br><span class="token keyword">const</span> previousWorkflow <span class="token operator">=</span> workflow<span class="token punctuation">.</span>previous<span class="token punctuation">;</span> <span class="token comment">// undefined for the root workflow</span></code></pre>
-<p>See <a href="/miso-client-js-sdk/ui/ask/follow-up/" target="_blank" rel="noopener">follow-up questions</a> for details.</p>
 <h3 id="properties" tabindex="-1">Properties</h3>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> questionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span><br><span class="token keyword">const</span> parentQuestionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>parentQuestionId<span class="token punctuation">;</span></code></pre>
-<h3 id="configure-api" tabindex="-1">Configure API</h3>
-<p>You can configure the default search API payload:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>For example, to make the API return <code>8</code> products instead of the default value:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">8</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>Given a question <code>What's the meaing of life?</code>, the API payload will be:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"What's the meaing of life?"</span><span class="token punctuation">,</span><br>  <span class="token property">"rows"</span><span class="token operator">:</span> <span class="token number">8</span><br><span class="token punctuation">}</span></code></pre>
-<p>See the <a href="https://api.askmiso.com/#tag/Ask-APIs/operation/questions_v1_ask_questions_post" target="_blank" rel="noopener">REST API reference</a> for payload options.</p>
-<p>You can configure the default API payload for all workflows:</p>
-<h4 id="configure-api-globally" tabindex="-1">Configure API globally</h4>
-<p><div class="since">Since 1.8.2</div></p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>To disable the built-in data source:</p>
-<pre class="language-js"><code class="language-js"><span class="token comment">// to disable for a specific workflow</span><br>workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// or to disable for all workflows</span><br><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>See <a href="/miso-client-js-sdk/ui/ask/custom-data/">customize data source</a> for details.</p>
-<h3 id="configure-ui" tabindex="-1">Configure UI</h3>
-<p>You can choose the layout for the results:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">sources</span><span class="token operator">:</span> <span class="token string">'cards'</span><span class="token punctuation">,</span> <span class="token comment">// or 'carousel', 'list' (default)</span><br>  <span class="token literal-property property">related_resources</span><span class="token operator">:</span> <span class="token string">'carousel'</span> <span class="token comment">// or 'cards', 'list' (default)</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>To hide Miso logo:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>See <a href="/miso-client-js-sdk/ui/ask/elements/" target="_blank" rel="noopener">elements</a> section for details.</p>
-<h4 id="configure-ui-globally" tabindex="-1">Configure UI globally</h4>
-<p><div class="since">Since 1.8.2</div></p>
-<p>You can configure the default layouts options for all workflows:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">//...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h3 id="lifecycle" tabindex="-1">Lifecycle</h3>
-<p>Update API results manually. See <a href="/miso-client-js-sdk/ui/ask/custom-data/" target="_blank" rel="noopener">customize data source</a> for details.</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span> session<span class="token punctuation">,</span> value<span class="token punctuation">,</span> ongoing <span class="token punctuation">}</span><span class="token punctuation">;</span><br>workflow<span class="token punctuation">.</span><span class="token function">updateData</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>The data object has the following properties:</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Type</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>session</code></td>
-      <td>object</td>
-      <td>
-        <strong>Required.</strong> Session object from `input` event. Updates associated to expired sessions are ignored.
-      </td>
-    </tr>
-    <tr>
-      <td><code>value</code></td>
-      <td>object</td>
-      <td>
-        <strong>Required.</strong> Result of <a href="/miso-client-js-sdk/sdk/ask/questions/">questions</a> API.
-      </td>
-    </tr>
-    <tr>
-      <td><code>ongoing</code></td>
-      <td>boolean</td>
-      <td>
-        Whether the result is ongoing, expecting more updates to the current session. Default: <code>false</code>.
-      </td>
-    </tr>
-  </tbody>
-</table>
 <h3 id="events" tabindex="-1">Events</h3>
 <p>Events on workflow context:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br><br>context<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">workflow</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When a new workflow is created</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
