@@ -285,7 +285,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     // TODO: select completion items with arrow keys
   }
 
-  _handleClick({ target }) {
+  _handleClick(event) {
+    const { target } = event;
     const { inputElement } = this._context();
     for (let element = target; element && element !== this._element; element = element.parentElement) {
       if (element.matches('[data-role="submit"]') || element.matches('[data-role="button"]') || element.matches('[type="submit"]')) {
@@ -303,12 +304,16 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
           if (inputElement) {
             inputElement.value = value;
           }
-          this._submit(value);
+          this._view._events.emit('select', Object.freeze({ value: item, index, domEvent: event }));
+          if (!event.defaultPrevented) {
+            this._submit(value);
+          }
         }
         this.close();
         return;
       }
       if (element.matches('[data-role="product-item"]')) {
+        this._view._events.emit('select', Object.freeze({ value: item, index, domEvent: event }));
         return;
       }
     }
