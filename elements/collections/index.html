@@ -173,26 +173,33 @@
 <li><code>cards</code></li>
 <li><code>carousel</code></li>
 </ul>
+<h4 id="layout-options" tabindex="-1">Layout options</h4>
+<p>You can customize the layout by specifying additional options in the following way:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">products</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token comment">// additional options</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// or with default layout type</span><br>workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">products</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token comment">// additional options</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="customize-styles" tabindex="-1">Customize styles</h4>
 <p>You can customize the look-and-feel of any layouts by adding additional CSS rules. The built-in layouts have the following base class names:</p>
 <table class="table">
   <thead>
     <tr>
       <th scope="col">Layout</th>
+      <th scope="col">Key</th>
       <th scope="col">CSS class name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>List</td>
+      <td><code>list</code></td>
       <td><code>miso-list</code></td>
     </tr>
     <tr>
       <td>Cards</td>
+      <td><code>cards</code></td>
       <td><code>miso-cards</code></td>
     </tr>
     <tr>
       <td>Carousel</td>
+      <td><code>carousel</code></td>
       <td><code>miso-carousel</code></td>
     </tr>
   </tbody>
@@ -218,6 +225,12 @@
 <li><code>article</code>: the article record to display</li>
 </ul>
 <p>See also: <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/layout/templates.js" target="_blank" rel="noopener">default templates</a>.</p>
+<p>Note that the properties of the article record are limited to the fields returned by the API. If you need additional fields, you need to specify <code>source_fl</code> or <code>related_resource_fl</code> in the API payload:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">source_fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'cover_image'</span><span class="token punctuation">,</span> <span class="token string">'url'</span><span class="token punctuation">,</span> <span class="token string">'created_at'</span><span class="token punctuation">,</span> <span class="token string">'updated_at'</span><span class="token punctuation">,</span> <span class="token string">'published_at'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.my_prop'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">related_resource_fl</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'cover_image'</span><span class="token punctuation">,</span> <span class="token string">'url'</span><span class="token punctuation">,</span> <span class="token string">'created_at'</span><span class="token punctuation">,</span> <span class="token string">'updated_at'</span><span class="token punctuation">,</span> <span class="token string">'published_at'</span><span class="token punctuation">,</span> <span class="token string">'custom_attributes.my_prop'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>See <a href="/miso-client-js-sdk/answers/ask/data/" target="_blank" rel="noopener">Ask UI: data</a> for details.</p>
+<h4 id="customize-dom-structure-(related-questions)" tabindex="-1">Customize DOM structure (related questions)</h4>
+<p>To customize related question item DOM structure, you can override the template function:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">related_questions</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">question</span><span class="token operator">:</span> renderQuestion<br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">]</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">function</span> <span class="token function">renderQuestion</span><span class="token punctuation">(</span><span class="token parameter">layout<span class="token punctuation">,</span> state<span class="token punctuation">,</span> question</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> html <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>  <span class="token keyword">return</span> html<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
 
         </div>
       </main>
