@@ -464,6 +464,11 @@ body.home main #components ul .card > .title + p {
   margin-top: 0.15rem;
 }
 
+.outline-list {
+  padding-left: 1.2rem;
+  margin-top: 0.5rem;
+}
+
 body:not(.__preview__) .__preview__ {
   display: none;
 }
