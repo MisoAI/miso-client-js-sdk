@@ -19,6 +19,8 @@ sections:
     path: /ask/basic
   - title: Full
     path: /ask/full
+  - title: Production
+    path: /ask/production
   - title: Lorem (client)
     path: /ask/lorem-client
   - title: Plaintext
@@ -42,6 +44,8 @@ sections:
 - title: Explore
   path: /explore
   pages:
+  - title: Production
+    path: /explore/production
   - title: Lorem (server)
     path: /explore/lorem-server
   - title: Lorem (client)

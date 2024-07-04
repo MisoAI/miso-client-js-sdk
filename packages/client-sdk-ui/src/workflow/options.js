@@ -12,7 +12,7 @@ export function normalizeApiOptions([name, payload] = []) {
     name = undefined;
   }
   let group = undefined;
-  if (name.indexOf('/') !== -1) {
+  if (name && name.indexOf('/') !== -1) {
     [group, name] = name.split('/');
   }
   if ((name && typeof name !== 'string') || (payload !== undefined && typeof payload !== 'object')) {
