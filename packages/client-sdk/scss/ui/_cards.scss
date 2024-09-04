@@ -117,9 +117,5 @@
 
   .miso-cards__item-price {
     color: #23262b;
-
-    &::before {
-      content: var(--miso-currency-symbol);
-    }
   }
 }

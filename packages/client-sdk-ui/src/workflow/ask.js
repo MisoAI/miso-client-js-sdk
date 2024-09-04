@@ -4,8 +4,9 @@ import { mergeApiOptions } from './options.js';
 import * as sources from '../source/index.js';
 import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout } from '../layout/index.js';
+import { SearchBoxLayout, OptionListLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { makeConfigurable } from './options.js';
+import { processData as processAffiliationData } from '../affiliation/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -35,6 +36,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.SOURCES]: [ListLayout.type, { incremental: true, itemType: 'article', templates: { ordered: true } }],
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, itemType: 'article' }],
   [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
+  [ROLE.AFFILIATION]: [AffiliationLayout.type, { itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
@@ -206,6 +208,9 @@ export default class Ask extends Workflow {
         window.history.replaceState({}, '', url);
       }
     }
+
+    // affiliation
+    data = processAffiliationData(data);
 
     // 1. put answer_stage to meta
     // 2. mark ongoing flag

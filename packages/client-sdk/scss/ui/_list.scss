@@ -144,9 +144,5 @@
 
   .miso-list__item-price {
     color: var(--miso-text-color);
-
-    &::before {
-      content: var(--miso-currency-symbol);
-    }
   }
 }

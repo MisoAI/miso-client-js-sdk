@@ -42,37 +42,86 @@ export function article(layout, state, data, meta) {
   ].join('');
 }
 
-export function productInfoBlock({ className }, { title, description, sale_price, original_price }) {
-  let content = '';
-  if (title) {
-    content += `<div class="${className}__item-title">${escapeHtml(title)}</div>`;
-  }
-  if (description) {
-    content += `<div class="${className}__item-desc">${escapeHtml(description)}</div>`;
-  }
-  const price = sale_price || original_price;
-  if (price) {
-    content += `<hr><div class="${className}__item-price">${price}</div>`;
-    // TODO: enhance this
-  }
-  return `<div class="${className}__item-info-container">${content}</div>`;
+export function affiliation(layout, state, data, meta) {
+  const { templates } = layout;
+  const [openTag, closeTag] = tagPair(layout, data);
+  return [
+    openTag,
+    (templates.infoBlock || templates.affiliationInfoBlock || affiliationInfoBlock)(layout, data, meta),
+    (templates.imageBlock || imageBlock)(layout, data, meta),
+    (templates.brandBlock || brandBlock)(layout, data, meta),
+    closeTag,
+  ].join('');
 }
 
-export function articleInfoBlock({ className, templates }, { title, snippet, description, created_at, updated_at, published_at }) {
+export function affiliationInfoBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  return `<div class="${className}__item-info-container">${[
+    (templates.titleBlock || titleBlock)(layout, data, meta),
+    (templates.descriptionBlock || descriptionBlock)(layout, data, meta),
+    (templates.priceBlock || priceBlock)(layout, data, meta),
+    (templates.ctaBlock || ctaBlock)(layout, data, meta),
+  ].join('')}</div>`;
+}
+
+export function productInfoBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  return `<div class="${className}__item-info-container">${[
+    (templates.titleBlock || titleBlock)(layout, data, meta),
+    (templates.descriptionBlock || descriptionBlock)(layout, data, meta),
+    (templates.priceBlock || priceBlock)(layout, data, meta),
+  ].join('')}</div>`;
+}
+
+export function articleInfoBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  return `<div class="${className}__item-info-container">${[
+    (templates.titleBlock || titleBlock)(layout, data, meta),
+    (templates.dateBlock || dateBlock)(layout, data, meta),
+    (templates.descriptionBlock || descriptionBlock)(layout, data, meta),
+    (templates.ctaBlock || ctaBlock)(layout, data, meta),
+  ].join('')}</div>`;
+}
+
+export function titleBlock({ className }, { title }) {
+  return title ? `<div class="${className}__item-title">${escapeHtml(title)}</div>` : '';
+}
+
+export function brandBlock({ className }, { brand, brand_logo }) {
+  if (!brand && !brand_logo) {
+    return '';
+  }
+  brand_logo = undefined;
+  const content = brand_logo ? `<img class="${className}__item-brand-logo" src="${brand_logo}"${brand ? ` alt="${brand}"` : ''}>` : `<div class="${className}__item-brand">${brand}</div>`;
+  return `<div class="${className}__item-brand-container">${content}</div>`;
+}
+
+export function descriptionBlock({ className }, { snippet, description }) {
+  return snippet ? `<div class="${className}__item-snippet">${snippet}</div>` : description ? `<div class="${className}__item-desc">${escapeHtml(description)}</div>` : '';
+}
+
+export function dateBlock({ className, templates }, { created_at, updated_at, published_at }) {
   const date = published_at || created_at || updated_at;
+  return date ? `<div class="${className}__item-date">${formatDate(date, templates.date)}</div>` : '';
+}
+
+export function priceBlock({ className }, { sale_price, original_price, discount_rate_percent, currency = 'USD' }) {
+  const price = sale_price || original_price;
+  if (!price) {
+    return '';
+  }
+  const has_price_difference = original_price !== undefined && sale_price !== undefined && sale_price < original_price;
+  discount_rate_percent = discount_rate_percent || (has_price_difference ? Math.floor((1 - sale_price / original_price) * 100) : undefined);
+
   let content = '';
-  if (title) {
-    content += `<div class="${className}__item-title">${escapeHtml(title)}</div>`;
+  if (has_price_difference) {
+    content += `<span class="${className}__item-original-price miso-price" data-currency="${currency}">${original_price}</span><br>`;
   }
-  if (date) {
-    content += `<div class="${className}__item-date">${formatDate(date, templates.date)}</div>`;
+  content += `<span class="${className}__item-price miso-price" data-currency="${currency}">${price}</span>`;
+  if (discount_rate_percent) {
+    content += `<span class="${className}__item-discount-rate"> (${discount_rate_percent}% off)</span>`;
   }
-  if (snippet) {
-    content += `<div class="${className}__item-snippet">${snippet}</div>`;
-  } else if (description) {
-    content += `<div class="${className}__item-desc">${escapeHtml(description)}</div>`;
-  }
-  return `<div class="${className}__item-info-container">${content}</div>`;
+  return `<div class="${className}__item-price-container">${content}</div>`;
 }
 
 export function imageBlock({ className }, { cover_image }) {
@@ -84,8 +133,25 @@ export function imageBlock({ className }, { cover_image }) {
 }
 
 export function indexBlock({ className }, data, { index }) {
-  const i = index + 1;
-  return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${i}"></span></div>`;
+  return `<div class="${className}__item-index-container"><span class="${className}__item-index miso-citation-index" data-index="${index + 1}"></span></div>`;
+}
+
+export function ctaBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  let _cta = templates.cta || cta;
+  if (typeof _cta === 'function') {
+    _cta = _cta(layout, data, meta);
+  }
+  return _cta ? `<div class="${className}__item-cta-container">${_cta}</div>` : '';
+}
+
+export function cta(layout, data, meta) {
+  const { className, templates } = layout;
+  let text = templates.ctaText;
+  if (typeof text === 'function') {
+    text = text(layout, data, meta);
+  }
+  return text ? `<div class="${className}__item-cta">${text}</div>` : '';
 }
 
 // helpers //

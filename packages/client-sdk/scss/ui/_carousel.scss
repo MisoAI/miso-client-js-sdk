@@ -154,13 +154,11 @@
     display: none;
   }
 
-  .miso-carousel__item-price {
+  .miso-carousel__item-price-container {
     margin-top: auto;
+  }
+  .miso-carousel__item-price {
     color: #23262b;
-
-    &::before {
-      content: var(--miso-currency-symbol);
-    }
   }
 
   mark {

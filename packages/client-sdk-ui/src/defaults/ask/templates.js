@@ -106,6 +106,7 @@ function querySuggestions(options) {
 function answerGroup(options) {
   return [
     answer(options),
+    affiliation(options),
     sources(options),
     container(options, { name: 'bottom-spacing', visibleWhen: 'ongoing' }),
   ];
@@ -119,7 +120,7 @@ function answer(options) {
     '<miso-answer></miso-answer>',
     '<miso-feedback></miso-feedback>',
   ]);
-};
+}
 
 function sources(options) {
   return container(options, { name: 'sources', visibleWhen: 'nonempty' }, [
@@ -127,7 +128,18 @@ function sources(options) {
     phrase(options, { name: 'sources', tag: 'h3' }),
     '<miso-sources></miso-sources>',
   ]);
-};
+}
+
+function affiliation(options) {
+  const { affiliation = true } = options || {};
+  if (!affiliation) {
+    return '';
+  }
+  return container(options, { name: 'affiliation', visibleWhen: 'nonempty' }, [
+    '<hr>',
+    '<miso-affiliation></miso-affiliation>',
+  ]);
+}
 
 function phrase(options, { name, tag = 'div' }) {
   const { classPrefix } = options;

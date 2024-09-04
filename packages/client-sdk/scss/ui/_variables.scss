@@ -1,6 +1,8 @@
 :root {
   // content text color
   --miso-text-color: #33323e;
+  // gray text color
+  --miso-text-color-gray: #666476;
   // background for <mark> element
   --miso-mark-background: rgba(26, 76, 227, .09804);
   // lighter border color
@@ -11,6 +13,4 @@
   --miso-box-shadow-hover: 0 0 3px rgba(0, 0, 0, 0.1);
   // general transition properties
   --miso-transition: .15s;
-  // currency symbol for price properties
-  --miso-currency-symbol: "$";
 }

@@ -1,0 +1,22 @@
+.miso-price {
+  &[data-currency="EUR"] {
+    &::before {
+      content: "€";
+    }
+  }
+  &[data-currency="GBP"] {
+    &::before {
+      content: "£";
+    }
+  }
+  &[data-currency="JPY"] {
+    &::before {
+      content: "¥";
+    }
+  }
+  &[data-currency]:not([data-currency="EUR"]):not([data-currency="GBP"]):not([data-currency="JPY"]) {
+    &::before {
+      content: "$";
+    }
+  }
+}

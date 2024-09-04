@@ -19,6 +19,7 @@ export const ROLE = Object.freeze({
   RELATED_RESOURCES: 'related_resources',
   QUERY_SUGGESTIONS: 'query_suggestions',
   RELATED_QUESTIONS: 'related_questions',
+  AFFILIATION: 'affiliation',
   ERROR: 'error',
 });
 
@@ -34,6 +35,7 @@ const DATA_ROLE_SET = new Set([
   ROLE.RELATED_RESOURCES,
   ROLE.QUERY_SUGGESTIONS,
   ROLE.RELATED_QUESTIONS,
+  ROLE.AFFILIATION,
 ]);
 
 export function isDataRole(role) {
@@ -47,6 +49,7 @@ export const LAYOUT_CATEGORY = Object.freeze({
   QUERY: 'query',
   RADIO: 'radio',
   TEXT: 'text',
+  AFFILIATION: 'affiliation',
   ERROR: 'error',
 });
 
