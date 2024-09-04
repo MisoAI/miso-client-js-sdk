@@ -161,12 +161,14 @@
     margin-bottom: 0.5rem;
   }
   .miso-affiliation__item-original-price {
+    font-size: 0.9rem;
     color: var(--miso-text-color-gray);
     text-decoration: line-through;
   }
   .miso-affiliation__item-discount-rate,
   .miso-affiliation__item-price {
-    font-size: 1.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
     color: var(--miso-text-color);
   }
 

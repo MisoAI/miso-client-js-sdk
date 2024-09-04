@@ -23,6 +23,7 @@ function processValue(value) {
 }
 
 function processSovrnData({ products, ...sovrn_aff }) {
+  products = products.slice(0, 1);
   return {
     channel: 'sovrn',
     ...sovrn_aff,
@@ -33,8 +34,7 @@ function processSovrnData({ products, ...sovrn_aff }) {
 export function processSovrnProduct({
   id,
   deeplink: url,
-  name: title,
-  headline: description,
+  headline: title,
   currency,
   retailPrice: original_price,
   salePrice: sale_price,
@@ -50,7 +50,6 @@ export function processSovrnProduct({
     id: `sovrn-${id}`,
     channel: 'sovrn',
     title,
-    description,
     cover_image,
     url,
     currency,

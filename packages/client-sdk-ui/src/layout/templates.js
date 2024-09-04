@@ -91,7 +91,6 @@ export function brandBlock({ className }, { brand, brand_logo }) {
   if (!brand && !brand_logo) {
     return '';
   }
-  brand_logo = undefined;
   const content = brand_logo ? `<img class="${className}__item-brand-logo" src="${brand_logo}"${brand ? ` alt="${brand}"` : ''}>` : `<div class="${className}__item-brand">${brand}</div>`;
   return `<div class="${className}__item-brand-container">${content}</div>`;
 }
@@ -105,23 +104,33 @@ export function dateBlock({ className, templates }, { created_at, updated_at, pu
   return date ? `<div class="${className}__item-date">${formatDate(date, templates.date)}</div>` : '';
 }
 
-export function priceBlock({ className }, { sale_price, original_price, discount_rate_percent, currency = 'USD' }) {
+export function priceBlock(layout, data) {
+  const { className, templates } = layout;
+  const { sale_price, original_price, currency = 'USD' } = data;
   const price = sale_price || original_price;
   if (!price) {
     return '';
   }
   const has_price_difference = original_price !== undefined && sale_price !== undefined && sale_price < original_price;
-  discount_rate_percent = discount_rate_percent || (has_price_difference ? Math.floor((1 - sale_price / original_price) * 100) : undefined);
+  const discount_rate_percent = data.discount_rate_percent || (has_price_difference ? Math.floor((1 - sale_price / original_price) * 100) : undefined);
 
   let content = '';
+  // original price
   if (has_price_difference) {
     content += `<span class="${className}__item-original-price miso-price" data-currency="${currency}">${original_price}</span><br>`;
   }
+  // current price
   content += `<span class="${className}__item-price miso-price" data-currency="${currency}">${price}</span>`;
+  // discount rate
   if (discount_rate_percent) {
-    content += `<span class="${className}__item-discount-rate"> (${discount_rate_percent}% off)</span>`;
+    const text = (templates.discountRateText || discountRateText)(layout, data);
+    content += ` <span class="${className}__item-discount-rate">${text}</span>`;
   }
   return `<div class="${className}__item-price-container">${content}</div>`;
+}
+
+export function discountRateText(layout, { discount_rate_percent }) {
+  return `(${discount_rate_percent}% off)`;
 }
 
 export function imageBlock({ className }, { cover_image }) {
