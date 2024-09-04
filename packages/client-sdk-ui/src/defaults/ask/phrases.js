@@ -6,7 +6,7 @@ export const question = 'You asked...';
 /**
  * The phrase displayed right before <miso-sources>
  */
-export const sources = 'My reply is based on the following';
+export const sources = 'This reply is based on the following articles';
 
 /**
  * The phrase displayed right before <miso-query-suggestions>
