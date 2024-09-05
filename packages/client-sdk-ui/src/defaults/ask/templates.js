@@ -136,7 +136,6 @@ function affiliation(options) {
     return '';
   }
   return container(options, { name: 'affiliation', visibleWhen: 'nonempty' }, [
-    '<hr>',
     '<miso-affiliation></miso-affiliation>',
   ]);
 }

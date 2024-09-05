@@ -11,18 +11,19 @@
   // how many lines to show for description text
   --miso-affiliation-description-lines: 4;
 
+  --miso-affiliation-item-box-max-width: 48rem;
   --miso-affiliation-item-box-shadow: 0 0 8px rgba(0, 0, 128, 0.4);
   --miso-affiliation-item-box-shadow-hover: 0 0 12px rgba(0, 0, 128, 0.4);
 
-  --miso-affiliation-item-header-tab-bg-color: #378;
+  --miso-affiliation-item-header-tab-bg-color: #4080a0;
   --miso-affiliation-item-header-tab-text-color: #fff;
-  --miso-affiliation-item-cta-bg-color: #378;
+  --miso-affiliation-item-cta-bg-color: #408048;
   --miso-affiliation-item-cta-text-color: #fff;
 }
 
 .miso-affiliation {
   .miso-affiliation__body {
-    max-width: 40rem;
+    max-width: var(--miso-affiliation-item-box-max-width);
     margin: 0 auto;
   }
   .miso-affiliation__header-tab {
@@ -177,10 +178,13 @@
   }
   .miso-affiliation__item-cta {
     display: inline-block;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2.5rem;
     background-color: var(--miso-affiliation-item-cta-bg-color);
     color: var(--miso-affiliation-item-cta-text-color);
+    font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 0.25rem;
   }
 }
