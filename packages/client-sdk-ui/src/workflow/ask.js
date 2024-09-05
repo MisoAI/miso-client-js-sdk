@@ -293,7 +293,6 @@ export default class Ask extends Workflow {
       this._context._byQid.delete(questionId);
     }
     this._feedback._destroy();
-    this._autocomplete._destroy();
     super._destroy(options);
   }
 
