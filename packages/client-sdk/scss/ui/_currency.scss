@@ -14,9 +14,14 @@
       content: "¥";
     }
   }
-  &[data-currency]:not([data-currency="EUR"]):not([data-currency="GBP"]):not([data-currency="JPY"]) {
+  &[data-currency="USD"] {
     &::before {
       content: "$";
+    }
+  }
+  &[data-currency]:not([data-currency="EUR"]):not([data-currency="GBP"]):not([data-currency="JPY"]):not([data-currency="USD"]) {
+    &::after {
+      content: " " attr(data-currency);
     }
   }
 }
