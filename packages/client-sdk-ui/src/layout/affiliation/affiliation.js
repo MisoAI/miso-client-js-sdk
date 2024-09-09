@@ -16,9 +16,9 @@ function root(layout, state) {
 
 function ready(layout, state) {
   const { templates } = layout;
-  const { products } = state.value || {};
+  const items = layout._getItems(state);
 
-  if (products && products.length > 0) {
+  if (items && items.length > 0) {
     return templates.body(layout, state);
   } else {
     return templates.empty(layout, state);
@@ -27,9 +27,8 @@ function ready(layout, state) {
 
 function body(layout, state) {
   const { className, templates } = layout;
-  let { channel, products } = state.value;
-  products = products.map(product => ({ channel, ...product }));
-  return `<div class="${className}__body">${templates.header(layout, state)}${templates.list(layout, state, products)}</div>`;
+  const items = layout._getItems(state);
+  return `<div class="${className}__body">${templates.header(layout, state)}${templates.list(layout, state, items)}</div>`;
 }
 
 function header(layout, state) {
@@ -79,6 +78,11 @@ export default class AffiliationLayout extends CollectionLayout {
 
   constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
     super({ className, itemType: 'affiliation', templates: { ...DEFAULT_TEMPLATES, ...templates }, ...options });
+  }
+
+  _getItems(state) {
+    const { products } = state.value || {};
+    return products;
   }
 
 }

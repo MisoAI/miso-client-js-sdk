@@ -42,6 +42,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.SOURCES]: {},
   [ROLE.RELATED_RESOURCES]: {},
+  [ROLE.AFFILIATION]: {},
   [ROLE.QUERY_SUGGESTIONS]: {
     active: true, // we are tracking events at initial stage, when session is not active yet
     click: {

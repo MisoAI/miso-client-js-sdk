@@ -14,11 +14,18 @@ export function processData(data) {
 function processValue(value) {
   if (value.sovrn_aff) {
     const { sovrn_aff, ...rest } = value;
-    return {
+    value = {
       ...rest,
       affiliation: processSovrnData(sovrn_aff),
     }
   }
+
+  // put channel info to items
+  const { channel } = value;
+  if (channel) {
+    value.products = value.products.map(product => ({ channel, ...product }));
+  }
+
   return value;
 }
 

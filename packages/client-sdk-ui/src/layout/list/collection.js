@@ -14,7 +14,7 @@ function root(layout, state) {
 
 function ready(layout, state) {
   const { templates } = layout;
-  const values = state.value;
+  const values = layout._getItems(state);
 
   // TODO: handle categories, attributes, etc. by introducing sublayout
   if ((values && values.length > 0) || state.ongoing) {
@@ -125,7 +125,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
   _html(state, rendered, incremental) {
     if (incremental) {
       const offset = rendered.value.length;
-      const values = state.value.slice(offset);
+      const values = (this._getItems(state) || []).slice(offset);
       return values.length > 0 ? this.templates.items(this, state, values, { offset }) : '';
     } else {
       return this.templates.root(this, state);
@@ -151,11 +151,15 @@ export default class CollectionLayout extends TemplateBasedLayout {
     if (!element) {
       return;
     }
-    const values = state.value || [];
+    const values = this._getItems(state) || [];
     let i = 0;
     for (const itemElement of this._listItemElements(element)) {
       itemElement[VALUE] = values[i++];
     }
+  }
+
+  _getItems(state) {
+    return state.value;
   }
 
   _getListElement(element) {

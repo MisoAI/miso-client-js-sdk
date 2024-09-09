@@ -17,7 +17,8 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
 
 function ready(layout, state) {
   const { templates } = layout;
-  const nonEmpty = state.value && state.value.length > 0;
+  const items = layout._getItems(state);
+  const nonEmpty = items && items.length > 0;
   const html = Object.getPrototypeOf(layout.constructor).defaultTemplates.ready(layout, state);
   return nonEmpty ? templates.carousel(layout, state, html) : html;
 }
@@ -60,7 +61,8 @@ export default class CarouselLayout extends CollectionLayout {
   _render(element, states, controls) {
     super._render(element, states, controls);
     const { state } = states;
-    this._itemCount = state.value ? state.value.length : undefined;
+    const items = this._getItems(state);
+    this._itemCount = items ? items.length : undefined;
     this.syncSize();
   }
 
