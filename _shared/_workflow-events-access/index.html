@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/_main-components-inline/" />
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/_shared/_workflow-events-access/" />
 <meta name="description" content="" />
 
 <meta property="og:title" content="Miso SDK for JavaScript" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/_main-components-inline/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/_shared/_workflow-events-access/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
@@ -17,7 +17,7 @@
 <meta name="twitter:creator" content="@askmiso">
 <meta name="twitter:title" content="Miso SDK for JavaScript">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/_main-components-inline/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/_shared/_workflow-events-access/">
 
 
 
@@ -98,36 +98,7 @@
       <aside>
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
-  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/elements/">Overview</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"></ul>
-      </div>
-    </li><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/elements/containers/">Containers</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/miso-ask/">&lt;miso-ask&gt;</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/miso-explore/">&lt;miso-explore&gt;</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/miso-search/">&lt;miso-search&gt;</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/miso-recommendation/">&lt;miso-recommendation&gt;</a>
-          </li></ul>
-      </div>
-    </li><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/elements/components/">Components</a>
-      <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/miso-query/">&lt;miso-query&gt;</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/miso-answer/">&lt;miso-answer&gt;</a>
-          </li><li class="page  ">
-            <a href="/miso-client-js-sdk/elements/collections/">Collections</a>
-          </li></ul>
-      </div>
-    </li></ul>
+  <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"></ul>
 </div>
 
         </nav>
@@ -141,7 +112,13 @@
         
         
         <div class="content ps-lg-4">
-          <p>``</p>
+          <h3 id="listen-to-events" tabindex="-1">Listen to events</h3>
+<p>You can listen to several events on the `` workflow.</p>
+<h4 id="listen-to-events-on-an-individual-workflow" tabindex="-1">Listen to events on an individual workflow</h4>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'request'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> payload <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When user submits a question in search box.</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> status<span class="token punctuation">,</span> ongoing <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When answer is fully populated</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>To remove an event listener, call the function returned by <code>on</code>:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> off <span class="token operator">=</span> workflow<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> session<span class="token punctuation">,</span> status<span class="token punctuation">,</span> ongoing <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token function">off</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// remove the listener</span></code></pre>
+<p>See <a href="workflow/" target="_blank" rel="noopener">workflow</a> for individual workflow access.</p>
 
         </div>
       </main>

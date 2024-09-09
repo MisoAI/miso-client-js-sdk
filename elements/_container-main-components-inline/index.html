@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Miso SDK for JavaScript</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/workflow/" />
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/_container-main-components-inline/" />
 <meta name="description" content="" />
 
 <meta property="og:title" content="Miso SDK for JavaScript" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/workflow/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/_container-main-components-inline/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
@@ -17,7 +17,7 @@
 <meta name="twitter:creator" content="@askmiso">
 <meta name="twitter:title" content="Miso SDK for JavaScript">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/workflow/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/_container-main-components-inline/">
 
 
 
@@ -134,70 +134,14 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Elements - workflow containers</h1>
           
-          <hr>
+          
+          
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>The following elements serve as containers for corresponding workflows:</p>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Element tag name</th>
-      <th scope="col">Workflow</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>&lt;miso-ask&gt;</code></td>
-      <td><a href="/miso-client-js-sdk/ui/ask/elements/">Ask</a></td>
-    </tr>
-    <tr>
-      <td><code>&lt;miso-search&gt;</code></td>
-      <td><a href="/miso-client-js-sdk/ui/search/elements/">Search</a></td>
-    </tr>
-    <tr>
-      <td><code>&lt;miso-recommendation&gt;</code></td>
-      <td><a href="/miso-client-js-sdk/ui/recommendation/elements/">Recommendation</a></td>
-    </tr>
-  </tbody>
-</table>
-<h3 id="layouts" tabindex="-1">Layouts</h3>
-<p>You can configure the layout options for the workflow elements:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">setLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token comment">//...</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h4 id="logo" tabindex="-1">Logo</h4>
-<p>Turn off Miso logo display globally:</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">setLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">container</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">logo</span><span class="token operator">:</span> <span class="token boolean">false</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>Configure Miso logo display for each workflow element:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-ask</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-ask</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-search</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-search</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Value</th>
-      <th scope="col">Default</th>
-      <th scope="col">Behavior</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>true</code></td>
-      <td></td>
-      <td>Append Miso logo at the end of container visible when data ready.</td>
-    </tr>
-    <tr>
-      <td><code>false</code></td>
-      <td></td>
-      <td>Does not append Miso logo.</td>
-    </tr>
-    <tr>
-      <td><code>"auto"</code></td>
-      <td style="text-align: center">✓</td>
-      <td>Append Miso logo at the end of container visible when data ready only if it contains <code>&lt;miso-products&gt;</code> or <code>&lt;miso-answer&gt;</code>.</td>
-    </tr>
-  </tbody>
-</table>
+          <p>``</p>
 
         </div>
       </main>

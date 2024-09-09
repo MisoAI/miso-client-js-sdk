@@ -115,6 +115,8 @@
           </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/events/">Events</a>
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
           </li></ul>
       </div>
@@ -179,7 +181,7 @@
 <p>You can configure the default API payload for all workflows:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="user-data" tabindex="-1">User data</h4>
-<p>To pass user data to the API, see <a href="api/context/" target="_blank" rel="noopener">API: context</a>.</p>
+<p>To pass user data to the API, see <a href="/miso-client-js-sdk/answers/api/context/" target="_blank" rel="noopener">API context</a>.</p>
 <h3 id="modify-api-response" tabindex="-1">Modify API response</h3>
 <p>You can modify the API response before rendering the UI:</p>
 <pre class="language-js"><code class="language-js"><span class="token comment">// for individual workflow</span><br>workflow<span class="token punctuation">.</span><span class="token function">useDataProcessor</span><span class="token punctuation">(</span><span class="token parameter">data</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> response <span class="token operator">=</span> data<span class="token punctuation">.</span>value<span class="token punctuation">;</span> <span class="token comment">// the API response</span><br>  <span class="token keyword">const</span> <span class="token punctuation">{</span> answer<span class="token punctuation">,</span> sources<span class="token punctuation">,</span> related_resources <span class="token punctuation">}</span> <span class="token operator">=</span> response<span class="token punctuation">;</span><br>  <span class="token comment">// ...modify the response</span><br>  <span class="token keyword">return</span> data<span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// or for all workflows</span><br><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useDataProcessor</span><span class="token punctuation">(</span><span class="token parameter">data</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// ...</span><br>  <span class="token keyword">return</span> data<span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
