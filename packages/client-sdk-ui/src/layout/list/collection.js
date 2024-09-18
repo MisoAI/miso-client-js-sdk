@@ -28,7 +28,7 @@ function list(layout, state, values) {
   const { className, templates, options } = layout;
   const listTag = templates.ordered ? 'ol' : 'ul';
   // TODO: support separator?
-  return `<${listTag} class="${className}__list" data-item-type="${options.itemType}">${templates.items(layout, state, values)}</${listTag}>`;
+  return `<${listTag} class="${className}__list" data-role="list" data-item-type="${options.itemType}">${templates.items(layout, state, values)}</${listTag}>`;
 }
 
 function items(layout, state, values, { offset = 0 } = {}) {
@@ -163,7 +163,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
   }
 
   _getListElement(element) {
-    return element.querySelector(`.${this.className}__list`);
+    return element.querySelector('[data-role="list"]');
   }
 
   _listItemElements(element) {

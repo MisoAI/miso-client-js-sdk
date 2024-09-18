@@ -61,5 +61,5 @@ export default class States {
 
 function getKey(value) {
   // TODO: ad-hoc!
-  return value.product_id || value.text || value;
+  return value.product_id || value.text || value.id || value;
 }

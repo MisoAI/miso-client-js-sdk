@@ -19,18 +19,36 @@ function processValue(value) {
       affiliation: processSovrnData(sovrn_aff),
     }
   }
+  return postProcessValue(value);
+}
 
-  // put channel info to items
-  const { channel } = value;
-  if (channel) {
-    value.products = value.products.map(product => ({ channel, ...product }));
+function postProcessValue(value) {
+  const { affiliation } = value;
+  if (!affiliation) {
+    return value;
   }
-
-  return value;
+  let { channel, products } = affiliation;
+  if (!products) {
+    return value;
+  }
+  products = products.map(product => ({ ...product }));
+  let i = 0;
+  for (const product of products) {
+    if (channel) {
+      product.channel = channel;
+    }
+    product.position = i++;
+  }
+  return {
+    ...value,
+    affiliation: {
+      ...affiliation,
+      products,
+    },
+  };
 }
 
 function processSovrnData({ products, ...sovrn_aff }) {
-  products = products.slice(0, 1);
   return {
     channel: 'sovrn',
     ...sovrn_aff,
@@ -56,7 +74,6 @@ export function processSovrnProduct({
   const brand_logo = merchant && merchant.logo;
   return trimObj({
     id: `sovrn-${id}`,
-    channel: 'sovrn',
     title,
     description,
     cover_image,

@@ -36,13 +36,15 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.SOURCES]: [ListLayout.type, { incremental: true, itemType: 'article', templates: { ordered: true } }],
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, itemType: 'article' }],
   [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
-  [ROLE.AFFILIATION]: [AffiliationLayout.type, { itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
+  [ROLE.AFFILIATION]: [AffiliationLayout.type, { incremental: true, itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.SOURCES]: {},
   [ROLE.RELATED_RESOURCES]: {},
-  [ROLE.AFFILIATION]: {},
+  [ROLE.AFFILIATION]: {
+    viewable: false, // track viewable manually
+  },
   [ROLE.QUERY_SUGGESTIONS]: {
     active: true, // we are tracking events at initial stage, when session is not active yet
     click: {

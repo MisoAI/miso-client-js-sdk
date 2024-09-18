@@ -25,6 +25,7 @@ export function toInteraction({ property, misoId, request }, { event, values, ma
   const product_ids = isProductType ? values.map(v => v.product_id).filter(v => v) : [];
   const items = isProductType ? undefined : values.map(v => v.text || v.id || v);
   const channel = property === ROLE.AFFILIATION ? values[0] && values[0].channel : undefined;
+  const positions = property === ROLE.AFFILIATION ? values.map(v => v.position) : undefined;
   const payload = trimObj({
     type: event === 'viewable' ? 'viewable_impression' : event,
     product_ids,
@@ -35,6 +36,7 @@ export function toInteraction({ property, misoId, request }, { event, values, ma
         property,
         channel,
         items,
+        positions,
         trigger: manual ? 'manual' : 'auto',
         question_source,
       }),

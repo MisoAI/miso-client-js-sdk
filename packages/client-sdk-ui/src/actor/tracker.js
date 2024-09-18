@@ -1,4 +1,4 @@
-import { STATUS, ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
+import { STATUS, ATTR_DATA_MISO_PRODUCT_ID, EVENT_TYPE } from '../constants.js';
 import * as fields from './fields.js';
 import _Tracker from '../util/tracker.js';
 import { fallbackListFunction } from '../util/bindings.js';
@@ -29,6 +29,8 @@ export default class Tracker {
 
     this._unsubscribes = [
       this._tracker.on('*', data => this._handleEvent(data)),
+      // TODO: view actor has another click event that does not comply to this data format
+      ...[EVENT_TYPE.VIEWABLE].map(type => this._view.on(type, values => this._handleViewActorEvent(type, values))),
       hub.on(fields.view(role), () => this.refresh()),
     ];
 
@@ -108,6 +110,10 @@ export default class Tracker {
 
   getState(productId) {
     return this._tracker.getState(productId);
+  }
+
+  _handleViewActorEvent(type, values) {
+    this._tracker._trigger(type, values);
   }
 
   _handleEvent(data) {

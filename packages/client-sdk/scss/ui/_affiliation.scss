@@ -1,15 +1,20 @@
 :root {
   // the gap between list items
-  --miso-affiliation-item-gap: 1.5rem;
+  --miso-affiliation-item-gap: 1rem;
   // the spacing among list item content
   --miso-affiliation-item-content-spacing: 1rem;
 
   --miso-affiliation-image-max-width: 15rem;
+  --miso-affiliation-image-max-height: 20rem;
 
   // how many lines to show for title text
   --miso-affiliation-title-lines: 2;
   // how many lines to show for description text
   --miso-affiliation-description-lines: 4;
+
+  --miso-affiliation-control-button-width: 2.5rem;
+  --miso-affiliation-control-button-color: rgba(0, 0, 0, 0.1);
+  --miso-affiliation-control-button-color-hover: rgba(0, 0, 0, 0.2);
 
   --miso-affiliation-item-box-max-width: 48rem;
   --miso-affiliation-item-box-shadow: 0 0 8px rgba(0, 0, 128, 0.4);
@@ -22,11 +27,88 @@
 }
 
 .miso-affiliation {
+  display: flex;
+  flex-direction: row;
+  //gap: var(--miso-affiliation-item-gap);
+
+  .miso-affiliation__control-previous,
+  .miso-affiliation__control-next {
+    flex-grow: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.5rem;
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border: var(--miso-affiliation-control-button-width) solid transparent;
+      transition: border-color 0.25s;
+    }
+  }
+  .miso-affiliation__control-previous {
+    margin-left: auto;
+
+    &::before {
+      border-right-color: var(--miso-affiliation-control-button-color);
+      border-left: none;
+    }
+    &:hover::before {
+      border-right-color: var(--miso-affiliation-control-button-color-hover);
+    }
+  }
+  .miso-affiliation__control-next {
+    margin-right: auto;
+
+    &::before {
+      border-left-color: var(--miso-affiliation-control-button-color);
+      border-right: none;
+    }
+    &:hover::before {
+      border-left-color: var(--miso-affiliation-control-button-color-hover);
+    }
+  }
+  &[data-item-count="0"],
+  &[data-item-count="1"] {
+    .miso-affiliation__control-previous,
+    .miso-affiliation__control-next {
+      display: none;
+    }
+  }
+
   .miso-affiliation__body {
+    flex-grow: 1;
     max-width: var(--miso-affiliation-item-box-max-width);
     margin: 0 auto;
+    overflow: hidden;
+    padding: 0.5rem 0;
   }
-  .miso-affiliation__header-tab {
+  ol.miso-affiliation__list,
+  ul.miso-affiliation__list {
+    &[data-item-type="affiliation"] {
+      list-style: none !important;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      position: relative;
+      left: 0;
+      transition: left 0.2s;
+
+      li.miso-affiliation__item {
+        width: 100%;
+        flex-shrink: 0;
+        flex-grow: 0;
+        margin: 0;
+        padding: 0 var(--miso-affiliation-item-gap);
+      }
+    }
+  }
+  .miso-affiliation__item-header-tab {
     display: inline-block;
     padding: 0.5em 1em;
     background: var(--miso-affiliation-item-header-tab-bg-color);
@@ -35,23 +117,14 @@
     font-weight: 500;
     user-select: none;
   }
-  ol.miso-affiliation__list,
-  ul.miso-affiliation__list {
-    &[data-item-type="affiliation"] {
-      list-style: none !important;
-      padding: 0;
-      margin: 0;
-
-      li.miso-affiliation__item {
-        margin: var(--miso-affiliation-item-gap) 0 0;
-
-        &:first-child {
-          margin-top: 0;
-        }
-      }
-    }
-  }
-  .miso-affiliation__item {
+  .miso-affiliation__item-body {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--miso-affiliation-item-content-spacing);
+    position: relative;
+    height: auto;
+    padding: var(--miso-affiliation-item-content-spacing);
+    user-select: none;
     border: 1px solid var(--miso-border-color-light);
     background-color: #fff;
     box-shadow: var(--miso-affiliation-item-box-shadow);
@@ -62,15 +135,6 @@
       box-shadow: var(--miso-affiliation-item-box-shadow-hover);
     }
   }
-  .miso-affiliation__item-body {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--miso-affiliation-item-content-spacing);
-    position: relative;
-    height: auto;
-    padding: var(--miso-affiliation-item-content-spacing);
-    user-select: none;
-  }
   a.miso-affiliation__item-body {
     cursor: pointer;
     text-decoration: none;
@@ -79,6 +143,7 @@
   .miso-affiliation__item-cover-image-container {
     position: relative;
     max-width: var(--miso-affiliation-image-max-width);
+    max-height: var(--miso-affiliation-image-max-height);
     flex-shrink: 0;
     border-radius: 0.5rem;
     overflow: hidden;
