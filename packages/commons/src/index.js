@@ -27,6 +27,7 @@ export { default as EventEmitter } from './events.js';
 export { default as Component } from './component.js';
 export { default as Registry } from './registry.js';
 export { default as ContinuityObserver } from './continuity.js';
+export { default as CarouselItemViewabilityObserver } from './carousel-viewable.js';
 export { default as ValueBuffer } from './value-buffer.js';
 export { default as StallTimeoutAbortController } from './stall-timeout.js';
 

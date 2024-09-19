@@ -1,6 +1,6 @@
-import { ContinuityObserver } from '@miso.ai/commons';
+import ContinuityObserver from './continuity.js';
 
-export default class CarouselItemViewableTracker {
+export default class CarouselItemViewabilityObserver {
 
   constructor(callback, { area = 0.5, duration = 1000 } = {}) {
     this._callback = callback;
@@ -35,6 +35,14 @@ export default class CarouselItemViewableTracker {
   disconnect() {
     this._continuity.disconnect();
     this._intersection.disconnect();
+  }
+
+  get triggeredCount() {
+    return this._triggered.size;
+  }
+
+  get triggered() {
+    return new Set(this._triggered);
   }
 
   _syncContinuity() {

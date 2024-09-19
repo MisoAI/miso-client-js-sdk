@@ -1,7 +1,7 @@
+import { CarouselItemViewabilityObserver } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY, EVENT_TYPE } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
 import { affiliation } from '../templates.js';
-import CarouselItemViewableTracker from './viewable.js';
 
 const TYPE = 'affiliation';
 const DEFAULT_CLASSNAME = 'miso-affiliation';
@@ -110,7 +110,7 @@ export default class AffiliationLayout extends CollectionLayout {
     this._itemCount = undefined;
     this._itemIndex = 0;
     this._displayedIndex = undefined;
-    this._viewable = new CarouselItemViewableTracker(this._onViewable.bind(this));
+    this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this));
   }
 
   get itemIndex() {
