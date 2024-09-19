@@ -148,13 +148,13 @@ export default class AffiliationLayout extends CollectionLayout {
     if (this._autoplay.options) {
       clearInterval(this._autoplay.intervalId);
     }
+    this._autoplay = { options };
     // TODO: use slower transition speed for autoplay
     // TODO: pause on hover
     // TODO: cooldown after manual interaction
-    this._autoplay = {
-      options,
-      intervalId: setInterval(() => this.next(), options.interval),
-    };
+    if (options) {
+      this._autoplay.intervalId = setInterval(() => this.next(), options.interval);
+    }
   }
 
   get itemIndex() {
