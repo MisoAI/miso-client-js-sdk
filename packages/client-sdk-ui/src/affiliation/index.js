@@ -32,6 +32,7 @@ function postProcessValue(value) {
     return value;
   }
   products = products.map(product => ({ ...product }));
+  products = [...products, ...products];
   let i = 0;
   for (const product of products) {
     if (channel) {

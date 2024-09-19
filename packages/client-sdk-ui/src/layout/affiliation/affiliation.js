@@ -1,4 +1,4 @@
-import { CarouselItemViewabilityObserver } from '@miso.ai/commons';
+import { CarouselItemViewabilityObserver, requestAnimationFrame as raf } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY, EVENT_TYPE } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
 import { affiliation } from '../templates.js';
@@ -87,6 +87,29 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
   ...DEFAULT_TEMPLATES,
 });
 
+function normalizeAutoplayOptions(options) {
+  if (options === true) {
+    options = { interval: 5000 };
+  } else if (typeof options === 'number') {
+    if (options <= 0) {
+      options = false;
+    } else {
+      options = { interval: Math.max(options, 500) };
+    }
+  }
+  return options;
+}
+
+function autoplayOptionsEquals(a, b) {
+  if (a === b) {
+    return true;
+  }
+  if (!a || !b) {
+    return false;
+  }
+  return a.interval === b.interval;
+}
+
 export default class AffiliationLayout extends CollectionLayout {
 
   static get category() {
@@ -105,33 +128,40 @@ export default class AffiliationLayout extends CollectionLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+  constructor({ className = DEFAULT_CLASSNAME, templates, autoplay, ...options } = {}) {
     super({ className, itemType: 'affiliation', templates: { ...DEFAULT_TEMPLATES, ...templates }, ...options });
     this._itemCount = undefined;
     this._itemIndex = 0;
+    this._displayedCount = undefined;
     this._displayedIndex = undefined;
+    this._autoplay = {};
     this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this));
+
+    this.autoplay(autoplay);
+  }
+
+  autoplay(options = true) {
+    options = normalizeAutoplayOptions(options);
+    if (autoplayOptionsEquals(options, this._autoplay.options)) {
+      return;
+    }
+    if (this._autoplay.options) {
+      clearInterval(this._autoplay.intervalId);
+    }
+    // TODO: use slower transition speed for autoplay
+    // TODO: pause on hover
+    // TODO: cooldown after manual interaction
+    this._autoplay = {
+      options,
+      intervalId: setInterval(() => this.next(), options.interval),
+    };
   }
 
   get itemIndex() {
     return this._itemIndex;
   }
 
-  next() {
-    if (this._itemCount === undefined) {
-      return;
-    }
-    this.go(this._itemIndex + 1);
-  }
-
-  previous() {
-    if (this._itemCount === undefined) {
-      return;
-    }
-    this.go(this._itemIndex - 1);
-  }
-
-  go(index) {
+  set itemIndex(index) {
     if (this._itemCount === undefined) {
       return;
     }
@@ -141,7 +171,21 @@ export default class AffiliationLayout extends CollectionLayout {
       index = 0;
     }
     this._itemIndex = index;
-    this._syncItemIndex();
+    raf(() => this._syncItemIndex());
+  }
+
+  next() {
+    if (this._itemCount === undefined) {
+      return;
+    }
+    this.itemIndex++;
+  }
+
+  previous() {
+    if (this._itemCount === undefined) {
+      return;
+    }
+    this.itemIndex--;
   }
 
   _getItems(state) {
@@ -151,8 +195,15 @@ export default class AffiliationLayout extends CollectionLayout {
 
   _render(element, states, controls) {
     super._render(element, states, controls);
-    this._syncItemCount(element, states);
-    this._syncItemIndex();
+
+    // update item count, but raf to display as attribute
+    const items = this._getItems(states.state);
+    this._itemCount = items ? items.length : undefined;
+
+    raf(() => {
+      this._syncItemCount();
+      this._syncItemIndex();
+    });
   }
 
   _syncElement(element) {
@@ -169,14 +220,17 @@ export default class AffiliationLayout extends CollectionLayout {
     newElement && this._viewable.observe(newElement);
   }
 
-  _syncItemCount(element, states) {
+  _syncItemCount() {
+    const itemCount = this._itemCount;
+    if (itemCount === this._displayedCount) {
+      return;
+    }
+    let { element } = this._view;
     element = element.firstElementChild;
     if (!element) {
       return;
     }
-    const { state } = states;
-    const items = this._getItems(state);
-    const itemCount = this._itemCount = items ? items.length : undefined;
+    this._displayedCount = itemCount;
     if (itemCount === undefined) {
       element.removeAttribute('data-item-count');
     } else {
@@ -185,14 +239,13 @@ export default class AffiliationLayout extends CollectionLayout {
   }
 
   _syncItemIndex() {
-    // TODO: raf
+    const index = this._itemIndex;
+    if (index === this._displayedIndex) {
+      return;
+    }
     const { element } = this._view;
     const listElement = element && this._getListElement(element);
     if (!listElement) {
-      return;
-    }
-    const index = this._itemIndex;
-    if (index === this._displayedIndex) {
       return;
     }
     this._displayedIndex = index;
@@ -206,6 +259,7 @@ export default class AffiliationLayout extends CollectionLayout {
     if (!item) {
       return;
     }
+    // TODO: view should provide internal API for this
     this._view._events.emit(EVENT_TYPE.VIEWABLE, [item]);
   }
 
