@@ -2,10 +2,13 @@ import ContinuityObserver from './continuity.js';
 
 export default class CarouselItemViewabilityObserver {
 
-  constructor(callback, { area = 0.5, duration = 1000 } = {}) {
+  constructor(callback, options) {
     this._callback = callback;
-    this._intersection = new IntersectionObserver(this._handleIntersection.bind(this), { threshold: area });
-    this._continuity = new ContinuityObserver(this._handleContinuity.bind(this), { onDuration: duration });
+    this._options = options || {};
+    if (options !== false) {
+      this._intersection = new IntersectionObserver(this._handleIntersection.bind(this), { threshold: options.area || 0.5 });
+      this._continuity = new ContinuityObserver(this._handleContinuity.bind(this), { onDuration: options.duration || 1000 });
+    }
 
     this._displayed = undefined;
     this._intersecting = false;
@@ -13,14 +16,23 @@ export default class CarouselItemViewabilityObserver {
   }
 
   observe(element) {
+    if (this._options === false) {
+      return;
+    }
     this._intersection.observe(element);
   }
 
   unobserve(element) {
+    if (this._options === false) {
+      return;
+    }
     this._intersection.unobserve(element);
   }
 
   display(index) {
+    if (this._options === false) {
+      return;
+    }
     if (this._triggered.has(index)) {
       index = undefined;
     }
@@ -33,6 +45,9 @@ export default class CarouselItemViewabilityObserver {
   }
 
   disconnect() {
+    if (this._options === false) {
+      return;
+    }
     this._continuity.disconnect();
     this._intersection.disconnect();
   }

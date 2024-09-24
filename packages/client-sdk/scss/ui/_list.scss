@@ -145,4 +145,9 @@
   .miso-list__item-price {
     color: var(--miso-text-color);
   }
+  .miso-list__item-original-price {
+    font-size: 0.9rem;
+    color: var(--miso-text-color-gray);
+    text-decoration: line-through;
+  }
 }

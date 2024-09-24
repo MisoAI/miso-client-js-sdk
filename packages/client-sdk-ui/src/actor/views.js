@@ -2,6 +2,7 @@ import { defineValues, delegateGetters } from '@miso.ai/commons';
 import { STATUS, ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
+import { normalizeTrackerOptions } from '../util/trackers.js';
 
 export default class ViewsActor {
 
@@ -34,9 +35,11 @@ export default class ViewsActor {
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
       hub.on(fields.data(), () => this.refresh()),
+      options.on('trackers', () => this._syncTrackers()),
       options.on('layouts', () => this._syncLayouts()),
     ];
 
+    this._syncTrackers();
     this._syncLayouts();
   }
 
@@ -183,6 +186,14 @@ export default class ViewsActor {
       this._data = Object.freeze({ ...data, status, ongoing });
     }
     return this._data;
+  }
+
+  _syncTrackers() {
+    this._trackerOptions = this._options.resolved.trackers;
+  }
+
+  _getTrackerOptions(role) {
+    return normalizeTrackerOptions((this._trackerOptions && this._trackerOptions[role]) || false);
   }
 
   _error(e) {

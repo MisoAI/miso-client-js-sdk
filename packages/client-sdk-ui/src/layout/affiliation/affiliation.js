@@ -134,10 +134,16 @@ export default class AffiliationLayout extends CollectionLayout {
     this._itemIndex = 0;
     this._displayedCount = undefined;
     this._displayedIndex = undefined;
+    this._viewable = undefined;
     this._autoplay = {};
-    this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this));
 
     this.autoplay(autoplay);
+  }
+
+  initialize(view) {
+    super.initialize(view);
+    const { viewable: options } = this._view.trackerOptions || {};
+    this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this), options);
   }
 
   autoplay(options = true) {
@@ -259,8 +265,7 @@ export default class AffiliationLayout extends CollectionLayout {
     if (!item) {
       return;
     }
-    // TODO: view should provide internal API for this
-    this._view._events.emit(EVENT_TYPE.VIEWABLE, [item]);
+    this._view._track(EVENT_TYPE.VIEWABLE, [item]);
   }
 
   _getRenderedItemData(index) {
@@ -271,6 +276,8 @@ export default class AffiliationLayout extends CollectionLayout {
     const { products = [] } = value;
     return products[index];
   }
+
+  _trackViewables() {} // omit default behavior for we want to track by other means
 
   _onClick(event) {
     super._onClick(event);

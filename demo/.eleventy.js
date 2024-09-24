@@ -30,6 +30,7 @@ module.exports = function(config) {
   config.addNunjucksGlobal('helpers', new Helpers());
   config.addGlobalData('layout', 'base.njk');
   config.addGlobalData('DEFAULT_ASK_API_KEY', process.env.DEFAULT_ASK_API_KEY);
+  config.addGlobalData('DEFAULT_PRODUCT_ID', process.env.DEFAULT_PRODUCT_ID);
 
   return {
     markdownTemplateEngine: 'njk', // 11ty offers stronger context support with njk toolchain

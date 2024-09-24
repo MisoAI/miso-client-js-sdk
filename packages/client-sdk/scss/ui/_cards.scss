@@ -116,6 +116,11 @@
   }
 
   .miso-cards__item-price {
-    color: #23262b;
+    color: var(--miso-text-color);
+  }
+  .miso-cards__item-original-price {
+    font-size: 0.9rem;
+    color: var(--miso-text-color-gray);
+    text-decoration: line-through;
   }
 }

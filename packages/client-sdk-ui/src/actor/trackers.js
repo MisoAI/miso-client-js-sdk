@@ -12,7 +12,9 @@ export default class Trackers {
   }
 
   _syncConfig() {
-    for (const [role, options] of Object.entries(this._options.resolved.trackers)) {
+    // TODO: trackers itself can be falsy
+    const { trackers } = this._options.resolved;
+    for (const [role, options] of Object.entries(trackers)) {
       this._createOrConfigTracker(role, options);
     }
   }

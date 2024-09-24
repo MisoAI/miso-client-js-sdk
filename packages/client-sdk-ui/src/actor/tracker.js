@@ -1,96 +1,63 @@
-import { STATUS, ATTR_DATA_MISO_PRODUCT_ID, EVENT_TYPE } from '../constants.js';
+import { asArray } from '@miso.ai/commons';
+import { EVENT_TYPE, TRACKING_EVENT_TYPES, TRACKING_STATUS, validateEventType } from '../constants.js';
 import * as fields from './fields.js';
-import _Tracker from '../util/tracker.js';
-import { fallbackListFunction } from '../util/bindings.js';
+import States from '../util/states.js';
+import { normalizeTrackerOptions } from '../util/trackers.js';
 import { toInteraction } from './utils.js';
 
-function isReady(viewState) {
-  return viewState && viewState.status === STATUS.READY;
-}
+const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
 
 export default class Tracker {
 
   constructor(hub, view, { active, bindings, ...options } = {}) {
     this._hub = hub;
     this._view = view;
-    this._bindings = bindings;
-    const role = this._role = view.role;
+    this._role = view.role;
     // TODO: know item type
 
-    this._tracker = new _Tracker({
-      bindings: {
-        list: element => this._listBindingsFn()(element),
-      },
-      proxyElement: view.proxyElement,
-      sessionId: () => this._getSessionId(),
-      active: active || (() => this._isViewReady()),
-      ...options,
-    });
+    this._states = undefined;
+    this.config(options);
 
     this._unsubscribes = [
-      this._tracker.on('*', data => this._handleEvent(data)),
-      // TODO: view actor has another click event that does not comply to this data format
-      ...[EVENT_TYPE.VIEWABLE].map(type => this._view.on(type, values => this._handleViewActorEvent(type, values))),
-      hub.on(fields.view(role), () => this.refresh()),
+      ...TRACKING_EVENT_TYPES.map(type => this._view.trackingEvents.on(type, values => this._trigger(type, values))),
+      hub.on(fields.view(view.role), () => this._syncSession()),
     ];
 
-    this.refresh();
+    this._syncSession();
   }
 
   config(options) {
-    this._tracker.config(options);
+    this._options = normalizeTrackerOptions(options);
   }
 
   start() {
     throw new Error(`workflow.tracker.start() is deprecated. Use workflow.startTracker() instead.`);
   }
 
-  refresh() {
-    this._tracker.refresh();
+  impression(items, options) {
+    this._trigger(IMPRESSION, items, true);
   }
 
-  impression(productIds, options) {
-    this._assertViewReady();
-    this._tracker.impression(productIds.map(product_id => ({ product_id })), options);
+  viewable(items, options) {
+    this._trigger(VIEWABLE, items, true);
   }
 
-  viewable(productIds, options) {
-    this._assertViewReady();
-    this._tracker.viewable(productIds.map(product_id => ({ product_id })), options);
-  }
-
-  click(productIds, options) {
-    this._assertViewReady();
-    this._tracker.click(productIds.map(product_id => ({ product_id })), options);
-  }
-
-  _listBindingsFn() {
-    if (this._bindings && typeof this._bindings.list === 'function') {
-      return this._bindings.list;
-    }
-    const { layout } = this._view;
-    if (layout && layout.bindings && typeof layout.bindings.list === 'function') {
-      return layout.bindings.list;
-    }
-    // TODO: only if item is product typed
-    return fallbackListFunction(ATTR_DATA_MISO_PRODUCT_ID);
-  }
-
-  _assertViewReady() {
-    if (!this._hub.active) {
-      throw new Error(`Workflow is not active. Call workflow.start() to activate it.`);
-    }
-    if (!isReady(this._getViewState())) {
-      throw new Error(`Workflow is not rendered yet. If you handle rendering by yourself, call workflow.notifyViewUpdate() when DOM is ready.`);
-    }
+  click(items, options) {
+    this._trigger(CLICK, items, true);
   }
 
   _getViewState() {
     return this._hub.states[fields.view(this._role)];
   }
 
-  _isViewReady() {
-    return this._hub.active && isReady(this._getViewState());
+  _syncSession() {
+    const sessionId = this._getSessionId();
+    if (!sessionId) {
+      return;
+    }
+    if (!this._states || sessionId !== this._states.sessionId) {
+      this._states = new States(sessionId);
+    }
   }
 
   _getSessionId() {
@@ -108,20 +75,25 @@ export default class Tracker {
     return request && request.payload;
   }
 
-  getState(productId) {
-    return this._tracker.getState(productId);
+  getState(item) {
+    return this._states.getFullState(item);
   }
 
-  _handleViewActorEvent(type, values) {
-    this._tracker._trigger(type, values);
-  }
+  _trigger(type, items, manual = false) {
+    validateEventType(type);
 
-  _handleEvent(data) {
+    items = this._states.untriggered(asArray(items), type);
+    if (items.length === 0) {
+      return;
+    }
+    this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
+
     const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
     const misoId = this._getMisoId();
     const request = this._getRequestPayload();
+
     // TODO: should trigger 'tracker' and let workflow translate to interactions
-    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId, request }, data));
+    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId, request }, { event: type, values: items, manual }));
   }
 
   _destroy() {
@@ -129,7 +101,6 @@ export default class Tracker {
       unsubscribe();
     }
     this._unsubscribes = [];
-    this._tracker.destroy();
   }
 
 }

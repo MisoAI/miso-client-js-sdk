@@ -123,7 +123,7 @@ export function priceBlock(layout, data) {
   content += `<span class="${className}__item-price miso-price" data-currency="${currency}">${price}</span>`;
   // discount rate
   if (discount_rate_percent) {
-    const text = (templates.discountRateText || discountRateText)(layout, data);
+    const text = (templates.discountRateText || discountRateText)(layout, { ...data, discount_rate_percent });
     content += ` <span class="${className}__item-discount-rate">${text}</span>`;
   }
   return `<div class="${className}__item-price-container">${content}</div>`;

@@ -81,7 +81,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       onDebug,
     });
     // capture citation link click if necessary
-    this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._handleClick(e)));
+    this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._onClick(e)));
   }
 
   _getSource(index) {
@@ -148,7 +148,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
   }
 
   // event //
-  _handleClick({ target }) {
+  _onClick({ target }) {
     const element = target.closest(`[data-role="citation-link"]`);
     if (!element) {
       return;

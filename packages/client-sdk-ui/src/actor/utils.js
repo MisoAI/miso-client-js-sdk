@@ -22,7 +22,7 @@ export function toInteraction({ property, misoId, request }, { event, values, ma
   // TODO: ad-hoc
   const question_source = request && request._meta && request._meta.question_source;
   const isProductType = isProduct(property);
-  const product_ids = isProductType ? values.map(v => v.product_id).filter(v => v) : [];
+  const product_ids = isProductType ? values.map(v => typeof v === 'string' ? v : v.product_id).filter(v => v) : [];
   const items = isProductType ? undefined : values.map(v => v.text || v.id || v);
   const channel = property === ROLE.AFFILIATION ? values[0] && values[0].channel : undefined;
   const positions = property === ROLE.AFFILIATION ? values.map(v => v.position) : undefined;

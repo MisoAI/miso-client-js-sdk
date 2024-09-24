@@ -74,7 +74,7 @@ export async function viewable(element, {
 } = {}) {
   element = asElement(element);
   // TODO: check element
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const continuity = new ContinuityObserver((value) => {
       if (value) {
         continuity.disconnect();
@@ -95,6 +95,7 @@ export async function viewable(element, {
       signal.addEventListener('abort', () => {
         continuity.disconnect();
         intersection.disconnect();
+        reject(new DOMException('Aborted', 'AbortError'));
       });
     }
   });

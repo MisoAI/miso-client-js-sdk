@@ -1,9 +1,8 @@
-import { defineValues, escapeHtml } from '@miso.ai/commons';
+import { escapeHtml } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
-
-const OPTION_VALUE = Symbol.for('miso.option-value');
+import { makeTrackable } from '../trackable.js';
 
 const TYPE = 'option-list';
 const DEFAULT_CLASSNAME = 'miso-option-list';
@@ -64,11 +63,7 @@ export default class OptionListLayout extends TemplateBasedLayout {
       templates: { ...DEFAULT_TEMPLATES, ...templates },
       ...options,
     });
-    defineValues(this, {
-      bindings: Object.freeze({
-        list: this._listBindings.bind(this),
-      }),
-    });
+    this._initTrackable();
   }
 
   initialize(view) {
@@ -89,59 +84,48 @@ export default class OptionListLayout extends TemplateBasedLayout {
 
   _render(element, data, controls) {
     super._render(element, data, controls);
-    this._syncOptionValues(element, data);
+    const { state } = data;
+    this._syncBindings(element, state);
+    this._syncOptionValues(element, state);
   }
 
-  _syncOptionValues(element, { state }) {
-    if (!element) {
-      return;
-    }
-    const optionsElement = this._getOptionsElement(element);
+  _unrender() {
+    this._clearBindings();
+  }
+
+  _syncOptionValues(element, state) {
+    const optionsElement = element && this._getOptionsElement(element);
     if (!optionsElement) {
       return;
     }
-    const optionValues = state.value || [];
+    const optionValues = this._getItems(state) || [];
     optionsElement.classList[optionValues.length === 0 ? 'add' : 'remove']('empty');
-    let i = 0;
-    for (const optionElement of this._listOptionElements(optionsElement)) {
-      optionElement[OPTION_VALUE] = optionValues[i++];
-    }
   }
 
-  _listBindings(rootElement) {
-    if (!rootElement) {
-      return [];
-    }
-    const optionsElement = this._getOptionsElement(rootElement);
-    const bindings = [];
-    for (const element of this._listOptionElements(optionsElement)) {
-      const value = element[OPTION_VALUE];
-      if (!value) {
-        continue;
-      }
-      const key = value.text || value;
-      bindings.push({ key, value, element });
-    }
-    return bindings;
+  _getItems(state) {
+    return state.value;
   }
 
   _getOptionsElement(element) {
     return element.querySelector(`[data-role="options"]`);
   }
 
-  _listOptionElements(optionsElement) {
-    return optionsElement ? Array.from(optionsElement.querySelectorAll(`[data-role="option"]`)) : [];
+  _getItemElements(element) {
+    return element ? Array.from(element.querySelectorAll(`[data-role="option"]`)) : [];
   }
 
-  _handleClick(e) {
-    for (let element = e.target; element && element !== this._view.element; element = element.parentElement) {
-      const option = element[OPTION_VALUE];
-      if (!option) {
-        continue;
-      }
-      this._submit(option.text);
+  _handleClick(event) {
+    const element = event.target.closest(`[data-role="option"]`);
+    if (!element) {
       return;
     }
+    const binding = this._bindings.get(element);
+    const option = binding && binding.value;
+    if (!option) {
+      return;
+    }
+    this._trackClick(event, binding);
+    this._submit(option.text);
   }
 
   async _submit(value) {
@@ -152,4 +136,12 @@ export default class OptionListLayout extends TemplateBasedLayout {
     this._view.hub.trigger(fields.query(), { q: value });
   }
 
+  destroy() {
+    this._destroyTrackable();
+    this._view = undefined;
+    super.destroy();
+  }
+
 }
+
+makeTrackable(OptionListLayout.prototype);

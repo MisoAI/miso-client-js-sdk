@@ -21,10 +21,13 @@ export default class ViewActor {
   constructor(views, role) {
     this._events = new EventEmitter({ target: this });
     this._views = views;
+    const trackingEvents = {};
+    this._trackingEvents = new EventEmitter({ target: trackingEvents });
 
     defineValues(this, {
       role,
       interface: new View(this),
+      trackingEvents,
     });
   }
 
@@ -134,6 +137,14 @@ export default class ViewActor {
     this.hub.update(fields.view(role), state, { silent });
   }
 
+  get trackerOptions() {
+    return this._views._getTrackerOptions(this.role);
+  }
+
+  _track(type, items) {
+    this._trackingEvents.emit(type, items);
+  }
+
   _sliceData({ value, error, status, meta, ...rest }) {
     const sliced = {
       value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
@@ -205,7 +216,7 @@ export default class ViewActor {
 class View {
 
   constructor(actor) {
-    delegateGetters(this, actor, ['role', 'layout', 'element', 'proxyElement', 'refresh', 'on']);
+    delegateGetters(this, actor, ['role', 'layout', 'element', 'proxyElement', 'refresh', 'on', 'trackingEvents']);
   }
 
 }

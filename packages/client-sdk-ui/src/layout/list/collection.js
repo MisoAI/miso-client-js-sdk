@@ -1,9 +1,7 @@
-import { defineValues } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
+import { makeTrackable } from '../trackable.js';
 import { product, article, question, productInfoBlock, articleInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock, helpers } from '../templates.js';
-
-const VALUE = Symbol.for('miso.value');
 
 function root(layout, state) {
   const { className, role, templates } = layout;
@@ -88,18 +86,13 @@ export default class CollectionLayout extends TemplateBasedLayout {
       itemType,
       ...options,
     });
-    defineValues(this, {
-      bindings: Object.freeze({
-        list: this._listBindings.bind(this),
-      }),
-    });
     this._view = undefined;
+    this._initTrackable();
   }
 
   initialize(view) {
     this._view = view;
-    const { proxyElement } = this._view = view;
-    this._unsubscribes.push(proxyElement.on('click', this._onClick.bind(this)));
+    this._unsubscribes.push(view.proxyElement.on('click', this._onClick.bind(this)));
   }
 
   _preprocess({ state, rendered }) {
@@ -144,18 +137,11 @@ export default class CollectionLayout extends TemplateBasedLayout {
     } else {
       element.innerHTML = html;
     }
-    this._syncValues(element, state);
+    this._syncBindings(element, state);
   }
 
-  _syncValues(element, state) {
-    if (!element) {
-      return;
-    }
-    const values = this._getItems(state) || [];
-    let i = 0;
-    for (const itemElement of this._listItemElements(element)) {
-      itemElement[VALUE] = values[i++];
-    }
+  _unrender() {
+    this._clearBindings();
   }
 
   _getItems(state) {
@@ -166,24 +152,8 @@ export default class CollectionLayout extends TemplateBasedLayout {
     return element.querySelector('[data-role="list"]');
   }
 
-  _listItemElements(element) {
+  _getItemElements(element) {
     return element ? Array.from(element.querySelectorAll(`[data-role="item"]`)) : [];
-  }
-
-  _listBindings(rootElement) {
-    if (!rootElement) {
-      return [];
-    }
-    const bindings = [];
-    for (const element of this._listItemElements(rootElement)) {
-      const value = element[VALUE];
-      if (!value) {
-        continue;
-      }
-      const key = this.options.itemType === 'product' ? value.product_id : value;
-      bindings.push({ element, key, value });
-    }
-    return bindings;
   }
 
   _onClick(event) {
@@ -191,14 +161,26 @@ export default class CollectionLayout extends TemplateBasedLayout {
     if (!element) {
       return;
     }
-    const value = element[VALUE];
+    const binding = this._bindings.get(element);
+    if (!binding) {
+      return;
+    }
+    this._trackClick(event, binding);
+    this._emitClickEvent(event, binding);
+  }
+
+  _emitClickEvent(event, binding) {
     const { session } = this._view._state;
+    const { value, element } = binding;
     this._view._events.emit('click', { session, value, element, domEvent: event });
   }
 
   destroy() {
+    this._destroyTrackable();
     this._view = undefined;
     super.destroy();
   }
 
 }
+
+makeTrackable(CollectionLayout.prototype);

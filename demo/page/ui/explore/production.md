@@ -10,7 +10,7 @@ misocmd.push(() => {
   const client = new MisoClient(window.DEFAULT_ASK_API_KEY);
   const workflow = client.ui.explore;
   workflow.useApi({
-    product_id: 'aaa',
+    product_id: window.DEFAULT_PRODUCT_ID || 'aaa',
   });
   workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`);
   workflow.start();

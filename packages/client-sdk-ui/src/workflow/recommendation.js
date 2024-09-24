@@ -53,6 +53,7 @@ export default class Recommendation extends Workflow {
     return this;
   }
 
+  // TODO: deprecate this
   startTracker() {
     this.useApi(false);
     this.useLayouts(false);

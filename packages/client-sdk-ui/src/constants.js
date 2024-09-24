@@ -59,6 +59,12 @@ export const EVENT_TYPE = Object.freeze({
   CLICK: 'click',
 });
 
+export const TRACKING_EVENT_TYPES = [
+  EVENT_TYPE.IMPRESSION,
+  EVENT_TYPE.VIEWABLE,
+  EVENT_TYPE.CLICK,
+];
+
 export const TRACKING_STATUS = Object.freeze({
   UNTRACKED: 'untracked',
   TRACKING: 'tracking',
@@ -77,7 +83,7 @@ export const STATUS = Object.freeze({
 });
 
 export function validateEventType(value) {
-  if (value !== EVENT_TYPE.IMPRESSION && value !== EVENT_TYPE.VIEWABLE && value !== EVENT_TYPE.CLICK) {
+  if (TRACKING_EVENT_TYPES.indexOf(value) < 0) {
     throw new Error(`Unrecognized event type: ${value}`);
   }
 }

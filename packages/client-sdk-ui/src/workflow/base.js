@@ -47,8 +47,8 @@ export default class Workflow extends Component {
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source: sources.api(client), options });
     const views = this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
-    this._interactions = new InteractionsActor(hub, { client, options });
     this._trackers = new Trackers(hub, { views, options });
+    this._interactions = new InteractionsActor(hub, { client, options });
 
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
