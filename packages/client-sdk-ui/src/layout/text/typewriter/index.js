@@ -1,7 +1,6 @@
-import { trimObj, defineValues, Resolution } from '@miso.ai/commons';
+import { trimObj, defineValues, Resolution, pacer } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY, STATUS } from '../../../constants.js';
 import ProgressiveLayout from '../../progressive.js';
-import ProgressController from './progress.js';
 import PlaintextRenderer from './plaintext.js';
 import { containerElement, cursorClassName, fromSameSession } from './utils.js';
 
@@ -27,6 +26,9 @@ export default class TypewriterLayout extends ProgressiveLayout {
     tag = 'auto',
     format = 'markdown',
     tooltip = false,
+    speed,
+    acceleration,
+    nextCursorFn,
     ...options
   } = {}) {
     super({
@@ -39,7 +41,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       className,
     });
     this._prevState = undefined;
-    this._progress = new ProgressController(options);
+    this._getNextCursor = typeof nextCursorFn === 'function' ? nextCursorFn : pacer({ speed, acceleration });
     this._readiness = new Resolution();
 
     // kick off sooner
@@ -134,7 +136,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       // new typing streak
       result = this._renderer.clear(container, rendered);
     } else {
-      const cursor = this._progress.get(rendered, state);
+      const cursor = this._getNextCursor(rendered.cursor, state.doneAt, rendered.timestamp, state.timestamp);
       result = this._renderer.update(container, rendered, { ...state, cursor });
     }
     writeToState(result);
