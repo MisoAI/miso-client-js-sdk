@@ -5,7 +5,7 @@ export default function pacer(options) {
   const speedFn = normalizeSpeedFunction(options);
   return (previousCursor, doneAt, previousTimestamp, newTimestamp) => {
     const cps = speedFn(previousTimestamp, doneAt);
-    return previousCursor + Math.floor((newTimestamp - previousTimestamp) * cps / 1000);
+    return previousCursor + ((newTimestamp - previousTimestamp) * cps / 1000);
   };
 }
 

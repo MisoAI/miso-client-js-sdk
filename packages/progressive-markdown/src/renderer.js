@@ -18,7 +18,10 @@ export default class Renderer {
     return { cursor: 0, done: false, ref: element, index };
   }
 
-  update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor, timestamp, done: dataDone }) {
+  update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor: rawCursor, timestamp, done: dataDone }) {
+    prevCursor = Math.floor(prevCursor);
+    let cursor = Math.floor(rawCursor);
+
     const index = this._index++;
     const query = this._query;
 
@@ -30,7 +33,10 @@ export default class Renderer {
     const safeRightBound = dataDone ? query.rightBound : query.safeRightBound;
     const viewDone = !!dataDone && (cursor >= query.rightBound);
 
-    cursor = Math.min(cursor, safeRightBound);
+    if (cursor > safeRightBound) {
+      cursor = safeRightBound;
+      rawCursor = safeRightBound;
+    }
 
     // defense:
     //   on error, overwrite the whole thing
@@ -61,7 +67,7 @@ export default class Renderer {
     viewDone && this._onDone && this._onDone(element);
     this._handleRefChange(prevRef, ref);
 
-    return { cursor, done: viewDone, ref, index };
+    return { cursor: rawCursor, done: viewDone, ref, index };
   }
 
   _handleRefChange(oldRef, newRef) {
