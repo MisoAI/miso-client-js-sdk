@@ -44,12 +44,11 @@ export function article(layout, state, data, meta) {
 
 export function affiliation(layout, state, data, meta) {
   const { templates } = layout;
-  const [openTag, closeTag] = tagPair(layout, data);
+  const [openTag, closeTag] = tagPair(layout, data, { link: false});
   return [
     openTag,
     (templates.infoBlock || templates.affiliationInfoBlock || affiliationInfoBlock)(layout, data, meta),
-    (templates.imageBlock || imageBlock)(layout, data, meta),
-    (templates.brandBlock || brandBlock)(layout, data, meta),
+    (templates.imageBlock || imageBlock)(layout, data, { brand: true, ...meta, }),
     closeTag,
   ].join('');
 }
@@ -133,12 +132,15 @@ export function discountRateText(layout, { discount_rate_percent }) {
   return `(${discount_rate_percent}% off)`;
 }
 
-export function imageBlock({ className }, { cover_image }) {
+export function imageBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  const { cover_image } = data;
   if (!cover_image) {
     return '';
   }
   const img = `<img class="${className}__item-cover-image" src="${cover_image}">`;
-  return `<div class="${className}__item-cover-image-container">${img}</div>`;
+  const brand = meta.brand ? (templates.brandBlock || brandBlock)(layout, data, meta) : '';
+  return `<div class="${className}__item-cover-image-container">${img}${brand}</div>`;
 }
 
 export function indexBlock({ className }, data, { index }) {
@@ -147,28 +149,27 @@ export function indexBlock({ className }, data, { index }) {
 
 export function ctaBlock(layout, data, meta) {
   const { className, templates } = layout;
-  let _cta = templates.cta || cta;
-  if (typeof _cta === 'function') {
-    _cta = _cta(layout, data, meta);
-  }
-  return _cta ? `<div class="${className}__item-cta-container">${_cta}</div>` : '';
+  const cta = helpers.asFunction(templates.cta)(layout, data, meta);
+  return cta ? `<div class="${className}__item-cta-container">${cta}</div>` : '';
 }
 
 export function cta(layout, data, meta) {
-  const { className, templates } = layout;
-  let text = templates.ctaText;
-  if (typeof text === 'function') {
-    text = text(layout, data, meta);
+  const { templates } = layout;
+  const { url } = data;
+  if (!url) {
+    return '';
   }
-  return text ? `<div class="${className}__item-cta">${text}</div>` : '';
+  const [openTag, closeTag] = tagPair(layout, { url }, { classSuffix: 'item-cta', role: 'cta' });
+  const ctaText = helpers.asFunction(templates.ctaText)(layout, data, meta);
+  return ctaText ? `${openTag}${ctaText}${closeTag}` : '';
 }
 
 // helpers //
-function tagPair({ className, options = {} }, { product_id, url }, { classSuffix = 'item-body', role = 'item' } = {}) {
+function tagPair({ className, options = {} }, { product_id, url }, { classSuffix = 'item-body', role = 'item', ...meta } = {}) {
   const { link = {} } = options;
   const { target = '_blank', rel = 'noopener' } = link; // TODO: other properties
-  const tag = url ? 'a' : 'div';
-  const urlAttrs = url ? `href="${url}" target="${target}" rel="${rel}"` : '';
+  const tag = meta.link !== false && url ? 'a' : 'div';
+  const urlAttrs = meta.link !== false && url ? `href="${url}" target="${target}" rel="${rel}"` : '';
   const productAttrs = product_id ? `${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}"` : '';
   const roleAttrs = role ? `data-role="${role}"` : '';
   return [`<${tag} class="${className}__${classSuffix}" ${roleAttrs} ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
@@ -189,8 +190,13 @@ function formatDate(date, fn = DEFAULT_DATE_OPTIONS) {
   }
 }
 
+function asFunction(template = '') {
+  return typeof template === 'function' ? template : () => template;
+}
+
 export const helpers = Object.freeze({
   tagPair,
   formatDate,
   escapeHtml,
+  asFunction,
 });

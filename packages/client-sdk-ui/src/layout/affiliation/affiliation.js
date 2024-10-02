@@ -1,7 +1,8 @@
 import { CarouselItemViewabilityObserver, requestAnimationFrame as raf } from '@miso.ai/commons';
 import { STATUS, LAYOUT_CATEGORY, EVENT_TYPE } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
-import { affiliation } from '../templates.js';
+import { affiliation, helpers } from '../templates.js';
+import { TRIANGLE } from '../../asset/svgs.js';
 
 const TYPE = 'affiliation';
 const DEFAULT_CLASSNAME = 'miso-affiliation';
@@ -20,15 +21,24 @@ function ready(layout, state) {
   const items = layout._getItems(state);
 
   if (items && items.length > 0) {
-    return templates.control(layout, state, 'previous') + templates.body(layout, state) + templates.control(layout, state, 'next');
+    return templates.controlContainer(layout, state, 'previous') + templates.body(layout, state) + templates.controlContainer(layout, state, 'next');
   } else {
     return templates.empty(layout, state);
   }
 }
 
+function controlContainer(layout, state, direction) {
+  const { className, templates } = layout;
+  return `<div class="${className}__control-${direction}-container">${templates.control(layout, state, direction)}</div>`;
+}
+
 function control(layout, state, direction) {
-  const { className } = layout;
-  return `<div class="${className}__control-${direction}" data-role="${direction}"></div>`;
+  const { className, templates } = layout;
+  return `<div class="${className}__control-${direction}" data-role="${direction}">${templates.controlIcon(layout, state, direction)}</div>`;
+}
+
+function controlIcon(layout, state, direction) {
+  return TRIANGLE;
 }
 
 function body(layout, state) {
@@ -37,49 +47,56 @@ function body(layout, state) {
   return `<div class="${className}__body">${templates.list(layout, state, items)}</div>`;
 }
 
-function header(layout, state) {
-  const { className, templates } = layout;
-  let { headerText } = templates;
-  if (typeof headerText === 'function') {
-    headerText = headerText(layout, state);
-  }
-  if (!headerText) {
-    return '';
-  }
-  return `<div class="${className}__header"><div class="${className}__header-tab">${headerText}</div></div>`;
-}
-
 function item(layout, state, value, index) {
   const { className, templates, options } = layout;
   const { itemType } = options;
   const header = templates.itemHeader(layout, state, value, { index });
   const body = templates[itemType](layout, state, value, { index });
-  return `<li class="${className}__item">${header}${body}</li>`;
+  return `<li class="${className}__item"><div class="${className}__item-inner">${header}${body}</div></li>`;
 }
 
 function itemHeader(layout, state, value, meta) {
   const { className, templates } = layout;
-  let { headerText } = templates;
-  if (typeof headerText === 'function') {
-    headerText = headerText(layout, state, value, meta);
-  }
-  if (!headerText) {
+  let { itemHeaderLeftText, itemHeaderRightText } = templates;
+  itemHeaderLeftText = helpers.asFunction(itemHeaderLeftText)(layout, state, value, meta);
+  itemHeaderRightText = helpers.asFunction(itemHeaderRightText)(layout, state, value, meta);
+  return `<div class="${className}__item-header">
+  <div class="${className}__item-header-left">${itemHeaderLeftText}</div>
+  <div class="${className}__item-header-right">${itemHeaderRightText}</div>
+</div>`;
+}
+
+function itemHeaderRightText(layout, state, value, meta) {
+  const { templates } = layout;
+  const logoImg = helpers.asFunction(templates.logoImg)(layout, state, value, meta);
+  return logoImg ? `Selected by ${logoImg}` : '';
+}
+
+function logoImg(layout, state, value, meta) {
+  const { className, templates } = layout;
+  const logoUrl = helpers.asFunction(templates.logoUrl)(layout, state, value, meta);
+  if (!logoUrl) {
     return '';
   }
-  return `<div class="${className}__item-header"><div class="${className}__item-header-tab">${headerText}</div></div>`;
+  const logoAltText = helpers.asFunction(templates.logoAltText)(layout, state, value, meta);
+  const logoAltTextAttr = logoAltText ? ` alt="${logoAltText}"` : '';
+  return `<img class="${className}__item-header-logo" src="${logoUrl}"${logoAltTextAttr}>`;
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
   root,
   [STATUS.READY]: ready,
+  controlContainer,
   control,
+  controlIcon,
   body,
-  header,
   item,
   itemHeader,
   affiliation,
-  ctaText: 'View',
-  headerText: 'Featured',
+  ctaText: 'View deal',
+  itemHeaderLeftText: `Today's best deals`,
+  itemHeaderRightText,
+  logoImg,
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
@@ -87,9 +104,10 @@ const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
   ...DEFAULT_TEMPLATES,
 });
 
+/*
 function normalizeAutoplayOptions(options) {
   if (options === true) {
-    options = { interval: 5000 };
+    options = { interval: 10000 };
   } else if (typeof options === 'number') {
     if (options <= 0) {
       options = false;
@@ -109,6 +127,7 @@ function autoplayOptionsEquals(a, b) {
   }
   return a.interval === b.interval;
 }
+*/
 
 export default class AffiliationLayout extends CollectionLayout {
 
@@ -135,9 +154,12 @@ export default class AffiliationLayout extends CollectionLayout {
     this._displayedCount = undefined;
     this._displayedIndex = undefined;
     this._viewable = undefined;
-    this._autoplay = {};
 
+    // TODO: extract this
+    /*
+    this._autoplay = {};
     this.autoplay(autoplay);
+    */
   }
 
   initialize(view) {
@@ -146,7 +168,8 @@ export default class AffiliationLayout extends CollectionLayout {
     this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this), options);
   }
 
-  autoplay(options = true) {
+  /*
+  autoplay(options = false) {
     options = normalizeAutoplayOptions(options);
     if (autoplayOptionsEquals(options, this._autoplay.options)) {
       return;
@@ -162,6 +185,7 @@ export default class AffiliationLayout extends CollectionLayout {
       this._autoplay.intervalId = setInterval(() => this.next(), options.interval);
     }
   }
+  */
 
   get itemIndex() {
     return this._itemIndex;
@@ -280,7 +304,6 @@ export default class AffiliationLayout extends CollectionLayout {
   _trackViewables() {} // omit default behavior for we want to track by other means
 
   _onClick(event) {
-    super._onClick(event);
     const element = event.target;
     if (element.closest(`[data-role="previous"]`)) {
       this.previous();
@@ -290,6 +313,7 @@ export default class AffiliationLayout extends CollectionLayout {
       this.next();
       return;
     }
+    super._onClick(event);
   }
 
 }
