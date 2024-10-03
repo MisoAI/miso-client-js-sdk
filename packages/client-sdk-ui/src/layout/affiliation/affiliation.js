@@ -67,9 +67,10 @@ function itemHeader(layout, state, value, meta) {
 }
 
 function itemHeaderRightText(layout, state, value, meta) {
-  const { templates } = layout;
+  const { className, templates } = layout;
+  const logoText = helpers.asFunction(templates.logoText)(layout, state, value, meta) || '';
   const logoImg = helpers.asFunction(templates.logoImg)(layout, state, value, meta);
-  return logoImg ? `Selected by ${logoImg}` : '';
+  return logoImg ? `<span class="${className}__item-header-logo-phrase">${logoText}</span>${logoImg}` : '';
 }
 
 function logoImg(layout, state, value, meta) {
@@ -97,6 +98,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
   itemHeaderLeftText: `Today's best deals`,
   itemHeaderRightText,
   logoImg,
+  logoText: 'Selected by',
 });
 
 const INHERITED_DEFAULT_TEMPLATES = Object.freeze({

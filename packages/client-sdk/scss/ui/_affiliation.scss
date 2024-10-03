@@ -147,6 +147,14 @@
     font-weight: 600;
     text-transform: capitalize;
   }
+  .miso-affiliation__item-header-right {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+  .miso-affiliation__item-header-logo {
+    height: 1.5rem;
+  }
   .miso-affiliation__item-body {
     display: flex;
     max-width: 100%;
