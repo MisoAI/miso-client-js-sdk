@@ -2,6 +2,7 @@ import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/c
 import { STATUS, ROLE, isDataRole } from '../constants.js';
 import * as fields from './fields.js';
 import ProxyElement from '../util/proxy.js';
+import Tracker from './tracker.js';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&
@@ -21,13 +22,10 @@ export default class ViewActor {
   constructor(views, role) {
     this._events = new EventEmitter({ target: this });
     this._views = views;
-    const trackingEvents = {};
-    this._trackingEvents = new EventEmitter({ target: trackingEvents });
 
     defineValues(this, {
       role,
       interface: new View(this),
-      trackingEvents,
     });
   }
 
@@ -88,6 +86,13 @@ export default class ViewActor {
     this.refresh({ force: true });
   }
 
+  get tracker() {
+    if (!this._tracker) {
+      this._tracker = new Tracker(this);
+    }
+    return this._tracker;
+  }
+
   async refresh({ force = false, data } = {}) {
     // protocol: no reaction when layout is absent
     if (!this._layout) {
@@ -137,12 +142,9 @@ export default class ViewActor {
     this.hub.update(fields.view(role), state, { silent });
   }
 
-  get trackerOptions() {
+  _getTrackerOptions() {
+    // used by tracker to expose tracker options to layout
     return this._views._getTrackerOptions(this.role);
-  }
-
-  _track(type, items) {
-    this._trackingEvents.emit(type, items);
   }
 
   _sliceData({ value, error, status, meta, ...rest }) {
@@ -216,7 +218,7 @@ export default class ViewActor {
 class View {
 
   constructor(actor) {
-    delegateGetters(this, actor, ['role', 'layout', 'element', 'proxyElement', 'refresh', 'on', 'trackingEvents']);
+    delegateGetters(this, actor, ['role', 'layout', 'element', 'proxyElement', 'refresh', 'on', 'tracker']);
   }
 
 }

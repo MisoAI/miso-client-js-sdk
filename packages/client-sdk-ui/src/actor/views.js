@@ -20,6 +20,7 @@ export default class ViewsActor {
     this._options = options;
     this._containers = new Map();
     this._views = {};
+    this._trackers = new Trackers(this, roles);
 
     for (const role of roles) {
       this._views[role] = new ViewActor(this, role);
@@ -41,6 +42,10 @@ export default class ViewsActor {
 
     this._syncTrackers();
     this._syncLayouts();
+  }
+
+  get trackers() {
+    return this._trackers;
   }
 
   // elements //
@@ -219,7 +224,7 @@ class Views {
 
   constructor(actor) {
     this._actor = actor;
-    delegateGetters(this, actor, ['syncSize', 'refresh']);
+    delegateGetters(this, actor, ['syncSize', 'refresh', 'trackers']);
   }
 
   get(role) {
@@ -228,6 +233,19 @@ class Views {
 
   get all() {
     return this._actor.views.map(view => view.interface);
+  }
+
+}
+
+class Trackers {
+
+  constructor(views, roles) {
+    this._views = views;
+    for (const role of roles) {
+      Object.defineProperty(this, role, {
+        get: () => views.get(role).tracker,
+      });
+    }
   }
 
 }

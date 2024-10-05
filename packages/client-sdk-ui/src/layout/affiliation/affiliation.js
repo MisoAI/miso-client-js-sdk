@@ -1,5 +1,5 @@
 import { CarouselItemViewabilityObserver, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { STATUS, LAYOUT_CATEGORY, EVENT_TYPE } from '../../constants.js';
+import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
 import { affiliation, helpers } from '../templates.js';
 import { TRIANGLE } from '../../asset/svgs.js';
@@ -166,7 +166,7 @@ export default class AffiliationLayout extends CollectionLayout {
 
   initialize(view) {
     super.initialize(view);
-    const { viewable: options } = this._view.trackerOptions || {};
+    const { viewable: options } = this._view.tracker.options || {};
     this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this), options);
   }
 
@@ -291,7 +291,7 @@ export default class AffiliationLayout extends CollectionLayout {
     if (!item) {
       return;
     }
-    this._view._track(EVENT_TYPE.VIEWABLE, [item]);
+    this._view.tracker.viewable([item]);
   }
 
   _getRenderedItemData(index) {

@@ -65,11 +65,11 @@ export class TrackableMixin {
     if (entries.length === 0) {
       return;
     }
-    const { impression: options } = this._view.trackerOptions || {};
+    const { impression: options } = this._view.tracker.options || {};
     if (!options) {
       return;
     }
-    setTimeout(() => this._view._track(EVENT_TYPE.IMPRESSION, entries.map(({ value }) => value)), 0);
+    this._view.tracker.impression(entries.map(({ value }) => value));
   }
 
   _untrackViewables(entries) {
@@ -82,19 +82,19 @@ export class TrackableMixin {
     if (entries.length === 0) {
       return;
     }
-    const { viewable: options } = this._view.trackerOptions || {};
+    const { viewable: options } = this._view.tracker.options || {};
     if (!options) {
       return;
     }
     for (const { value, element } of entries) {
-      (async () => (await this._viewables.track(element, options)) && this._view._track(EVENT_TYPE.VIEWABLE, [value]))();
+      (async () => (await this._viewables.track(element, options)) && this._view.tracker.viewable([value]))();
     }
   }
 
   _trackClick(event, binding) {
-    const { click: options } = this._view.trackerOptions || {};
+    const { click: options } = this._view.tracker.options || {};
     if (validateClick(options, event, binding)) {
-      this._view._track(EVENT_TYPE.CLICK, [binding.value]);
+      this._view.tracker.click([binding.value]);
     }
   }
 
