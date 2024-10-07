@@ -13,7 +13,10 @@ function root(layout, state) {
   const roleAttr = role ? ` data-role="${role}"` : '';
   const data = state.value || {};
   const channelAttr = data.channel ? ` data-channel="${data.channel}"` : '';
-  return `<div class="${className} ${status}"${roleAttr}${channelAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}</div>`;
+  const items = layout._getItems(state);
+  const itemCount = items ? items.length : undefined;
+  const itemCountAttr = itemCount !== undefined ? ` data-item-count="${itemCount}"` : '';
+  return `<div class="${className} ${status}"${roleAttr}${channelAttr}${itemCountAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}</div>`;
 }
 
 function ready(layout, state) {
@@ -227,15 +230,9 @@ export default class AffiliationLayout extends CollectionLayout {
 
   _render(element, states, controls) {
     super._render(element, states, controls);
-
-    // update item count, but raf to display as attribute
-    const items = this._getItems(states.state);
-    this._itemCount = items ? items.length : undefined;
-
-    raf(() => {
-      this._syncItemCount();
-      this._syncItemIndex();
-    });
+    // sync again for incremental item rendering
+    this._syncItemCount(states);
+    this._syncItemIndex();
   }
 
   _syncElement(element) {
@@ -252,8 +249,9 @@ export default class AffiliationLayout extends CollectionLayout {
     newElement && this._viewable.observe(newElement);
   }
 
-  _syncItemCount() {
-    const itemCount = this._itemCount;
+  _syncItemCount({ state } = {}) {
+    const items = this._getItems(state);
+    const itemCount = this._itemCount = items ? items.length : undefined;
     if (itemCount === this._displayedCount) {
       return;
     }
