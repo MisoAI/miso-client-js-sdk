@@ -355,6 +355,17 @@ table.miso-diagram .label.right {
   }
   */
 }
+.screenshot-container img {
+  max-width: 100%;
+}
+.screenshot-container.medium {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+.screenshot-container.small {
+  max-width: 32rem;
+  margin: 0 auto;
+}
 
 /* home */
 body.home main {

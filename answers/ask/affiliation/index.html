@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - Workflow</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/workflow/" />
+<title>Miso SDK for JavaScript - Answers - Affiliation</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/affiliation/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - Workflow" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Affiliation" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/workflow/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/affiliation/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Workflow">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Affiliation">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/workflow/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/affiliation/">
 
 
 
@@ -116,9 +116,9 @@
             <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/ask/events/">Events</a>
-          </li><li class="page active ">
-            <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/ask/affiliation/">Affiliation</a>
           </li></ul>
       </div>
@@ -155,25 +155,18 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask UI - workflow</h1>
+          <h1 class="intro-title">Ask UI - affiliation</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display.</p>
-<h3 id="access-workflow" tabindex="-1">Access workflow</h3>
-<p>You can access the (root) workflow as the following:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ask<span class="token punctuation">;</span></code></pre>
-<p>When there are multiple workflows, you can retrieve all of them or by question ID or by parent question ID:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br><br><span class="token keyword">const</span> workflows <span class="token operator">=</span> context<span class="token punctuation">.</span>workflows<span class="token punctuation">;</span> <span class="token comment">// returns an array of workflows</span><br><span class="token keyword">const</span> workflow0 <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getByQuestionId</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> workflow1 <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getByParentQuestionId</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>You can also navigate through the question chain:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> nextWorkflow0 <span class="token operator">=</span> workflow<span class="token punctuation">.</span>next<span class="token punctuation">;</span> <span class="token comment">// undefined if there is no follow-up question</span><br><span class="token keyword">const</span> nextWorkflow1 <span class="token operator">=</span> workflow<span class="token punctuation">.</span><span class="token function">getOrCreateNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// create a new workflow if absent</span><br><span class="token keyword">const</span> previousWorkflow <span class="token operator">=</span> workflow<span class="token punctuation">.</span>previous<span class="token punctuation">;</span> <span class="token comment">// undefined for the root workflow</span></code></pre>
-<p>Listen to workflow creation:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br><br>context<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">workflow</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When a new workflow is created</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h3 id="properties" tabindex="-1">Properties</h3>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> questionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span><br><span class="token keyword">const</span> parentQuestionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>parentQuestionId<span class="token punctuation">;</span></code></pre>
+          <p><div class="since">Since 1.10.0</div></p>
+<h3 id="setup-affiliation" tabindex="-1">Setup affiliation</h3>
+<p>Contact Miso to enable the affiliation feature. Once enabled, the affiliation feature will be available in the ask module.</p>
+<h3 id="customize-affiliation" tabindex="-1">Customize affiliation</h3>
+<p>See <a href="/miso-client-js-sdk/elements/miso-affiliation/" target="_blank" rel="noopener">Affiliation element</a> for more details.</p>
 
         </div>
       </main>

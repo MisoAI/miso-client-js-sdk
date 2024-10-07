@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Elements - Components</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/components/" />
+<title>Miso SDK for JavaScript - Elements - &lt;miso-affiliation&gt;</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/elements/miso-affiliation/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Elements - Components" />
+<meta property="og:title" content="Miso SDK for JavaScript - Elements - &lt;miso-affiliation&gt;" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/components/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/elements/miso-affiliation/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Elements - Components">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Elements - &lt;miso-affiliation&gt;">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/components/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/elements/miso-affiliation/">
 
 
 
@@ -116,14 +116,14 @@
             <a href="/miso-client-js-sdk/elements/miso-recommendation/">&lt;miso-recommendation&gt;</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3 active ">
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/elements/components/">Components</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/elements/miso-query/">&lt;miso-query&gt;</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/elements/miso-answer/">&lt;miso-answer&gt;</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/elements/miso-affiliation/">&lt;miso-affiliation&gt;</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/elements/collections/">Collections</a>
@@ -136,36 +136,44 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Component elements</h1>
+          <h1 class="intro-title">Elements - &lt;miso-affiliation&gt;</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <h3>Table of Content</h3><div class="section-toc">
-    <div class="page-list list-unstyled"><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/elements/miso-query/">&lt;miso-query&gt;</a>
-        </h5><p class="mb-0">
-          Search box element
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/elements/miso-answer/">&lt;miso-answer&gt;</a>
-        </h5><p class="mb-0">
-          Answer text element
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/elements/miso-affiliation/">&lt;miso-affiliation&gt;</a>
-        </h5><p class="mb-0">
-          Affiliated products element
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/elements/collections/">Collections</a>
-        </h5><p class="mb-0">
-          Collection elements
-        </p></div></div>
-  </div>
+          <p><code>&lt;miso-affiliation&gt;</code> is the element for displaying affilated products.</p>
+<table class="table"><thead>
+<tr>
+<th>Tag</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;miso-affiliation&gt;</code></td>
+<td><a href="/miso-client-js-sdk/answers/ask/" target="_blank" rel="noopener">Ask</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="layouts" tabindex="-1">Layouts</h3>
+<p>The default look-and-feel of the affiliation element is as follows:</p>
+<div class="screenshot-container ">
+  <img src="/miso-client-js-sdk/img/affiliation-default.png">
+</div>
+<h4 id="customize-header" tabindex="-1">Customize header</h4>
+<p>You can customize the header content of the affiliation element:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">affiliation</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">ctaText</span><span class="token operator">:</span> <span class="token string">"View deal"</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">itemHeaderLeftText</span><span class="token operator">:</span> <span class="token string">"Today's best deals"</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">logoText</span><span class="token operator">:</span> <span class="token string">"Selected by"</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">logoUrl</span><span class="token operator">:</span> <span class="token operator">...</span><span class="token punctuation">,</span> <span class="token comment">// your site logo image URL</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>If you provide a logo image URL, the image will be displayed on the right side of the header, along with the logo text:</p>
+<div class="screenshot-container small">
+  <img src="/miso-client-js-sdk/img/affiliation-logo.png">
+</div>
+<p>Tip: you may want to align the logo image with the logo text by specifying a vertical offset in the CSS:</p>
+<pre class="language-css"><code class="language-css"><span class="token selector">.miso-affiliation__item-header-logo-text</span> <span class="token punctuation">{</span><br>  <span class="token property">position</span><span class="token punctuation">:</span> relative<span class="token punctuation">;</span><br>  <span class="token property">top</span><span class="token punctuation">:</span> -2px<span class="token punctuation">;</span> <span class="token comment">/* adjust the value as needed */</span><br><span class="token punctuation">}</span></code></pre>
+<h4 id="customize-colors" tabindex="-1">Customize colors</h4>
+<p>You can override some CSS variables to customize the colors of the affiliation element:</p>
+<pre class="language-css"><code class="language-css"><span class="token comment">/* The values below are default ones */</span><br><span class="token selector">:root</span> <span class="token punctuation">{</span><br>  <span class="token comment">/* header */</span><br>  <span class="token property">--miso-affiliation-item-header-bg-color</span><span class="token punctuation">:</span> #e0e0e0<span class="token punctuation">;</span><br>  <span class="token property">--miso-affiliation-item-header-text-color</span><span class="token punctuation">:</span> #333<span class="token punctuation">;</span><br>  <span class="token comment">/* "View Deal" button */</span><br>  <span class="token property">--miso-affiliation-item-cta-bg-color</span><span class="token punctuation">:</span> #408048<span class="token punctuation">;</span><br>  <span class="token property">--miso-affiliation-item-cta-text-color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span><br>  <span class="token comment">/* previous/next buttons */</span><br>  <span class="token property">--miso-affiliation-control-button-color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span><br>  <span class="token property">--miso-affiliation-control-button-color-hover</span><span class="token punctuation">:</span> #f0f0f0<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
 
         </div>
       </main>
