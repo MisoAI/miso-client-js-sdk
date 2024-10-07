@@ -73,7 +73,7 @@ function itemHeaderRightText(layout, state, value, meta) {
   const { className, templates } = layout;
   const logoText = helpers.asFunction(templates.logoText)(layout, state, value, meta) || '';
   const logoImg = helpers.asFunction(templates.logoImg)(layout, state, value, meta);
-  return logoImg ? `<span class="${className}__item-header-logo-phrase">${logoText}</span>${logoImg}` : '';
+  return logoImg ? `<span class="${className}__item-header-logo-text">${logoText}</span>${logoImg}` : '';
 }
 
 function logoImg(layout, state, value, meta) {
