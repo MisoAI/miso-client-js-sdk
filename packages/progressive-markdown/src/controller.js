@@ -56,10 +56,10 @@ export default class Controller {
       return;
     }
     this._updateRequested = true;
-    window.requestAnimationFrame(() => this._updateDom());
+    window.requestAnimationFrame(timestamp => this._updateDom(timestamp));
   }
 
-  _updateDom() {
+  _updateDom(timestamp) {
     if (!this._updateRequested) {
       return;
     }
@@ -70,7 +70,6 @@ export default class Controller {
       return;
     }
 
-    const timestamp = Date.now();
     const { answer, answer_stage, finished } = this._response;
     const previouslyDone = this._rendered && this._rendered.done;
     const done = previouslyDone || finished;

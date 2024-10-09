@@ -11,9 +11,9 @@ export default class ProgressiveLayout extends RafLayout {
     return this._pending;
   }
 
-  _applyRender(extraControls = {}) {
+  _applyRender(timestamp, extraControls = {}) {
     const loop = capture(false);
-    super._applyRender({ ...extraControls, loop: loop.t });
+    super._applyRender(timestamp, { ...extraControls, loop: loop.t });
     if (loop.value) {
       this._requestRaf();
     }

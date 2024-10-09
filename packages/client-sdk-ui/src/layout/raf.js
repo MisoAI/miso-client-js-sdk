@@ -59,22 +59,21 @@ export default class RafLayout {
       return;
     }
     this._requested = true;
-    raf(() => this._doRaf());
+    raf(timestamp => this._doRaf(timestamp));
   }
 
-  _doRaf() {
+  _doRaf(timestamp) {
     if (!this._requested) {
       return; // just in case
     }
     this._requested = false;
-    this._applyRender();
+    this._applyRender(timestamp);
   }
 
-  _applyRender(extraControls = {}) {
+  _applyRender(timestamp, extraControls = {}) {
     if (!this._pending) {
       return; // just in case
     }
-    const timestamp = Date.now();
     let [state, { notifyUpdate }] = this._takePending();
     state = Object.freeze({ ...state, timestamp });
 

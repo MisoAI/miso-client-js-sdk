@@ -53,9 +53,9 @@ export function defineAndUpgrade(elementClass) {
  */
 export async function requestAnimationFrame(callback) {
   return new Promise((resolve, reject) => {
-    window.requestAnimationFrame(async () => {
+    window.requestAnimationFrame(async (timestamp) => {
       try {
-        await callback();
+        await callback(timestamp);
         resolve();
       } catch(err) {
         reject(err);
