@@ -32,3 +32,30 @@ export function cursorClassName(className) {
 export function fromSameSession(a, b) {
   return a && b && a.session && b.session && a.session.uuid === b.session.uuid;
 }
+
+export function normalizeOnDebug(fn) {
+  if (fn === true) {
+    return defaultOnDebug();
+  }
+  if (!fn) {
+    return undefined;
+  }
+  if (typeof fn === 'function') {
+    return fn;
+  }
+  throw new Error('onDebug must be a function or a boolean');
+}
+
+function defaultOnDebug(start = performance.now()) {
+  return function({ summary, timestamp, elapsed, ref, operation, conflict }) {
+    MisoClient.debug('<progressive-markdown>', `[${formatTimeInSeconds(timestamp - start)}](${formatTimeInMilliseconds(elapsed[0])}, ${formatTimeInMilliseconds(elapsed[1])})`, summary, `${operation}`, ref, conflict);
+  };
+}
+
+function formatTimeInSeconds(t) {
+  return `${Math.floor(t) / 1000}s`;
+}
+
+function formatTimeInMilliseconds(t) {
+  return `${Math.floor(t * 100) / 100}ms`;
+}

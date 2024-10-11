@@ -1,0 +1,23 @@
+.miso-logdump {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  text-align: center;
+
+  .miso-logdump__download-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #333;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

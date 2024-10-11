@@ -16,6 +16,7 @@ export * from './polling.js';
 export * from './cmd.js';
 export * from './styles.js';
 export * from './debounce.js';
+export * from './dump.js';
 
 export { signals, API };
 

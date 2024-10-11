@@ -2,7 +2,7 @@ import { trimObj, defineValues, Resolution, pacer } from '@miso.ai/commons';
 import { LAYOUT_CATEGORY, STATUS } from '../../../constants.js';
 import ProgressiveLayout from '../../progressive.js';
 import PlaintextRenderer from './plaintext.js';
-import { containerElement, cursorClassName, fromSameSession } from './utils.js';
+import { containerElement, cursorClassName, fromSameSession, normalizeOnDebug } from './utils.js';
 
 const TYPE = 'typewriter';
 const DEFAULT_CLASSNAME = 'miso-typewriter';
@@ -80,7 +80,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       cursorClass,
       getSource: index => this._getSource(index),
       onCitationLink,
-      onDebug,
+      onDebug: normalizeOnDebug(onDebug),
     });
     // capture citation link click if necessary
     this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._onClick(e)));

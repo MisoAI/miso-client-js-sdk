@@ -1,9 +1,12 @@
+import { Logs } from './logs.js';
+
 const ID = 'std:debug';
 
 export default class DebugPlugin {
 
   constructor(options = {}) {
     this._options = options;
+    this._logs = new Logs(options);
   }
 
   static get id() {
@@ -13,6 +16,7 @@ export default class DebugPlugin {
   install(MisoClient) {
     this._injectComponents(MisoClient);
     MisoClient.debug = (...args) => this._logr(...args);
+    MisoClient.logs = this._logs;
   }
 
   config(options = {}) {
@@ -20,6 +24,7 @@ export default class DebugPlugin {
       ...this._options,
       ...options,
     }
+    this._logs.config(options);
   }
 
   _injectComponents(component, treePath = []) {
@@ -105,16 +110,6 @@ export default class DebugPlugin {
     return path.reverse();
   }
 
-  _logr(...data) {
-    const options = this._options.console || {};
-    console.log(_tag(options), _style(options), ...data);
-  }
-
-  _log(path, name, ...data) {
-    const options = this._options.console || {};
-    console.log(_tag(options), _style(options), _path(path), _name(name), ...data);
-  }
-
   _logw(path, name, data) {
     if (data === undefined) {
       this._log(path, name);
@@ -123,6 +118,18 @@ export default class DebugPlugin {
     } else {
       this._log(path, name, _wrapObj(data));
     }
+  }
+
+  _log(path, name, ...data) {
+    this._logr(_path(path), _name(name), ...data);
+  }
+
+  _logr(...data) {
+    const options = this._options.console || {};
+    if (this._options.preserveLogs) {
+      this._logs._logs.push(data);
+    }
+    console.log(_tag(options), _style(options), ...data);
   }
 
 }
