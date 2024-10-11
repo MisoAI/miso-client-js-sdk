@@ -54,11 +54,11 @@ export default class Renderer {
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
     for (const operation of operations) {
       if (this._onDebug) {
-        t0 = Date.now();
+        t0 = performance.now();
       }
       ref = operation.applyTo(element, ref);
       if (this._onDebug) {
-        t1 = Date.now();
+        t1 = performance.now();
         const info = { index, timestamp, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound }, elapsed: [t0 - timestamp, t1 - t0] };
         info.summary = summarize(info);
         this._onDebug(info);
