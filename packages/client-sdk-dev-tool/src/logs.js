@@ -24,7 +24,7 @@ export class Logs {
     let element = document.getElementById(LOGS_UI_ROOT_ID);
     if (!element) {
       const button = document.createElement('div');
-      button.textContent = this._options.downloadButtonText || DEFAULT_DOWNLOAD_BUTTON_TEXT;
+      button.textContent = this._options.logDownloadButtonText || DEFAULT_DOWNLOAD_BUTTON_TEXT;
       button.classList.add(LOGS_UI_BUTTON_CLASS);
       button.addEventListener('click', () => this.download());
 
@@ -42,7 +42,7 @@ export class Logs {
     const element = document.getElementById(LOGS_UI_ROOT_ID);
     const button = element && element.querySelector(`.${LOGS_UI_BUTTON_CLASS}`);
     if (button) {
-      button.textContent = this._options.downloadButtonText || DEFAULT_DOWNLOAD_BUTTON_TEXT;
+      button.textContent = this._options.logDownloadButtonText || DEFAULT_DOWNLOAD_BUTTON_TEXT;
     }
   }
 
@@ -59,14 +59,34 @@ export class Logs {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `miso-log.${new Date().toISOString().replaceAll(/[\:\.]/g, '-')}.jsonl`;
+    a.download = this._filename();
     a.click();
+  }
+
+  _filename() {
+    let { logFilename } = this._options;
+    if (typeof logFilename === 'function') {
+      const timestamp = getTimestampSegment();
+      logFilename = logFilename({ timestamp });
+    }
+    if (logFilename && typeof logFilename === 'string') {
+      return logFilename;
+    }
+    return getDefaultFileName();
   }
 
   clear() {
     this._logs = [];
   }
 
+}
+
+function getDefaultFileName() {
+  return `miso-log.${getTimestampSegment()}.jsonl`;
+}
+
+function getTimestampSegment() {
+  return new Date().toISOString().replaceAll(/[\:\.]/g, '-');
 }
 
 function exportLog(logs) {

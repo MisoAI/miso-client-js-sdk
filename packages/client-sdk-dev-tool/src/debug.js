@@ -25,6 +25,9 @@ export default class DebugPlugin {
       ...options,
     }
     this._logs.config(options);
+    if (options.preserveLog) {
+      this._log(ID, 'ua', window.navigator.userAgent);
+    }
   }
 
   _injectComponents(component, treePath = []) {
@@ -126,7 +129,7 @@ export default class DebugPlugin {
 
   _logr(...data) {
     const options = this._options.console || {};
-    if (this._options.preserveLogs) {
+    if (this._options.preserveLog) {
       this._logs._logs.push(data);
     }
     console.log(_tag(options), _style(options), ...data);

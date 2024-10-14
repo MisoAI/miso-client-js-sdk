@@ -8,8 +8,9 @@
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   MisoClient.plugins.use('std:debug', {
-    preserveLogs: true,
-    downloadButtonText: 'Logs',
+    preserveLog: true,
+    logDownloadButtonText: 'Logs',
+    logFilename: ({ timestamp }) => `demo-miso-log.${timestamp}.jsonl`,
   });
   const client = new MisoClient({
     apiKey: '...',
