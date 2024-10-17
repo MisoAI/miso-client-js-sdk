@@ -16,11 +16,10 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
-  const start = Date.now();
-  const workflow = client.ui.ask;
-  workflow.useLayouts({
+  client.ui.asks.useLayouts({
     answer: { onDebug: true },
   });
+  const workflow = client.ui.ask;
   await Promise.all([
     MisoClient.logs.showDownloadButton(),
     client.ui.ready,

@@ -12,6 +12,7 @@ misocmd.push(async () => {
   const { templates } = MisoClient.ui.defaults.ask;
   const rootElement = document.querySelector('#miso-ask-combo');
   rootElement.innerHTML = templates.root();
+  client.ui.ask.autoQuery();
 });
 </script>
 {% endraw %}
