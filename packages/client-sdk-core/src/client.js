@@ -20,6 +20,9 @@ class MisoClient extends Component {
     window.MisoClient = MisoClient;
   }
 
+  // nop, will be replaced by DebugPlugin
+  static debug() {}
+
   constructor(options) {
     super('client', root);
     this._config(options);
