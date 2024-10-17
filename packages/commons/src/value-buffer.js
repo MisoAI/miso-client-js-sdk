@@ -60,7 +60,8 @@ export default class ValueBuffer {
   }
 
   async *[Symbol.asyncIterator]() {
-    for (let cursor = 0; ; cursor = this._index + 1) {
+    let cursor = 0;
+    while (true) {
       // check error
       if (this._error) {
         throw this._error;
@@ -80,10 +81,16 @@ export default class ValueBuffer {
       if (this._aborted) {
         break;
       }
-      yield this._value;
-      if (this._done) {
+      const done = this._done;
+      const newCursor = this._index + 1;
+
+      yield this._value; // expect this to be async
+
+      // check aborted or done
+      if (this._aborted || done) {
         break;
       }
+      cursor = newCursor;
     }
   }
 

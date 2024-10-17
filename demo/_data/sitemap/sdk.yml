@@ -36,3 +36,5 @@ sections:
     path: /helpers/markdown-npm
   - title: Markdown (UMD)
     path: /helpers/markdown-umd
+  - title: Polling
+    path: /helpers/polling
