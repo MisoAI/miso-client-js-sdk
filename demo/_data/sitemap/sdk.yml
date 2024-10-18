@@ -23,6 +23,8 @@ sections:
     path: /setup/timeout
   - title: Detached
     path: /setup/detached
+  - title: Native Fetch
+    path: /setup/native-fetch
 - title: Helpers
   path: /helpers
   pages:
