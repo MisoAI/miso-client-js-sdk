@@ -56,7 +56,7 @@ class Answer {
     const fetch = async ({ signal } = {}) => {
       // TODO: pass signal
       const response = await this.get();
-      return [response, response.finished];
+      return [response, response.finished, response.revision];
     };
     let { pollingInterval: interval, signal, stallTimeout = 120000, ...options } = this._options;
     const stac = new StallTimeoutAbortController(stallTimeout);

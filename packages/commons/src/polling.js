@@ -1,25 +1,27 @@
+import { isNullLike } from './objects.js';
 import ValueBuffer from './value-buffer.js';
 
 export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onResponse, signal } = {}) {
   if (signal && signal.aborted) {
     return [];
   }
-  let consecutiveErrorCount = 0, currReqIndex = -1, currResIndex = -1, done = false, intervalId;
+  let consecutiveErrorCount = 0, intervalId, done = false, currResRevision;
   function clear() {
     intervalId && clearInterval(intervalId);
     done = true;
   }
   const buffer = new ValueBuffer();
   intervalId = setInterval(async () => {
-    const index = ++currReqIndex;
-    let response, finished;
+    let response, finished, revision;
     try {
-      [response, finished] = await fetch(signal ? { signal } : {});
-      if (done || index < currResIndex) {
+      [response, finished, revision] = await fetch(signal ? { signal } : {});
+      if (done || (!isNullLike(currResRevision) && revision <= currResRevision)) {
         return; // discard outdated response
       }
-      currResIndex = index;
-      onResponse && onResponse(response, finished);
+      if (!isNullLike(revision)) {
+        currResRevision = revision;
+      }
+      onResponse && onResponse(response, finished, revision);
       consecutiveErrorCount = 0;
     } catch(error) {
       onError && onError(error);

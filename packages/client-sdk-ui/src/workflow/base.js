@@ -1,4 +1,4 @@
-import { Component } from '@miso.ai/commons';
+import { Component, isNullLike } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor/index.js';
 import * as sources from '../source/index.js';
 import { STATUS, ROLE } from '../constants.js';
@@ -20,6 +20,10 @@ function mergeDefaults(workflow, { layouts, interactions, ...defaults } = {}) {
     layouts: mergeLayoutsOptions(DEFAULT_LAYOUTS, layouts),
     interactions: mergeInteractionsOptions(DEFAULT_INTERACTIONS, interactions),
   };
+}
+
+function getRevision(data) {
+  return data && data.value && data.value.revision;
 }
 
 export default class Workflow extends Component {
@@ -106,6 +110,15 @@ export default class Workflow extends Component {
     }
     if (session.uuid !== this.session.uuid) {
       return; // ignore data for old session or inactive session
+    }
+
+    // compare revision to omit outdated data, if any
+    const revision = getRevision(data);
+    if (!isNullLike(revision)) {
+      const currentRevision = getRevision(this._hub.states[fields.data()]);
+      if (!isNullLike(currentRevision) && revision <= currentRevision) {
+        return;
+      }
     }
 
     this._sessions.start(); // in case session not started yet

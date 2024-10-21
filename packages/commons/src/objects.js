@@ -22,6 +22,13 @@ export function trimObj(obj) {
 }
 
 /**
+ * Return true if value is undefined or null.
+ */
+export function isNullLike(value) {
+  return value === undefined || value === null;
+}
+
+/**
  * Return a new object which has the same set of properties of the given object and their values mapped by the given function.
  */
 export function mapValues(obj, fn) {
