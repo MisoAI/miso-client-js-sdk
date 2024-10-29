@@ -77,9 +77,12 @@ export default class ViewActor {
     this._layout = layout;
 
     // initialize new layout
-    // don't use _safeApplyOnLayout, for any error should be thrown
-    if (layout && typeof layout.initialize === 'function') {
-      layout.initialize(this);
+    if (layout) {
+      layout._view = this;
+      // don't use _safeApplyOnLayout, for any error should be thrown
+      if (typeof layout.initialize === 'function') {
+        layout.initialize(this);
+      }
     }
 
     // in case the data is already there
@@ -87,8 +90,13 @@ export default class ViewActor {
   }
 
   get tracker() {
+    const { role } = this;
+    if (role === ROLE.CONTAINER) {
+      return this._views._getContainerTracker();
+    }
     if (!this._tracker) {
-      this._tracker = new Tracker(this);
+      const { hub } = this;
+      this._tracker = new Tracker({ hub, role, options: () => this._getTrackerOptions() });
     }
     return this._tracker;
   }

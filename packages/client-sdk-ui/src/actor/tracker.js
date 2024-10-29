@@ -4,18 +4,22 @@ import * as fields from './fields.js';
 import States from '../util/states.js';
 import { toInteraction } from './utils.js';
 
+const VALUELESS_ITEMS = [Symbol('valueless')];
+
 export default class Tracker {
 
-  constructor(view) {
-    this._view = view;
-    this._role = view.role;
+  constructor({ hub, role, valueless = false, options }) {
+    this._hub = hub;
+    this._role = role;
+    this._valueless = !!valueless;
+    this._options = options;
     // TODO: know item type
 
     this._states = new States(this._getSessionId());
   }
 
   get options() {
-    return this._view._getTrackerOptions();
+    return typeof this._options === 'function' ? this._options() : this._options;
   }
 
   getState(item) {
@@ -23,6 +27,10 @@ export default class Tracker {
   }
 
   _trigger(type, items, meta = {}) {
+    if (this._valueless) {
+      meta = items;
+      items = VALUELESS_ITEMS;
+    }
     validateEventType(type);
     this._syncSession();
 
@@ -35,9 +43,10 @@ export default class Tracker {
     const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
     const misoId = this._getMisoId();
     const request = this._getRequestPayload();
+    const values = this._valueless ? undefined : items;
 
     // TODO: should trigger 'tracker' and let workflow translate to interactions
-    this._view.hub.trigger(fields.interaction(), toInteraction({ property, misoId, request }, { event: type, values: items, meta }));
+    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId, request }, { event: type, values, meta }));
   }
 
   _syncSession() {
@@ -66,7 +75,7 @@ export default class Tracker {
   }
 
   _getViewState() {
-    return this._view.hub.states[fields.view(this._role)];
+    return this._hub.states[fields.view(this._role)];
   }
 
 }

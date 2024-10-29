@@ -86,12 +86,10 @@ export default class CollectionLayout extends TemplateBasedLayout {
       itemType,
       ...options,
     });
-    this._view = undefined;
     this._initTrackable();
   }
 
   initialize(view) {
-    this._view = view;
     this._unsubscribes.push(view.proxyElement.on('click', this._onClick.bind(this)));
   }
 

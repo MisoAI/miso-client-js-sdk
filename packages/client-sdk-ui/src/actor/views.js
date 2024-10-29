@@ -2,6 +2,7 @@ import { defineValues, delegateGetters } from '@miso.ai/commons';
 import { STATUS, ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
+import Tracker from './tracker.js';
 import { normalizeTrackerOptions } from '../util/trackers.js';
 
 export default class ViewsActor {
@@ -19,6 +20,7 @@ export default class ViewsActor {
     this._layoutFactory = layouts;
     this._options = options;
     this._containers = new Map();
+    this._containerTracker = undefined;
     this._views = {};
     this._trackers = new Trackers(this, roles);
 
@@ -201,6 +203,15 @@ export default class ViewsActor {
     return normalizeTrackerOptions((this._trackerOptions && this._trackerOptions[role]) || false);
   }
 
+  _getContainerTracker() {
+    if (!this._containerTracker) {
+      const hub = this._hub;
+      const role = ROLE.CONTAINER;
+      this._containerTracker = new Tracker({ hub, role, valueless: true, options: () => this._getTrackerOptions(role) });
+    }
+    return this._containerTracker;
+  }
+
   _error(e) {
     // TODO: hub trigger error event
     console.error(e);
@@ -246,6 +257,9 @@ class Trackers {
         get: () => views.get(role).tracker,
       });
     }
+    Object.defineProperty(this, ROLE.CONTAINER, {
+      get: () => views._getContainerTracker(),
+    });
   }
 
 }

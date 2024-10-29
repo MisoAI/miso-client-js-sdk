@@ -50,8 +50,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
     }
   }
 
-  initialize(view) {
-    this._view = view;
+  initialize() {
     this._setup();
   }
 

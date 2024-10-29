@@ -1,4 +1,3 @@
-import { EVENT_TYPE } from '../constants.js';
 import Bindings from '../util/bindings.js';
 import Viewables from '../util/viewables.js';
 import { validateClick } from '../util/trackers.js';

@@ -67,7 +67,6 @@ export default class OptionListLayout extends TemplateBasedLayout {
   }
 
   initialize(view) {
-    this._view = view;
     const { proxyElement, hub } = view;
     this._unsubscribes = [
       ...this._unsubscribes,

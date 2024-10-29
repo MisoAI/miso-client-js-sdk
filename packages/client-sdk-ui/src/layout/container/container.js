@@ -1,6 +1,7 @@
 import { ROLE, STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import RafLayout from '../raf.js';
 import MisoBannerElement from '../../element/miso-banner.js';
+import Viewables from '../../util/viewables.js';
 
 const TYPE = 'container';
 
@@ -19,11 +20,21 @@ export default class ContainerLayout extends RafLayout {
       logo,
       ...options,
     });
+    this._impression = false;
+    this._viewables = new Viewables();
   }
 
-  _render(element, { state }) {
+  _syncElement(element) {
+    if (this._element !== element) {
+      this._viewables.untrack(this._element);
+    }
+    super._syncElement(element);
+  }
+
+  _render(element, states) {
     this._syncBanner(element);
-    this._syncStatus(element, { state });
+    this._syncStatus(element, states);
+    this._trackInteractions(element, states);
   }
 
   _syncBanner(element) {
@@ -59,6 +70,36 @@ export default class ContainerLayout extends RafLayout {
       element.setAttribute('miso-id', miso_id);
     } else {
       element.removeAttribute('miso-id');
+    }
+  }
+
+  _trackInteractions(element, { state }) {
+    const { status } = state;
+    if (status === STATUS.READY) {
+      this._trackImpression();
+      this._trackViewable(element); // don't await
+    }
+  }
+
+  _trackImpression() {
+    const { impression: options } = this._view.tracker.options || {};
+    if (!options) {
+      return;
+    }
+    if (this._impression) {
+      return;
+    }
+    this._impression = true;
+    this._view.tracker.impression();
+  }
+
+  async _trackViewable(element) {
+    const { viewable: options } = this._view.tracker.options || {};
+    if (!options) {
+      return;
+    }
+    if (await this._viewables.track(element, options)) {
+      this._view.tracker.viewable();
     }
   }
 

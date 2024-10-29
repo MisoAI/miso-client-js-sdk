@@ -17,6 +17,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.RELATED_QUESTIONS]: {},
+  [ROLE.CONTAINER]: {},
 });
 
 const DEFAULT_OPTIONS = Object.freeze({

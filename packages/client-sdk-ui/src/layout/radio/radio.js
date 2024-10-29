@@ -49,7 +49,7 @@ export default class RadioLayout extends TemplateBasedLayout {
   }
 
   initialize(view) {
-    const { proxyElement } = this._view = view;
+    const { proxyElement } = view;
     this._unsubscribes = [
       ...this._unsubscribes,
       view.hub.on(this._field, () => this._refresh()),
