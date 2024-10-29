@@ -1,5 +1,5 @@
 import { asArray } from '@miso.ai/commons';
-import { TRACKING_EVENT_TYPES, TRACKING_STATUS, validateEventType } from '../constants.js';
+import { TRACKING_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType } from '../constants.js';
 import * as fields from './fields.js';
 import States from '../util/states.js';
 import { toInteraction } from './utils.js';
@@ -34,11 +34,13 @@ export default class Tracker {
     validateEventType(type);
     this._syncSession();
 
-    items = this._states.untriggered(asArray(items), type);
-    if (items.length === 0) {
-      return;
+    if (type !== EVENT_TYPE.SUBMIT) {
+      items = this._states.untriggered(asArray(items), type);
+      if (items.length === 0) {
+        return;
+      }
+      this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
     }
-    this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
 
     const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
     const misoId = this._getMisoId();

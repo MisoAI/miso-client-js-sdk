@@ -57,12 +57,14 @@ export const EVENT_TYPE = Object.freeze({
   IMPRESSION: 'impression',
   VIEWABLE: 'viewable',
   CLICK: 'click',
+  SUBMIT: 'submit',
 });
 
 export const TRACKING_EVENT_TYPES = [
   EVENT_TYPE.IMPRESSION,
   EVENT_TYPE.VIEWABLE,
   EVENT_TYPE.CLICK,
+  EVENT_TYPE.SUBMIT,
 ];
 
 export const TRACKING_STATUS = Object.freeze({

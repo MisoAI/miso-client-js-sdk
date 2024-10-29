@@ -30,6 +30,10 @@ export function event() {
   return 'event';
 }
 
+export function tracker() {
+  return 'tracker';
+}
+
 export function interaction() {
   return 'interaction';
 }

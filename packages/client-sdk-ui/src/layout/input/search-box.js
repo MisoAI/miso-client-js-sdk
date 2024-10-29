@@ -1,5 +1,5 @@
 import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY, STATUS } from '../../constants.js';
+import { LAYOUT_CATEGORY, STATUS, EVENT_TYPE } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { helpers, imageBlock, productInfoBlock } from '../templates.js';
@@ -325,6 +325,15 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     this.close();
     // TODO: q -> value
     this._view.hub.trigger(fields.query(), { q: value });
+    this._trackSubmit(value);
+  }
+
+  _trackSubmit(value) {
+    const { [EVENT_TYPE.SUBMIT]: options } = this._view.tracker.options || {};
+    if (!options) {
+      return;
+    }
+    this._view.tracker.submit(value);
   }
 
 }

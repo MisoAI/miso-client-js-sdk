@@ -2,7 +2,7 @@ import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
-import { ROLE } from '../constants.js';
+import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -18,6 +18,9 @@ const DEFAULT_LAYOUTS = Object.freeze({
 const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.RELATED_QUESTIONS]: {},
   [ROLE.CONTAINER]: {},
+  [ROLE.QUERY]: {
+    [EVENT_TYPE.SUBMIT]: {},
+  },
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
