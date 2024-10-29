@@ -21,6 +21,8 @@ sections:
     path: /ask/full
   - title: Production
     path: /ask/production
+  - title: Affiliation
+    path: /ask/affiliation
   - title: Lorem (client)
     path: /ask/lorem-client
   - title: Plaintext

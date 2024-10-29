@@ -24,6 +24,7 @@ function _config(name, env = 'prod') {
       'process.env.NODE_ENV': JSON.stringify('production'),
       __DEFAULT_API_KEY__: JSON.stringify(process.env.DEFAULT_API_KEY),
       __DEFAULT_ASK_API_KEY__: JSON.stringify(process.env.DEFAULT_ASK_API_KEY),
+      __DEFAULT_AFFILIATION_ASK_API_KEY__: JSON.stringify(process.env.DEFAULT_AFFILIATION_ASK_API_KEY),
       __DEFAULT_USER_ID__: JSON.stringify(process.env.DEFAULT_USER_ID),
     }),
     babel({

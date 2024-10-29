@@ -30,6 +30,7 @@ module.exports = function(config) {
   config.addNunjucksGlobal('helpers', new Helpers());
   config.addGlobalData('layout', 'base.njk');
   config.addGlobalData('DEFAULT_ASK_API_KEY', process.env.DEFAULT_ASK_API_KEY);
+  config.addGlobalData('DEFAULT_AFFILIATION_ASK_API_KEY', process.env.DEFAULT_AFFILIATION_ASK_API_KEY);
   config.addGlobalData('DEFAULT_PRODUCT_ID', process.env.DEFAULT_PRODUCT_ID);
 
   return {
