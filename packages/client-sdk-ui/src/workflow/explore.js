@@ -73,15 +73,19 @@ export default class Explore extends Workflow {
   }
 
   // lifecycle //
-  start() {
-    if (this._linkFn === undefined) {
+  start({ relatedQuestions = true } = {}) {
+    if (relatedQuestions && this._linkFn === undefined) {
       throw new Error('Define link mapping function before calling start()');
     }
     this._sessions.start();
     // in explore workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     const { session } = this;
-    this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { session }));
+    if (relatedQuestions) {
+      this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { session }));
+    } else {
+      this.updateData({ session, value: { related_questions: [] } });
+    }
     return this;
   }
 
