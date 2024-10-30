@@ -26,9 +26,3 @@ function uuidv4ByMathRandom() {
     return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
 }
-
-export function uuidToTimestamp(uuid) {
-  const arr = uuid.split('-');
-  const timeStr = [arr[2].substring(1), arr[1], arr[0]].join('');
-  return Math.floor(parseInt(timeStr, 16) / 10000000) - 12219292800;
-};

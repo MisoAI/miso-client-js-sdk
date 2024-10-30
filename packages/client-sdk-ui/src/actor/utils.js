@@ -1,4 +1,4 @@
-import { trimObj, uuidToTimestamp } from '@miso.ai/commons';
+import { trimObj } from '@miso.ai/commons';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 
 const PRODUCT_TYPED_PROPERTIES = new Set([
@@ -13,12 +13,6 @@ export function isProduct(property) {
 }
 
 export function toInteraction({ property, misoId, request }, { event, values, manual }) {
-  let api_ts;
-  if (misoId) {
-    try {
-      api_ts = uuidToTimestamp(misoId);
-    } catch (e) {}
-  }
   // TODO: ad-hoc
   const question_source = request && request._meta && request._meta.question_source;
   const isProductType = isProduct(property);
@@ -38,7 +32,6 @@ export function toInteraction({ property, misoId, request }, { event, values, ma
     miso_id: misoId,
     context: {
       custom_context: trimObj({
-        api_ts,
         property,
         channel,
         items,
