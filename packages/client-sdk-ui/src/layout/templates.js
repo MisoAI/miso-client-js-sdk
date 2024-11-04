@@ -132,7 +132,7 @@ export function discountRateText(layout, { discount_rate_percent }) {
   return `(${discount_rate_percent}% off)`;
 }
 
-export function imageBlock(layout, data, meta) {
+export function imageBlock(layout, data, meta = {}) {
   const { className, templates } = layout;
   const { cover_image } = data;
   if (!cover_image) {
