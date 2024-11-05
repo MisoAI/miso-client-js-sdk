@@ -54,15 +54,24 @@ export default class UserPlugin extends Component {
 
   _modifyPayloadForInteractions(client, { data }) {
     const { anonymous_id, user_id } = client.context;
-    const baseObj = trimObj({ anonymous_id, user_id });
-    data = data.map(obj => ({ ...baseObj, ...obj }));
+    const userInfo = trimObj({ anonymous_id, user_id });
+    data = data.map(obj => ({ ...userInfo, ...obj }));
     return { data };
   }
 
 }
 
 function getAutoAnonymousId() {
-  return getOrComputeFromStorage('miso_anonymous_id', uuidv4);
+  try {
+    return [getOrComputeFromStorage('miso_anonymous_id', uuidv4)];
+  } catch (e) {
+    // if the SDK is loaded as a 3rd party script, accessing cookie/localStorage may throw a SecurityError
+    // in this case, abort getting the auto anonymous id
+    if (e.name !== 'SecurityError') {
+      throw e;
+    }
+  }
+  return [];
 }
 
 class UserContext {
@@ -72,7 +81,7 @@ class UserContext {
   }
 
   get anonymous_id() {
-    return this._anonymousId || this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId());
+    return this._anonymousId || (this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId()))[0];
   }
 
   set anonymous_id(value) {
