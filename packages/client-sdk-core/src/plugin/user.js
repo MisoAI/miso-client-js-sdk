@@ -24,7 +24,7 @@ export default class UserPlugin extends Component {
   _injectClient(client) {
     const context = new UserContext(this);
     this._contexts.set(client, context);
-    delegateProperties(client.context, context, ['anonymous_id', 'user_id', 'user_hash']);
+    delegateProperties(client.context, context, ['anonymous_id', 'user_id', 'user_hash', 'user_type']);
   }
 
   _modifyPayload({ client, apiGroup, apiName, payload }) {
@@ -61,9 +61,11 @@ export default class UserPlugin extends Component {
 
 }
 
+let _pageBasedAutoAnonymousId;
+
 function getAutoAnonymousId() {
   try {
-    return [getOrComputeFromStorage('miso_anonymous_id', uuidv4)];
+    return getOrComputeFromStorage('miso_anonymous_id', uuidv4);
   } catch (e) {
     // if the SDK is loaded as a 3rd party script, accessing cookie/localStorage may throw a SecurityError
     // in this case, abort getting the auto anonymous id
@@ -71,7 +73,8 @@ function getAutoAnonymousId() {
       throw e;
     }
   }
-  return [];
+  // fallback to page-based auto anonymous id
+  return _pageBasedAutoAnonymousId || (_pageBasedAutoAnonymousId = uuidv4());
 }
 
 class UserContext {
@@ -81,7 +84,7 @@ class UserContext {
   }
 
   get anonymous_id() {
-    return this._anonymousId || (this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId()))[0];
+    return this._anonymousId || this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId());
   }
 
   set anonymous_id(value) {
