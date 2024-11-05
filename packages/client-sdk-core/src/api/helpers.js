@@ -113,7 +113,7 @@ export default class ApiHelpers {
       try {
         url = pass({ client, apiGroup, apiName, url }) || url;
       } catch(e) {
-        component.error(e);
+        (component._error || console.error)(e);
       }
     }
     return url;
@@ -125,7 +125,7 @@ export default class ApiHelpers {
       try {
         payload = pass({ client, apiGroup, apiName, payload }) || payload;
       } catch(e) {
-        component.error(e);
+        (component._error || console.error)(e);
       }
     }
     return payload;
