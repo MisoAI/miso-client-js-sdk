@@ -84,8 +84,11 @@ export default class OptionListLayout extends TemplateBasedLayout {
   _render(element, data, controls) {
     super._render(element, data, controls);
     const { state } = data;
-    this._syncBindings(element, state);
     this._syncOptionValues(element, state);
+  }
+
+  _afterRender(element, state) {
+    this._syncBindings(element, state);
   }
 
   _unrender() {

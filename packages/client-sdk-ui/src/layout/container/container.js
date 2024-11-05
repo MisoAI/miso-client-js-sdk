@@ -31,10 +31,14 @@ export default class ContainerLayout extends RafLayout {
     super._syncElement(element);
   }
 
-  _render(element, states) {
+  _render(element, data) {
     this._syncBanner(element);
-    this._syncStatus(element, states);
-    this._trackInteractions(element, states);
+    this._syncStatus(element, data);
+    this._trackInteractions(element, data);
+  }
+
+  _afterRender(element, state) {
+    this._trackInteractions(element, state);
   }
 
   _syncBanner(element) {
@@ -73,7 +77,7 @@ export default class ContainerLayout extends RafLayout {
     }
   }
 
-  _trackInteractions(element, { state }) {
+  _trackInteractions(element, state) {
     const { status } = state;
     if (status === STATUS.READY) {
       this._trackImpression();

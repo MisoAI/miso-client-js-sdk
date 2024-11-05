@@ -81,16 +81,22 @@ export default class RafLayout {
     const argsForNotifyUpdate = capture([]);
     const stateExtra = capture({});
 
+    // TODO: remove this timestamp, for it's in state already
     this._render(this._element, { state, rendered, timestamp }, { notifyUpdate: argsForNotifyUpdate.args, writeToState: stateExtra.merge, ...extraControls });
 
-    this._rendered.set(this._element, Object.freeze({ ...state, ...stateExtra.value }));
+    state = Object.freeze({ ...state, ...stateExtra.value });
+    this._rendered.set(this._element, state);
 
     notifyUpdate && notifyUpdate(...argsForNotifyUpdate.value);
+
+    this._afterRender(this._element, state);
   }
 
   _render() {
     throw new Error('Unimplemented');
   }
+
+  _afterRender() {}
 
   destroy() {
     for (const unsubscribe of this._unsubscribes) {

@@ -135,6 +135,9 @@ export default class CollectionLayout extends TemplateBasedLayout {
     } else {
       element.innerHTML = html;
     }
+  }
+
+  _afterRender(element, state) {
     this._syncBindings(element, state);
   }
 
