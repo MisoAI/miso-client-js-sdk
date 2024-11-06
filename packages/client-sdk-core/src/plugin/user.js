@@ -64,17 +64,10 @@ export default class UserPlugin extends Component {
 let _pageBasedAutoAnonymousId;
 
 function getAutoAnonymousId() {
-  try {
-    return getOrComputeFromStorage('miso_anonymous_id', uuidv4);
-  } catch (e) {
-    // if the SDK is loaded as a 3rd party script, accessing cookie/localStorage may throw a SecurityError
-    // in this case, abort getting the auto anonymous id
-    if (e.name !== 'SecurityError') {
-      throw e;
-    }
-  }
-  // fallback to page-based auto anonymous id
-  return _pageBasedAutoAnonymousId || (_pageBasedAutoAnonymousId = uuidv4());
+  // 1. Cache the value for the page
+  // 2. Get and set the value from cookies/localStorage is possible
+  // 3. In case cookies/localStorage are disabled, generate a new value for each page
+  return _pageBasedAutoAnonymousId || (_pageBasedAutoAnonymousId = getOrComputeFromStorage('miso_anonymous_id', uuidv4));
 }
 
 class UserContext {
@@ -84,7 +77,7 @@ class UserContext {
   }
 
   get anonymous_id() {
-    return this._anonymousId || this._autoAnonymousId || (this._autoAnonymousId = getAutoAnonymousId());
+    return this._anonymousId || getAutoAnonymousId();
   }
 
   set anonymous_id(value) {

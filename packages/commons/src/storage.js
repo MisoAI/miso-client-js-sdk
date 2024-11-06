@@ -1,12 +1,12 @@
 export function getOrComputeFromStorage(name, compute) {
-  const localStorageValue = window.localStorage.getItem(name);
-  const cookieValue = getCookie(name);
+  const localStorageValue = catchSecurityError(() => window.localStorage.getItem(name));
+  const cookieValue = catchSecurityError(() => getCookie(name));
   const value = localStorageValue || cookieValue || `${compute()}`;
   if (value && !localStorageValue) {
-    window.localStorage.setItem(name, value);
+    catchSecurityError(() => window.localStorage.setItem(name, value));
   }
   if (value && !cookieValue) {
-    setCookie(name, value);
+    catchSecurityError(() => setCookie(name, value));
   }
   return value;
 }
@@ -25,4 +25,19 @@ export function getCookie(name) {
 
 export function setCookie(name, value) {
   document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; max-age=31536000; path=/`;
+}
+
+function catchSecurityError(fn) {
+  try {
+    return fn();
+  } catch (e) {
+    if (!isSecurityError(e)) {
+      throw e;
+    }
+  }
+  return undefined;
+}
+
+function isSecurityError(e) {
+  return e.name === 'SecurityError';
 }
