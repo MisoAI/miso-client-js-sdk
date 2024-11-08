@@ -1,23 +1,10 @@
+import { mixin } from '@miso.ai/commons'; 
 import Bindings from '../util/bindings.js';
 import Viewables from '../util/viewables.js';
 import { validateClick } from '../util/trackers.js';
 
 export function makeTrackable(prototype) {
-  _mixin(prototype, TrackableMixin.prototype);
-}
-
-function _mixin(target, source) {
-  const descriptors = Object.getOwnPropertyDescriptors(source);
-  for (const key in descriptors) {
-    if (key === 'constructor') {
-      continue;
-    }
-    const { value } = descriptors[key];
-    if (target[key] === undefined && typeof value === 'function') {
-      target[key] = value;
-    }
-    // TODO: getter, setter
-  }
+  mixin(prototype, TrackableMixin.prototype);
 }
 
 export class TrackableMixin {
