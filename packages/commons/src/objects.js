@@ -116,6 +116,7 @@ export function defineTypeByKey(constructor, key) {
   });
 }
 
+// TODO: unused
 /**
  * Override target's methods with specific properties in given options. For example, a property of 'x' with function typed value overrides target's '_x' method.
  * @return The remainder of options not used in replacement.

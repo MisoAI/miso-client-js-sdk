@@ -17,7 +17,7 @@ export * from './cmd.js';
 export * from './styles.js';
 export * from './debounce.js';
 export * from './dump.js';
-export * from './mixin.js';
+export * from './classes.js';
 
 export { signals, API };
 
