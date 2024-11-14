@@ -1,0 +1,115 @@
+:root {
+  --miso-hybrid-search-combo-section-padding: 2rem;
+  --miso-hybrid-search-combo-section-spacing: 4rem;
+  --miso-hybrid-search-combo-content-max-width: none; 
+  --miso-hybrid-search-combo-content-padding: 2rem;
+  --miso-hybrid-search-combo-content-spacing: 2rem;
+  --miso-hybrid-search-combo-question-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
+  --miso-hybrid-search-combo-hits-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
+}
+
+miso-hybrid-search-combo,
+.miso-hybrid-search-combo {
+  &, * {
+    box-sizing: border-box;
+  }
+
+  // general //
+  miso-ask > hr {
+    height: 1px;
+    margin: var(--miso-hybrid-search-combo-content-spacing) 0;
+    color: inherit;
+    background-color: var(--miso-border-color-light);
+    border: 0;
+    opacity: 1;
+  }
+  .miso-feedback {
+    margin: var(--miso-hybrid-search-combo-content-spacing) 0;
+  }
+  
+  // section //
+  .miso-hybrid-search-combo__section {
+    padding: 0 var(--miso-hybrid-search-combo-section-padding);
+
+    > miso-ask {
+      max-width: var(--miso-hybrid-search-combo-content-max-width);
+      margin: 0 auto;
+    }
+  }
+  .miso-hybrid-search-combo__query-container,
+  .miso-hybrid-search-combo__answer-container,
+  .miso-hybrid-search-combo__affiliation-container,
+  .miso-hybrid-search-combo__sources-container,
+  //.miso-hybrid-search-combo__query-suggestions-container,
+  .miso-hybrid-search-combo__search-results-container {
+    padding: 0 var(--miso-hybrid-search-combo-content-padding);
+  }
+  /*
+  .miso-hybrid-search-combo__follow-up {
+    margin-top: var(--miso-hybrid-search-combo-content-spacing);
+
+    .miso-hybrid-search-combo__answer-container > hr:first-child {
+      margin: 0 calc(0px - var(--miso-hybrid-search-combo-content-padding)) var(--miso-hybrid-search-combo-content-spacing);
+    }
+    .miso-hybrid-search-combo__query-container {
+      margin-bottom: calc(0px - var(--miso-search-box-padding) - var(--miso-search-box-font-size) * 0.5);
+    }
+  }
+  .miso-hybrid-search-combo__query-suggestions-container + .miso-hybrid-search-combo__query-container {
+    margin-top: var(--miso-hybrid-search-combo-section-spacing);
+  }
+  */
+  .miso-hybrid-search-combo__sources-container {
+    margin-bottom: calc(var(--miso-search-box-padding) + var(--miso-search-box-font-size) * 0.5 + var(--miso-hybrid-search-combo-content-spacing));
+  }
+  /*
+  .miso-hybrid-search-combo__bottom-spacing-container {
+    height: var(--miso-hybrid-search-combo-section-spacing);
+  }
+  */
+  .miso-hybrid-search-combo__search-results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  // phrase //
+  .miso-hybrid-search-combo__phrase-inline {
+    display: inline;
+  }
+  .miso-hybrid-search-combo__phrase {
+    margin-top: var(--miso-hybrid-search-combo-content-spacing);
+    margin-bottom: 0.5rem;
+  }
+  h3.miso-hybrid-search-combo__phrase {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  h2.miso-hybrid-search-combo__phrase {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .miso-hybrid-search-combo__question-phrase {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--miso-hybrid-search-combo-question-phrase-color);
+  }
+  .miso-hybrid-search-combo__sources-phrase {
+    margin-bottom: 1rem;
+  }
+  /*
+  .miso-hybrid-search-combo__query-suggestions-phrase {
+    margin-bottom: 1.25rem;
+  }
+  */
+  .miso-hybrid-search-combo__keywords-phrase {
+    font-size: 1.2rem;
+    miso-keywords {
+      font-weight: 500;
+    }
+  }
+  .miso-hybrid-search-combo__hits-phrase {
+    color: var(--miso-hybrid-search-combo-hits-phrase-color);
+  }
+}

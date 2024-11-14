@@ -1,8 +1,8 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
-import { ROLE } from '../constants.js';
-import { OptionListLayout, ListLayout } from '../layout/index.js';
+import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
+import { OptionListLayout, ListLayout, TextLayout } from '../layout/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -102,12 +102,17 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   // query //
-  _buildPayload(args) {
-    const payload = super._buildPayload(args);
-    if (this.parentQuestionId) {
-      payload.parent_question_id = this.parentQuestionId;
-    }
-    return payload;
+  _buildPayload({ q, qs, ...payload } = {}) {
+    const { parentQuestionId } = this;
+    return trimObj({
+      ...payload,
+      question: q, // question, not q
+      parent_question_id: parentQuestionId,
+      _meta: {
+        ...payload._meta,
+        question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
+      },
+    });
   }
 
   // interactions //

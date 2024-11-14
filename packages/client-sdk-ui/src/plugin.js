@@ -1,10 +1,10 @@
 import { Component, Resolution, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Asks, Explore, Search, Recommendations } from './workflow/index.js';
+import { Asks, HybridSearch, Explore, Search, Recommendations } from './workflow/index.js';
 import { AskCombo } from './combo/index.js';
 import Layouts from './layouts.js';
 import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
-import * as sources from './source/index.js';
+import * as sources from './source.js';
 import * as defaults from './defaults/index.js';
 import { loadStylesIfNecessary } from './styles.js';
 
@@ -174,6 +174,10 @@ class Ui {
 
   get ask() {
     return this.asks.root;
+  }
+
+  get hybridSearch() {
+    return this._hybridSearch || (this._hybridSearch = new HybridSearch(this._plugin, this._client));
   }
 
   get explore() {

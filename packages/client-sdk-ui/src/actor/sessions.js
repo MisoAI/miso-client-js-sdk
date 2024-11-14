@@ -32,13 +32,12 @@ export default class SessionMaker {
   }
 
   restart() {
-    this.new({ force: true });
-    this.start();
+    this._hub.update(fields.session(), this._create(true));
   }
 
-  _create() {
+  _create(active = false) {
     return Object.freeze({
-      active: false,
+      active,
       uuid: uuidv4(),
       index: this._sessionIndex++,
       meta: {},

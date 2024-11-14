@@ -2,6 +2,7 @@ $statuses_stage: "initial", "loading", "erroneous", "ready", "ongoing", "done";
 $statuses_content: "empty", "nonempty";
 
 miso-ask,
+miso-hybrid-search,
 miso-explore,
 miso-search,
 miso-recommendation {
@@ -42,7 +43,8 @@ miso-recommendation {
   }
 }
 
-miso-ask-combo {
+miso-ask-combo,
+miso-hybrid-search-combo {
   display: block;
 }
 

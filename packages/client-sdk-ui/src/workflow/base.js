@@ -1,10 +1,11 @@
 import { Component, isNullLike } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor/index.js';
-import * as sources from '../source/index.js';
+import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
 import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
+import { writeDataStatus, writeMisoIdToMeta, addDataInstructions } from './processors.js';
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
@@ -47,9 +48,10 @@ export default class Workflow extends Component {
     const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
     const layouts = plugin.layouts;
+    const onResponseObject = response => this._handleResponseObject(response);
 
     this._sessions = new SessionMaker(hub);
-    this._data = new DataActor(hub, { source: sources.api(client), options });
+    this._data = new DataActor(hub, { source: sources.api(client), options, onResponseObject });
     this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
     this._interactions = new InteractionsActor(hub, { client, options });
 
@@ -91,13 +93,12 @@ export default class Workflow extends Component {
   }
 
   restart() {
-    this.reset();
-    this.start();
+    this._sessions.restart();
     return this;
   }
 
   // states //
-  updateData(data) {
+  updateData(data, { instructions } = {}) {
     if (!data) {
       throw new Error(`Data is required.`);
     }
@@ -128,25 +129,32 @@ export default class Workflow extends Component {
       data = process(data);
     }
 
+    // write data instructions from function args
+    data = addDataInstructions(data, instructions);
+    data = this._mergeDataIfNecessary(data);
+
     this._hub.update(fields.data(), data);
 
     return this;
   }
 
   _defaultProcessData(data) {
-    const { value } = data;
-    // put miso_id to meta
-    if (!value || !value.miso_id) {
+    data = writeDataStatus(data);
+    data = writeMisoIdToMeta(data);
+    return data;
+  }
+
+  _mergeDataIfNecessary(data) {
+    if (!data._inst || !data._inst.merge) {
       return data;
     }
     return {
+      ...this._hub.states[fields.data()],
       ...data,
-      meta: {
-        ...data.meta,
-        miso_id: value.miso_id,
-      },
     };
   }
+
+  _handleResponseObject() {}
 
   // TODO: notifyViewUpdateAll()
 

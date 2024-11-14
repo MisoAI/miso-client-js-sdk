@@ -1,11 +1,12 @@
 import { trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { mergeApiOptions } from './options.js';
-import * as sources from '../source/index.js';
+// import * as sources from '../source.js';
 import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
-import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { SearchBoxLayout, ListLayout, TextLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
+import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE, DATA_ASPECT } from '../constants.js';
+import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
+import { writeAnswerStageToMeta } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -67,7 +68,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   _initSubscriptions() {
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._hub.on(fields.query(), payload => this.query(payload)),
+      this._hub.on(fields.query(), args => this.query(args)),
       this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
       this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
     ];
@@ -132,27 +133,25 @@ export default class AnswerBasedWorkflow extends Workflow {
 
     // build payload and trigger request
     const payload = this._buildPayload(args);
-    this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
+    const event = mergeApiOptions(this._options.resolved.api, { payload, session });
+    this._request(event);
 
     return this;
   }
 
-  _buildPayload({ q, qs, ...payload } = {}) {
-    return {
-      ...payload,
-      question: q,
-      _meta: {
-        ...payload._meta,
-        question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
-      },
-    };
+  _request(event) {
+    this._hub.update(fields.request(), event);
+  }
+
+  _buildPayload() {
+    throw new Error(`Not implemented`);
   }
 
   // autocomplete //
   /*
   updateCompletions(event) {
     // TODO: verify
-    this._hub.update(fields.completions(), {
+    this._hub.update(fields.data(DATA_ASPECT.AUTOCOMPLETE), {
       ...event,
       source: 'manual',
     });
@@ -160,7 +159,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
   */
 
-  // process data //
+  // data //
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
 
@@ -173,24 +172,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     // affiliation
     data = processAffiliationData(data);
 
-    return this._processDataAnswerStage(data);
-  }
-
-  _processDataAnswerStage(data) {
-    const { value } = data;
-    if (!value) {
-      return data;
-    }
-    // 1. put answer_stage to meta
-    // 2. mark ongoing flag
-    return {
-      ...data,
-      ongoing: !value.finished,
-      meta: {
-        ...data.meta,
-        answer_stage: value.answer_stage,
-      },
-    };
+    return writeAnswerStageToMeta(data);
   }
 
   _writeQuestionIdFromData({ value }) {

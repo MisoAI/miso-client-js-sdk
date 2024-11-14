@@ -1,4 +1,4 @@
-import { STATUS } from '../constants.js';
+import { STATUS, DATA_ASPECT } from '../constants.js';
 import * as fields from './fields.js';
 
 export default class AutocompleteActor {
@@ -9,6 +9,7 @@ export default class AutocompleteActor {
     this._options = options;
     this._index = -1;
 
+    // TODO: listen to request:input instead
     this._unsubscribes = [
       hub.on(fields.input(), () => this._sync()),
       options.on('autocomplete', () => this._syncOptions()),
@@ -104,7 +105,8 @@ export default class AutocompleteActor {
 
   _emitCompletions(event) {
     event.source = 'actor';
-    this._hub.update(fields.completions(), event);
+    // TDOO: update response:autocomplete instead
+    this._hub.update(fields.data(DATA_ASPECT.AUTOCOMPLETE), event);
   }
 
   _error(error) {

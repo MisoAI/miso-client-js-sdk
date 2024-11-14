@@ -76,6 +76,9 @@ miso-ask-combo,
   }
   
   // phrase //
+  .miso-ask-combo__phrase-inline {
+    display: inline;
+  }
   .miso-ask-combo__phrase {
     margin-top: var(--miso-ask-combo-content-spacing);
     margin-bottom: 0.5rem;

@@ -1,7 +1,7 @@
 import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../trackable.js';
-import { product, article, question, productInfoBlock, articleInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock, helpers } from '../templates.js';
+import { product, article, question, productInfoBlock, articleInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
 
 function root(layout, state) {
   const { className, role, templates } = layout;
@@ -67,7 +67,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
   cta,
   imageBlock,
   indexBlock,
-  helpers,
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {

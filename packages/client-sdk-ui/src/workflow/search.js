@@ -1,9 +1,9 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { mergeApiOptions } from './options.js';
-import * as sources from '../source/index.js';
+import * as sources from '../source.js';
 import { fields, AutocompleteActor } from '../actor/index.js';
-import { ROLE } from '../constants.js';
+import { ROLE, DATA_ASPECT } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { makeConfigurable } from './options.js';
 
@@ -89,7 +89,7 @@ export default class Search extends Workflow {
 
   updateCompletions(event) {
     // TODO: verify
-    this._hub.update(fields.completions(), {
+    this._hub.update(fields.data(DATA_ASPECT.AUTOCOMPLETE), {
       ...event,
       source: 'manual',
     });

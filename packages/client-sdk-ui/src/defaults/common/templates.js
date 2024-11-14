@@ -10,30 +10,33 @@ export class Sections {
   }
 
   answerGroup(options) {
-    const { container } = this._helpers;
     return [
       this.answer(options),
       this.affiliation(options),
       this.sources(options),
-      container(options, { name: 'bottom-spacing', visibleWhen: 'ongoing' }),
     ];
   }
 
   answer(options) {
-    const { container, phrase } = this._helpers;
+    const { container } = this._helpers;
     return container(options, { name: 'answer', visibleWhen: 'ready' }, [
-      options.parentQuestionId ? '<hr>' : '',
-      phrase(options, { name: 'question', tag: 'div' }),
-      '<miso-question></miso-question>',
+      ...this.question(options),
       '<miso-answer></miso-answer>',
       '<miso-feedback></miso-feedback>',
     ]);
   }
 
+  question(options) {
+    const { phrase } = this._helpers;
+    return [
+      phrase(options, { name: 'question', tag: 'div' }),
+      '<miso-question></miso-question>',
+    ];
+  }
+
   sources(options) {
     const { container, phrase } = this._helpers;
     return container(options, { name: 'sources', visibleWhen: 'nonempty' }, [
-      '<hr>',
       phrase(options, { name: 'sources', tag: 'h3' }),
       '<miso-sources></miso-sources>',
     ]);
@@ -91,9 +94,10 @@ export class Helpers {
   }
 
   // html //
-  phrase(options, { name, tag = 'div' }) {
+  phrase(options, { name, tag = 'div', inline = false }) {
     const { classPrefix } = options;
-    return `<${tag} class="${classPrefix}__phrase ${classPrefix}__${name}-phrase">${this.phraseText(options, kebabToLowerCamel(name))}</${tag}>`;
+    const mainClass = inline ? `${classPrefix}__phrase-inline` : `${classPrefix}__phrase`;
+    return `<${tag} class="${mainClass} ${classPrefix}__${name}-phrase">${this.phraseText(options, kebabToLowerCamel(name))}</${tag}>`;
   }
 
   phraseText(options, key) {
@@ -118,7 +122,7 @@ export class Helpers {
   container({ classPrefix, circledCitationIndex, parentQuestionId }, { name, visibleWhen, logo = false }, body) {
     const classes = [`${classPrefix}__${name}-container`];
     circledCitationIndex && classes.push('miso-circled-citation-index');
-    return this.element('miso-ask', { classes, visibleWhen, logo, parentQuestionId }, body);
+    return this.element(this._context.CONAINER_TAG, { classes, visibleWhen, logo, parentQuestionId }, body);
   }
 
   element(tag, attributes = {}, body = '') {

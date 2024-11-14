@@ -56,6 +56,11 @@ sections:
     path: /explore/lorem-client
   - title: Linkless
     path: /explore/linkless
+- title: Hybrid Search
+  path: /hybrid-search
+  pages:
+  - title: Lorem
+    path: /hybrid-search/lorem
 - title: Search
   path: /search
   pages:

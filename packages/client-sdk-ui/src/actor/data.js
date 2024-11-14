@@ -3,10 +3,11 @@ import { isCurrentSession } from './utils.js';
 
 export default class DataActor {
 
-  constructor(hub, { source, options }) {
+  constructor(hub, { source, options, ...extra }) {
     this._hub = hub;
     this._source = source;
     this._options = options;
+    this._extra = extra;
     this._unsubscribes = [
       hub.on(fields.session(), session => this._handleSession(session)),
       hub.on(fields.request(), event => this._handleRequest(event)),
@@ -59,6 +60,14 @@ export default class DataActor {
       const response = await this._source({ session, ...event, options });
       // takes an iterable, either sync or async
       if (response && response[Symbol.asyncIterator]) {
+        const { onResponseObject } = this._extra;
+        if (typeof onResponseObject === 'function') {
+          try {
+            onResponseObject({ session, request, value: response });
+          } catch(error) {
+            this._error(error);
+          }
+        }
         let value;
         for await (value of response) {
           // A new session invalidates ongoing data fetch for the old session, terminating the loop

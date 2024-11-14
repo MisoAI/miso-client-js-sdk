@@ -10,16 +10,16 @@ export function query() {
   return 'query';
 }
 
-export function request() {
-  return 'request';
+export function request(aspect) {
+  return aspect ? `request:${aspect}` : 'request';
 }
 
-export function response() {
-  return 'response';
+export function response(aspect) {
+  return aspect ? `response:${aspect}` : 'response';
 }
 
-export function data() {
-  return 'data';
+export function data(aspect) {
+  return aspect ? `data:${aspect}` : 'data';
 }
 
 export function view(role) {
@@ -44,8 +44,4 @@ export function feedback() {
 
 export function input() {
   return 'input';
-}
-
-export function completions() {
-  return 'completions';
 }

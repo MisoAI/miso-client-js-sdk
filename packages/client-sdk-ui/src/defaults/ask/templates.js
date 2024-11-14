@@ -1,5 +1,5 @@
 import { externalize } from '@miso.ai/commons';
-import { CLASS_PREFIX } from './constants.js';
+import * as CONSTANTS from './constants.js';
 import * as DEFAULT_PHRASES from './phrases.js';
 import { Helpers, Sections as _Sections } from '../common/templates.js';
 
@@ -7,6 +7,33 @@ class Sections extends _Sections {
 
   constructor() {
     super({ helpers });
+  }
+
+  answerGroup(options) {
+    const { container } = this._helpers;
+    return [
+      ...super.answerGroup(options),
+      container(options, { name: 'bottom-spacing', visibleWhen: 'ongoing' }),
+    ];
+  }
+
+  answer(options) {
+    const { container } = this._helpers;
+    return container(options, { name: 'answer', visibleWhen: 'ready' }, [
+      options.parentQuestionId ? '<hr>' : '',
+      ...this.question(options),
+      '<miso-answer></miso-answer>',
+      '<miso-feedback></miso-feedback>',
+    ]);
+  }
+
+  sources(options) {
+    const { container, phrase } = this._helpers;
+    return container(options, { name: 'sources', visibleWhen: 'nonempty' }, [
+      '<hr>',
+      phrase(options, { name: 'sources', tag: 'h3' }),
+      '<miso-sources></miso-sources>',
+    ]);
   }
 
   followUps(options) {
@@ -36,7 +63,7 @@ class Sections extends _Sections {
 
 }
 
-export const helpers = externalize(new Helpers({ CLASS_PREFIX, DEFAULT_PHRASES }));
+export const helpers = externalize(new Helpers({ ...CONSTANTS, DEFAULT_PHRASES }));
 export const sections = externalize(new Sections({ helpers }));
 
 export function root(options = {}) {

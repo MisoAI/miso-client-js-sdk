@@ -1,8 +1,8 @@
 import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY, STATUS, EVENT_TYPE } from '../../constants.js';
+import { LAYOUT_CATEGORY, STATUS, EVENT_TYPE, DATA_ASPECT } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
-import { helpers, imageBlock, productInfoBlock } from '../templates.js';
+import { imageBlock, productInfoBlock } from '../templates.js';
 import { SEND, SEARCH } from '../../asset/svgs.js';
 
 const TYPE = 'search-box';
@@ -57,7 +57,7 @@ function query(layout, { text, text_with_inverted_markups } = {}) {
 
 function product(layout, { product }) {
   const { templates } = layout;
-  const [openTag, closeTag] = helpers.tagPair(layout, product, { role: false });
+  const [openTag, closeTag] = templates.helpers.tagPair(layout, product, { role: false });
   return [
     openTag,
     templates.imageBlock(layout, product),
@@ -93,7 +93,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
   product,
   imageBlock,
   productInfoBlock,
-  helpers,
 });
 
 const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
@@ -143,7 +142,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       proxyElement.on('focusin', (e) => this._handleFocusIn(e)),
       proxyElement.on('focusout', (e) => this._handleFocusOut(e)),
     ];
-    this._unsubscribes.push(hub.on(fields.completions(), () => view.refresh({ force: true })));
+    this._unsubscribes.push(hub.on(fields.data(DATA_ASPECT.AUTOCOMPLETE), () => view.refresh({ force: true })));
   }
 
   focus() {
@@ -176,7 +175,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     state = super._preprocess({ state });
     return {
       ...state,
-      completions: this._view.hub.states[fields.completions()],
+      completions: this._view.hub.states[fields.data(DATA_ASPECT.AUTOCOMPLETE)],
     };
   }
 

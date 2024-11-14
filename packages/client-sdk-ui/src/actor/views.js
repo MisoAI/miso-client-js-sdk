@@ -1,4 +1,4 @@
-import { defineValues, delegateGetters } from '@miso.ai/commons';
+import { defineValues, delegateGetters, trimObj } from '@miso.ai/commons';
 import { STATUS, ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
@@ -37,7 +37,7 @@ export default class ViewsActor {
 
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
-      hub.on(fields.data(), () => this.refresh()),
+      hub.on(fields.data(), data => this.refresh({ data })),
       options.on('trackers', () => this._syncTrackers()),
       options.on('layouts', () => this._syncLayouts()),
     ];
@@ -177,22 +177,27 @@ export default class ViewsActor {
     }
   }
 
-  async refresh({ force } = {}) {
-    const data = this._getData();
+  async refresh({ force, data } = {}) {
+    data = this._getData(data);
     // container first
-    await Promise.all(this._getViews(true).map(view => view.refresh({ force, data })));
+    let views = this._getViews(true);
+
+    if (!force && data._inst) {
+      const { includes, excludes } = data._inst;
+      if (includes) {
+        // always include containers
+        views = views.filter(view => view.role === ROLE.CONTAINER || includes.includes(view.role));
+      }
+      if (excludes) {
+        views = views.filter(view => !excludes.includes(view.role));
+      }
+    }
+
+    await Promise.all(views.map(view => view.refresh({ force, data })));
   }
 
-  _getData() {
-    const { [fields.data()]: data } = this._hub.states;
-    // compare to cached
-    if (!this._data || this._data.data !== data) {
-      const status = (!data || !data.session || !data.session.active) ? STATUS.INITIAL :
-        data.error ? STATUS.ERRONEOUS : data.value ? STATUS.READY : STATUS.LOADING;
-      const ongoing = status === STATUS.READY ? !!data.ongoing : undefined;
-      this._data = Object.freeze({ ...data, status, ongoing });
-    }
-    return this._data;
+  _getData(data) {
+    return data || this._hub.states[fields.data()];
   }
 
   _syncTrackers() {

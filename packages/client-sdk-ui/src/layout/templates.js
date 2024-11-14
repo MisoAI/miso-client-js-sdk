@@ -176,6 +176,7 @@ function tagPair({ className, options = {} }, { product_id, url }, { classSuffix
 }
 
 const DEFAULT_DATE_OPTIONS = Object.freeze({ locale: 'en-US', year: 'numeric', month: 'short', day: 'numeric' });
+const DEFAULT_NUMBER_OPTIONS = 'en-US';
 
 function formatDate(date, fn = DEFAULT_DATE_OPTIONS) {
   switch (typeof fn) {
@@ -190,6 +191,19 @@ function formatDate(date, fn = DEFAULT_DATE_OPTIONS) {
   }
 }
 
+function formatNumber(number, fn = DEFAULT_NUMBER_OPTIONS) {
+  switch (typeof fn) {
+    case 'function':
+      return fn(number);
+    case 'string':
+      return new Intl.NumberFormat(fn).format(number);
+    case 'object':
+      return new Intl.NumberFormat(fn.locale || DEFAULT_NUMBER_OPTIONS.locale, fn).format(number);
+    default:
+      throw new Error(`Invalid number format: ${fn}`);
+  }
+}
+
 function asFunction(template = '') {
   return typeof template === 'function' ? template : () => template;
 }
@@ -197,6 +211,7 @@ function asFunction(template = '') {
 export const helpers = Object.freeze({
   tagPair,
   formatDate,
+  formatNumber,
   escapeHtml,
   asFunction,
 });

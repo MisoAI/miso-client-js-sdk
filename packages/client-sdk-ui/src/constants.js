@@ -20,6 +20,9 @@ export const ROLE = Object.freeze({
   QUERY_SUGGESTIONS: 'query_suggestions',
   RELATED_QUESTIONS: 'related_questions',
   AFFILIATION: 'affiliation',
+  KEYWORDS: 'keywords',
+  FACETS: 'facets',
+  HITS: 'hits',
   ERROR: 'error',
 });
 
@@ -36,11 +39,17 @@ const DATA_ROLE_SET = new Set([
   ROLE.QUERY_SUGGESTIONS,
   ROLE.RELATED_QUESTIONS,
   ROLE.AFFILIATION,
+  ROLE.FACETS,
+  ROLE.HITS,
 ]);
 
 export function isDataRole(role) {
   return DATA_ROLE_SET.has(role);
 }
+
+export const DATA_ASPECT = Object.freeze({
+  AUTOCOMPLETE: 'autocomplete',
+});
 
 export const LAYOUT_CATEGORY = Object.freeze({
   CONTAINER: 'container',

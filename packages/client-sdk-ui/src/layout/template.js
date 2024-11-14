@@ -1,6 +1,6 @@
 import { defineValues } from '@miso.ai/commons';
 import RafLayout from './raf.js';
-import { requiresImplementation } from './templates.js';
+import { requiresImplementation, helpers } from './templates.js';
 
 export default class TemplateBasedLayout extends RafLayout {
 
@@ -11,6 +11,7 @@ export default class TemplateBasedLayout extends RafLayout {
       templates: {
         ...requiresImplementation('root'),
         ...templates,
+        helpers,
       },
     });
   }
