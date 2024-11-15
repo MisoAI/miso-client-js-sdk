@@ -17,3 +17,6 @@ export const keywords = 'You searched for “${value}”';
  * The phrase to display <miso-hits>
  */
 export const hits = '${value} Results';
+
+export const showMore = 'Show more';
+export const showLess = 'Show less';

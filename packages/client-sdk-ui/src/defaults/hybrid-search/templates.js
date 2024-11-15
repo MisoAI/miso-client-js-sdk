@@ -9,6 +9,23 @@ class Sections extends _Sections {
     super({ helpers });
   }
 
+  answerBox(options) {
+    const { element } = this._helpers;
+    const { classPrefix } = options;
+    return element('div', { classes: [`${classPrefix}__answer-box`] }, [
+      element('div', { classes: [`${classPrefix}__answer-box-inner`] }, this.answerGroup(options)),
+      this.answerBoxToggle(options),
+    ]);
+  }
+
+  answerBoxToggle(options) {
+    const { element } = this._helpers;
+    const { classPrefix } = options;
+    return element('div', { classes: [`${classPrefix}__answer-box-toggle-container`] }, [
+      element('div', { classes: [`${classPrefix}__answer-box-toggle`], 'data-role': 'answer-box-toggle' }),
+    ]);
+  }
+
   searchResultsGroup(options) {
     const { container } = this._helpers;
     return container(options, { name: 'search-results', visibleWhen: 'ready' }, [
@@ -43,12 +60,14 @@ export const sections = externalize(new Sections({ helpers }));
 
 export function root(options = {}) {
   const { normalizeOptions, section, container } = helpers;
-  const { answerGroup } = sections;
   options = normalizeOptions(options);
+  const { answerBox } = sections;
   return [
-    section(options, { name: 'answer' }, [
+    section(options, { name: 'question' }, [
       container(options, { name: 'query' }, '<miso-query></miso-query>'),
-      ...answerGroup(options),
+    ]),
+    section(options, { name: 'answer' }, [
+      answerBox(options),
     ]),
     section(options, { name: 'search-results' }, sections.searchResultsGroup(options)),
   ].join('');

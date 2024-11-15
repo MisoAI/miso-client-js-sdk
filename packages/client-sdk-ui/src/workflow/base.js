@@ -77,6 +77,11 @@ export default class Workflow extends Component {
     return this._hub.states;
   }
 
+  get status() {
+    const data = this._hub.states[fields.data()];
+    return data && data.status;
+  }
+
   get views() {
     return this._views.interface;
   }

@@ -8,6 +8,7 @@
   --miso-search-box-padding: 0.75rem;
   --miso-search-box-padding-left: calc(var(--miso-search-box-padding) + var(--miso-search-box-line-height) * 0.5 - 0.25em);
   --miso-search-box-border-radius-open: calc(max(var(--miso-search-box-line-height), var(--miso-search-box-icon-size)) / 2 + var(--miso-search-box-padding) + 1px);
+  --miso-search-box-height: calc(var(--miso-search-box-line-height) + var(--miso-search-box-padding) * 2 + 2px);
 }
 
 .miso-search-box {
