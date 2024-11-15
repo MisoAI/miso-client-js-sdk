@@ -84,7 +84,8 @@ export default class Explore extends Workflow {
     if (relatedQuestions) {
       this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { session }));
     } else {
-      this.updateData({ session, value: { related_questions: [] } });
+      // TODO: ad-hoc
+      this.updateData({ session, request: {}, value: { related_questions: [] } });
     }
     return this;
   }
