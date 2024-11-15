@@ -57,7 +57,7 @@ class SearchWithAnswer extends IdBasedIterableApiStub {
 
   constructor(api, response, options = {}) {
     super(api, '_searchGet', response.question_id, options);
-    defineValues(this, { searchResults: getSearchResults(response) });
+    defineValues(this, { response });
   }
 
   get questionId() {
@@ -69,7 +69,7 @@ class SearchWithAnswer extends IdBasedIterableApiStub {
 class SearchWithoutAnswer {
 
   constructor(response) {
-    defineValues(this, { searchResults: getSearchResults(response) });
+    defineValues(this, { response });
   }
 
 }
@@ -77,9 +77,4 @@ class SearchWithoutAnswer {
 // helpers //
 function isId(value) {
   return typeof value === 'string' && value.charAt(0) !== '{';
-}
-
-function getSearchResults(response) {
-  const { products, hits, facets } = response;
-  return { products, hits, facets };
 }

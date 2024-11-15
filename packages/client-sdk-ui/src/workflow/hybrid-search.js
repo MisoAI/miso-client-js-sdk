@@ -73,7 +73,7 @@ export default class HybridSearch extends AnswerBasedWorkflow {
   // data //
   _handleResponseObject(data) {
     // write search results from initial POST API response
-    data = trimObj({ ...data, value: data.value.searchResults });
+    data = trimObj({ ...data, value: data.value.response });
     this.updateData(data);
   }
 
