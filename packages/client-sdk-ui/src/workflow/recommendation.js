@@ -41,6 +41,8 @@ export default class Recommendation extends Workflow {
     this._context = context;
 
     context._members.set(id, this);
+
+    this.reset();
   }
 
   // lifecycle //

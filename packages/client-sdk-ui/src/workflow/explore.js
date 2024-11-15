@@ -47,6 +47,8 @@ export default class Explore extends Workflow {
       this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleRelatedQuestionClick(event)),
       this._hub.on(fields.query(), payload => this.query(payload)),
     ];
+
+    this.reset();
   }
 
   set productId(value) {

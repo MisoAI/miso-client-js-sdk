@@ -61,6 +61,8 @@ export default class Search extends Workflow {
     });
 
     this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
+
+    this.reset();
   }
 
   // lifecycle //
