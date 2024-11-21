@@ -51,8 +51,10 @@ export default class DataActor {
     const { session } = this._hub.states;
     const { session: _, ...request } = event;
 
-    // emit response to update request
-    this._emitResponse({ session, request });
+    if (!event._skipLoading) {
+      // emit response to update request
+      this._emitResponse({ session, request });
+    }
 
     try {
       const { signal } = this._ac || {};
@@ -63,7 +65,7 @@ export default class DataActor {
         const { onResponseObject } = this._extra;
         if (typeof onResponseObject === 'function') {
           try {
-            onResponseObject({ session, request, value: response });
+            onResponseObject({ session, request, value: response._response });
           } catch(error) {
             this._error(error);
           }

@@ -141,8 +141,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       proxyElement.on('click', (e) => this._handleClick(e)),
       proxyElement.on('focusin', (e) => this._handleFocusIn(e)),
       proxyElement.on('focusout', (e) => this._handleFocusOut(e)),
+      hub.on(fields.data(DATA_ASPECT.AUTOCOMPLETE), () => view.refresh({ force: true })),
     ];
-    this._unsubscribes.push(hub.on(fields.data(DATA_ASPECT.AUTOCOMPLETE), () => view.refresh({ force: true })));
   }
 
   focus() {
@@ -323,7 +323,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     }
     this.close();
     // TODO: q -> value
-    this._view.hub.trigger(fields.query(), { q: value });
+    this._view.hub.update(fields.query(), { q: value });
     this._trackSubmit(value);
   }
 

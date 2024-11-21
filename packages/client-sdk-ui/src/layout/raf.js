@@ -103,6 +103,7 @@ export default class RafLayout {
       unsubscribe();
     }
     this._unsubscribes = [];
+    this._view = undefined;
     this._element = undefined;
     this._notifyUpdate = undefined;
     this._pending = undefined;

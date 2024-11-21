@@ -6,6 +6,10 @@ export function suggestions() {
   return 'suggestions';
 }
 
+export function filters() {
+  return 'filters';
+}
+
 export function query() {
   return 'query';
 }

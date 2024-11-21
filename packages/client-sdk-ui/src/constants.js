@@ -57,6 +57,7 @@ export const LAYOUT_CATEGORY = Object.freeze({
   LIST: 'list',
   QUERY: 'query',
   RADIO: 'radio',
+  FILTERS: 'filters',
   TEXT: 'text',
   AFFILIATION: 'affiliation',
   ERROR: 'error',

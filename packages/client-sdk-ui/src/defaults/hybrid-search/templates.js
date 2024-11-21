@@ -30,6 +30,7 @@ class Sections extends _Sections {
     const { container } = this._helpers;
     return container(options, { name: 'search-results', visibleWhen: 'ready' }, [
       this.searchResultsInfoGroup(options),
+      this.searchResultsFilters(options),
       '<miso-products></miso-products>',
     ]);
   }
@@ -40,6 +41,14 @@ class Sections extends _Sections {
     return element('div', { classes: [`${classPrefix}__search-results-info`] }, [
       this.keywords(options),
       this.hits(options),
+    ]);
+  }
+
+  searchResultsFilters(options) {
+    const { element } = this._helpers;
+    const { classPrefix } = options;
+    return element('div', { classes: [`${classPrefix}__search-results-filters`] }, [
+      '<miso-facets></miso-facets>',
     ]);
   }
 

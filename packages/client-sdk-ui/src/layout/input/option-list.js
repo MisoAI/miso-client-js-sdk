@@ -71,13 +71,13 @@ export default class OptionListLayout extends TemplateBasedLayout {
     this._unsubscribes = [
       ...this._unsubscribes,
       proxyElement.on('click', (e) => this._handleClick(e)),
-      hub.on(fields.suggestions(), () => this._handleInput()),
+      hub.on(fields.suggestions(), () => this._handleInput()), // TODO: use data mapping
     ];
   }
 
   _preprocess() {
     return super._preprocess({
-      state: this._view.hub.states[fields.suggestions()],
+      state: this._view.hub.states[fields.suggestions()], // TODO: use data mapping
     });
   }
 
@@ -135,12 +135,11 @@ export default class OptionListLayout extends TemplateBasedLayout {
       return;
     }
     // TODO: q -> value
-    this._view.hub.trigger(fields.query(), { q: value });
+    this._view.hub.update(fields.query(), { q: value });
   }
 
   destroy() {
     this._destroyTrackable();
-    this._view = undefined;
     super.destroy();
   }
 

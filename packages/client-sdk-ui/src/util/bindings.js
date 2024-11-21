@@ -41,6 +41,10 @@ export default class Bindings {
     return this._e2b.get(element) || undefined;
   }
 
+  find(key) {
+    return this._k2b.get(key) || undefined;
+  }
+
   update(keys, values, elements) {
     const newTuple = tuple(keys, values, elements);
     const oldTuple = { k2b: this._k2b, e2b: this._e2b, entries: this._entries };

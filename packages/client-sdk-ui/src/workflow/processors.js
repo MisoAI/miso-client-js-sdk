@@ -11,11 +11,8 @@ function getStatus(data) {
   if (!data) {
     return STATUS.INITIAL;
   }
-  const { session, request, error, value } = data;
-  if (!session || !request) {
-    return STATUS.INITIAL;
-  }
-  return error ? STATUS.ERRONEOUS : value ? STATUS.READY : STATUS.LOADING;
+  const { request, error, value } = data;
+  return error ? STATUS.ERRONEOUS : value ? STATUS.READY : request ? STATUS.LOADING : STATUS.INITIAL;
 }
 
 export function writeMisoIdToMeta(data) {
@@ -36,7 +33,7 @@ export function writeMisoIdToMeta(data) {
   };
 }
 
-export function writeKeywordsToData(data, { question: writeQuestion = false } = {}) {
+export function writeKeywordsToData(data) {
   const { request, value } = data;
   if (!request || !value) {
     return data;
@@ -46,11 +43,9 @@ export function writeKeywordsToData(data, { question: writeQuestion = false } = 
   if (!keywords) {
     return data;
   }
-  const question = writeQuestion ? keywords : undefined;
   return {
     ...data,
     value: {
-      question, // so it can be overwritten by value
       ...value,
       keywords,
     },

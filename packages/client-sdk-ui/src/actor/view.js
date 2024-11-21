@@ -22,6 +22,7 @@ export default class ViewActor {
   constructor(views, role) {
     this._events = new EventEmitter({ target: this });
     this._views = views;
+    this._config = views._rolesConfig[role] || {};
 
     defineValues(this, {
       role,
@@ -101,6 +102,10 @@ export default class ViewActor {
     return this._tracker;
   }
 
+  get filters() {
+    return this._views.filters;
+  }
+
   async refresh({ force = false, data } = {}) {
     // protocol: no reaction when layout is absent
     if (!this._layout) {
@@ -155,9 +160,10 @@ export default class ViewActor {
     return this._views._getTrackerOptions(this.role);
   }
 
-  _sliceData({ value, error, status, meta, ...rest }) {
+  _sliceData(data) {
+    const { value, error, status, meta, ...rest } = data;
     const sliced = {
-      value: this.role === ROLE.ERROR ? error : (value && value[this.role]),
+      value: asMappingFunction(this._config.mapping || this.role)(data),
       status,
       data: value,
       meta,
@@ -229,4 +235,15 @@ class View {
     delegateGetters(this, actor, ['role', 'layout', 'element', 'proxyElement', 'refresh', 'on', 'tracker']);
   }
 
+}
+
+function asMappingFunction(fn) {
+  switch (typeof fn) {
+    case 'function':
+      return fn;
+    case 'string':
+      return data => data.value && data.value[fn];
+    default:
+      throw new Error(`Invalid mapping function: ${fn}`);
+  }
 }

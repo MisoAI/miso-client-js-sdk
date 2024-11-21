@@ -1,7 +1,8 @@
-import { defineValues, delegateGetters, trimObj } from '@miso.ai/commons';
-import { STATUS, ROLE } from '../constants.js';
+import { defineValues, delegateGetters } from '@miso.ai/commons';
+import { ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
+import Filters from './filters.js';
 import Tracker from './tracker.js';
 import { normalizeTrackerOptions } from '../util/trackers.js';
 
@@ -12,6 +13,7 @@ export default class ViewsActor {
     extensions,
     layouts,
     roles = [],
+    rolesConfig = {},
     options,
   }) {
     this._hub = hub;
@@ -19,10 +21,12 @@ export default class ViewsActor {
     this._extensions = extensions;
     this._layoutFactory = layouts;
     this._options = options;
+    this._rolesConfig = rolesConfig;
     this._containers = new Map();
     this._containerTracker = undefined;
     this._views = {};
     this._trackers = new Trackers(this, roles);
+    this._filters = new Filters(this);
 
     for (const role of roles) {
       this._views[role] = new ViewActor(this, role);
@@ -48,6 +52,10 @@ export default class ViewsActor {
 
   get trackers() {
     return this._trackers;
+  }
+
+  get filters() {
+    return this._filters;
   }
 
   // elements //
@@ -232,6 +240,7 @@ export default class ViewsActor {
       unsubscribe();
     }
     this._unsubscribes = [];
+    this._filters._destroy();
   }
 
 }
@@ -240,7 +249,7 @@ class Views {
 
   constructor(actor) {
     this._actor = actor;
-    delegateGetters(this, actor, ['syncSize', 'refresh', 'trackers']);
+    delegateGetters(this, actor, ['syncSize', 'refresh', 'trackers', 'filters']);
   }
 
   get(role) {

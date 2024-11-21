@@ -52,6 +52,9 @@ miso-hybrid-search-combo,
     align-items: center;
     margin-bottom: 1rem;
   }
+  .miso-hybrid-search-combo__search-results-filters {
+    margin-bottom: var(--miso-hybrid-search-combo-content-spacing);
+  }
   
   // answer box //
   .miso-hybrid-search-combo__answer-box {

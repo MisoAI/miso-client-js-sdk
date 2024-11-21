@@ -12,3 +12,4 @@ export { default as FeedbackLayout } from './radio/feedback.js';
 export { default as TextLayout } from './text/text.js';
 export { default as TypewriterLayout } from './text/typewriter/index.js';
 export { default as AffiliationLayout } from './affiliation/affiliation.js';
+export { default as FacetsLayout } from './input/facets.js';

@@ -32,7 +32,7 @@ export default class Ask extends ApiBase {
 
   async search(payload, options = {}) {
     const response = await this._run(NAME.SEARCH, payload, options);
-    return response.question_id ? new SearchWithAnswer(this, response, options) : new SearchWithoutAnswer(response);
+    return response.question_id ? new SearchResult(this, response, options) : response;
   }
 
   async _searchGet(questionId, options) {
@@ -53,23 +53,16 @@ class Answer extends IdBasedIterableApiStub {
 
 }
 
-class SearchWithAnswer extends IdBasedIterableApiStub {
+class SearchResult extends IdBasedIterableApiStub {
 
   constructor(api, response, options = {}) {
     super(api, '_searchGet', response.question_id, options);
-    defineValues(this, { response });
+    defineValues(this, response);
+    this._response = response;
   }
 
   get questionId() {
     return this._id;
-  }
-
-}
-
-class SearchWithoutAnswer {
-
-  constructor(response) {
-    defineValues(this, { response });
   }
 
 }

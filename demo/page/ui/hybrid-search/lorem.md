@@ -11,8 +11,9 @@ misocmd.push(async () => {
     apiHost: 'http://localhost:9901/api',
   });
   const workflow = client.ui.hybridSearch;
-  //client.context.user_id = 'id';
-  //client.context.user_type = 'test';
+  workflow.useApi({
+    facets: ['categories'],
+  });
   // render DOM and get elements
   await client.ui.ready;
   const { templates, wireAnswerBox } = MisoClient.ui.defaults.hybridSearch;

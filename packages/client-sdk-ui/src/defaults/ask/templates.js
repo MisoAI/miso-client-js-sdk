@@ -41,7 +41,7 @@ class Sections extends _Sections {
     return features.followUpQuestions === false ? '' : `<div id="${classPrefix}__follow-ups" class="${classPrefix}__follow-ups"></div>`;
   }
 
-  relatedResources(options) {
+  relatedResourcesSection(options) {
     const { container, phrase, section } = this._helpers;
     const { features = {}, logo = true } = options;
     const body = features.relatedResources === false ? '' : container(options, { name: 'related-resources', visibleWhen: 'nonempty', logo }, [
@@ -68,7 +68,7 @@ export const sections = externalize(new Sections({ helpers }));
 
 export function root(options = {}) {
   const { normalizeOptions, section, container } = helpers;
-  const { followUps, relatedResources, answerGroup } = sections;
+  const { followUps, relatedResourcesSection, answerGroup } = sections;
   options = normalizeOptions(options);
   return [
     section(options, { name: 'question' }, [
@@ -76,7 +76,7 @@ export function root(options = {}) {
     ]),
     section(options, { name: 'answer' }, answerGroup(options)),
     followUps(options),
-    relatedResources(options),
+    relatedResourcesSection(options),
   ].join('');
 };
 

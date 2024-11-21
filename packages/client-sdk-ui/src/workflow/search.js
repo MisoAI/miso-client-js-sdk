@@ -82,11 +82,11 @@ export default class Search extends Workflow {
     }
   }
 
-  query(payload) {
+  query(args) {
     this.restart();
     const { session } = this;
+    const payload = args; // TODO: go through _buildPayload()
     this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
-    return this;
   }
 
   updateCompletions(event) {

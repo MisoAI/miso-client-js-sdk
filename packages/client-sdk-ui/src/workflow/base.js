@@ -12,6 +12,12 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.ERROR]: ErrorLayout.type,
 });
 
+const ROLES_CONFIG = Object.freeze({
+  [ROLE.ERROR]: {
+    mapping: data => data.error,
+  },
+});
+
 function mergeDefaults(workflow, { layouts, interactions, ...defaults } = {}) {
   const DEFAULT_INTERACTIONS = {
     preprocess: [payload => workflow._preprocessInteraction(payload)],
@@ -35,6 +41,7 @@ export default class Workflow extends Component {
     plugin,
     client,
     roles,
+    rolesConfig,
     defaults,
   }) {
     super(name || 'workflow', plugin);
@@ -44,6 +51,7 @@ export default class Workflow extends Component {
     this._name = name;
     this._roles = roles;
 
+    rolesConfig = { ...ROLES_CONFIG, ...rolesConfig };
     const extensions = this._extensions = plugin._getExtensions(client);
     const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
     const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
@@ -52,7 +60,7 @@ export default class Workflow extends Component {
 
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source: sources.api(client), options, onResponseObject });
-    this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
+    this._views = new ViewsActor(hub, { extensions, layouts, roles, rolesConfig, options, workflow: name });
     this._interactions = new InteractionsActor(hub, { client, options });
 
     this._unsubscribes = [
@@ -129,6 +137,7 @@ export default class Workflow extends Component {
 
     this._sessions.start(); // in case session not started yet
 
+    data = writeDataStatus(data);
     data = this._defaultProcessData(data);
     for (const process of this._options.resolved.dataProcessor) {
       data = process(data);
@@ -144,9 +153,7 @@ export default class Workflow extends Component {
   }
 
   _defaultProcessData(data) {
-    data = writeDataStatus(data);
-    data = writeMisoIdToMeta(data);
-    return data;
+    return writeMisoIdToMeta(data);
   }
 
   _mergeDataIfNecessary(data) {

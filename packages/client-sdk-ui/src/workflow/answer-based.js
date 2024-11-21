@@ -135,8 +135,6 @@ export default class AnswerBasedWorkflow extends Workflow {
     const payload = this._buildPayload(args);
     const event = mergeApiOptions(this._options.resolved.api, { payload, session });
     this._request(event);
-
-    return this;
   }
 
   _request(event) {

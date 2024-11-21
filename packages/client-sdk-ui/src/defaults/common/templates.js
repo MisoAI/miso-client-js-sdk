@@ -9,6 +9,13 @@ export class Sections {
     this._helpers = helpers;
   }
 
+  errorSection(options) {
+    const { section, container } = this._helpers;
+    return section(options, { name: 'error' }, [
+      container(options, { name: 'error', visibleWhen: 'erroneous' }, '<miso-error></miso-error>'),
+    ]);
+  }
+
   answerGroup(options) {
     return [
       this.answer(options),
