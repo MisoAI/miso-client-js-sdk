@@ -35,14 +35,19 @@ export default class Recommendation extends Workflow {
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
       defaults: DEFAULT_OPTIONS,
+      id,
     });
+  }
 
+  _initProperties(args) {
+    super._initProperties(args);
+    const { id } = args;
     defineValues(this, { id });
-    this._context = context;
+  }
 
-    context._members.set(id, this);
-
-    this.reset();
+  _initReset(args) {
+    this._context._members.set(args.id, this);
+    super._initReset(args);
   }
 
   // lifecycle //

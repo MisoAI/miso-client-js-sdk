@@ -44,23 +44,19 @@ export default class Ask extends AnswerBasedWorkflow {
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
       defaults: DEFAULT_OPTIONS,
+      parentQuestionId,
     });
-    this._initProperties(context, parentQuestionId);
-    this._initActors();
-    this._setSuggestedQuestions();
-    this._initSubscriptions();
-
-    // register at context
-    parentQuestionId && context._byPqid.set(parentQuestionId, this);
-    context._events.emit('create', this);
-
-    this.reset(); // create a session so query suggestions can be tracked
   }
 
-  _initProperties(context, parentQuestionId) {
-    super._initProperties();
-    this._context = context;
+  _initProperties(args) {
+    super._initProperties(args);
+    const { parentQuestionId } = args;
     defineValues(this, { parentQuestionId });
+  }
+
+  _initSubscriptions(args) {
+    this._setSuggestedQuestions();
+    super._initSubscriptions(args);
   }
 
   _setSuggestedQuestions() {
@@ -71,6 +67,13 @@ export default class Ask extends AnswerBasedWorkflow {
     const values = previous.states[fields.data()].value;
     const value = values.suggested_followup_questions || values.followup_questions || [];
     this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
+  }
+
+  _initReset(args) {
+    // register at context
+    args.parentQuestionId && this._context._byPqid.set(args.parentQuestionId, this);
+    this._context._events.emit('create', this);
+    super._initReset(args);
   }
 
   // lifecycle //

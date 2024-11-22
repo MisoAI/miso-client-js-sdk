@@ -39,18 +39,24 @@ export default class Explore extends Workflow {
       roles: Object.keys(DEFAULT_LAYOUTS),
       defaults: DEFAULT_OPTIONS,
     });
+  }
+
+  _initProperties(args) {
+    super._initProperties(args);
     this._productId = undefined;
     this._linkFn = undefined;
+  }
 
+  _initSubscriptions(args) {
+    super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
       this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleRelatedQuestionClick(event)),
       this._hub.on(fields.query(), payload => this.query(payload)),
     ];
-
-    this.reset();
   }
 
+  // configuration //
   set productId(value) {
     console.warning('DEPRECATED: use useApi() instead');
     this.useApi({

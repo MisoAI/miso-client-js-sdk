@@ -35,37 +35,54 @@ function getRevision(data) {
 
 export default class Workflow extends Component {
 
-  constructor({
-    name,
-    context,
-    plugin,
-    client,
-    roles,
-    rolesConfig,
-    defaults,
-  }) {
-    super(name || 'workflow', plugin);
+  constructor(args) {
+    super(args.name || 'workflow', args.plugin);
+
+    let { context, plugin, client } = args;
     this._context = context;
     this._plugin = plugin = plugin || context._plugin;
     this._client = client = client || context._client;
-    this._name = name;
-    this._roles = roles;
+    args = Object.freeze({ ...args, plugin, client });
 
-    rolesConfig = { ...ROLES_CONFIG, ...rolesConfig };
-    const extensions = this._extensions = plugin._getExtensions(client);
-    const options = this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, defaults));
-    const hub = this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
-    const layouts = plugin.layouts;
-    const onResponseObject = response => this._handleResponseObject(response);
+    this._name = args.name;
+    this._roles = args.roles;
+    this._rolesConfig = { ...ROLES_CONFIG, ...args.rolesConfig };
+
+    this._extensions = plugin._getExtensions(client);
+    this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, args.defaults));
+    this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
+
+    this._initProperties(args);
+    this._initActors(args);
+    this._initSubscriptions(args);
+    this._initReset(args);
+  }
+
+  _initProperties() {}
+
+  _initActors() {
+    const hub = this._hub;
+    const client = this._client;
+    const roles = this._roles;
+    const rolesConfig = this._rolesConfig;
+    const options = this._options;
+    const extensions = this._extensions;
+    const layouts = this._plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
-    this._data = new DataActor(hub, { source: sources.api(client), options, onResponseObject });
-    this._views = new ViewsActor(hub, { extensions, layouts, roles, rolesConfig, options, workflow: name });
+    this._data = new DataActor(hub, { source: sources.api(client), options, onResponseObject: response => this._handleResponseObject(response) });
+    this._views = new ViewsActor(hub, { extensions, layouts, roles, rolesConfig, options, workflow: this._name });
     this._interactions = new InteractionsActor(hub, { client, options });
+  }
 
+  _initSubscriptions() {
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
     ];
+  }
+
+  _initReset() {
+    this.reset();
   }
 
   get uuid() {

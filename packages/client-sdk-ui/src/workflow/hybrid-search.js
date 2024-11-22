@@ -53,22 +53,10 @@ export default class HybridSearch extends AnswerBasedWorkflow {
       rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
     });
-
-    this._initProperties();
-    this._initActors();
-    this._initSubscriptions();
-
-    this.reset();
   }
 
-  /*
-  _initActors() {
-    super._initActors();
-  }
-  */
-
-  _initSubscriptions() {
-    super._initSubscriptions();
+  _initSubscriptions(args) {
+    super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.filters(), filters => this._refine(filters)),

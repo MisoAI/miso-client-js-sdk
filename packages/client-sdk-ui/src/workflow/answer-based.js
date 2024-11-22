@@ -50,12 +50,14 @@ const DEFAULT_OPTIONS = Object.freeze({
 export default class AnswerBasedWorkflow extends Workflow {
 
   // constructor //
-  _initProperties() {
+  _initProperties(args) {
+    super._initProperties(args);
     this._questionId = undefined;
     this._autoQuery = false;
   }
 
-  _initActors() {
+  _initActors(args) {
+    super._initActors(args);
     this._feedback = new FeedbackActor(this._hub);
     /*
     this._autocomplete = new AutocompleteActor(this._hub, {
@@ -65,7 +67,8 @@ export default class AnswerBasedWorkflow extends Workflow {
     */
   }
 
-  _initSubscriptions() {
+  _initSubscriptions(args) {
+    super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this.query(args)),

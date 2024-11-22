@@ -54,15 +54,22 @@ export default class Search extends Workflow {
       roles: Object.keys(DEFAULT_LAYOUTS),
       defaults: DEFAULT_OPTIONS,
     });
+  }
 
+  _initActors(args) {
+    super._initActors(args);
     this._autocomplete = new AutocompleteActor(this._hub, {
       source: sources.api(this._client),
       options: this._options,
     });
+  }
 
-    this._unsubscribes.push(this._hub.on(fields.query(), payload => this.query(payload)));
-
-    this.reset();
+  _initSubscriptions(args) {
+    super._initSubscriptions(args);
+    this._unsubscribes = [
+      ...this._unsubscribes,
+      this._hub.on(fields.query(), payload => this.query(payload)),
+    ];
   }
 
   // lifecycle //
