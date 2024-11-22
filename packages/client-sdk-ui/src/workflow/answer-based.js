@@ -71,7 +71,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._hub.on(fields.query(), args => this.query(args)),
+      this._hub.on(fields.query(), args => this._query(args)),
       this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
       this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
     ];
@@ -121,18 +121,21 @@ export default class AnswerBasedWorkflow extends Workflow {
     }
   }
 
-  query(args = {}) {
-    const { q: question, qs: questionSource } = args;
-    if (!question) {
-      throw new Error(`Question is required in query()`);
+  query(args) {
+    // TODO: also accept "question", "questionSource"?
+    if (!args.q) {
+      throw new Error(`q is required in query() call`);
     }
+    this._hub.update(fields.query(), args);
+  }
 
+  _query(args = {}) {
     // start a new session
     this.restart();
 
     // keep track of question source on this session
     const { session } = this;
-    session.meta.question_source = questionSource || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
+    session.meta.question_source = args.questionSource || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
 
     // build payload and trigger request
     const payload = this._buildPayload(args);

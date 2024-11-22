@@ -68,7 +68,7 @@ export default class Search extends Workflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._hub.on(fields.query(), payload => this.query(payload)),
+      this._hub.on(fields.query(), args => this._query(args)),
     ];
   }
 
@@ -90,10 +90,29 @@ export default class Search extends Workflow {
   }
 
   query(args) {
+    if (!args.q) {
+      throw new Error(`q is required in query() call`);
+    }
+    this._hub.update(fields.query(), args);
+  }
+
+  _query(args) {
+    // start a new session
     this.restart();
     const { session } = this;
-    const payload = args; // TODO: go through _buildPayload()
-    this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { payload, session }));
+
+    // build payload and trigger request
+    const payload = this._buildPayload(args);
+    const event = mergeApiOptions(this._options.resolved.api, { payload, session });
+    this._request(event);
+  }
+
+  _buildPayload(args) {
+    return args;
+  }
+
+  _request(event) {
+    this._hub.update(fields.request(), event);
   }
 
   updateCompletions(event) {

@@ -70,7 +70,7 @@ export default class Workflow extends Component {
     const layouts = this._plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
-    this._data = new DataActor(hub, { source: sources.api(client), options, onResponseObject: response => this._handleResponseObject(response) });
+    this._data = new DataActor(hub, { source: sources.api(client), options });
     this._views = new ViewsActor(hub, { extensions, layouts, roles, rolesConfig, options, workflow: this._name });
     this._interactions = new InteractionsActor(hub, { client, options });
   }

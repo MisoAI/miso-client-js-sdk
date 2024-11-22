@@ -106,11 +106,6 @@ export default class HybridSearch extends AnswerBasedWorkflow {
   }
 
   // data //
-  _handleResponseObject(data) {
-    // write search results from initial POST API response
-    this.updateData(trimObj(data));
-  }
-
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
@@ -125,6 +120,6 @@ function instructPartialUpdates(data) {
     return data;
   }
   return addDataInstructions(data, data.value.products ? 
-    { includes: [ ROLE.PRODUCTS, ROLE.FACETS, ROLE.HITS, ROLE.QUESTION, ROLE.KEYWORDS ], merge: true } :
+    { includes: [ ROLE.PRODUCTS, ROLE.HITS, ROLE.FACETS, ROLE.KEYWORDS, ROLE.QUESTION ], merge: true } :
     { excludes: [ ROLE.PRODUCTS, ROLE.HITS, ROLE.FACETS ], merge: true });
 }
