@@ -72,6 +72,9 @@ export default class TypewriterLayout extends ProgressiveLayout {
 
   async _setupForMarkdown() {
     const context = await this._view._views._extensions.require('markdown');
+    if (!this._view) {
+      return; // destroyed
+    }
     const cursorClass = cursorClassName(this.className);
     const { onDebug, onCitationLink } = this.options;
     // TODO: options
