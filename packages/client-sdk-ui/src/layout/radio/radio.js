@@ -86,7 +86,7 @@ export default class RadioLayout extends TemplateBasedLayout {
   }
 
   _syncValueAttribute() {
-    if (!this._state) {
+    if (!this._state || !this._view) {
       return;
     }
     const { element } = this._view;
