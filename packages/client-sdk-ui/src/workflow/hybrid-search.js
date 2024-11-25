@@ -4,13 +4,14 @@ import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
 import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { ListLayout, TextLayout, FacetsLayout } from '../layout/index.js';
-import { writeKeywordsToData, addDataInstructions } from './processors.js';
+import { writeKeywordsToData, addDataInstructions, composeFq } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
   name: API.NAME.SEARCH,
   payload: {
     ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload,
+    source_fl: [...(AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload.source_fl || []), 'title', 'snippet'],
   },
 });
 
@@ -65,7 +66,7 @@ export default class HybridSearch extends AnswerBasedWorkflow {
 
   // query //
   _buildPayload({ q, qs, filters, ...payload } = {}) {
-    const fq = this._buildFq(filters); // TODO: combine with fq in payload?
+    const fq = composeFq(filters); // TODO: combine with fq in payload?
     return trimObj({
       ...payload,
       q, // q, not question
@@ -75,22 +76,6 @@ export default class HybridSearch extends AnswerBasedWorkflow {
         question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
       },
     });
-  }
-
-  _buildFq(filters) {
-    if (!filters) {
-      return undefined;
-    }
-    const clauses = [];
-    const { facets } = filters;
-    for (const field in facets) {
-      const values = facets[field];
-      if (!values || !values.length) {
-        continue; // just in case
-      }
-      clauses.push(`${field}:(${values.map(v => `"${v}"`).join(' OR ')})`);
-    }
-    return clauses.map(c => `(${c})`).join(' AND ');
   }
 
   _refine(filters) {

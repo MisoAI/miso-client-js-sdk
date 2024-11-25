@@ -36,7 +36,7 @@ export default class Ask extends ApiBase {
   }
 
   async _searchGet(questionId, options) {
-    return this._run(`${NAME.SEARCH}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
+    return this._run(`${NAME.QUESTIONS}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
 }

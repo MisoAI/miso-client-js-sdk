@@ -118,6 +118,22 @@ miso-hybrid-search-combo,
     }
   }
 
+  // results //
+  miso-products {
+    .miso-list__item {
+      border-color: transparent !important;
+    }
+    .miso-list__item-body {
+      gap: 1.5rem !important;
+    }
+    .miso-list__item-cover-image-container {
+      height: 10rem !important;
+    }
+    .miso-list__item-index-container {
+      display: none !important;
+    }
+  }
+
   // phrase //
   .miso-hybrid-search-combo__phrase-inline {
     display: inline;

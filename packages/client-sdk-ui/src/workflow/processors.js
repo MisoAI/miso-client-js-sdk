@@ -93,3 +93,19 @@ export function removeDataInstructions(data) {
   const { _inst, ...rest } = data;
   return rest;
 }
+
+export function composeFq(filters) {
+  if (!filters) {
+    return undefined;
+  }
+  const clauses = [];
+  const { facets } = filters;
+  for (const field in facets) {
+    const values = facets[field];
+    if (!values || !values.length) {
+      continue; // just in case
+    }
+    clauses.push(`${field}:(${values.map(v => `"${v}"`).join(' OR ')})`);
+  }
+  return clauses.map(c => `(${c})`).join(' AND ');
+}

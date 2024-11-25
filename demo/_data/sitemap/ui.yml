@@ -61,6 +61,8 @@ sections:
   pages:
   - title: Lorem
     path: /hybrid-search/lorem
+  - title: Production
+    path: /hybrid-search/production
 - title: Search
   path: /search
   pages:

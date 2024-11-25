@@ -205,7 +205,12 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   // interactions //
   _preprocessInteraction(payload) {
-    payload = super._preprocessInteraction(payload) || {};
+    payload = super._preprocessInteraction(payload);
+    payload = this._writeQuestionIdToInteractions(payload);
+    return payload;
+  }
+
+  _writeQuestionIdToInteractions(payload = {}) {
     const { context = {} } = payload;
     const { custom_context = {} } = context;
     let { questionId } = this;

@@ -203,6 +203,7 @@ export default class Workflow extends Component {
     return this._views.trackers;
   }
 
+  // TODO: extract to a separate function
   _preprocessInteraction({
     context: {
       custom_context,
