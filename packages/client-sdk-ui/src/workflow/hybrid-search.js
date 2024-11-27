@@ -4,6 +4,7 @@ import Workflow from './base.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE } from '../constants.js';
 import { ListLayout, TextLayout, FacetsLayout } from '../layout/index.js';
+import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
