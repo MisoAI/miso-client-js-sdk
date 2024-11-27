@@ -35,9 +35,9 @@ export default class AnswerBox {
 
     this._unsubscribes = [
       () => element.removeEventListener('click', callback),
-      workflow.on('loading', () => this.hide()),
-      workflow.on('error', () => this.show()),
-      workflow.on('ready', () => this.show()),
+      workflow._answer.on('loading', () => this.hide()),
+      workflow._answer.on('error', () => this.show()),
+      workflow._answer.on('ready', () => this.show()),
     ];
   }
 
@@ -52,7 +52,7 @@ export default class AnswerBox {
   }
 
   _syncWofkflowStatus() {
-    const { status } = this._workflow;
+    const { status } = this._workflow._answer;
     switch (status) {
       case STATUS.ERRONEOUS:
       case STATUS.READY:

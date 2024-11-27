@@ -5,7 +5,7 @@ import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
 import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
-import { writeDataStatus, writeMisoIdToMeta, addDataInstructions } from './processors.js';
+import { writeDataStatus, writeMisoIdToMeta } from './processors.js';
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
@@ -38,7 +38,7 @@ export default class Workflow extends Component {
   constructor(args) {
     super(args.name || 'workflow', args.plugin);
 
-    let { context, plugin, client } = args;
+    let { context, plugin, client, options } = args;
     this._context = context;
     this._plugin = plugin = plugin || context._plugin;
     this._client = client = client || context._client;
@@ -49,7 +49,7 @@ export default class Workflow extends Component {
     this._rolesConfig = { ...ROLES_CONFIG, ...args.rolesConfig };
 
     this._extensions = plugin._getExtensions(client);
-    this._options = new WorkflowOptions(context && context._options, mergeDefaults(this, args.defaults));
+    this._options = options || new WorkflowOptions(context && context._options, mergeDefaults(this, args.defaults));
     this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
 
     this._initProperties(args);
@@ -90,7 +90,7 @@ export default class Workflow extends Component {
   }
 
   get session() {
-    return this._hub.states.session;
+    return this._hub.states[fields.session()];
   }
 
   get active() {
@@ -128,7 +128,7 @@ export default class Workflow extends Component {
   }
 
   // states //
-  updateData(data, { instructions } = {}) {
+  updateData(data) {
     if (!data) {
       throw new Error(`Data is required.`);
     }
@@ -152,6 +152,12 @@ export default class Workflow extends Component {
       }
     }
 
+    this._updateData(data);
+
+    return this;
+  }
+
+  _updateData(data) {
     this._sessions.start(); // in case session not started yet
 
     data = writeDataStatus(data);
@@ -160,19 +166,14 @@ export default class Workflow extends Component {
       data = process(data);
     }
 
-    // write data instructions from function args
-    data = addDataInstructions(data, instructions);
-    data = this._mergeDataIfNecessary(data);
-
     this._hub.update(fields.data(), data);
-
-    return this;
   }
 
   _defaultProcessData(data) {
     return writeMisoIdToMeta(data);
   }
 
+  /*
   _mergeDataIfNecessary(data) {
     if (!data._inst || !data._inst.merge) {
       return data;
@@ -184,6 +185,7 @@ export default class Workflow extends Component {
   }
 
   _handleResponseObject() {}
+  */
 
   // TODO: notifyViewUpdateAll()
 

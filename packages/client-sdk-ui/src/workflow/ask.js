@@ -2,7 +2,7 @@ import { defineValues, trimObj, API } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { OptionListLayout, ListLayout, TextLayout } from '../layout/index.js';
+import { OptionListLayout, ListLayout } from '../layout/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -64,6 +64,7 @@ export default class Ask extends AnswerBasedWorkflow {
     if (!previous) {
       return;
     }
+    // TODO: write question_source from payload._meta, so we don't need to write it to session.meta
     const values = previous.states[fields.data()].value;
     const value = values.suggested_followup_questions || values.followup_questions || [];
     this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });

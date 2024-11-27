@@ -99,6 +99,10 @@ export default class ViewsActor {
     // TODO
   }
 
+  containsElement(element) {
+    return this._containers.has(element) || this._views[element.role];
+  }
+
   refreshElement(element) {
     const view = element.isContainer ? this._containers.get(element) : this._getViewByElement(element);
     view && view.refresh({ force: true });

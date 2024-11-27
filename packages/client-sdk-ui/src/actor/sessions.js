@@ -10,12 +10,13 @@ export default class SessionMaker {
   }
 
   get active() {
-    const { session } = this._hub.states;
+    // TODO: may eliminate active flag?
+    const session = this._hub.states[fields.session()];
     return !!(session && session.active);
   }
 
   new({ force = false } = {}) {
-    const currentSession = this._hub.states.session;
+    const currentSession = this._hub.states[fields.session()];
     if (currentSession && !currentSession.active && !force) {
       return;
     }
@@ -24,7 +25,7 @@ export default class SessionMaker {
   }
 
   start() {
-    const session = this._hub.states.session || this._create();
+    const session = this._hub.states[fields.session()] || this._create();
     if (session.active) {
       return;
     }

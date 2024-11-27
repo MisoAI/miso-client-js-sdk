@@ -14,8 +14,8 @@ export default class Ask extends ApiBase {
     if (isId(payload)) {
       return new Answer(this, payload, options);
     }
-    const { question_id } = await this._run(NAME.QUESTIONS, payload, options);
-    return new Answer(this, question_id, options);
+    const response = await this._run(NAME.QUESTIONS, payload, options);
+    return new Answer(this, response, options);
   }
 
   async _questions(payload, options) {
@@ -43,8 +43,9 @@ export default class Ask extends ApiBase {
 
 class Answer extends IdBasedIterableApiStub {
 
-  constructor(api, questionId, options = {}) {
-    super(api, '_questionGet', questionId, options);
+  constructor(api, response, options = {}) {
+    super(api, '_questionGet', response.question_id, options);
+    this._response = response;
   }
 
   get questionId() {

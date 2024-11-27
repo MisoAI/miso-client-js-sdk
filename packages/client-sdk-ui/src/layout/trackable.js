@@ -1,4 +1,4 @@
-import { mixin } from '@miso.ai/commons'; 
+import { mixin } from '@miso.ai/commons';
 import Bindings from '../util/bindings.js';
 import Viewables from '../util/viewables.js';
 import { validateClick } from '../util/trackers.js';

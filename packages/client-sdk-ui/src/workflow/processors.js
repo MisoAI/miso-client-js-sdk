@@ -73,27 +73,6 @@ export function writeAnswerStageToMeta(data) {
   };
 }
 
-export function addDataInstructions(data, instructions) {
-  if (!instructions) {
-    return data;
-  }
-  return {
-    _inst: {
-      ...data._inst,
-      ...instructions,
-    },
-    ...data,
-  };
-}
-
-export function removeDataInstructions(data) {
-  if (typeof data !== 'object') {
-    return data;
-  }
-  const { _inst, ...rest } = data;
-  return rest;
-}
-
 export function composeFq(filters) {
   if (!filters) {
     return undefined;

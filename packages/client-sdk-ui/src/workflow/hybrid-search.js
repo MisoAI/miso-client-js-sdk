@@ -1,17 +1,17 @@
-import { trimObj, API } from '@miso.ai/commons';
+import { API } from '@miso.ai/commons';
+import { InteractionsActor } from '../actor/index.js';
+import Workflow from './base.js';
 import AnswerBasedWorkflow from './answer-based.js';
-import { mergeApiOptions } from './options.js';
-import { fields } from '../actor/index.js';
-import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
+import { ROLE } from '../constants.js';
 import { ListLayout, TextLayout, FacetsLayout } from '../layout/index.js';
-import { writeKeywordsToData, addDataInstructions, composeFq } from './processors.js';
+import HybridSearchResults from './hybrid-search-results.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
   name: API.NAME.SEARCH,
   payload: {
     ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload,
-    source_fl: [...(AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload.source_fl || []), 'title', 'snippet'],
+    fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
   },
 });
 
@@ -43,7 +43,25 @@ const ROLES_CONFIG = Object.freeze({
   },
 });
 
-export default class HybridSearch extends AnswerBasedWorkflow {
+const SUBWORKFLOW = Object.freeze({
+  ANSWER: 'answer',
+  RESULTS: 'results',
+});
+
+function getSubworkflowByRole(role) {
+  // TODO: ROLE.ERROR
+  switch (role) {
+    case ROLE.PRODUCTS:
+    case ROLE.HITS:
+    case ROLE.FACETS:
+    case ROLE.KEYWORDS:
+      return SUBWORKFLOW.RESULTS;
+    default:
+      return SUBWORKFLOW.ANSWER;
+  }
+}
+
+export default class HybridSearch extends Workflow {
 
   constructor(plugin, client) {
     super({
@@ -56,55 +74,187 @@ export default class HybridSearch extends AnswerBasedWorkflow {
     });
   }
 
-  _initSubscriptions(args) {
-    super._initSubscriptions(args);
-    this._unsubscribes = [
-      ...this._unsubscribes,
-      this._hub.on(fields.filters(), filters => this._refine(filters)),
+  _initProperties(args) {
+    super._initProperties(args);
+    this._subworkflows = [
+      this._answer = new HybridSearchAnswer(this),
+      this._results = new HybridSearchResults(this),
     ];
   }
 
-  // query //
-  _buildPayload({ q, qs, filters, ...payload } = {}) {
-    const fq = composeFq(filters); // TODO: combine with fq in payload?
-    return trimObj({
-      ...payload,
-      q, // q, not question
-      fq,
-      _meta: {
-        ...payload._meta,
-        question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
-      },
-    });
+  _getSubworkflow(name) {
+    switch (name) {
+      case SUBWORKFLOW.ANSWER:
+        return this._answer;
+      case SUBWORKFLOW.RESULTS:
+        return this._results;
+      default:
+        throw new Error(`Invalid subworkflow: ${name}`);
+    }
   }
 
-  _refine(filters) {
-    const query = this._hub.states[fields.query()];
-    const payload = this._buildPayload({ ...query, filters, answer: false });
+  _initActors() {
+    const hub = this._hub;
+    const client = this._client;
+    const options = this._options;
+
+    this._views = new HybridSearchViewsActor(this);
+    this._interactions = new InteractionsActor(hub, { client, options });
+  }
+
+  _initReset() {
+    this._results.reset();
+    this._answer.reset();
+  }
+
+  restart({ answer = true } = {}) {
+    const previousSession = this.session;
+    this._sessions.restart();
     const { session } = this;
-
-    const event = mergeApiOptions(this._options.resolved.api, { payload, session, _skipLoading: true });
-    this._request(event);
-
-    // emulate loading status exclusively for products
-    // TODO
+    if (!answer) {
+      session._answer = previousSession._answer || previousSession;
+    }
+    return this;
   }
 
-  // data //
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
-    data = writeKeywordsToData(data);
-    data = instructPartialUpdates(data);
-    return data;
+  // properties //
+  get questionId() {
+    return this._answer.questionId;
+  }
+
+  get filters() {
+    return this._results._views.filters;
+  }
+
+  // query //
+  autoQuery(options) {
+    this._answer.autoQuery(options);
+  }
+
+  query(args) {
+    this._answer.query(args);
+  }
+
+  // interactions //
+  _preprocessInteraction(payload) {
+    return this._answer._preprocessInteraction(payload);
+  }
+
+  // destroy //
+  _destroy() {
+    for (const subworkflow of this._subworkflows) {
+      subworkflow.destroy();
+    }
+    super._destroy();
   }
 
 }
 
-function instructPartialUpdates(data) {
-  if (!data.value) {
-    return data;
+class HybridSearchViewsActor {
+
+  constructor(workflow) {
+    this._workflow = workflow;
+    this._containers = new Set();
   }
-  return addDataInstructions(data, data.value.products ? 
-    { includes: [ ROLE.PRODUCTS, ROLE.HITS, ROLE.FACETS, ROLE.KEYWORDS, ROLE.QUESTION ], merge: true } :
-    { excludes: [ ROLE.PRODUCTS, ROLE.HITS, ROLE.FACETS ], merge: true });
+
+  get(role) {
+    return this._getSubviews(role).get(role);
+  }
+
+  addContainer(element) {
+    if (this._containers.has(element)) {
+      return;
+    }
+    this._containers.add(element);
+
+    const { components } = element;
+    for (const component of components) {
+      this.addComponent(component);
+    }
+  }
+
+  removeContainer(element) {
+    for (const subworkflow of this._workflow._subworkflows) {
+      subworkflow._views.removeContainer(element);
+    }
+    this._containers.delete(element);
+  }
+
+  addComponent(element) {
+    this._getViewByElement(element).element = element;
+    this._addContainerToSubviews(element._container, element);
+  }
+
+  removeComponent(element) {
+    this._getViewByElement(element).element = undefined;
+    this._removeContainerFromSubviewsIfNecessary(element._container);
+  }
+
+  updateComponentRole(element, oldRole, newRole) {
+    // TODO
+  }
+
+  refreshElement(element) {
+    const view = element.isContainer ? this._containers.get(element) : this._getViewByElement(element);
+    view && view.refresh({ force: true });
+  }
+
+  // helpers //
+  _getSubworkflow(role) {
+    return this._workflow._getSubworkflow(getSubworkflowByRole(role));
+  }
+
+  _getAllSubviews() {
+    return this._workflow._subworkflows.flatMap(subworkflow => subworkflow._views);
+  }
+
+  _getSubviews(role) {
+    return this._getSubworkflow(role)._views;
+  }
+
+  _getViewByElement(element) {
+    let { role } = element;
+    if (!role) {
+      throw new Error('Component must have a role');
+    }
+    return this.get(role);
+  }
+
+  _addContainerToSubviews(container, child) {
+    if (!container) {
+      return;
+    }
+    const { role } = child;
+    const subviews = this._getSubviews(role);
+    if (subviews._containers.has(container)) {
+      return;
+    }
+    // check if the container is in other subviews
+    for (const otherSubviews of this._getAllSubviews()) {
+      if (otherSubviews === subviews) {
+        continue;
+      }
+      if (otherSubviews._containers.has(container)) {
+        // find the conflicting element
+        for (const component of container.components) {
+          if (otherSubviews.containsElement(component)) {
+            throw new Error(`<${container.tagName}> cannot contain both <${component.tagName}> and <${child.tagName}>, for they don't share the same data lifecycle.`);
+          }
+        }
+        throw new Error(`Failed to add container <${container.tagName}> with child component <${child.tagName}>.`);
+      }
+    }
+    // add the container to the subviews
+    subviews.addContainer(container);
+  }
+
+  _removeContainerFromSubviewsIfNecessary(container) {
+    if (!container || container.components.length > 0) {
+      return;
+    }
+    for (const subviews of this._getAllSubviews()) {
+      subviews.removeContainer(container);
+    }
+  }
+
 }

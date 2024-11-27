@@ -1,5 +1,4 @@
 import { defineValues, EventEmitter } from '@miso.ai/commons';
-import { removeDataInstructions } from '../workflow/processors.js';
 
 export default class Hub {
 
@@ -14,7 +13,7 @@ export default class Hub {
   }
 
   update(name, state, { silent = false } = {}) {
-    this._states[name] = Object.freeze(removeDataInstructions(state));
+    this._states[name] = Object.freeze(state);
     if (!silent) {
       this._events.emit(name, state);
     }

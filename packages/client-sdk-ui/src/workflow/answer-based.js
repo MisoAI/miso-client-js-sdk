@@ -133,14 +133,19 @@ export default class AnswerBasedWorkflow extends Workflow {
     // start a new session
     this.restart();
 
-    // keep track of question source on this session
-    const { session } = this;
-    session.meta.question_source = args.questionSource || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
+    // TODO: move to ask workflow
+    // keep track of question source on this session, for suggested questions interactions
+    this._writeQuestionSourceToSession(args);
 
     // build payload and trigger request
+    const { session } = this;
     const payload = this._buildPayload(args);
     const event = mergeApiOptions(this._options.resolved.api, { payload, session });
     this._request(event);
+  }
+
+  _writeQuestionSourceToSession(args) {
+    this.session.meta.question_source = args.questionSource || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
   }
 
   _request(event) {
@@ -164,11 +169,22 @@ export default class AnswerBasedWorkflow extends Workflow {
   */
 
   // data //
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
+  _updateData(data) {
+    // if it's the head response, write question id and return
+    if (data.value && !data.value.answer_stage) {
+      this._handleHeadResponse(data);
+      return;
+    }
+    super._updateData(data);
+  }
 
+  _handleHeadResponse(data) {
     // capture question ID and register at context
     this._writeQuestionIdFromData(data);
+  }
+
+  _defaultProcessData(data) {
+    data = super._defaultProcessData(data);
 
     // update URL if autoQuery.updateUrl is not false
     this._updateUrlIfNecessary(data);
