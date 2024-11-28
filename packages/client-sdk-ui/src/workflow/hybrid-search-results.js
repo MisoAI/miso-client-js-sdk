@@ -60,7 +60,7 @@ export default class HybridSearchResults extends Workflow {
     payload = this._superworkflow._answer._buildPayload(payload);
     payload = this._writeFqToPayload({ ...payload, filters });
     payload = this._writeQuestionIdToPayload(payload);
-    return { ...payload, answers: false };
+    return { ...payload, answer: false };
   }
 
   _writeFqToPayload({ filters, ...payload } = {}) {

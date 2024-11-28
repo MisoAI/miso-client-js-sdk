@@ -31,8 +31,7 @@ export default class Component {
     defineValues(this, { meta });
   
     const error = this._error = this._error.bind(this);
-    const events = this._events = new EventEmitter({ error, replays: ['child'] });
-    events._injectSubscribeInterface(this);
+    this._events = new EventEmitter({ target: this, error, replays: ['child'] });
 
     this._warn =  this._warn.bind(this);
 

@@ -87,5 +87,5 @@ export function composeFq(filters) {
     const vstr = values.length === 1 ? `"${values[0]}"` : `(${values.map(v => `"${v}"`).join(' OR ')})`;
     clauses.push(`${field}:${vstr}`);
   }
-  return clauses.map(c => `(${c})`).join(' AND ');
+  return clauses.map(c => `(${c})`).join(' AND ') || undefined;
 }

@@ -125,11 +125,11 @@ export default class FacetsLayout extends TemplateBasedLayout {
 
   _render(element, data, controls) {
     super._render(element, data, controls);
-    this._syncSelections();
   }
 
   _afterRender(element, state) {
     this._syncBindings(element, state);
+    this._syncSelections();
   }
 
   _unrender() {
@@ -220,6 +220,10 @@ export default class FacetsLayout extends TemplateBasedLayout {
   }
 
   _handleClick(event) {
+    // only left click
+    if (event.button !== 0) {
+      return;
+    }
     const element = event.target.closest(`[data-role="option"]`);
     if (!element) {
       return;
