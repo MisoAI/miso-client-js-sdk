@@ -18,6 +18,11 @@ class Sections extends _Sections {
     ]);
   }
 
+  question(options) {
+    const { phrase } = this._helpers;
+    return phrase(options, { name: 'question', tag: 'h3' }).replaceAll('${value}', '<miso-question></miso-question>');
+  }
+
   answerBoxToggle(options) {
     const { element } = this._helpers;
     const { classPrefix } = options;
@@ -28,7 +33,7 @@ class Sections extends _Sections {
 
   searchResultsGroup(options) {
     const { container } = this._helpers;
-    return container(options, { name: 'search-results', visibleWhen: 'ready' }, [
+    return container(options, { name: 'search-results', visibleWhen: 'loading ready' }, [
       this.searchResultsInfoGroup(options),
       this.searchResultsFilters(options),
       '<miso-products></miso-products>',

@@ -160,17 +160,22 @@ export default class Workflow extends Component {
   _updateData(data) {
     this._sessions.start(); // in case session not started yet
 
-    data = writeDataStatus(data);
     data = this._defaultProcessData(data);
     for (const process of this._options.resolved.dataProcessor) {
       data = process(data);
     }
 
-    this._hub.update(fields.data(), data);
+    this._updateDataInHub(data);
   }
 
   _defaultProcessData(data) {
-    return writeMisoIdToMeta(data);
+    data = writeDataStatus(data);
+    data = writeMisoIdToMeta(data);
+    return data;
+  }
+
+  _updateDataInHub(data) {
+    this._hub.update(fields.data(), data);
   }
 
   /*

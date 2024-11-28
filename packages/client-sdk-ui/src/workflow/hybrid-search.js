@@ -3,7 +3,7 @@ import { InteractionsActor } from '../actor/index.js';
 import Workflow from './base.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE } from '../constants.js';
-import { ListLayout, TextLayout, FacetsLayout } from '../layout/index.js';
+import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout } from '../layout/index.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 
@@ -18,6 +18,8 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_LAYOUTS,
+  [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: '' }],
+  [ROLE.QUESTION]: [TextLayout.type, { raw: true }],
   [ROLE.PRODUCTS]: [ListLayout.type, { itemType: 'article' }],
   [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
   [ROLE.HITS]: [TextLayout.type, { raw: true, format: 'number' }],

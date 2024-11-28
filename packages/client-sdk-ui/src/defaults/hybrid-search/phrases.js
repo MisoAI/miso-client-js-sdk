@@ -1,7 +1,7 @@
 /**
- * The phrase displayed right before <miso-question>
+ * The phrase to display <miso-question>
  */
-export const question = 'You asked...';
+export const question = 'You asked “${value}”';
 
 /**
  * The phrase displayed right before <miso-sources>

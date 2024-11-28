@@ -1,7 +1,7 @@
 import { trimObj } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE } from '../constants.js';
+import { ROLE, STATUS } from '../constants.js';
 import { mergeApiOptions } from './options.js';
 import { writeKeywordsToData, composeFq } from './processors.js';
 
@@ -43,6 +43,10 @@ export default class HybridSearchResults extends Workflow {
 
   // query //
   _refine(filters) {
+    // remember current facet_counts
+    const { facet_counts } = this._hub.states[fields.data()].value || {};
+    this._previousFacetCounts = facet_counts;
+
     // start a new session
     this.restart();
 
@@ -89,7 +93,32 @@ export default class HybridSearchResults extends Workflow {
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
+    data = this._retainFacetCounts(data);
     return data;
+  }
+
+  _retainFacetCounts(data) {
+    if (!this._previousFacetCounts) {
+      return data;
+    }
+    const { status, value } = data;
+    switch (status) {
+      case STATUS.INITIAL:
+      case STATUS.LOADING:
+        break;
+      default:
+        return data;
+    }
+    if (value && value.facet_counts) {
+      return data;
+    }
+    return {
+      ...data,
+      value: {
+        ...value,
+        facet_counts: this._previousFacetCounts,
+      },
+    };
   }
 
 }

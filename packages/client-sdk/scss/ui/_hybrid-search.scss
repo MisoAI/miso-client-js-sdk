@@ -119,6 +119,11 @@ miso-hybrid-search-combo,
   }
 
   // results //
+  miso-hybrid-search[status~="loading"] {
+    .miso-hybrid-search-combo__hits-phrase {
+      visibility: hidden;
+    }
+  }
   miso-products {
     .miso-list__item {
       border-color: transparent !important;
@@ -150,11 +155,6 @@ miso-hybrid-search-combo,
   h2.miso-hybrid-search-combo__phrase {
     font-size: 1.5rem;
     font-weight: 700;
-  }
-  .miso-hybrid-search-combo__question-phrase {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--miso-hybrid-search-combo-question-phrase-color);
   }
   .miso-hybrid-search-combo__sources-phrase {
     color: var(--miso-hybrid-search-combo-answer-box-phrase-color);

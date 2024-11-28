@@ -4,7 +4,7 @@ import { STATUS } from '../constants.js';
 export function writeDataStatus(data) {
   const status = getStatus(data);
   const ongoing = status === STATUS.READY ? !!data.ongoing : undefined;
-  return trimObj({ ...data, status, ongoing });
+  return trimObj({ status, ongoing, ...data }); // let orinigal data override status and ongoing
 }
 
 function getStatus(data) {
@@ -35,7 +35,8 @@ export function writeMisoIdToMeta(data) {
 
 export function writeKeywordsToData(data) {
   const { request, value } = data;
-  if (!request || !value) {
+  // we still want the value in loading status
+  if (!request) {
     return data;
   }
   const { payload } = request || {};

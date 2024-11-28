@@ -51,10 +51,13 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   // data //
-  _updateData(data) {
-    // we want this to be available everywhere
+  _defaultProcessData(data) {
+    data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
+    return data;
+  }
 
+  _updateDataInHub(data) {
     switch (data.status) {
       case STATUS.INITIAL:
       case STATUS.LOADING:
@@ -62,7 +65,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
         this._dispatchDataToSibling(data);
         break;
     }
-    super._updateData(data);
+    super._updateDataInHub(data);
   }
 
   _handleHeadResponse(data) {
@@ -72,7 +75,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   _dispatchDataToSibling(data) {
-    this._superworkflow._results.updateData({ ...data, session: this._resultsSession });
+    this._resultsSession && this._superworkflow._results.updateData({ ...data, session: this._resultsSession });
   }
 
 }

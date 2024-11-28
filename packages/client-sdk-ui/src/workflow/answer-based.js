@@ -176,6 +176,9 @@ export default class AnswerBasedWorkflow extends Workflow {
       return;
     }
     super._updateData(data);
+
+    // update URL if autoQuery.updateUrl is not false
+    this._updateUrlIfNecessary(data);
   }
 
   _handleHeadResponse(data) {
@@ -185,14 +188,9 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
-
-    // update URL if autoQuery.updateUrl is not false
-    this._updateUrlIfNecessary(data);
-
-    // affiliation
     data = processAffiliationData(data);
-
-    return writeAnswerStageToMeta(data);
+    data = writeAnswerStageToMeta(data);
+    return data;
   }
 
   _writeQuestionIdFromData({ value }) {
