@@ -48,7 +48,7 @@ export default class HybridSearchResults extends Workflow {
 
     // get stored query from sibling
     const query = this._superworkflow._answer._hub.states[fields.query()];
-    const payload = this._buildPayload({ ...query, filters, answer: false });
+    const payload = this._buildPayload({ ...query, filters });
     const { session } = this;
     const event = mergeApiOptions(this._options.resolved.api, { payload, session });
 
@@ -58,11 +58,27 @@ export default class HybridSearchResults extends Workflow {
   _buildPayload({ filters, ...payload } = {}) {
     // borrow the work from the sibling
     payload = this._superworkflow._answer._buildPayload(payload);
+    payload = this._writeFqToPayload({ ...payload, filters });
+    payload = this._writeQuestionIdToPayload(payload);
+    return { ...payload, answers: false };
+  }
+
+  _writeFqToPayload({ filters, ...payload } = {}) {
     const fq = composeFq(filters); // TODO: combine with fq in payload?
     return trimObj({
       ...payload,
       fq,
     });
+  }
+
+  _writeQuestionIdToPayload(payload) {
+    return {
+      ...payload,
+      _meta: trimObj({
+        ...payload._meta,
+        question_id: this._superworkflow._answer.questionId,
+      }),
+    };
   }
 
   _request(event) {
