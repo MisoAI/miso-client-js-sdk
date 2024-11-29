@@ -23,7 +23,6 @@ export default class HybridSearchResults extends Workflow {
       rolesConfig: ROLES_CONFIG,
       superworkflow,
     });
-    this.useInteractions(false);
   }
 
   _initProperties(args) {

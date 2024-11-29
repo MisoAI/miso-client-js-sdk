@@ -20,7 +20,6 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
       rolesConfig: ROLES_CONFIG,
       superworkflow,
     });
-    this.useInteractions(false);
   }
 
   _initProperties(args) {

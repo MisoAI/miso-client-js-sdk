@@ -38,6 +38,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 const DEFAULT_TRACKERS = Object.freeze({
   [ROLE.SOURCES]: {},
   [ROLE.AFFILIATION]: {},
+  [ROLE.PRODUCTS]: {},
 });
 
 const DEFAULT_OPTIONS = Object.freeze({

@@ -12,7 +12,8 @@ const DEFAULT_API_OPTIONS = Object.freeze({
   name: API.NAME.SEARCH,
   payload: {
     ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload,
-    fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
+    source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
+    fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
   },
 });
 
