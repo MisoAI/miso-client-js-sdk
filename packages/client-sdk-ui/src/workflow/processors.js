@@ -74,19 +74,29 @@ export function writeAnswerStageToMeta(data) {
   };
 }
 
-export function composeFq(filters) {
+export function composeFiltersPayload(filters) {
   if (!filters) {
     return undefined;
   }
-  const clauses = [];
   const { facets } = filters;
+  return trimObj({
+    facet_filters: composeFacetFilters(facets),
+  });
+}
+
+function composeFacetFilters(facets) {
+  if (!facets) {
+    return undefined;
+  }
+  const filters = {};
   for (const field in facets) {
     const values = facets[field];
     if (!values || !values.length) {
       continue; // just in case
     }
-    const vstr = values.length === 1 ? `"${values[0]}"` : `(${values.map(v => `"${v}"`).join(' OR ')})`;
-    clauses.push(`${field}:${vstr}`);
+    filters[field] = {
+      terms: values,
+    };
   }
-  return clauses.map(c => `(${c})`).join(' AND ') || undefined;
+  return Object.keys(filters).length ? filters : undefined;
 }

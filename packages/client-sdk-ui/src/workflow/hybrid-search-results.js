@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
 import { mergeApiOptions } from './options.js';
-import { writeKeywordsToData, composeFq } from './processors.js';
+import { writeKeywordsToData, composeFiltersPayload } from './processors.js';
 
 const ROLES_CONFIG = Object.freeze({
   [ROLE.FACETS]: {
@@ -61,16 +61,15 @@ export default class HybridSearchResults extends Workflow {
   _buildPayload({ filters, ...payload } = {}) {
     // borrow the work from the sibling
     payload = this._superworkflow._answer._buildPayload(payload);
-    payload = this._writeFqToPayload({ ...payload, filters });
+    payload = this._writeFiltersToPayload({ ...payload, filters });
     payload = this._writeQuestionIdToPayload(payload);
     return { ...payload, answer: false };
   }
 
-  _writeFqToPayload({ filters, ...payload } = {}) {
-    const fq = composeFq(filters); // TODO: combine with fq in payload?
+  _writeFiltersToPayload({ filters, ...payload } = {}) {
     return trimObj({
       ...payload,
-      fq,
+      ...composeFiltersPayload(filters),
     });
   }
 

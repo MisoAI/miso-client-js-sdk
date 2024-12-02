@@ -33,6 +33,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
     super.restart();
     // cascade restart to the sibling
     const results = this._superworkflow._results;
+    results._views.filters.reset();
     results.restart();
     this._resultsSession = results.session; // keep track of the session
   }
