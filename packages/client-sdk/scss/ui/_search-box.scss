@@ -62,7 +62,7 @@
     border: none;
     padding: var(--miso-search-box-padding) 0;
     padding-right: calc(var(--miso-search-box-padding) + var(--miso-search-box-font-size) * 0.5 - var(--miso-search-box-icon-size) * 0.25);
-    color: #333;
+    color: var(--miso-text-color);
     background-color: #fff;
     display: flex;
     align-items: center;

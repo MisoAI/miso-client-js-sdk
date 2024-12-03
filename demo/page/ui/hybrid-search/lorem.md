@@ -1,5 +1,5 @@
 {% raw %}
-<h1 class="hero-title">Miso Answers</h1>
+<h1 class="hero-title">Miso Hybrid Search</h1>
 <div id="miso-hybrid-search-combo" class="miso-hybrid-search-combo"></div>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);

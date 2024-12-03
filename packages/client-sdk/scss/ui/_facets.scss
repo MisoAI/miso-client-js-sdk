@@ -1,10 +1,10 @@
 :root {
-  --miso-facet-color-unselected: #33323e;
+  --miso-facet-color-unselected: var(--miso-text-color);
   --miso-facet-color-selected: #fff;
   --miso-facet-background-unselected: #fff;
-  --miso-facet-background-selected: #33323e;
+  --miso-facet-background-selected: var(--miso-text-color);
   --miso-facet-border-color-unselected: #a0a8be;
-  --miso-facet-border-color-selected: #33323e;
+  --miso-facet-border-color-selected: var(--miso-facet-color-unselected);
 }
 
 .miso-facets {

@@ -3,25 +3,35 @@ import { LAYOUT_CATEGORY, STATUS, EVENT_TYPE, DATA_ASPECT } from '../../constant
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { imageBlock, productInfoBlock } from '../templates.js';
-import { SEND, SEARCH } from '../../asset/svgs.js';
+import { getIcon } from '../../asset/svgs.js';
 
 const TYPE = 'search-box';
 const DEFAULT_CLASSNAME = 'miso-search-box';
 const DEFAULT_AUTOCOMPLETE_CLASSNAME = 'miso-autocomplete';
 
 function root(layout) {
-  const { className, role, options, workflow, autocomplete } = layout;
-  const { placeholder, buttonText } = options;
+  const { className, templates, role, options, autocomplete } = layout;
+  const { placeholder } = options;
   const roleAttr = role ? `data-role="${role}"` : '';
-  const buttonContent = buttonText || workflow === 'search' ? SEARCH : SEND;
   return `
 <div class="${className}" ${roleAttr}>
   <div class="${className}__input-group">
     <input class="${className}__input" type="text" data-role="input" ${placeholder ? `placeholder="${placeholder}"` : ''}>
-    <button class="${className}__button" type="submit" data-role="submit">${buttonContent}</button>
+    <button class="${className}__button" type="submit" data-role="submit">${templates.buttonContent(layout)}</button>
   </div>
   <div class="${autocomplete.className}" data-role="autocomplete"></div>
 </div>`.trim();
+}
+
+function buttonContent(layout) {
+  const { templates, options } = layout;
+  if (options.buttonText) {
+    return options.buttonText; // legacy
+  }
+  const { buttonText, buttonIcon } = templates;
+  const text = typeof buttonText === 'function' ? buttonText(layout) : `${buttonText}`;
+  const icon = typeof buttonIcon === 'function' ? buttonIcon(layout) : (getIcon(buttonIcon) || `${buttonIcon}`);
+  return text + icon;
 }
 
 function completions(layout, items) {
@@ -84,6 +94,9 @@ function completionItem(layout, type, item) {
 
 const DEFAULT_TEMPLATES = Object.freeze({
   root,
+  buttonContent,
+  buttonText: '',
+  buttonIcon: 'search',
   completions,
   completionList,
   completionItem,

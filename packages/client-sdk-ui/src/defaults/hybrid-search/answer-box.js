@@ -1,5 +1,6 @@
 import { CLASS_PREFIX } from './constants.js';
 import { STATUS } from '../../constants.js';
+import { fields } from '../../actor/index.js';
 import { showMore as DEFAULT_PHRASE_SHOW_MORE, showLess as DEFAULT_PHRASE_SHOW_LESS } from './phrases.js';
 
 const CLASS_OPEN = 'answer-box-open';
@@ -23,7 +24,12 @@ export default class AnswerBox {
 
     // expose widget API
     workflow.answerBox = this;
-    workflow._unsubscribes.push(() => this.destroy()); // TODO: review
+    workflow._unsubscribes.push(() => {
+      if (workflow.answerBox === this) {
+        this.destroy();
+        workflow.answerBox = undefined;
+      }
+    });
 
     // handle toggle button clicks
     const callback = event => this._handleClick(event);
@@ -35,9 +41,8 @@ export default class AnswerBox {
 
     this._unsubscribes = [
       () => element.removeEventListener('click', callback),
-      workflow._answer.on('loading', () => this.hide()),
-      workflow._answer.on('error', () => this.show()),
-      workflow._answer.on('ready', () => this.show()),
+      // cling to data rather than view, as we may miss view event when tab is inactive due to raf
+      workflow._answer._hub.on(fields.data(), () => this._syncWofkflowStatus()),
     ];
   }
 
@@ -71,6 +76,12 @@ export default class AnswerBox {
     const phrase = this.isOpen ? this._phrases.showLess || DEFAULT_PHRASE_SHOW_LESS : this._phrases.showMore || DEFAULT_PHRASE_SHOW_MORE;
     for (const button of this._element.querySelectorAll(TOGGLE_BUTTON_SELECTOR)) {
       button.textContent = phrase;
+    }
+  }
+
+  _syncScroll() {
+    if (!this.isOpen) {
+      this._element.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
@@ -113,6 +124,7 @@ for (const [method, [action, className]] of Object.entries(METHODS)) {
     this._updateBoxStatus(action, className);
     if (className === CLASS_OPEN) {
       this._syncButtonText();
+      this._syncScroll();
     }
   };
 }
