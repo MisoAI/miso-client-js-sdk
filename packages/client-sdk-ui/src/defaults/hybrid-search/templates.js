@@ -20,7 +20,7 @@ class Sections extends _Sections {
 
   question(options) {
     const { phrase } = this._helpers;
-    return phrase(options, { name: 'question', tag: 'h3' }).replaceAll('${value}', '<miso-question></miso-question>');
+    return phrase(options, { name: 'question', tag: 'div' }).replaceAll('${value}', '<miso-question></miso-question>');
   }
 
   answerBoxToggle(options) {
@@ -75,14 +75,13 @@ export const sections = externalize(new Sections({ helpers }));
 export function root(options = {}) {
   const { normalizeOptions, section, container } = helpers;
   options = normalizeOptions(options);
-  const { answerBox } = sections;
+  const { answerBox, answerGroup } = sections;
+  const { answerBox: answerBoxOptions = true } = options;
   return [
     section(options, { name: 'question' }, [
       container(options, { name: 'query' }, '<miso-query></miso-query>'),
     ]),
-    section(options, { name: 'answer' }, [
-      answerBox(options),
-    ]),
+    section(options, { name: 'answer' }, answerBoxOptions ? [ answerBox(options) ] : answerGroup(options)),
     section(options, { name: 'search-results' }, sections.searchResultsGroup(options)),
   ].join('');
 };

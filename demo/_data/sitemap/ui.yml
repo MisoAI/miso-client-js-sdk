@@ -63,6 +63,8 @@ sections:
     path: /hybrid-search/lorem
   - title: Production
     path: /hybrid-search/production
+  - title: No box
+    path: /hybrid-search/no-box
 - title: Search
   path: /search
   pages:

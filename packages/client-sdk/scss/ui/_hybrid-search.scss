@@ -6,7 +6,8 @@
   --miso-hybrid-search-combo-content-spacing: 2rem;
   --miso-hybrid-search-combo-question-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
   --miso-hybrid-search-combo-hits-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
-  --miso-hybrid-search-combo-answer-background: #fffaf5;
+  --miso-hybrid-search-combo-answer-box-background: #fff;
+  --miso-hybrid-search-combo-answer-box-border-color: var(--miso-border-color-light);
   --miso-hybrid-search-combo-answer-box-phrase-color: var(--miso-text-color);
   --miso-hybrid-search-combo-answer-box-toggle-font-size: 0.9rem;
   --miso-hybrid-search-combo-answer-box-toggle-padding: 0.5rem;
@@ -43,8 +44,7 @@ miso-hybrid-search-combo,
   .miso-hybrid-search-combo__answer-container,
   .miso-hybrid-search-combo__affiliation-container,
   .miso-hybrid-search-combo__sources-container,
-  .miso-hybrid-search-combo__search-results-container,
-  .miso-hybrid-search-combo__answer-box-toggle-container {
+  .miso-hybrid-search-combo__search-results-container {
     margin-top: var(--miso-hybrid-search-combo-content-spacing);
     padding: 0 var(--miso-hybrid-search-combo-content-padding);
   }
@@ -72,7 +72,8 @@ miso-hybrid-search-combo,
     padding-bottom: calc(var(--miso-hybrid-search-combo-answer-box-toggle-height) / 2);
     margin-top: calc(0px - var(--miso-search-box-height) / 2) !important;
     border-radius: var(--miso-hybrid-search-combo-content-spacing);
-    background: var(--miso-hybrid-search-combo-answer-background);
+    background: var(--miso-hybrid-search-combo-answer-box-background);
+    border: 1px solid var(--miso-hybrid-search-combo-answer-box-border-color);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
     display: none;
   }
@@ -89,7 +90,7 @@ miso-hybrid-search-combo,
       left: 0;
       right: 0;
       height: 4rem;
-      background: linear-gradient(transparent, var(--miso-hybrid-search-combo-answer-background));
+      background: linear-gradient(transparent, var(--miso-hybrid-search-combo-answer-box-background));
     }
   }
   &.miso-hybrid-search-combo__answer-box-shown {
@@ -174,6 +175,12 @@ miso-hybrid-search-combo,
   h2.miso-hybrid-search-combo__phrase {
     font-size: 1.5rem;
     font-weight: 700;
+  }
+  .miso-hybrid-search-combo__question-phrase {
+    font-size: 1.2rem;
+    miso-question {
+      font-weight: 700;
+    }
   }
   .miso-hybrid-search-combo__sources-phrase {
     color: var(--miso-hybrid-search-combo-answer-box-phrase-color);
