@@ -75,13 +75,13 @@ export const sections = externalize(new Sections({ helpers }));
 export function root(options = {}) {
   const { normalizeOptions, section, container } = helpers;
   options = normalizeOptions(options);
-  const { answerBox, answerGroup } = sections;
+  const { answerBox, answerGroup, searchResultsGroup } = sections;
   const { answerBox: answerBoxOptions = true } = options;
   return [
     section(options, { name: 'question' }, [
       container(options, { name: 'query' }, '<miso-query></miso-query>'),
     ]),
     section(options, { name: 'answer' }, answerBoxOptions ? [ answerBox(options) ] : answerGroup(options)),
-    section(options, { name: 'search-results' }, sections.searchResultsGroup(options)),
+    section(options, { name: 'search-results' }, searchResultsGroup(options)),
   ].join('');
 };
