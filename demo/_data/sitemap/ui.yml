@@ -48,8 +48,10 @@ sections:
   pages:
   - title: Production
     path: /explore/production
-  - title: No related questions
-    path: /explore/no-related-questions
+  - title: Search box only
+    path: /explore/search-box-only
+  - title: Questions only
+    path: /explore/questions-only
   - title: Lorem (server)
     path: /explore/lorem-server
   - title: Lorem (client)
