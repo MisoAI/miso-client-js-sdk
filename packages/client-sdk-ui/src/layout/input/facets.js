@@ -1,5 +1,4 @@
 import { escapeHtml } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import Bindings from '../../util/bindings.js';
 
@@ -87,10 +86,6 @@ function getSelectedValues(facets) {
 }
 
 export default class FacetsLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.FILTERS;
-  }
 
   static get type() {
     return TYPE;

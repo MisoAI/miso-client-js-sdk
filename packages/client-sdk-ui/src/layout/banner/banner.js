@@ -1,4 +1,3 @@
-import { LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { LOGO } from '../svgs.js';
 
@@ -18,10 +17,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 // TODO: give a role and make this customizable
 
 export default class BannerLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.BANNER;
-  }
 
   static get type() {
     return TYPE;

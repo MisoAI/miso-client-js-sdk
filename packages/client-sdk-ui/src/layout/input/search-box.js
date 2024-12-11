@@ -1,5 +1,5 @@
 import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY, STATUS, EVENT_TYPE, DATA_ASPECT } from '../../constants.js';
+import { STATUS, EVENT_TYPE, DATA_ASPECT } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { imageBlock, productInfoBlock } from '../templates.js';
@@ -114,10 +114,6 @@ const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
 });
 
 export default class SearchBoxLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.QUERY;
-  }
 
   static get type() {
     return TYPE;

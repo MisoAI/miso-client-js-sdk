@@ -51,18 +51,6 @@ export const DATA_ASPECT = Object.freeze({
   AUTOCOMPLETE: 'autocomplete',
 });
 
-export const LAYOUT_CATEGORY = Object.freeze({
-  CONTAINER: 'container',
-  BANNER: 'banner',
-  LIST: 'list',
-  QUERY: 'query',
-  RADIO: 'radio',
-  FILTERS: 'filters',
-  TEXT: 'text',
-  AFFILIATION: 'affiliation',
-  ERROR: 'error',
-});
-
 export const EVENT_TYPE = Object.freeze({
   IMPRESSION: 'impression',
   VIEWABLE: 'viewable',

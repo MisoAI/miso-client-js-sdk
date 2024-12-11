@@ -35,10 +35,6 @@ function chevron(layout) {
 
 export default class CarouselLayout extends CollectionLayout {
 
-  static get category() {
-    return super.category;
-  }
-
   static get type() {
     return TYPE;
   }

@@ -5,10 +5,6 @@ const DEFAULT_CLASSNAME = 'miso-list';
 
 export default class ListLayout extends CollectionLayout {
 
-  static get category() {
-    return super.category;
-  }
-
   static get type() {
     return TYPE;
   }

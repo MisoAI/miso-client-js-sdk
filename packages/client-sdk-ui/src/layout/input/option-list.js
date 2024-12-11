@@ -1,5 +1,4 @@
 import { escapeHtml } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../trackable.js';
@@ -40,10 +39,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 });
 
 export default class OptionListLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.QUERY;
-  }
 
   static get type() {
     return TYPE;

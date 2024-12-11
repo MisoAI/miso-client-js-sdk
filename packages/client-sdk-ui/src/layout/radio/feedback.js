@@ -50,10 +50,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 
 export default class FeedbackLayout extends RadioLayout {
 
-  static get category() {
-    return super.category;
-  }
-
   static get type() {
     return TYPE;
   }

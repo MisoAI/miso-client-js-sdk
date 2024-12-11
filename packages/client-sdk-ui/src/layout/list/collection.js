@@ -1,4 +1,4 @@
-import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
+import { STATUS } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../trackable.js';
 import { product, article, question, productInfoBlock, articleInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
@@ -70,10 +70,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.LIST;
-  }
 
   static get defaultTemplates() {
     return DEFAULT_TEMPLATES;

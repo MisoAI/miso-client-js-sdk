@@ -5,10 +5,6 @@ const DEFAULT_CLASSNAME = 'miso-cards';
 
 export default class CardsLayout extends CollectionLayout {
 
-  static get category() {
-    return super.category;
-  }
-
   static get type() {
     return TYPE;
   }

@@ -1,5 +1,5 @@
 import { CarouselItemViewabilityObserver, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { STATUS, LAYOUT_CATEGORY } from '../../constants.js';
+import { STATUS } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
 import { affiliation, helpers } from '../templates.js';
 import { TRIANGLE } from '../../asset/svgs.js';
@@ -135,10 +135,6 @@ function autoplayOptionsEquals(a, b) {
 */
 
 export default class AffiliationLayout extends CollectionLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.AFFILIATION;
-  }
 
   static get type() {
     return TYPE;

@@ -1,5 +1,4 @@
 import { findInAncestors, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { requiresImplementation } from '../templates.js';
 
@@ -29,10 +28,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 });
 
 export default class RadioLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.RADIO;
-  }
 
   static get defaultTemplates() {
     return DEFAULT_TEMPLATES;

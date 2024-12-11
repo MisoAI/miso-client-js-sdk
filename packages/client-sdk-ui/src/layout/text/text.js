@@ -1,5 +1,4 @@
 import { escapeHtml } from '@miso.ai/commons';
-import { LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 
 const TYPE = 'text';
@@ -41,10 +40,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 });
 
 export default class TextLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.TEXT;
-  }
 
   static get type() {
     return TYPE;

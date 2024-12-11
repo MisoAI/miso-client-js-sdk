@@ -1,4 +1,3 @@
-import { LAYOUT_CATEGORY } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 
 const TYPE = 'error';
@@ -23,10 +22,6 @@ const DEFAULT_TEMPLATES = Object.freeze({
 });
 
 export default class ErrorLayout extends TemplateBasedLayout {
-
-  static get category() {
-    return LAYOUT_CATEGORY.ERROR;
-  }
 
   static get type() {
     return TYPE;
