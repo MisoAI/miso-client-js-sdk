@@ -81,7 +81,7 @@ export default class Explore extends Workflow {
 
   // lifecycle //
   start({ relatedQuestions = true } = {}) {
-    if (relatedQuestions && this._linkFn === undefined) {
+    if (this._linkFn === undefined) {
       throw new Error('Define link mapping function before calling start()');
     }
     this._sessions.start();
