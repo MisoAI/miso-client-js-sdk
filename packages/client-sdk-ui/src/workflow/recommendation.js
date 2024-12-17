@@ -58,16 +58,6 @@ export default class Recommendation extends Workflow {
     return this;
   }
 
-  // TODO: deprecate this
-  startTracker() {
-    this.useApi(false);
-    this.useLayouts(false);
-    this._sessions.start();
-    this.notifyViewUpdate(ROLE.CONTAINER);
-    this.notifyViewUpdate(ROLE.PRODUCTS);
-    return this;
-  }
-
   notifyViewUpdate(role = ROLE.PRODUCTS, ...args) {
     super.notifyViewUpdate(role, ...args);
     return this;
