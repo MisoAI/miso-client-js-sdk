@@ -185,20 +185,6 @@ export default class Workflow extends Component {
     this._hub.update(fields.data(), data);
   }
 
-  /*
-  _mergeDataIfNecessary(data) {
-    if (!data._inst || !data._inst.merge) {
-      return data;
-    }
-    return {
-      ...this._hub.states[fields.data()],
-      ...data,
-    };
-  }
-
-  _handleResponseObject() {}
-  */
-
   // TODO: notifyViewUpdateAll()
 
   notifyViewUpdate(role, state) {
