@@ -195,4 +195,7 @@ miso-hybrid-search-combo,
   .miso-hybrid-search-combo__hits-phrase {
     color: var(--miso-hybrid-search-combo-hits-phrase-color);
   }
+  .miso-hybrid-search-combo__search-results-more-container {
+    margin-top: var(--miso-hybrid-search-combo-content-spacing);
+  }
 }

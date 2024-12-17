@@ -49,3 +49,7 @@ export function feedback() {
 export function input() {
   return 'input';
 }
+
+export function more() {
+  return 'more';
+}

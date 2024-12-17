@@ -1,13 +1,14 @@
 import { STATUS } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../trackable.js';
+import { makeTriggerable } from '../triggerable.js';
 import { product, article, question, productInfoBlock, articleInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
 
 function root(layout, state) {
   const { className, role, templates } = layout;
   const { status } = state;
   const roleAttr = role ? `data-role="${role}"` : '';
-  return `<div class="${className} ${status}" ${roleAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}</div>`;
+  return `<div class="${className} ${status}" ${roleAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loadingBar(layout, state)}</div>`;
 }
 
 function ready(layout, state) {
@@ -42,6 +43,16 @@ function item(layout, state, value, index) {
   return `<li class="${className}__item">${body}</li>`;
 }
 
+function trigger(layout, state) {
+  const { className } = layout;
+  return `<div class="${className}__trigger" data-role="trigger"></div>`;
+}
+
+function loadingBar(layout, state) {
+  const { className } = layout;
+  return `<div class="${className}__loading-bar"></div>`;
+}
+
 // TODO: let templates.js control what to be included here
 
 const DEFAULT_TEMPLATES = Object.freeze({
@@ -67,6 +78,8 @@ const DEFAULT_TEMPLATES = Object.freeze({
   cta,
   imageBlock,
   indexBlock,
+  trigger,
+  loadingBar,
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {
@@ -82,6 +95,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
       ...options,
     });
     this._initTrackable();
+    this._initTriggerable();
   }
 
   initialize(view) {
@@ -102,8 +116,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
     // TODO: compare item ids as well
     return this.options.incremental &&
     rendered && rendered.value && rendered.value.length > 0 &&
-      state.status === STATUS.READY &&
-      rendered.status === STATUS.READY &&
+    state.value && state.value.length >= rendered.value.length &&
       state.session && rendered.session &&
       state.session.id === rendered.session.id;
   }
@@ -134,10 +147,12 @@ export default class CollectionLayout extends TemplateBasedLayout {
 
   _afterRender(element, state) {
     this._syncBindings(element, state);
+    this._syncTrigger(element, state);
   }
 
   _unrender() {
     this._clearBindings();
+    this._untrackTrigger();
   }
 
   _getItems(state) {
@@ -173,6 +188,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
 
   destroy() {
     this._destroyTrackable();
+    this._destroyTriggerable();
     this._view = undefined;
     super.destroy();
   }
@@ -180,3 +196,4 @@ export default class CollectionLayout extends TemplateBasedLayout {
 }
 
 makeTrackable(CollectionLayout.prototype);
+makeTriggerable(CollectionLayout.prototype);

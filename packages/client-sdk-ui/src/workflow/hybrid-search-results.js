@@ -1,9 +1,10 @@
 import { trimObj } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, STATUS } from '../constants.js';
-import { mergeApiOptions } from './options.js';
-import { writeKeywordsToData, composeFiltersPayload } from './processors.js';
+import { ROLE } from '../constants.js';
+import { writeKeywordsToData, writeFiltersToPayload, retainFacetCounts, markExhaustion, concatResults } from './processors.js';
+
+const DEFAULT_PAGE_LIMIT = 10;
 
 const ROLES_CONFIG = Object.freeze({
   [ROLE.FACETS]: {
@@ -19,7 +20,7 @@ export default class HybridSearchResults extends Workflow {
       plugin: superworkflow._plugin,
       client: superworkflow._client,
       options: superworkflow._options,
-      roles: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS],
+      roles: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
       rolesConfig: ROLES_CONFIG,
       superworkflow,
     });
@@ -35,42 +36,69 @@ export default class HybridSearchResults extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.filters(), filters => this._refine(filters)),
+      this._hub.on(fields.more(), () => this._more()),
     ];
   }
 
   _initReset() {} // no reset here, will manually reset later
 
+  restart() {
+    super.restart();
+    this._page = 0;
+  }
+
+  // properties //
+  get exhausted() {
+    const data = this._hub.states[fields.data()];
+    return !!(data && data.meta && data.meta.exhausted);
+  }
+
   // query //
   _refine(filters) {
     // remember current facet_counts
     const { facet_counts } = this._hub.states[fields.data()].value || {};
-    this._previousFacetCounts = facet_counts;
+    this._currentFacetCounts = facet_counts;
 
     // start a new session
     this.restart();
 
-    // get stored query from sibling
-    const query = this._superworkflow._answer._hub.states[fields.query()];
+    const query = this._getQuery();
     const payload = this._buildPayload({ ...query, filters });
-    const { session } = this;
-    const event = mergeApiOptions(this._options.resolved.api, { payload, session });
 
-    this._request(event);
+    this._request({ payload });
+  }
+
+  _more() {
+    if (this.exhausted || this._page >= DEFAULT_PAGE_LIMIT - 1) {
+      return; // ignore
+    }
+    // don't create a new session
+
+    const query = this._getQuery();
+    const filters = this._hub.states[fields.filters()]; // get stored filters
+    const start = (this._page + 1) * this._getPageSize();
+    const payload = this._buildPayload({ ...query, filters, start });
+
+    this._request({ payload });
+
+    this._page++;
+  }
+
+  _getQuery() {
+    // get stored query from sibling
+    return this._superworkflow._answer._hub.states[fields.query()];
+  }
+
+  _getPageSize() {
+    return this._options.resolved.api.payload.rows;
   }
 
   _buildPayload({ filters, ...payload } = {}) {
     // borrow the work from the sibling
     payload = this._superworkflow._answer._buildPayload(payload);
-    payload = this._writeFiltersToPayload({ ...payload, filters });
+    payload = writeFiltersToPayload(payload, filters);
     payload = this._writeQuestionIdToPayload(payload);
     return { ...payload, answer: false };
-  }
-
-  _writeFiltersToPayload({ filters, ...payload } = {}) {
-    return trimObj({
-      ...payload,
-      ...composeFiltersPayload(filters),
-    });
   }
 
   _writeQuestionIdToPayload(payload) {
@@ -83,40 +111,33 @@ export default class HybridSearchResults extends Workflow {
     };
   }
 
-  _request(event) {
-    this._hub.update(fields.request(), event);
-  }
-
   // data //
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
-    data = this._retainFacetCounts(data);
+    data = retainFacetCounts(data, this._currentFacetCounts);
+    data = markExhaustion(data);
     return data;
   }
 
-  _retainFacetCounts(data) {
-    if (!this._previousFacetCounts) {
+  _updateDataInHub(data) {
+    data = this._appendResultsFromMoreRequest(data);
+    super._updateDataInHub(data);
+  }
+
+  _appendResultsFromMoreRequest(data) {
+    const { request } = data;
+    if (!request || !request.payload.start) {
+      return data; // the initial state, or not from "more" request
+    }
+    /*
+    if (status !== STATUS.READY || !request || !value) {
       return data;
     }
-    const { status, value } = data;
-    switch (status) {
-      case STATUS.INITIAL:
-      case STATUS.LOADING:
-        break;
-      default:
-        return data;
-    }
-    if (value && value.facet_counts) {
-      return data;
-    }
-    return {
-      ...data,
-      value: {
-        ...value,
-        facet_counts: this._previousFacetCounts,
-      },
-    };
+    */
+    // concat records if it's from "more" request
+    const currentData = this._hub.states[fields.data()];
+    return concatResults(currentData, data);
   }
 
 }

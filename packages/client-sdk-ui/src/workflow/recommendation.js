@@ -1,6 +1,5 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
@@ -55,8 +54,7 @@ export default class Recommendation extends Workflow {
     this._sessions.start();
     // in recommendation workflow, start() triggers query
     // TODO: we should still make the query lifecycle
-    const { session } = this;
-    this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { session }));
+    this._request();
     return this;
   }
 

@@ -23,6 +23,7 @@ export const ROLE = Object.freeze({
   KEYWORDS: 'keywords',
   FACETS: 'facets',
   HITS: 'hits',
+  MORE: 'more',
   ERROR: 'error',
 });
 

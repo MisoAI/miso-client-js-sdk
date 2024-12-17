@@ -1,6 +1,5 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApiOptions } from './options.js';
 import { fields } from '../actor/index.js';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
@@ -88,11 +87,11 @@ export default class Explore extends Workflow {
     this._sessions.start();
     // in explore workflow, start() triggers query
     // TODO: we should still make the query lifecycle
-    const { session } = this;
     if (relatedQuestions) {
-      this._hub.update(fields.request(), mergeApiOptions(this._options.resolved.api, { session }));
+      this._request();
     } else {
       // TODO: ad-hoc
+      const { session } = this;
       this.updateData({ session, request: {}, value: { related_questions: [] } });
     }
     return this;

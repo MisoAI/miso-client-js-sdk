@@ -1,6 +1,5 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApiOptions } from './options.js';
 import * as sources from '../source.js';
 import { fields, AutocompleteActor } from '../actor/index.js';
 import { ROLE, DATA_ASPECT } from '../constants.js';
@@ -99,20 +98,14 @@ export default class Search extends Workflow {
   _query(args) {
     // start a new session
     this.restart();
-    const { session } = this;
 
     // build payload and trigger request
     const payload = this._buildPayload(args);
-    const event = mergeApiOptions(this._options.resolved.api, { payload, session });
-    this._request(event);
+    this._request({ payload });
   }
 
   _buildPayload(args) {
     return args;
-  }
-
-  _request(event) {
-    this._hub.update(fields.request(), event);
   }
 
   updateCompletions(event) {

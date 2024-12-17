@@ -37,6 +37,7 @@ class Sections extends _Sections {
       this.searchResultsInfoGroup(options),
       this.searchResultsFilters(options),
       '<miso-products></miso-products>',
+      this.more(options),
     ]);
   }
 
@@ -65,6 +66,17 @@ class Sections extends _Sections {
   hits(options) {
     const { phrase } = this._helpers;
     return phrase(options, { name: 'hits', tag: 'div', inline: true }).replaceAll('${value}', '<miso-hits></miso-hits>');
+  }
+
+  more(options) {
+    if (!options.moreButton) {
+      return '';
+    }
+    const { element } = this._helpers;
+    const { classPrefix } = options;
+    return element('div', { classes: [`${classPrefix}__search-results-more-container`] }, [
+      '<miso-more></miso-more>',
+    ]);
   }
 
 }

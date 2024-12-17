@@ -1,6 +1,5 @@
 import { trimObj, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeApiOptions } from './options.js';
 // import * as sources from '../source.js';
 import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE, DATA_ASPECT } from '../constants.js';
@@ -139,18 +138,12 @@ export default class AnswerBasedWorkflow extends Workflow {
     this._writeQuestionSourceToSession(args);
 
     // build payload and trigger request
-    const { session } = this;
     const payload = this._buildPayload(args);
-    const event = mergeApiOptions(this._options.resolved.api, { payload, session });
-    this._request(event);
+    this._request({ payload });
   }
 
   _writeQuestionSourceToSession(args) {
     this.session.meta.question_source = args.questionSource || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
-  }
-
-  _request(event) {
-    this._hub.update(fields.request(), event);
   }
 
   _buildPayload() {

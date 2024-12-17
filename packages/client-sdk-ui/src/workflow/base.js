@@ -4,7 +4,7 @@ import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
-import { WorkflowOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
+import { WorkflowOptions, mergeApiOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
 import { writeDataStatus, writeMisoIdToMeta } from './processors.js';
 
 const DEFAULT_LAYOUTS = Object.freeze({
@@ -127,7 +127,14 @@ export default class Workflow extends Component {
     return this;
   }
 
-  // states //
+  // request //
+  _request(options = {}) {
+    const { session } = this;
+    const event = mergeApiOptions(this._options.resolved.api, { ...options, session });
+    this._hub.update(fields.request(), event);
+  }
+
+  // data //
   updateData(data) {
     if (!data) {
       throw new Error(`Data is required.`);

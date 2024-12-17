@@ -1,5 +1,5 @@
 import { trimObj } from '@miso.ai/commons';
-import { STATUS } from '../constants.js';
+import { STATUS, ROLE } from '../constants.js';
 
 export function writeDataStatus(data) {
   const status = getStatus(data);
@@ -74,7 +74,14 @@ export function writeAnswerStageToMeta(data) {
   };
 }
 
-export function composeFiltersPayload(filters) {
+export function writeFiltersToPayload(payload = {}, filters) {
+  return trimObj({
+    ...payload,
+    ...composeFiltersPayload(filters),
+  });
+}
+
+function composeFiltersPayload(filters) {
   if (!filters) {
     return undefined;
   }
@@ -99,4 +106,70 @@ function composeFacetFilters(facets) {
     };
   }
   return Object.keys(filters).length ? filters : undefined;
+}
+
+export function retainFacetCounts(data, currentFacetCounts) {
+  if (!currentFacetCounts) {
+    return data;
+  }
+  const { status, value } = data;
+  switch (status) {
+    case STATUS.INITIAL:
+    case STATUS.LOADING:
+      break;
+    default:
+      return data;
+  }
+  if (value && value.facet_counts) {
+    return data;
+  }
+  return {
+    ...data,
+    value: {
+      ...value,
+      facet_counts: currentFacetCounts,
+    },
+  };
+}
+
+export function concatResults(oldData, newData, { role = ROLE.PRODUCTS } = {}) {
+  if (!newData.value) {
+    return oldData;
+  }
+  const { [role]: oldProducts = [] } = oldData.value;
+  const { [role]: newProducts = [] } = newData.value;
+  // keep exhaustion flag
+  // TODO
+  return {
+    ...newData,
+    value: {
+      ...newData.value,
+      [role]: [...oldProducts, ...newProducts],
+    },
+  }
+}
+
+export function markExhaustion(data, { role = ROLE.PRODUCTS } = {}) {
+  const { status, request, value } = data;
+  // keep track of the exhaustion state
+  if (status !== STATUS.READY || !request || !value) {
+    return data;
+  }
+  const { [role]: products } = value;
+  if (!products) {
+    return data;
+  }
+  const { rows } = request.payload;
+  const { length } = products;
+  const exhausted = length < rows;
+  if (!exhausted) {
+    return data;
+  }
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      exhausted: true,
+    },
+  };
 }

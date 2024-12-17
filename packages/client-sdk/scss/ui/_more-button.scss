@@ -1,0 +1,22 @@
+:root {
+  --miso-more-button-color: var(--miso-text-color);
+  --miso-more-button-background: #fff;
+  --miso-more-button-border-color: #a0a8be;
+  --miso-more-button-max-width: 20rem;
+}
+
+.miso-more-button {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: var(--miso-more-button-max-width);
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  color: var(--miso-more-button-color);
+  background: var(--miso-more-button-background);
+  border: 1px solid var(--miso-more-button-border-color);
+}

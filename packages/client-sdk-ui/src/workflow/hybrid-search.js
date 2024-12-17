@@ -3,9 +3,11 @@ import { InteractionsActor } from '../actor/index.js';
 import Workflow from './base.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE } from '../constants.js';
-import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout } from '../layout/index.js';
+import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, MoreButtonLayout } from '../layout/index.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
+
+const DEFAULT_ROWS = 10;
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -14,6 +16,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
     ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload,
     source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
     fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
+    rows: DEFAULT_ROWS,
   },
 });
 
@@ -21,10 +24,11 @@ const DEFAULT_LAYOUTS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_LAYOUTS,
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: '' }],
   [ROLE.QUESTION]: [TextLayout.type, { raw: true }],
-  [ROLE.PRODUCTS]: [ListLayout.type, { itemType: 'article' }],
+  [ROLE.PRODUCTS]: [ListLayout.type, { incremental: true, itemType: 'article', infiniteScroll: true }],
   [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
   [ROLE.HITS]: [TextLayout.type, { raw: true, format: 'number' }],
   [ROLE.FACETS]: [FacetsLayout.type],
+  [ROLE.MORE]: [MoreButtonLayout.type],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
@@ -38,6 +42,7 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
+/*
 const ROLES_CONFIG = Object.freeze({
   [ROLE.QUESTION]: {
     mapping: ROLE.KEYWORDS,
@@ -46,6 +51,7 @@ const ROLES_CONFIG = Object.freeze({
     mapping: 'facet_counts',
   },
 });
+*/
 
 const SUBWORKFLOW = Object.freeze({
   ANSWER: 'answer',
@@ -59,6 +65,7 @@ function getSubworkflowByRole(role) {
     case ROLE.HITS:
     case ROLE.FACETS:
     case ROLE.KEYWORDS:
+    case ROLE.MORE:
       return SUBWORKFLOW.RESULTS;
     default:
       return SUBWORKFLOW.ANSWER;
@@ -73,7 +80,7 @@ export default class HybridSearch extends Workflow {
       plugin,
       client,
       roles: Object.keys(DEFAULT_LAYOUTS),
-      rolesConfig: ROLES_CONFIG,
+      //rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
     });
   }
