@@ -194,6 +194,9 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       super._render(element, data, controls);
     }
     this._updateCompletions(element, data, controls);
+  }
+
+  _afterRender(element, state) {
     this._fullfillFocusRequest(element);
     this._fullfillValueRequest(element);
   }
