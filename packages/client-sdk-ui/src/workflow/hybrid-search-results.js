@@ -40,7 +40,7 @@ export default class HybridSearchResults extends Workflow {
     ];
   }
 
-  _initReset() {} // no reset here, will manually reset later
+  _initSession() {} // no reset here, will manually reset later
 
   restart() {
     super.restart();

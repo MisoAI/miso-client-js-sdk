@@ -124,10 +124,6 @@ export default class ViewActor {
 
     // protocol: no reaction until session starts
     const { session, status, ongoing, request, meta } = data;
-    const active = session && session.active;
-    if (!force && !active) {
-      return;
-    }
 
     // if data is unchanged, skip unless forced
     if (!force && statesEqual(data, previousData)) {

@@ -71,11 +71,11 @@ export default class Ask extends AnswerBasedWorkflow {
     this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
   }
 
-  _initReset(args) {
+  _initSession(args) {
     // register at context
     args.parentQuestionId && this._context._byPqid.set(args.parentQuestionId, this);
     this._context._events.emit('create', this);
-    super._initReset(args);
+    super._initSession(args);
   }
 
   // lifecycle //

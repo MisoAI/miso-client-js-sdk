@@ -113,19 +113,9 @@ export default class HybridSearch extends Workflow {
     this._interactions = new InteractionsActor(hub, { client, options });
   }
 
-  _initReset() {
-    this._results.reset();
-    this._answer.reset();
-  }
-
-  restart({ answer = true } = {}) {
-    const previousSession = this.session;
-    this._sessions.restart();
-    const { session } = this;
-    if (!answer) {
-      session._answer = previousSession._answer || previousSession;
-    }
-    return this;
+  _initSession() {
+    this._results._sessions.restart();
+    this._answer._sessions.restart();
   }
 
   // properties //

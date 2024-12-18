@@ -44,14 +44,13 @@ export default class Recommendation extends Workflow {
     defineValues(this, { id });
   }
 
-  _initReset(args) {
+  _initSession(args) {
     this._context._members.set(args.id, this);
-    super._initReset(args);
+    super._initSession(args);
   }
 
   // lifecycle //
   start() {
-    this._sessions.start();
     // in recommendation workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     this._request();

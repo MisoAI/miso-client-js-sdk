@@ -55,7 +55,7 @@ export default class Workflow extends Component {
     this._initProperties(args);
     this._initActors(args);
     this._initSubscriptions(args);
-    this._initReset(args);
+    this._initSession(args);
   }
 
   _initProperties() {}
@@ -81,8 +81,8 @@ export default class Workflow extends Component {
     ];
   }
 
-  _initReset() {
-    this.reset();
+  _initSession() {
+    this.restart();
   }
 
   get uuid() {
@@ -91,11 +91,6 @@ export default class Workflow extends Component {
 
   get session() {
     return this._hub.states[fields.session()];
-  }
-
-  get active() {
-    const { session } = this;
-    return !!session && session.active;
   }
 
   get states() {
@@ -112,16 +107,6 @@ export default class Workflow extends Component {
   }
 
   // lifecycle //
-  reset() {
-    this._sessions.new();
-    return this;
-  }
-
-  start() {
-    this._sessions.start();
-    return this;
-  }
-
   restart() {
     this._sessions.restart();
     return this;
@@ -165,8 +150,6 @@ export default class Workflow extends Component {
   }
 
   _updateData(data) {
-    this._sessions.start(); // in case session not started yet
-
     data = this._defaultProcessData(data);
     for (const process of this._options.resolved.dataProcessor) {
       data = process(data);
@@ -188,7 +171,6 @@ export default class Workflow extends Component {
   // TODO: notifyViewUpdateAll()
 
   notifyViewUpdate(role, state) {
-    this._assertActive();
     state = {
       status: STATUS.READY,
       session: this.session,
@@ -253,12 +235,6 @@ export default class Workflow extends Component {
     this._events.emit(name, data);
     if (this._context) {
       this._context._events.emit(name, { workflow: this, ...data });
-    }
-  }
-
-  _assertActive() {
-    if (!this.active) {
-      throw new Error(`Unit is not active yet. Call unit.start() to activate it.`)
     }
   }
 

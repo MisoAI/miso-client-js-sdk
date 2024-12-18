@@ -84,7 +84,6 @@ export default class Explore extends Workflow {
     if (this._linkFn === undefined) {
       throw new Error('Define link mapping function before calling start()');
     }
-    this._sessions.start();
     // in explore workflow, start() triggers query
     // TODO: we should still make the query lifecycle
     if (relatedQuestions) {

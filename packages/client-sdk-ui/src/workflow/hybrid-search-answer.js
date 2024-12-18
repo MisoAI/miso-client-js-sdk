@@ -27,7 +27,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
     this._superworkflow = args.superworkflow;
   }
 
-  _initReset() {} // no reset here, will manually reset later
+  _initSession() {} // no reset here, will manually reset later
 
   restart() {
     super.restart();

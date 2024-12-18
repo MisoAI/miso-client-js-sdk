@@ -55,7 +55,7 @@ export default class Asks extends WorkflowContext {
 
     // reset root workflow
     if (root) {
-      this._root.reset();
+      this._root.restart();
     }
   }
 
