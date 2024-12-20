@@ -110,6 +110,16 @@ export function normalizeInteractionsOptions(options) {
   return { ...options, preprocess };
 }
 
+export function normalizePaginationOptions(options) {
+  if (options === undefined) {
+    throw new Error(`Expect pagination options to be an object or a boolean value: ${options}`);
+  }
+  if (typeof options === 'boolean') {
+    options = { active: options };
+  }
+  return options;
+}
+
 export function normalizeAutocompleteOptions(options) {
   if (options === undefined) {
     throw new Error(`Expect autocomplete options to be an object or a boolean value: ${options}`);
@@ -206,6 +216,13 @@ export function mergeInteractionsOptions(...optionsList) {
   }));
 }
 
+export function mergePaginationOptions(...optionsList) {
+  if (optionsList[optionsList.length - 1] === false) {
+    return false;
+  }
+  return mergeOptions(optionsList, (merged, options) => Object.assign(merged, options));
+}
+
 export function mergeAutocompleteOptions(...optionsList) {
   if (optionsList[optionsList.length - 1] === false) {
     return false;
@@ -247,6 +264,11 @@ const FEATURES = [
     merge: mergeInteractionsOptions,
   },
   {
+    key: 'pagination',
+    normalize: normalizePaginationOptions,
+    merge: mergePaginationOptions,
+  },
+  {
     key: 'autocomplete',
     normalize: normalizeAutocompleteOptions,
     merge: mergeAutocompleteOptions,
@@ -272,7 +294,7 @@ export class WorkflowOptions {
 
   constructor(context = {}, defaults = {}) {
     this._events = new EventEmitter({ target: this });
-    this._defaults = defaults;
+    this._defaults = defaults; // TODO: we should call normalize() on defaults
     this._context = context || {};
     this._locals = {};
 

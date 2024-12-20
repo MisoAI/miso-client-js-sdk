@@ -1,5 +1,5 @@
 import { trimObj } from '@miso.ai/commons';
-import Workflow from './base.js';
+import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { writeKeywordsToData, writeFiltersToPayload, retainFacetCounts, markExhaustion, concatResults } from './processors.js';
@@ -12,7 +12,7 @@ const ROLES_CONFIG = Object.freeze({
   },
 });
 
-export default class HybridSearchResults extends Workflow {
+export default class HybridSearchResults extends SearchBasedWorkflow {
 
   constructor(superworkflow) {
     super({
@@ -31,29 +31,10 @@ export default class HybridSearchResults extends Workflow {
     this._superworkflow = args.superworkflow;
   }
 
-  _initSubscriptions(args) {
-    super._initSubscriptions(args);
-    this._unsubscribes = [
-      ...this._unsubscribes,
-      this._hub.on(fields.filters(), filters => this._refine(filters)),
-      this._hub.on(fields.more(), () => this._more()),
-    ];
-  }
-
   _initSession() {} // no reset here, will manually reset later
 
-  restart() {
-    super.restart();
-    this._page = 0;
-  }
-
-  // properties //
-  get exhausted() {
-    const data = this._hub.states[fields.data()];
-    return !!(data && data.meta && data.meta.exhausted);
-  }
-
   // query //
+  /*
   _refine(filters) {
     // remember current facet_counts
     const { facet_counts } = this._hub.states[fields.data()].value || {};
@@ -83,14 +64,11 @@ export default class HybridSearchResults extends Workflow {
 
     this._page++;
   }
+  */
 
   _getQuery() {
     // get stored query from sibling
     return this._superworkflow._answer._hub.states[fields.query()];
-  }
-
-  _getPageSize() {
-    return this._options.resolved.api.payload.rows;
   }
 
   _buildPayload({ filters, ...payload } = {}) {
@@ -112,6 +90,7 @@ export default class HybridSearchResults extends Workflow {
   }
 
   // data //
+  /*
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
@@ -130,14 +109,10 @@ export default class HybridSearchResults extends Workflow {
     if (!request || !request.payload.start) {
       return data; // the initial state, or not from "more" request
     }
-    /*
-    if (status !== STATUS.READY || !request || !value) {
-      return data;
-    }
-    */
     // concat records if it's from "more" request
     const currentData = this._hub.states[fields.data()];
     return concatResults(currentData, data);
   }
+  */
 
 }

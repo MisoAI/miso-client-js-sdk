@@ -16,6 +16,10 @@ export class TriggerableMixin {
     if (!this.options.infiniteScroll) {
       return;
     }
+    const workflowPaginationOptions = this.workflowOptions.pagination;
+    if (!workflowPaginationOptions.active || workflowPaginationOptions.mode !== 'infiniteScroll') {
+      return;
+    }
     // only track trigger when ready
     if (state.status === STATUS.READY) {
       this._trackTrigger(element);

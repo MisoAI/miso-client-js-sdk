@@ -1,10 +1,9 @@
 import { API } from '@miso.ai/commons';
-import Workflow from './base.js';
 import * as sources from '../source.js';
 import { fields, AutocompleteActor } from '../actor/index.js';
 import { ROLE, DATA_ASPECT } from '../constants.js';
-import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { makeConfigurable } from './options.js';
+import SearchBasedWorkflow from './search-based.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.SEARCH,
@@ -28,22 +27,22 @@ const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.QUERY]: SearchBoxLayout.type,
-  [ROLE.PRODUCTS]: ListLayout.type,
+  ...SearchBasedWorkflow.DEFAULT_LAYOUTS,
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
-  [ROLE.PRODUCTS]: {},
+  ...SearchBasedWorkflow.DEFAULT_TRACKERS,
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
+  ...SearchBasedWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
 });
 
-export default class Search extends Workflow {
+export default class Search extends SearchBasedWorkflow {
 
   constructor(plugin, client) {
     super({
@@ -63,15 +62,6 @@ export default class Search extends Workflow {
     });
   }
 
-  _initSubscriptions(args) {
-    super._initSubscriptions(args);
-    this._unsubscribes = [
-      ...this._unsubscribes,
-      this._hub.on(fields.query(), args => this._query(args)),
-    ];
-  }
-
-  // lifecycle //
   autoQuery({ setValue = true, focus = true } = {}) {
     const q = new URLSearchParams(window.location.search).get('q');
     const { layout } = this._views.get(ROLE.QUERY);
@@ -86,26 +76,6 @@ export default class Search extends Workflow {
     if (q) {
       this.query({ q });
     }
-  }
-
-  query(args) {
-    if (!args.q) {
-      throw new Error(`q is required in query() call`);
-    }
-    this._hub.update(fields.query(), args);
-  }
-
-  _query(args) {
-    // start a new session
-    this.restart();
-
-    // build payload and trigger request
-    const payload = this._buildPayload(args);
-    this._request({ payload });
-  }
-
-  _buildPayload(args) {
-    return args;
   }
 
   updateCompletions(event) {

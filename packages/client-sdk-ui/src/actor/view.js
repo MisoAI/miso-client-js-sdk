@@ -101,6 +101,10 @@ export default class ViewActor {
     }
     return this._tracker;
   }
+  
+  get workflowOptions() {
+    return this._views._getWorkflowOptions();
+  }
 
   get filters() {
     return this._views.filters;

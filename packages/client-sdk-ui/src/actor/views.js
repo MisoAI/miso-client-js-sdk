@@ -1,4 +1,4 @@
-import { defineValues, delegateGetters } from '@miso.ai/commons';
+import { defineValues, delegateGetters, trimObj } from '@miso.ai/commons';
 import { ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
@@ -42,10 +42,14 @@ export default class ViewsActor {
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
       hub.on(fields.data(), data => this.refresh({ data })),
+      options.on('autocomplete', () => this._syncAutocompleteOptions()),
+      options.on('pagination', () => this._syncPaginationOptions()),
       options.on('trackers', () => this._syncTrackers()),
       options.on('layouts', () => this._syncLayouts()),
     ];
 
+    this._syncAutocompleteOptions();
+    this._syncPaginationOptions();
     this._syncTrackers();
     this._syncLayouts();
   }
@@ -144,7 +148,7 @@ export default class ViewsActor {
     } else {
       for (let [role, [name, options]] of Object.entries(layouts)) {
         // TODO: try to omit if unchanged
-        const fn = () => this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
+        const fn = () => this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName, workflowOptions: this._getWorkflowOptions() });
         if (role === ROLE.CONTAINER) {
           for (const view of this._containers.values()) {
             view.layout = fn();
@@ -162,7 +166,7 @@ export default class ViewsActor {
       return undefined;
     }
     const [name, options] = args;
-    return this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
+    return this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName, workflowOptions: this._getWorkflowOptions() });
   }
 
   get(role) {
@@ -227,6 +231,21 @@ export default class ViewsActor {
       this._containerTracker = new Tracker({ hub, role, valueless: true, options: () => this._getTrackerOptions(role) });
     }
     return this._containerTracker;
+  }
+
+  _syncAutocompleteOptions() {
+    this._autocompleteOptions = this._options.resolved.autocomplete;
+  }
+
+  _syncPaginationOptions() {
+    this._paginationOptions = this._options.resolved.pagination;
+  }
+
+  _getWorkflowOptions() {
+    return trimObj({
+      autocomplete: this._autocompleteOptions,
+      pagination: this._paginationOptions,
+    });
   }
 
   _error(e) {
