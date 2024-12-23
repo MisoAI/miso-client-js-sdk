@@ -72,7 +72,6 @@ export default class AnswerBasedWorkflow extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._query(args)),
-      this._hub.on(fields.view(ROLE.ANSWER), data => this._onAnswerViewUpdate(data)),
       this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
     ];
   }
@@ -83,17 +82,34 @@ export default class AnswerBasedWorkflow extends Workflow {
     if (this._questionId) {
       this._questionId = undefined;
     }
-    // interrupt event
-    // TODO: move to workflow base
-    const { session, status, ongoing } = this._hub.states[fields.view(ROLE.ANSWER)] || {};
-    if (session && status !== STATUS.INITIAL && (status !== STATUS.READY || ongoing)) {
-      // it's interrupted by a new question
-      const state = Object.freeze({ session, status, ongoing });
-      this._emit('interrupt', state);
-      this._emit('finally', state);
-    }
     // restart
     super.restart();
+  }
+
+  _emitInterruptEventIfNecessary() {
+    // TODO: data empty flag
+    const { session, status, ongoing } = this._hub.states[fields.view(this._rolesConfig.main)] || {};
+    if (session && status !== STATUS.INITIAL && (status !== STATUS.READY || ongoing)) {
+      // it's interrupted by a new question
+      const event = Object.freeze({ session, status, ongoing });
+      this._emitLifecycleEvent('interrupt', event);
+      this._emitLifecycleEvent('finally', event);
+    }
+  }
+
+  _onMainViewUpdate({ session, status, ongoing }) {
+    // TODO: data empty flag
+    if (status === STATUS.INITIAL) {
+      return;
+    }
+    const done = status === STATUS.READY && !ongoing;
+    const erroneous = status === STATUS.ERRONEOUS;
+    const eventName = done ? 'done' : erroneous ? 'error' : status;
+    const event = Object.freeze({ session, status, ongoing });
+    this._emitLifecycleEvent(eventName, event);
+    if (done || erroneous) {
+      this._emitLifecycleEvent('finally', event);
+    }
   }
 
   // properties //
@@ -235,20 +251,6 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   // handlers //
-  _onAnswerViewUpdate({ session, status, ongoing }) {
-    if (status === STATUS.INITIAL) {
-      return;
-    }
-    const done = status === STATUS.READY && !ongoing;
-    const erroneous = status === STATUS.ERRONEOUS;
-    const eventName = done ? 'done' : erroneous ? 'error' : status;
-    const state = Object.freeze({ session, status, ongoing });
-    this._emit(eventName, state);
-    if (done || erroneous) {
-      this._emit('finally', state);
-    }
-  }
-
   _onCitationClick({ index }) {
     const { value } = this.states[fields.data()] || {};
     const { sources } = value || {};

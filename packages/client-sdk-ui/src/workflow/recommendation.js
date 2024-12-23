@@ -26,6 +26,10 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
+const ROLES_CONFIG = Object.freeze({
+  main: ROLE.PRODUCTS,
+});
+
 export default class Recommendation extends Workflow {
 
   constructor(context, id) {
@@ -33,6 +37,7 @@ export default class Recommendation extends Workflow {
       name: 'recommendation',
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
+      rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
       id,
     });

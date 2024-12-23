@@ -37,6 +37,10 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
+const ROLES_CONFIG = Object.freeze({
+  main: ROLE.ANSWER,
+});
+
 export default class Ask extends AnswerBasedWorkflow {
 
   constructor(context, parentQuestionId) {
@@ -44,6 +48,7 @@ export default class Ask extends AnswerBasedWorkflow {
       name: 'ask',
       context,
       roles: Object.keys(DEFAULT_LAYOUTS),
+      rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
       parentQuestionId,
     });

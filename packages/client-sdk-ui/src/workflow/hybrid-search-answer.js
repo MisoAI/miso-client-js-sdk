@@ -3,6 +3,7 @@ import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { writeKeywordsToData } from './processors.js';
 
 const ROLES_CONFIG = Object.freeze({
+  main: ROLE.ANSWER,
   [ROLE.QUESTION]: {
     mapping: ROLE.KEYWORDS,
   },

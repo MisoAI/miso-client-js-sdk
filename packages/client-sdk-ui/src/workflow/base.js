@@ -78,6 +78,7 @@ export default class Workflow extends Component {
   _initSubscriptions() {
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
+      this._hub.on(fields.view(this._rolesConfig.main), data => this._onMainViewUpdate(data)),
     ];
   }
 
@@ -108,8 +109,41 @@ export default class Workflow extends Component {
 
   // lifecycle //
   restart() {
+    this._emitInterruptEventIfNecessary();
     this._sessions.restart();
     return this;
+  }
+
+  _emitInterruptEventIfNecessary() {
+    // TODO: data empty flag
+    const { session, status } = this._hub.states[fields.view(this._rolesConfig.main)] || {};
+    if (session && status === STATUS.LOADING) {
+      // it's interrupted by a new question
+      const event = Object.freeze({ session, status });
+      this._emitLifecycleEvent('interrupt', event);
+      this._emitLifecycleEvent('finally', event);
+    }
+  }
+
+  _onMainViewUpdate({ session, status }) {
+    if (status === STATUS.INITIAL) {
+      return;
+    }
+    // TODO: data empty flag
+    const done = status === STATUS.READY;
+    const erroneous = status === STATUS.ERRONEOUS;
+    const event = Object.freeze({ session, status });
+    this._emitLifecycleEvent(erroneous ? 'error' : status, event);
+    if (done) {
+      this._emitLifecycleEvent('done', event);
+    }
+    if (done || erroneous) {
+      this._emitLifecycleEvent('finally', event);
+    }
+  }
+
+  _emitLifecycleEvent(name, event) {
+    this._emit(name, event);
   }
 
   // request //
