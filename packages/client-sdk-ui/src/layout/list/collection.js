@@ -16,7 +16,7 @@ function ready(layout, state) {
   const values = layout._getItems(state);
 
   // TODO: handle categories, attributes, etc. by introducing sublayout
-  if ((values && values.length > 0) || state.ongoing) {
+  if ((values && values.length > 0) || state.ongoing) { // TODO: ad-hoc ongoing?
     return templates.list(layout, state, values);
   } else {
     return templates.empty(layout, state);

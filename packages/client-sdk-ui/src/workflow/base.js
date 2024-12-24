@@ -115,30 +115,25 @@ export default class Workflow extends Component {
   }
 
   _emitInterruptEventIfNecessary() {
-    // TODO: data empty flag
-    const { session, status } = this._hub.states[fields.view(this._rolesConfig.main)] || {};
-    if (session && status === STATUS.LOADING) {
+    const state = this._hub.states[fields.view(this._rolesConfig.main)] || {};
+    if (state.session && state.status === STATUS.LOADING) {
       // it's interrupted by a new question
-      const event = Object.freeze({ session, status });
-      this._emitLifecycleEvent('interrupt', event);
-      this._emitLifecycleEvent('finally', event);
+      this._emitLifecycleEvent('interrupt', state);
+      this._emitLifecycleEvent('finally', state);
     }
   }
 
-  _onMainViewUpdate({ session, status }) {
-    if (status === STATUS.INITIAL) {
-      return;
-    }
-    // TODO: data empty flag
+  _onMainViewUpdate(state) {
+    const { status } = state;
     const done = status === STATUS.READY;
     const erroneous = status === STATUS.ERRONEOUS;
-    const event = Object.freeze({ session, status });
-    this._emitLifecycleEvent(erroneous ? 'error' : status, event);
+    const eventName = erroneous ? 'error' : status;
+    this._emitLifecycleEvent(eventName, state);
     if (done) {
-      this._emitLifecycleEvent('done', event);
+      this._emitLifecycleEvent('done', state);
     }
     if (done || erroneous) {
-      this._emitLifecycleEvent('finally', event);
+      this._emitLifecycleEvent('finally', state);
     }
   }
 

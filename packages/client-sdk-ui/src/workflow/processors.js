@@ -3,7 +3,7 @@ import { STATUS, ROLE } from '../constants.js';
 
 export function writeDataStatus(data) {
   const status = getStatus(data);
-  const ongoing = status === STATUS.READY ? !!data.ongoing : undefined;
+  const ongoing = status === STATUS.READY ? data.ongoing : undefined;
   return trimObj({ status, ongoing, ...data }); // let orinigal data override status and ongoing
 }
 

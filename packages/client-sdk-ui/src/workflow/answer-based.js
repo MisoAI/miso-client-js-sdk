@@ -87,28 +87,22 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _emitInterruptEventIfNecessary() {
-    // TODO: data empty flag
-    const { session, status, ongoing } = this._hub.states[fields.view(this._rolesConfig.main)] || {};
-    if (session && status !== STATUS.INITIAL && (status !== STATUS.READY || ongoing)) {
+    const state = this._hub.states[fields.view(this._rolesConfig.main)] || {};
+    if (state.session && state.status !== STATUS.INITIAL && (state.status !== STATUS.READY || state.ongoing)) {
       // it's interrupted by a new question
-      const event = Object.freeze({ session, status, ongoing });
-      this._emitLifecycleEvent('interrupt', event);
-      this._emitLifecycleEvent('finally', event);
+      this._emitLifecycleEvent('interrupt', state);
+      this._emitLifecycleEvent('finally', state);
     }
   }
 
-  _onMainViewUpdate({ session, status, ongoing }) {
-    // TODO: data empty flag
-    if (status === STATUS.INITIAL) {
-      return;
-    }
-    const done = status === STATUS.READY && !ongoing;
+  _onMainViewUpdate(state) {
+    const { status } = state;
+    const done = status === STATUS.READY && !state.ongoing;
     const erroneous = status === STATUS.ERRONEOUS;
     const eventName = done ? 'done' : erroneous ? 'error' : status;
-    const event = Object.freeze({ session, status, ongoing });
-    this._emitLifecycleEvent(eventName, event);
+    this._emitLifecycleEvent(eventName, state);
     if (done || erroneous) {
-      this._emitLifecycleEvent('finally', event);
+      this._emitLifecycleEvent('finally', state);
     }
   }
 

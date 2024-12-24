@@ -126,17 +126,17 @@ export default class ViewActor {
     const previousData = this._data;
     this._data = data = this._sliceData(data || this._views._getData());
 
-    // protocol: no reaction until session starts
-    const { session, status, ongoing, request, meta } = data;
-
     // if data is unchanged, skip unless forced
     if (!force && statesEqual(data, previousData)) {
       return;
     }
 
+    const { session, status, ongoing, request, meta, value } = data;
+    const baseState = { session, status, ongoing, request, meta, data: value, ...getDataEmptyness(data) };
+
     // render
     const notifyUpdate = (state = {}, options) => {
-      state !== false && this.updateState({ session, status, ongoing, request, meta, ...state }, options);
+      state !== false && this.updateState({ ...baseState, ...state }, options);
     };
     try {
       await this._layout.render(element, data, { notifyUpdate });
@@ -146,11 +146,10 @@ export default class ViewActor {
     }
   }
 
-  updateState({ session, status, ongoing, request, meta, error }, { silent = false } = {}) {
-    if (error) {
-      status = STATUS.ERRONEOUS;
-    }
-    const state = this._state = Object.freeze(trimObj({ session, status, ongoing, request, meta, error }));
+  updateState(state, { silent = false } = {}) {
+    // there might be error from notifyUpdate() call
+    const status = state.error ? STATUS.ERRONEOUS : state.status;
+    state = this._state = Object.freeze(trimObj({ ...state, status }));
     const { role } = this;
     this.hub.update(fields.view(role), state, { silent });
   }
@@ -246,4 +245,17 @@ function asMappingFunction(fn) {
     default:
       throw new Error(`Invalid mapping function: ${fn}`);
   }
+}
+
+function getDataEmptyness(data) {
+  return isDataStatusRelevantToEmptyness(data) ? { empty: !!isDateValueEmpty(data) } : {};
+}
+
+function isDataStatusRelevantToEmptyness(data) {
+  return data.status === STATUS.READY && !data.ongoing;
+}
+
+function isDateValueEmpty(data) {
+  const { value } = data;
+  return value === undefined || ((Array.isArray(value) || typeof value === 'string') && !value.length);
 }
