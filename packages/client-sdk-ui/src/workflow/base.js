@@ -3,9 +3,23 @@ import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } f
 import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
-import { injectLogger } from './utils.js';
-import { WorkflowOptions, mergeApiOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
+import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options.js';
 import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
+
+function injectLogger(hub, callback) {
+  const { update, trigger } = hub;
+  hub.update = (name, state, options) => {
+    if (!options || !options.silent) {
+      callback('update', name, state, options);
+    }
+    return update.call(hub, name, state, options);
+  }
+  hub.trigger = (...args) => {
+    callback('trigger', ...args);
+    return trigger.apply(hub, args);
+  }
+  return hub;
+}
 
 const DEFAULT_API_OPTIONS = Object.freeze({});
 
