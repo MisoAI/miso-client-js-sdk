@@ -1,8 +1,7 @@
-import { asArray } from '@miso.ai/commons';
-import { TRACKING_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType } from '../constants.js';
+import { asArray, trimObj } from '@miso.ai/commons';
+import { PERFORMANCE_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType } from '../constants.js';
 import * as fields from './fields.js';
 import States from '../util/states.js';
-import { toInteraction } from './utils.js';
 
 const VALUELESS_ITEMS = [Symbol('valueless')];
 
@@ -26,29 +25,36 @@ export default class Tracker {
     return this._states.getFullState(item);
   }
 
-  _trigger(type, items, meta = {}) {
+  _trigger(type, items) {
+    validateEventType(type);
     if (this._valueless) {
-      meta = items;
       items = VALUELESS_ITEMS;
     }
-    validateEventType(type);
+
     this._syncSession();
 
-    if (type !== EVENT_TYPE.SUBMIT) {
-      items = this._states.untriggered(asArray(items), type);
-      if (items.length === 0) {
-        return;
-      }
-      this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
+    items = this._states.untriggered(asArray(items), type);
+    if (items.length === 0) {
+      return;
     }
+    this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
 
-    const property = this._role === 'results' ? 'products' : this._role; // TODO: ad-hoc, see #83
-    const misoId = this._getMisoId();
-    const request = this._getRequestPayload();
-    const values = this._valueless ? undefined : items;
+    this._sendToHub({
+      type,
+      items: this._valueless ? undefined : items,
+    });
+  }
 
-    // TODO: should trigger 'tracker' and let workflow translate to interactions
-    this._hub.trigger(fields.interaction(), toInteraction({ property, misoId, request }, { event: type, values, meta }));
+  submit({ value }) {
+    this._syncSession();
+    this._sendToHub({
+      type: EVENT_TYPE.SUBMIT,
+      value,
+    });
+  }
+
+  _sendToHub(args) {
+    this._hub.trigger(fields.tracker(), Object.freeze(trimObj({ role: this._role, ...args })));
   }
 
   _syncSession() {
@@ -82,7 +88,7 @@ export default class Tracker {
 
 }
 
-for (const type of TRACKING_EVENT_TYPES) {
+for (const type of PERFORMANCE_EVENT_TYPES) {
   Tracker.prototype[type] = function(items, meta) {
     this._trigger(type, items, meta);
   };

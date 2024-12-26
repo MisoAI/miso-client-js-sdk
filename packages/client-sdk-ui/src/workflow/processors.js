@@ -1,5 +1,5 @@
 import { trimObj } from '@miso.ai/commons';
-import { STATUS, ROLE } from '../constants.js';
+import { STATUS, ROLE, EVENT_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
 
 export function writeDataStatus(data) {
   const status = getStatus(data);
@@ -172,4 +172,69 @@ export function markExhaustion(data, { role = ROLE.PRODUCTS } = {}) {
       exhausted: true,
     },
   };
+}
+
+export function buildBaseInteraction(args) {
+  const { role, type, items } = args;
+  const payload = {
+    type: type === 'viewable' ? 'viewable_impression' : type,
+    context: {
+      custom_context: trimObj({
+        property: role,
+      }),
+    },
+  };
+
+  if (isPerformanceEventType(type)) {
+    if (isProductRole(role)) {
+      payload.product_ids = (items || []).map(v => typeof v === 'string' ? v : v.product_id).filter(v => v);
+    } else {
+      payload.product_ids = [];
+      payload.context.custom_context.items = (items || []).map(v => v.text || v.id || v);
+    }
+  }
+
+  switch (type) {
+    case EVENT_TYPE.SUBMIT:
+      payload.context.custom_context.value = args.value;
+      break;
+    case EVENT_TYPE.FEEDBACK:
+      payload.context.custom_context.value = payload.value = args.value;
+      payload.context.custom_context.result_type = payload.result_type = args.result_type;
+      break;
+  }
+
+  return trimObj(payload);
+}
+
+export function writeAffiliationInfoToInteraction(payload, args) {
+  if (args.role !== ROLE.AFFILIATION) {
+    return payload;
+  }
+  const { items } = args;
+  const channel = (items[0] && items[0].channel) || undefined;
+  const positions = items.map(v => v.position);
+  return mergeInteraction(payload, {
+    context: {
+      custom_context: {
+        channel,
+        positions,
+      },
+    },
+  });
+}
+
+export function mergeInteraction(base = {}, patch = {}) {
+  return trimObj({
+    ...base,
+    ...patch,
+    context:trimObj({
+      ...base.context,
+      ...patch.context,
+      custom_context: trimObj({
+        ...(base.context && base.context.custom_context),
+        ...(patch.context && patch.context.custom_context),
+      }),
+    }),
+  });
 }

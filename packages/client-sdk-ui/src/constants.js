@@ -52,11 +52,22 @@ export const DATA_ASPECT = Object.freeze({
   AUTOCOMPLETE: 'autocomplete',
 });
 
+const PRODUCT_ROLE_SET = new Set([
+  ROLE.PRODUCTS,
+  ROLE.SOURCES,
+  ROLE.RELATED_RESOURCES,
+]);
+
+export function isProductRole(role) {
+  return PRODUCT_ROLE_SET.has(role);
+}
+
 export const EVENT_TYPE = Object.freeze({
   IMPRESSION: 'impression',
   VIEWABLE: 'viewable',
   CLICK: 'click',
   SUBMIT: 'submit',
+  FEEDBACK: 'feedback',
 });
 
 export const TRACKING_EVENT_TYPES = [
@@ -64,7 +75,20 @@ export const TRACKING_EVENT_TYPES = [
   EVENT_TYPE.VIEWABLE,
   EVENT_TYPE.CLICK,
   EVENT_TYPE.SUBMIT,
+  EVENT_TYPE.FEEDBACK,
 ];
+
+export const PERFORMANCE_EVENT_TYPES = [
+  EVENT_TYPE.IMPRESSION,
+  EVENT_TYPE.VIEWABLE,
+  EVENT_TYPE.CLICK,
+];
+
+const PERFORMANCE_EVENT_TYPE_SET = new Set(PERFORMANCE_EVENT_TYPES);
+
+export function isPerformanceEventType(type) {
+  return PERFORMANCE_EVENT_TYPE_SET.has(type);
+}
 
 export const TRACKING_STATUS = Object.freeze({
   UNTRACKED: 'untracked',

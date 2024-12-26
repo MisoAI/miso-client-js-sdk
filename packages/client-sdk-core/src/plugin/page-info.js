@@ -43,7 +43,7 @@ function getPayloadContext() {
 function readPageInfo() {
   return trimObj({
     url: window.location.href,
-    referrer: document.referrer,
+    referrer: document.referrer || undefined,
     title: document.title,
   });
 }

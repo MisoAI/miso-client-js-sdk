@@ -5,7 +5,7 @@ import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
 import { WorkflowOptions, mergeApiOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
-import { writeDataStatus, writeMisoIdToMeta } from './processors.js';
+import { writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
@@ -18,14 +18,10 @@ const ROLES_CONFIG = Object.freeze({
   },
 });
 
-function mergeDefaults(workflow, { layouts, interactions, ...defaults } = {}) {
-  const DEFAULT_INTERACTIONS = {
-    preprocess: [payload => workflow._preprocessInteraction(payload)],
-  };
+function mergeDefaults({ layouts, interactions, ...defaults } = {}) {
   return {
     ...defaults,
     layouts: mergeLayoutsOptions(DEFAULT_LAYOUTS, layouts),
-    interactions: mergeInteractionsOptions(DEFAULT_INTERACTIONS, interactions),
   };
 }
 
@@ -49,7 +45,7 @@ export default class Workflow extends Component {
     this._rolesConfig = { ...ROLES_CONFIG, ...args.rolesConfig };
 
     this._extensions = plugin._getExtensions(client);
-    this._options = options || new WorkflowOptions(context && context._options, mergeDefaults(this, args.defaults));
+    this._options = options || new WorkflowOptions(context && context._options, mergeDefaults(args.defaults));
     this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
 
     this._initProperties(args);
@@ -78,7 +74,8 @@ export default class Workflow extends Component {
   _initSubscriptions() {
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
-      this._hub.on(fields.view(this._rolesConfig.main), data => this._onMainViewUpdate(data)),
+      this._hub.on(fields.tracker(), args => this._onTracker(args)),
+      this._hub.on(fields.view(this._rolesConfig.main), state => this._onMainViewUpdate(state)),
     ];
   }
 
@@ -214,29 +211,54 @@ export default class Workflow extends Component {
     return this._views.trackers;
   }
 
-  // TODO: extract to a separate function
-  _preprocessInteraction({
-    context: {
-      custom_context,
-      ...context
-    } = {},
-    ...payload
-  } = {}) {
-    const {
-      group: api_group,
-      name: api_name,
-    } = this._options.resolved.api;
-    return {
-      ...payload,
+  _onTracker(args) {
+    const payload = this._buildInteraction(args);
+    this._sendInteraction(payload);
+  }
+
+  _buildInteraction(args) {
+    let payload = buildBaseInteraction(args);
+    payload = this._defaultProcessInteraction(payload, args);
+    const { preprocess = [] } = this._options.resolved.interactions;
+    for (const p of preprocess) {
+      payload = p(payload, args);
+    }
+    return payload;
+  }
+
+  _defaultProcessInteraction(payload, args) {
+    payload = this._writeApiInfoToInteraction(payload, args);
+    payload = this._writeMisoIdToInteraction(payload, args);
+    payload = writeAffiliationInfoToInteraction(payload, args);
+    return payload;
+  }
+
+  _writeApiInfoToInteraction(payload) {
+    const { group, name } = this._options.resolved.api;
+    return mergeInteraction(payload, {
       context: {
-        ...context,
         custom_context: {
-          api_group,
-          api_name,
-          ...custom_context,
+          api_group: group,
+          api_name: name,
         },
       },
-    };
+    });
+  }
+
+  _writeMisoIdToInteraction(payload, args) {
+    // TODO: ad-hoc, try to pass info from tracker
+    const state = this._hub.states[fields.view(args.role)] || {};
+    const miso_id = (state.meta && state.meta.miso_id) || undefined;
+    return miso_id ? mergeInteraction(payload, { miso_id }) : payload;
+  }
+
+  _sendInteraction(payload) {
+    const { handle } = this._options.resolved.interactions;
+    if (typeof handle === 'function') {
+      handle(payload);
+    } else {
+      this._hub.trigger(fields.interaction(), payload);
+    }
   }
 
   // destroy //

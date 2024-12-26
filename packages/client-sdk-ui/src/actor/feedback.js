@@ -1,4 +1,5 @@
 import * as fields from './fields.js';
+import { EVENT_TYPE } from '../constants.js';
 
 export default class FeedbackActor {
 
@@ -10,29 +11,11 @@ export default class FeedbackActor {
   }
   
   _trigger(state) {
-    const { [fields.data()]: data } = this._hub.states;
-    const { question_id } = data && data.value || {};
-    if (!question_id) {
-      return;
-    }
-    // TODO: ad-hoc
-    const { request } = data || {};
-    const { payload } = request || {};
-    const question_source = payload && payload._meta && payload._meta.question_source;
-    this._hub.trigger(fields.interaction(), this._buildInteraction(state, { question_source }));
-  }
-
-  _buildInteraction({ value, unselected }, { question_source }) {
-    return {
-      type: 'feedback',
-      context: {
-        custom_context: {
-          result_type: 'answer',
-          question_source,
-          value: unselected ? 'unselected' : value,
-        },
-      },
-    };
+    this._hub.trigger(fields.tracker(), {
+      type: EVENT_TYPE.FEEDBACK,
+      result_type: 'answer',
+      value: state.unselected ? 'unselected' : state.value,
+    });
   }
 
   _destroy() {

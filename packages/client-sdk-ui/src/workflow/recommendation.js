@@ -3,6 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
+import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.RECOMMENDATION,
@@ -57,7 +58,6 @@ export default class Recommendation extends Workflow {
   // lifecycle //
   start() {
     // in recommendation workflow, start() triggers query
-    // TODO: we should still make the query lifecycle
     this._request();
     return this;
   }
@@ -68,21 +68,23 @@ export default class Recommendation extends Workflow {
   }
 
   // interactions //
-  _preprocessInteraction(payload) {
-    payload = super._preprocessInteraction(payload) || {};
-    const { context = {} } = payload;
-    const { custom_context = {} } = context;
-    return {
-      ...payload,
+  _defaultProcessInteraction(payload, args) {
+    payload = super._defaultProcessInteraction(payload, args);
+    payload = this._writeUnitIdToInteraction(payload, args);
+    return payload;
+  }
+
+  _writeUnitIdToInteraction(payload) {
+    const unit_id = this.id;
+    const unit_instance_uuid = this.uuid;
+    return mergeInteraction(payload, {
       context: {
-        ...context,
-        custom_context: trimObj({
-          unit_id: this.id,
-          unit_instance_uuid: this.uuid,
-          ...custom_context,
-        }),
+        custom_context: {
+          unit_id,
+          unit_instance_uuid,
+        },
       },
-    };
+    });
   }
 
   // destroy //

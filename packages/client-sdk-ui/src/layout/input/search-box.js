@@ -344,7 +344,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (!options) {
       return;
     }
-    this._view.tracker.submit(value);
+    this._view.tracker.submit({ value }); // not array
   }
 
 }

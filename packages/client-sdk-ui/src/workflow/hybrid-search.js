@@ -114,8 +114,8 @@ export default class HybridSearch extends Workflow {
   }
 
   // interactions //
-  _preprocessInteraction(payload) {
-    return this._answer._preprocessInteraction(payload);
+  _defaultProcessInteraction(payload, args) {
+    return this._answer._defaultProcessInteraction(payload, args);
   }
 
   // destroy //

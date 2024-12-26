@@ -12,20 +12,14 @@ export default class InteractionsActor {
   }
 
   _handle(payload) {
+    // TODO: omit when option == false
     payload = asArray(payload);
-    const { preprocess = [], handle } = this._options.resolved.interactions;
-    for (const p of preprocess) {
-      payload = payload.map(p);
-    }
-    // TODO: support filter?
+
     if (payload.length === 0) {
       return;
     }
-    if (handle) {
-      handle(payload);
-    } else {
-      this._client.api.interactions.upload(payload, { merge: true });
-    }
+
+    this._client.api.interactions.upload(payload, { merge: true });
   }
 
   destroy() {

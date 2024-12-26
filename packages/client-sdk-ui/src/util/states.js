@@ -4,20 +4,6 @@ import { EVENT_TYPE, TRACKING_STATUS, validateEventType, validateTrackingStatus 
 const { IMPRESSION, VIEWABLE, CLICK } = EVENT_TYPE;
 const { UNTRACKED, TRIGGERED } = TRACKING_STATUS;
 
-/*
-const STATES = {
-  NEW: Object.freeze({
-    [IMPRESSION]: UNTRACKED,
-    [VIEWABLE]: UNTRACKED,
-  }),
-  UNTRACKED: Object.freeze({
-    [IMPRESSION]: UNTRACKED,
-    [VIEWABLE]: UNTRACKED,
-    [CLICK]: UNTRACKED,
-  }),
-};
-*/
-
 const UNTRACKED_STATES = Object.freeze({
   [IMPRESSION]: UNTRACKED,
   [VIEWABLE]: UNTRACKED,

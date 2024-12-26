@@ -5,7 +5,7 @@ import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE, DATA_ASPECT } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
-import { writeAnswerStageToMeta } from './processors.js';
+import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -143,7 +143,6 @@ export default class AnswerBasedWorkflow extends Workflow {
     // start a new session
     this.restart();
 
-    // TODO: move to ask workflow
     // keep track of question source on this session, for suggested questions interactions
     this._writeQuestionSourceToSession(args);
 
@@ -153,7 +152,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _writeQuestionSourceToSession(args) {
-    this.session.meta.question_source = args.questionSource || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
+    this.session.meta.question_source = args.qs || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
   }
 
   _buildPayload() {
@@ -222,26 +221,29 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   // interactions //
-  _preprocessInteraction(payload) {
-    payload = super._preprocessInteraction(payload);
-    payload = this._writeQuestionIdToInteractions(payload);
+  _defaultProcessInteraction(payload, args) {
+    payload = super._defaultProcessInteraction(payload, args);
+    payload = this._writeAskPropertiesToInteraction(payload, args);
     return payload;
   }
 
-  _writeQuestionIdToInteractions(payload = {}) {
-    const { context = {} } = payload;
-    const { custom_context = {} } = context;
-    let { questionId } = this;
-    return {
-      ...payload,
+  _writeAskPropertiesToInteraction(payload = {}, args) {
+    const question_source = this._getQuestionSourceFromViewState(args);
+    const question_id = this.questionId;
+    return mergeInteraction(payload, {
       context: {
-        ...context,
-        custom_context: trimObj({
-          question_id: questionId,
-          ...custom_context,
-        }),
+        custom_context: {
+          question_source,
+          question_id,
+        },
       },
-    };
+    });
+  }
+
+  _getQuestionSourceFromViewState(args) {
+    const { request } = this._hub.states[fields.view(args.role)] || {};
+    const { payload } = request || {};
+    return (payload && payload._meta && payload._meta.question_source) || undefined;
   }
 
   // handlers //

@@ -3,6 +3,7 @@ import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout } from '../layout/index.js';
+import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -126,30 +127,33 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   // interactions //
-  _preprocessInteraction(payload) {
-    payload = super._preprocessInteraction(payload) || {};
+  _writeAskPropertiesToInteraction(payload, args) {
+    const root_question_id = this.rootQuestionId;
+    let { property } = (payload.context && payload.context.custom_context) || {};
+    let question_id, parent_question_id, question_source;
 
-    const { context = {} } = payload;
-    const { ...custom_context } = context.custom_context || {};
-    let { rootQuestionId, parentQuestionId, questionId } = this;
-
-    if (custom_context.property === ROLE.QUERY_SUGGESTIONS) {
-      questionId = parentQuestionId;
-      parentQuestionId = this.previous && this.previous.parentQuestionId;
-      custom_context.property = 'suggested_followup_questions';
-      custom_context.question_source = this.previous && this.previous.session.meta.question_source;
+    if (args.role === ROLE.QUERY_SUGGESTIONS) {
+      property = 'suggested_followup_questions';
+      parent_question_id = this.previous && this.previous.parentQuestionId;
+      question_id = this.parentQuestionId;
+      question_source = this.previous && this.previous.session.meta.question_source;
+    } else {
+      parent_question_id = this.parentQuestionId;
+      question_id = this.questionId;
+      question_source = this._getQuestionSourceFromViewState(args);
     }
-    custom_context.question_id = questionId;
-    custom_context.root_question_id = rootQuestionId;
-    custom_context.parent_question_id = parentQuestionId;
 
-    return {
-      ...payload,
+    return mergeInteraction(payload, {
       context: {
-        ...context,
-        custom_context: trimObj(custom_context),
-      },
-    };
+        custom_context: {
+          property,
+          root_question_id,
+          parent_question_id,
+          question_id,
+          question_source,
+        },
+      }
+    });
   }
 
   // helpers //
