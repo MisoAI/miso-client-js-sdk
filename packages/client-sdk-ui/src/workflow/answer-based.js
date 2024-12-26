@@ -81,6 +81,15 @@ export default class AnswerBasedWorkflow extends Workflow {
     ];
   }
 
+  // configuration //
+  useLink(fn) {
+    if (typeof fn !== 'function' && fn !== false) {
+      throw new Error('useLink(fn) expects fn to be a function or false');
+    }
+    this._linkFn = fn;
+    return this;
+  }
+
   // lifecycle //
   restart() {
     // clear question id from previous session
@@ -145,6 +154,10 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _query(args = {}) {
+    if (this._linkFn) {
+      this._submit(args);
+      return;
+    }
     // start a new session
     this.restart();
 
@@ -154,6 +167,15 @@ export default class AnswerBasedWorkflow extends Workflow {
     // build payload and trigger request
     const payload = this._buildPayload(args);
     this._request({ payload });
+  }
+
+  _submit(args) {
+    if (!this._linkFn) {
+      return;
+    }
+    // TODO: we want a submit event, but only with linkFn
+    const url = this._linkFn(args.q);
+    window.open(url, '_blank');
   }
 
   _writeQuestionSourceToSession(args) {

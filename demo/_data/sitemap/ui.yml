@@ -67,6 +67,8 @@ sections:
     path: /hybrid-search/production
   - title: No box
     path: /hybrid-search/no-box
+  - title: Use link
+    path: /hybrid-search/use-link
   - title: Templates
     path: /hybrid-search/templates
 - title: Search

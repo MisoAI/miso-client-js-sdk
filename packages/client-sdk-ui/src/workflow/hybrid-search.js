@@ -95,6 +95,12 @@ export default class HybridSearch extends Workflow {
     this._answer._sessions.restart();
   }
 
+  // configuration //
+  useLink(fn) {
+    this._answer.useLink(fn);
+    return this;
+  }
+
   // properties //
   get questionId() {
     return this._answer.questionId;
