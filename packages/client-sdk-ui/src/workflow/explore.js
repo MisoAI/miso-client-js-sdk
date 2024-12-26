@@ -5,16 +5,19 @@ import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_API_OPTIONS,
   group: API.GROUP.ASK,
   name: API.NAME.RELATED_QUESTIONS,
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
+  ...Workflow.DEFAULT_LAYOUTS,
   [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question', link: { rel: 'noopener nofollow' } }],
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
+  ...Workflow.DEFAULT_TRACKERS,
   [ROLE.RELATED_QUESTIONS]: {},
   [ROLE.CONTAINER]: {},
   [ROLE.QUERY]: {
@@ -23,6 +26,7 @@ const DEFAULT_TRACKERS = Object.freeze({
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,

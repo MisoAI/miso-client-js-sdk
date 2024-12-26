@@ -10,14 +10,17 @@ const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
 
 const DEFAULT_API_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_API_OPTIONS,
   group: API.GROUP.SEARCH,
   payload: {
+    ...Workflow.DEFAULT_API_OPTIONS.payload,
     fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
     rows: DEFAULT_ROWS,
   },
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
+  ...Workflow.DEFAULT_LAYOUTS,
   [ROLE.QUERY]: [SearchBoxLayout.type],
   [ROLE.PRODUCTS]: [ListLayout.type, { incremental: true, infiniteScroll: true }],
   [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
@@ -27,6 +30,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
+  ...Workflow.DEFAULT_TRACKERS,
   [ROLE.PRODUCTS]: {},
 });
 
@@ -37,6 +41,7 @@ const DEFAULT_PAGINATION = Object.freeze({
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,

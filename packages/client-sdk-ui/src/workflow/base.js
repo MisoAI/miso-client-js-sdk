@@ -5,11 +5,21 @@ import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { injectLogger } from './utils.js';
 import { WorkflowOptions, mergeApiOptions, mergeLayoutsOptions, mergeInteractionsOptions, makeConfigurable } from './options.js';
-import { writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
+import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
+
+const DEFAULT_API_OPTIONS = Object.freeze({});
 
 const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.CONTAINER]: ContainerLayout.type,
   [ROLE.ERROR]: ErrorLayout.type,
+});
+
+const DEFAULT_TRACKERS = Object.freeze({});
+
+const DEFAULT_OPTIONS = Object.freeze({
+  api: DEFAULT_API_OPTIONS,
+  layouts: DEFAULT_LAYOUTS,
+  trackers: DEFAULT_TRACKERS,
 });
 
 const ROLES_CONFIG = Object.freeze({
@@ -17,17 +27,6 @@ const ROLES_CONFIG = Object.freeze({
     mapping: data => data.error,
   },
 });
-
-function mergeDefaults({ layouts, interactions, ...defaults } = {}) {
-  return {
-    ...defaults,
-    layouts: mergeLayoutsOptions(DEFAULT_LAYOUTS, layouts),
-  };
-}
-
-function getRevision(data) {
-  return data && data.value && data.value.revision;
-}
 
 export default class Workflow extends Component {
 
@@ -45,7 +44,7 @@ export default class Workflow extends Component {
     this._rolesConfig = { ...ROLES_CONFIG, ...args.rolesConfig };
 
     this._extensions = plugin._getExtensions(client);
-    this._options = options || new WorkflowOptions(context && context._options, mergeDefaults(args.defaults));
+    this._options = options || new WorkflowOptions(context && context._options, args.defaults);
     this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
 
     this._initProperties(args);
@@ -292,3 +291,10 @@ export default class Workflow extends Component {
 }
 
 makeConfigurable(Workflow.prototype);
+
+Object.assign(Workflow, {
+  DEFAULT_API_OPTIONS,
+  DEFAULT_LAYOUTS,
+  DEFAULT_TRACKERS,
+  DEFAULT_OPTIONS,
+});

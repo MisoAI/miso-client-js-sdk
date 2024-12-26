@@ -6,22 +6,27 @@ import { ROLE } from '../constants.js';
 import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_API_OPTIONS,
   group: API.GROUP.RECOMMENDATION,
   name: API.NAME.USER_TO_PRODUCTS,
   payload: {
+    ...Workflow.DEFAULT_API_OPTIONS.payload,
     fl: ['*'],
   },
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
+  ...Workflow.DEFAULT_LAYOUTS,
   [ROLE.PRODUCTS]: ListLayout.type,
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
+  ...Workflow.DEFAULT_TRACKERS,
   [ROLE.PRODUCTS]: {},
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,

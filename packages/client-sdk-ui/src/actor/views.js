@@ -29,6 +29,9 @@ export default class ViewsActor {
     this._filters = new Filters(this);
 
     for (const role of roles) {
+      if (role === ROLE.CONTAINER) {
+        continue;
+      }
       this._views[role] = new ViewActor(this, role);
     }
 
@@ -290,6 +293,9 @@ class Trackers {
   constructor(views, roles) {
     this._views = views;
     for (const role of roles) {
+      if (role === ROLE.CONTAINER) {
+        continue;
+      }
       Object.defineProperty(this, role, {
         get: () => views.get(role).tracker,
       });

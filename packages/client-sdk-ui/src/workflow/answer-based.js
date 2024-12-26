@@ -8,8 +8,10 @@ import { processData as processAffiliationData } from '../affiliation/index.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_API_OPTIONS,
   group: API.GROUP.ASK,
   payload: {
+    ...Workflow.DEFAULT_API_OPTIONS.payload,
     source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
     cite_link: 1,
     cite_start: '[',
@@ -26,6 +28,7 @@ const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
+  ...Workflow.DEFAULT_LAYOUTS,
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
   [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
   [ROLE.ANSWER]: TypewriterLayout.type,
@@ -35,12 +38,14 @@ const DEFAULT_LAYOUTS = Object.freeze({
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
+  ...Workflow.DEFAULT_TRACKERS,
   [ROLE.SOURCES]: {},
   [ROLE.AFFILIATION]: {},
   [ROLE.PRODUCTS]: {},
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
+  ...Workflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
   layouts: DEFAULT_LAYOUTS,

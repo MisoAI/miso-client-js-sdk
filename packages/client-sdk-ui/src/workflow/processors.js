@@ -1,6 +1,11 @@
 import { trimObj } from '@miso.ai/commons';
 import { STATUS, ROLE, EVENT_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
 
+// data //
+export function getRevision(data) {
+  return data && data.value && data.value.revision;
+}
+
 export function writeDataStatus(data) {
   const status = getStatus(data);
   const ongoing = status === STATUS.READY ? data.ongoing : undefined;
@@ -174,6 +179,7 @@ export function markExhaustion(data, { role = ROLE.PRODUCTS } = {}) {
   };
 }
 
+// interactions //
 export function buildBaseInteraction(args) {
   const { role, type, items } = args;
   const payload = {
