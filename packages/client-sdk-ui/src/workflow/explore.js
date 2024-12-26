@@ -60,7 +60,7 @@ export default class Explore extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleRelatedQuestionClick(event)),
-      this._hub.on(fields.query(), payload => this.query(payload)),
+      this._hub.on(fields.query(), args => this._submit(args)),
     ];
   }
 
@@ -131,7 +131,14 @@ export default class Explore extends Workflow {
     this._events.emit('select', Object.freeze({ ...event, question }));
   }
 
-  query({ q } = {}) {
+  query(args) {
+    if (!args.q) {
+      throw new Error(`q is required in query() call`);
+    }
+    this._hub.update(fields.query(), args);
+  }
+
+  _submit({ q } = {}) {
     if (!this._linkFn) {
       return;
     }
