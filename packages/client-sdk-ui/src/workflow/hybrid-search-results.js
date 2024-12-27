@@ -2,6 +2,7 @@ import { trimObj } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
+import { mergeRolesOptions } from './options.js';
 import { writeFiltersToPayload } from './processors.js';
 
 const ROLES_CONFIG = Object.freeze({
@@ -9,6 +10,10 @@ const ROLES_CONFIG = Object.freeze({
   [ROLE.FACETS]: {
     mapping: 'facet_counts',
   },
+});
+
+const ROLES_OPTIONS = mergeRolesOptions(SearchBasedWorkflow.ROLES_OPTIONS, {
+  members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
 });
 
 export default class HybridSearchResults extends SearchBasedWorkflow {
@@ -19,7 +24,8 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
       plugin: superworkflow._plugin,
       client: superworkflow._client,
       options: superworkflow._options,
-      roles: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
+      roles: ROLES_OPTIONS,
+      rolesMembers: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
       rolesConfig: ROLES_CONFIG,
       superworkflow,
     });

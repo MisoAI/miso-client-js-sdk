@@ -42,13 +42,16 @@ const ROLES_CONFIG = Object.freeze({
   main: ROLE.ANSWER,
 });
 
+const ROLES_OPTIONS = AnswerBasedWorkflow.ROLES_OPTIONS;
+
 export default class Ask extends AnswerBasedWorkflow {
 
   constructor(context, parentQuestionId) {
     super({
       name: 'ask',
       context,
-      roles: Object.keys(DEFAULT_LAYOUTS),
+      roles: ROLES_OPTIONS,
+      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
       rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
       parentQuestionId,

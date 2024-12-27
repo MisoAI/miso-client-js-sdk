@@ -6,6 +6,7 @@ import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options.js';
 import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
 
+// TODO: just bury this into hub
 function injectLogger(hub, callback) {
   const { update, trigger } = hub;
   hub.update = (name, state, options) => {
@@ -42,6 +43,12 @@ const ROLES_CONFIG = Object.freeze({
   },
 });
 
+const ROLES_OPTIONS = Object.freeze({
+  mappings: {
+    [ROLE.ERROR]: data => data.error,
+  },
+});
+
 export default class Workflow extends Component {
 
   constructor(args) {
@@ -55,7 +62,6 @@ export default class Workflow extends Component {
 
     this._name = args.name;
     this._roles = args.roles;
-    this._rolesConfig = { ...ROLES_CONFIG, ...args.rolesConfig };
 
     this._extensions = plugin._getExtensions(client);
     this._options = options || new WorkflowOptions(context && context._options, args.defaults);
@@ -69,26 +75,24 @@ export default class Workflow extends Component {
 
   _initProperties() {}
 
-  _initActors() {
+  _initActors({ name, roles }) {
     const hub = this._hub;
     const client = this._client;
-    const roles = this._roles;
-    const rolesConfig = this._rolesConfig;
     const options = this._options;
     const extensions = this._extensions;
     const layouts = this._plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source: sources.api(client), options });
-    this._views = new ViewsActor(hub, { extensions, layouts, roles, rolesConfig, options, workflow: this._name });
+    this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
     this._interactions = new InteractionsActor(hub, { client, options });
   }
 
-  _initSubscriptions() {
+  _initSubscriptions({ roles }) {
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
       this._hub.on(fields.tracker(), args => this._onTracker(args)),
-      this._hub.on(fields.view(this._rolesConfig.main), state => this._onMainViewUpdate(state)),
+      this._hub.on(fields.view(roles.main), state => this._onMainViewUpdate(state)),
     ];
   }
 
@@ -125,7 +129,7 @@ export default class Workflow extends Component {
   }
 
   _emitInterruptEventIfNecessary() {
-    const state = this._hub.states[fields.view(this._rolesConfig.main)] || {};
+    const state = this._hub.states[fields.view(this._roles.main)] || {};
     if (state.session && state.status === STATUS.LOADING) {
       // it's interrupted by a new question
       this._emitLifecycleEvent('interrupt', state);
@@ -311,4 +315,5 @@ Object.assign(Workflow, {
   DEFAULT_LAYOUTS,
   DEFAULT_TRACKERS,
   DEFAULT_OPTIONS,
+  ROLES_OPTIONS,
 });

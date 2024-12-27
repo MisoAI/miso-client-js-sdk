@@ -5,6 +5,7 @@ import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE } from '../constants.js';
 import { SearchBoxLayout, TextLayout } from '../layout/index.js';
+import { mergeRolesOptions } from './options.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';
@@ -49,6 +50,15 @@ const ROLES_CONFIG = Object.freeze({
   main: ROLE.PRODUCTS,
 });
 
+const ROLES_OPTIONS = Object.freeze({
+  main: ROLE.PRODUCTS,
+  members: Object.keys(DEFAULT_LAYOUTS),
+  mappings: Object.freeze({
+    ...AnswerBasedWorkflow.ROLES_OPTIONS.mappings,
+    ...SearchBasedWorkflow.ROLES_OPTIONS.mappings,
+  }),
+});
+
 export default class HybridSearch extends Workflow {
 
   constructor(plugin, client) {
@@ -56,7 +66,8 @@ export default class HybridSearch extends Workflow {
       name: 'hybrid-search',
       plugin,
       client,
-      roles: Object.keys(DEFAULT_LAYOUTS),
+      roles: ROLES_OPTIONS,
+      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
       rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
     });

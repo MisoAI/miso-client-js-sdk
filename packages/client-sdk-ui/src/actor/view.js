@@ -22,7 +22,7 @@ export default class ViewActor {
   constructor(views, role) {
     this._events = new EventEmitter({ target: this });
     this._views = views;
-    this._config = views._rolesConfig[role] || {};
+    this._mapping = asMappingFunction((views._roles.mappings || {})[role] || role);
 
     defineValues(this, {
       role,
@@ -162,7 +162,7 @@ export default class ViewActor {
   _sliceData(data) {
     const { value, error, status, meta, ...rest } = data;
     const sliced = {
-      value: asMappingFunction(this._config.mapping || this.role)(data),
+      value: this._mapping(data),
       status,
       data: value,
       meta,

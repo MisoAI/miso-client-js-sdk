@@ -43,8 +43,11 @@ const DEFAULT_OPTIONS = Object.freeze({
 });
 
 const ROLES_CONFIG = Object.freeze({
+  members: Object.keys(DEFAULT_LAYOUTS),
   main: ROLE.PRODUCTS,
 });
+
+const ROLES_OPTIONS = SearchBasedWorkflow.ROLES_OPTIONS;
 
 export default class Search extends SearchBasedWorkflow {
 
@@ -53,7 +56,8 @@ export default class Search extends SearchBasedWorkflow {
       name: 'search',
       plugin,
       client,
-      roles: Object.keys(DEFAULT_LAYOUTS),
+      roles: ROLES_OPTIONS,
+      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
       rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
     });

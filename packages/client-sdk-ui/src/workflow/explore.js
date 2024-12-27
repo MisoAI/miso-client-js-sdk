@@ -3,6 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
+import { mergeRolesOptions } from './options.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...Workflow.DEFAULT_API_OPTIONS,
@@ -36,6 +37,11 @@ const ROLES_CONFIG = Object.freeze({
   main: ROLE.RELATED_QUESTIONS,
 });
 
+const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
+  main: ROLE.RELATED_QUESTIONS,
+  members: Object.keys(DEFAULT_LAYOUTS),
+});
+
 export default class Explore extends Workflow {
 
   constructor(plugin, client) {
@@ -43,7 +49,8 @@ export default class Explore extends Workflow {
       name: 'explore',
       plugin,
       client,
-      roles: Object.keys(DEFAULT_LAYOUTS),
+      roles: ROLES_OPTIONS,
+      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
       rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
     });

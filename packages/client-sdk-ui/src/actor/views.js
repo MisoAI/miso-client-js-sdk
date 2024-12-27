@@ -12,8 +12,7 @@ export default class ViewsActor {
     workflow,
     extensions,
     layouts,
-    roles = [],
-    rolesConfig = {},
+    roles,
     options,
   }) {
     this._hub = hub;
@@ -21,14 +20,14 @@ export default class ViewsActor {
     this._extensions = extensions;
     this._layoutFactory = layouts;
     this._options = options;
-    this._rolesConfig = rolesConfig;
+    this._roles = roles;
     this._containers = new Map();
     this._containerTracker = undefined;
     this._views = {};
-    this._trackers = new Trackers(this, roles);
+    this._trackers = new Trackers(this, roles.members);
     this._filters = new Filters(this);
 
-    for (const role of roles) {
+    for (const role of roles.members) {
       if (role === ROLE.CONTAINER) {
         continue;
       }

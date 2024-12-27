@@ -1,8 +1,8 @@
-import { defineValues, trimObj, API } from '@miso.ai/commons';
+import { defineValues, API } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { fields } from '../actor/index.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
+import { mergeRolesOptions } from './options.js';
 import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -36,13 +36,19 @@ const ROLES_CONFIG = Object.freeze({
   main: ROLE.PRODUCTS,
 });
 
+const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
+  main: ROLE.PRODUCTS,
+  members: Object.keys(DEFAULT_LAYOUTS),
+});
+
 export default class Recommendation extends Workflow {
 
   constructor(context, id) {
     super({
       name: 'recommendation',
       context,
-      roles: Object.keys(DEFAULT_LAYOUTS),
+      roles: ROLES_OPTIONS,
+      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
       rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
       id,

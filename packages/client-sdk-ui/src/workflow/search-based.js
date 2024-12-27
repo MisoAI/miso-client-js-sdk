@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, MoreButtonLayout } from '../layout/index.js';
 import { writeKeywordsToData, writeFiltersToPayload, retainFacetCounts, markExhaustion, concatResults } from './processors.js';
-import { makeConfigurable } from './options.js';
+import { mergeRolesOptions, makeConfigurable } from './options.js';
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
@@ -46,6 +46,14 @@ const DEFAULT_OPTIONS = Object.freeze({
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
   pagination: DEFAULT_PAGINATION,
+});
+
+const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
+  main: ROLE.PRODUCTS,
+  members: Object.keys(DEFAULT_LAYOUTS),
+  mappings: {
+    [ROLE.FACETS]: 'facet_counts',
+  },
 });
 
 export default class SearchBasedWorkflow extends Workflow {
@@ -171,4 +179,5 @@ Object.assign(SearchBasedWorkflow, {
   DEFAULT_TRACKERS,
   DEFAULT_PAGINATION,
   DEFAULT_OPTIONS,
+  ROLES_OPTIONS,
 });

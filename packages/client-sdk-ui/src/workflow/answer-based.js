@@ -5,6 +5,7 @@ import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE, DATA_ASPECT } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
+import { mergeRolesOptions } from './options.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -50,6 +51,11 @@ const DEFAULT_OPTIONS = Object.freeze({
   autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
+});
+
+const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
+  main: ROLE.ANSWER,
+  members: Object.keys(DEFAULT_LAYOUTS),
 });
 
 export default class AnswerBasedWorkflow extends Workflow {
@@ -101,7 +107,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _emitInterruptEventIfNecessary() {
-    const state = this._hub.states[fields.view(this._rolesConfig.main)] || {};
+    const state = this._hub.states[fields.view(this._roles.main)] || {};
     if (state.session && state.status !== STATUS.INITIAL && (state.status !== STATUS.READY || state.ongoing)) {
       // it's interrupted by a new question
       this._emitLifecycleEvent('interrupt', state);
@@ -315,4 +321,5 @@ Object.assign(AnswerBasedWorkflow, {
   DEFAULT_LAYOUTS,
   DEFAULT_TRACKERS,
   DEFAULT_OPTIONS,
+  ROLES_OPTIONS,
 });
