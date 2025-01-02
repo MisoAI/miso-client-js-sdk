@@ -5,13 +5,6 @@ import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options.js';
 import { writeFiltersToPayload } from './processors.js';
 
-const ROLES_CONFIG = Object.freeze({
-  main: ROLE.PRODUCTS,
-  [ROLE.FACETS]: {
-    mapping: 'facet_counts',
-  },
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(SearchBasedWorkflow.ROLES_OPTIONS, {
   members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
 });
@@ -25,8 +18,6 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
       client: superworkflow._client,
       options: superworkflow._options,
       roles: ROLES_OPTIONS,
-      rolesMembers: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
-      rolesConfig: ROLES_CONFIG,
       superworkflow,
     });
   }

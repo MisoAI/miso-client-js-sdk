@@ -51,8 +51,6 @@ export default class Ask extends AnswerBasedWorkflow {
       name: 'ask',
       context,
       roles: ROLES_OPTIONS,
-      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
-      rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
       parentQuestionId,
     });

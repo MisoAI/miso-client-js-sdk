@@ -3,13 +3,6 @@ import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options.js';
 import { writeKeywordsToData } from './processors.js';
 
-const ROLES_CONFIG = Object.freeze({
-  main: ROLE.ANSWER,
-  [ROLE.QUESTION]: {
-    mapping: ROLE.KEYWORDS,
-  },
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   mappings: {
     [ROLE.QUESTION]: ROLE.KEYWORDS,
@@ -25,8 +18,6 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
       client: superworkflow._client,
       options: superworkflow._options,
       roles: ROLES_OPTIONS,
-      rolesMembers: Object.keys(AnswerBasedWorkflow.DEFAULT_LAYOUTS),
-      rolesConfig: ROLES_CONFIG,
       superworkflow,
     });
   }

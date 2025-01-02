@@ -33,10 +33,6 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_CONFIG = Object.freeze({
-  main: ROLE.RELATED_QUESTIONS,
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.RELATED_QUESTIONS,
   members: Object.keys(DEFAULT_LAYOUTS),
@@ -50,8 +46,6 @@ export default class Explore extends Workflow {
       plugin,
       client,
       roles: ROLES_OPTIONS,
-      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
-      rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
     });
   }

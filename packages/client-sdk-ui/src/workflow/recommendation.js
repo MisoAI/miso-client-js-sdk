@@ -32,10 +32,6 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_CONFIG = Object.freeze({
-  main: ROLE.PRODUCTS,
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.PRODUCTS,
   members: Object.keys(DEFAULT_LAYOUTS),
@@ -48,8 +44,6 @@ export default class Recommendation extends Workflow {
       name: 'recommendation',
       context,
       roles: ROLES_OPTIONS,
-      rolesMembers: Object.keys(DEFAULT_LAYOUTS),
-      rolesConfig: ROLES_CONFIG,
       defaults: DEFAULT_OPTIONS,
       id,
     });
