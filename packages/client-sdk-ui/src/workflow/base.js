@@ -37,12 +37,6 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_CONFIG = Object.freeze({
-  [ROLE.ERROR]: {
-    mapping: data => data.error,
-  },
-});
-
 const ROLES_OPTIONS = Object.freeze({
   mappings: {
     [ROLE.ERROR]: data => data.error,

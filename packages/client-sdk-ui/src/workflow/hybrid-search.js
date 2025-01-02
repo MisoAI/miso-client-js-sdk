@@ -5,7 +5,6 @@ import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE } from '../constants.js';
 import { SearchBoxLayout, TextLayout } from '../layout/index.js';
-import { mergeRolesOptions } from './options.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';

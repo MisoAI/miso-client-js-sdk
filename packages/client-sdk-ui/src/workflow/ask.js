@@ -38,10 +38,6 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_CONFIG = Object.freeze({
-  main: ROLE.ANSWER,
-});
-
 const ROLES_OPTIONS = AnswerBasedWorkflow.ROLES_OPTIONS;
 
 export default class Ask extends AnswerBasedWorkflow {
