@@ -115,25 +115,3 @@ export function defineTypeByKey(constructor, key) {
     value: (obj) => obj && (obj instanceof constructor) || (typeof obj.constructor === 'function' && obj.constructor[sym] === true)
   });
 }
-
-// TODO: unused
-/**
- * Override target's methods with specific properties in given options. For example, a property of 'x' with function typed value overrides target's '_x' method.
- * @return The remainder of options not used in replacement.
- */
- export function overrideImplementations(target, options, props) {
-  if (!options) {
-    return options;
-  }
-  const remainder = {
-    ...options,
-  };
-  for (const prop of props) {
-    const _prop = `_${prop}`;
-    if (typeof target[_prop] === 'function' && typeof options[prop] === 'function') {
-      target[_prop] = options[prop].bind(target);
-      delete remainder[prop];
-    }
-  }
-  return remainder;
-}
