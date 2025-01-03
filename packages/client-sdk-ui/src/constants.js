@@ -22,7 +22,7 @@ export const ROLE = Object.freeze({
   AFFILIATION: 'affiliation',
   KEYWORDS: 'keywords',
   FACETS: 'facets',
-  HITS: 'hits',
+  TOTAL: 'total',
   MORE: 'more',
   ERROR: 'error',
 });
@@ -41,7 +41,7 @@ const DATA_ROLE_SET = new Set([
   ROLE.RELATED_QUESTIONS,
   ROLE.AFFILIATION,
   ROLE.FACETS,
-  ROLE.HITS,
+  ROLE.TOTAL,
 ]);
 
 export function isDataRole(role) {

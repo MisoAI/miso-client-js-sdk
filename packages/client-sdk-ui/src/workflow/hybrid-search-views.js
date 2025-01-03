@@ -4,7 +4,7 @@ function getSubworkflowByRole(role) {
   // TODO: ROLE.ERROR
   switch (role) {
     case ROLE.PRODUCTS:
-    case ROLE.HITS:
+    case ROLE.TOTAL:
     case ROLE.FACETS:
     case ROLE.KEYWORDS:
     case ROLE.MORE:

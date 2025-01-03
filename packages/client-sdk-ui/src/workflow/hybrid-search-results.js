@@ -6,7 +6,7 @@ import { mergeRolesOptions } from './options.js';
 import { writeFiltersToPayload } from './processors.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(SearchBasedWorkflow.ROLES_OPTIONS, {
-  members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.HITS, ROLE.FACETS, ROLE.MORE],
+  members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.MORE],
 });
 
 export default class HybridSearchResults extends SearchBasedWorkflow {

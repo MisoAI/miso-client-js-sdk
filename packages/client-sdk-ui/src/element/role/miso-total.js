@@ -1,16 +1,16 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoHitsElement extends MisoComponentElement {
+export default class MisoTotalElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.HITS,
+      role: ROLE.TOTAL,
     });
   }
 
   static get tagName() {
-    return 'miso-hits';
+    return 'miso-total';
   }
 
 }

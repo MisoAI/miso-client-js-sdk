@@ -24,7 +24,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.QUERY]: [SearchBoxLayout.type],
   [ROLE.PRODUCTS]: [ListLayout.type, { incremental: true, infiniteScroll: true }],
   [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
-  [ROLE.HITS]: [TextLayout.type, { raw: true, format: 'number' }],
+  [ROLE.TOTAL]: [TextLayout.type, { raw: true, format: 'number' }],
   [ROLE.FACETS]: [FacetsLayout.type],
   [ROLE.MORE]: [MoreButtonLayout.type],
 });

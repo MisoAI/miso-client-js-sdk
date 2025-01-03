@@ -20,7 +20,7 @@ section {
   <miso-search visible-when="loading ready">
     <div class="info">
       <div class="keywords">You searched for “<miso-keywords></miso-keywords>”</div>
-      <div class="hits"><miso-hits></miso-hits> Results</div>
+      <div class="total"><miso-total></miso-total> Results</div>
     </div>
     <miso-facets></miso-facets>
     <miso-products></miso-products>

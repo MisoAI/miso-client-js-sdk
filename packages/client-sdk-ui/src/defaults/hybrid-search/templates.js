@@ -46,7 +46,7 @@ class Sections extends _Sections {
     const { classPrefix } = options;
     return element('div', { classes: [`${classPrefix}__search-results-info`] }, [
       this.keywords(options),
-      this.hits(options),
+      this.total(options),
     ]);
   }
 
@@ -63,9 +63,9 @@ class Sections extends _Sections {
     return phrase(options, { name: 'keywords', tag: 'div', inline: true }).replaceAll('${value}', '<miso-keywords></miso-keywords>');
   }
 
-  hits(options) {
+  total(options) {
     const { phrase } = this._helpers;
-    return phrase(options, { name: 'hits', tag: 'div', inline: true }).replaceAll('${value}', '<miso-hits></miso-hits>');
+    return phrase(options, { name: 'total', tag: 'div', inline: true }).replaceAll('${value}', '<miso-total></miso-total>');
   }
 
   more(options) {
