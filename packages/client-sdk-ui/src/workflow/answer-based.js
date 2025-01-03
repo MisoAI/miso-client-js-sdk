@@ -185,18 +185,6 @@ export default class AnswerBasedWorkflow extends Workflow {
     throw new Error(`Not implemented`);
   }
 
-  // autocomplete //
-  /*
-  updateCompletions(event) {
-    // TODO: verify
-    this._hub.update(fields.completions(), {
-      ...event,
-      source: 'manual',
-    });
-    return this;
-  }
-  */
-
   // data //
   _updateData(data) {
     // if it's the head response, write question id and return
@@ -305,8 +293,6 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
 }
-
-// makeConfigurable(AnswerBasedWorkflow.prototype, ['autocomplete']);
 
 Object.assign(AnswerBasedWorkflow, {
   DEFAULT_API_OPTIONS,

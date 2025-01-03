@@ -17,6 +17,7 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
       plugin: superworkflow._plugin,
       client: superworkflow._client,
       options: superworkflow._options,
+      defaults: superworkflow._defaults,
       roles: ROLES_OPTIONS,
       superworkflow,
     });

@@ -120,17 +120,6 @@ export function normalizePaginationOptions(options) {
   return options;
 }
 
-export function normalizeAutocompleteOptions(options) {
-  if (options === undefined) {
-    throw new Error(`Expect autocomplete options to be an object or a boolean value: ${options}`);
-  }
-  if (typeof options === 'boolean') {
-    options = { actor: options };
-  }
-  const processData = normalizeDataProcessorOptions(options.processData);
-  return { ...options, processData };
-}
-
 // merge //
 export function mergeApiOptions(...optionsList) {
   if (optionsList[optionsList.length - 1] === false) {
@@ -224,13 +213,9 @@ export function mergePaginationOptions(...optionsList) {
 }
 
 export function mergeAutocompleteOptions(...optionsList) {
-  if (optionsList[optionsList.length - 1] === false) {
-    return false;
-  }
   return mergeOptions(optionsList, (merged, options) => Object.assign(merged, {
     ...options,
     api: mergeApiOptions(merged.api, options.api),
-    processData: mergeDataProcessorOptions(merged.processData, options.processData),
   }));
 }
 
@@ -280,11 +265,6 @@ const FEATURES = [
     key: 'pagination',
     normalize: normalizePaginationOptions,
     merge: mergePaginationOptions,
-  },
-  {
-    key: 'autocomplete',
-    normalize: normalizeAutocompleteOptions,
-    merge: mergeAutocompleteOptions,
   },
 ];
 

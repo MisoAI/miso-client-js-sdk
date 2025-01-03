@@ -1,4 +1,4 @@
-import { API, defineValues, isNullLike } from '@miso.ai/commons';
+import { API, defineValues } from '@miso.ai/commons';
 import ApiBase from './base.js';
 import { IdBasedIterableApiStub } from './iterable.js';
 

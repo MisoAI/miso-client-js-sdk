@@ -58,6 +58,7 @@ export default class Workflow extends Component {
     this._roles = args.roles;
 
     this._extensions = plugin._getExtensions(client);
+    this._defaults = args.defaults;
     this._options = options || new WorkflowOptions(context && context._options, args.defaults);
     this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
 

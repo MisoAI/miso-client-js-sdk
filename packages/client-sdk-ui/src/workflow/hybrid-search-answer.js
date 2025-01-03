@@ -2,6 +2,7 @@ import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options.js';
 import { writeKeywordsToData } from './processors.js';
+import { makeAutocompletable } from './autocompletable.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   mappings: {
@@ -17,6 +18,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
       plugin: superworkflow._plugin,
       client: superworkflow._client,
       options: superworkflow._options,
+      defaults: superworkflow._defaults,
       roles: ROLES_OPTIONS,
       superworkflow,
     });
@@ -24,6 +26,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
 
   _initProperties(args) {
     super._initProperties(args);
+    this._initAutocomplete(args);
     this._superworkflow = args.superworkflow;
   }
 
@@ -78,4 +81,12 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
     this._resultsSession && this._superworkflow._results.updateData({ ...data, session: this._resultsSession });
   }
 
+  // destroy //
+  _destroy(options) {
+    this._destroyAutocomplete();
+    super._destroy(options);
+  }
+
 }
+
+makeAutocompletable(HybridSearchAnswer.prototype);

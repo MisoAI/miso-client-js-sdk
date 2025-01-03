@@ -11,6 +11,7 @@ misocmd.push(async () => {
   workflow.useApi({
     facets: ['categories'],
   });
+  workflow.autocomplete.enable();
   // render DOM and get elements
   await client.ui.ready;
   const { templates, wireAnswerBox } = MisoClient.ui.defaults.hybridSearch;

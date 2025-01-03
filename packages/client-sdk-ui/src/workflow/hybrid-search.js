@@ -36,12 +36,23 @@ const DEFAULT_PAGINATION = Object.freeze({
   active: true,
 });
 
+const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
+  api: {
+    group: API.GROUP.ASK,
+    name: API.NAME.SEARCH_AUTOCOMPLETE,
+    payload: {
+      completion_fields: ['suggested_queries'],
+    },
+  },
+});
+
 const DEFAULT_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_OPTIONS,
   ...SearchBasedWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
+  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
   pagination: DEFAULT_PAGINATION,
 });
 
@@ -112,6 +123,10 @@ export default class HybridSearch extends Workflow {
 
   get filters() {
     return this._results._views.filters;
+  }
+
+  get autocomplete() {
+    return this._answer.autocomplete;
   }
 
   // query //

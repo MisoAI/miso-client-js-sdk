@@ -2,16 +2,15 @@
  * Mixin source properties into target.
  */
 export function mixin(target, source) {
-  const descriptors = Object.getOwnPropertyDescriptors(source);
-  for (const key in descriptors) {
+  const sourceDescriptors = Object.getOwnPropertyDescriptors(source);
+  const targetDescriptors = Object.getOwnPropertyDescriptors(target);
+  for (const [key, descriptor] of Object.entries(sourceDescriptors)) {
     if (key === 'constructor') {
       continue;
     }
-    const { value } = descriptors[key];
-    if (target[key] === undefined && typeof value === 'function') {
-      target[key] = value;
+    if (targetDescriptors[key] === undefined) {
+      Object.defineProperty(target, key, descriptor);
     }
-    // TODO: getter, setter
   }
 }
 

@@ -1,37 +1,17 @@
 import { STATUS } from '../constants.js';
 import { fields } from '../actor/index.js';
 import Workflow from './base.js';
-import { mergeApiOptions } from './options.js';
-
-const DEFAULT_API_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_API_OPTIONS,
-  payload: {
-    ...Workflow.DEFAULT_API_OPTIONS.payload,
-    completion_fields: ['suggested_queries', 'title'],
-    fl: ['title', 'url', 'cover_image'],
-  },
-});
-
-const DEFAULT_LAYOUTS = Object.freeze({});
-
-const DEFAULT_TRACKERS = Object.freeze({});
-
-const DEFAULT_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_OPTIONS,
-  api: DEFAULT_API_OPTIONS,
-  layouts: DEFAULT_LAYOUTS,
-  trackers: DEFAULT_TRACKERS,
-});
 
 const ROLES_OPTIONS = Object.freeze({
   members: [],
 });
 
-function mergeOptions(base, overrides) {
+function shimDefaults({ layouts, trackers, ...options } = {}) {
   return {
-    ...base,
-    ...overrides,
-    api: mergeApiOptions(base.api, overrides.api),
+    active: false,
+    ...options,
+    layouts: {},
+    trackers: {},
   };
 }
 
@@ -50,7 +30,7 @@ export default class Autocomplete extends Workflow {
       name: 'autocomplete',
       plugin: superworkflow._plugin,
       client: superworkflow._client,
-      defaults: mergeOptions(DEFAULT_OPTIONS, defaults),
+      defaults: shimDefaults(defaults),
       roles: ROLES_OPTIONS,
       superworkflow,
       ...args,
