@@ -6,6 +6,10 @@ export function suggestions() {
   return 'suggestions';
 }
 
+export function completions() {
+  return 'completions';
+}
+
 export function filters() {
   return 'filters';
 }
@@ -14,16 +18,16 @@ export function query() {
   return 'query';
 }
 
-export function request(aspect) {
-  return aspect ? `request:${aspect}` : 'request';
+export function request() {
+  return 'request';
 }
 
-export function response(aspect) {
-  return aspect ? `response:${aspect}` : 'response';
+export function response() {
+  return 'response';
 }
 
-export function data(aspect) {
-  return aspect ? `data:${aspect}` : 'data';
+export function data() {
+  return 'data';
 }
 
 export function view(role) {

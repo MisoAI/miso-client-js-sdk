@@ -1,5 +1,5 @@
 import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
-import { STATUS, EVENT_TYPE, DATA_ASPECT } from '../../constants.js';
+import { STATUS, EVENT_TYPE } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { imageBlock, productInfoBlock } from '../templates.js';
@@ -150,7 +150,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       proxyElement.on('click', (e) => this._handleClick(e)),
       proxyElement.on('focusin', (e) => this._handleFocusIn(e)),
       proxyElement.on('focusout', (e) => this._handleFocusOut(e)),
-      hub.on(fields.data(DATA_ASPECT.AUTOCOMPLETE), () => view.refresh({ force: true })),
+      hub.on(fields.completions(), () => view.refresh({ force: true })),
     ];
   }
 
@@ -184,7 +184,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     state = super._preprocess({ state });
     return {
       ...state,
-      completions: this._view.hub.states[fields.data(DATA_ASPECT.AUTOCOMPLETE)],
+      completions: this._view.hub.states[fields.completions()],
     };
   }
 
@@ -205,7 +205,8 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     if (!state.completions) {
       return;
     }
-    const { status = STATUS.INITIAL, index, value: completions } = state.completions;
+    const { status = STATUS.INITIAL, session, value: completions } = state.completions;
+    const { index } = session;
     if (rendered && rendered.completions.index === index && rendered.completions.status === status) {
       return;
     }

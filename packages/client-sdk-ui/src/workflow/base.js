@@ -86,8 +86,10 @@ export default class Workflow extends Component {
     this._unsubscribes = [
       this._hub.on(fields.response(), data => this.updateData(data)),
       this._hub.on(fields.tracker(), args => this._onTracker(args)),
-      this._hub.on(fields.view(roles.main), state => this._onMainViewUpdate(state)),
     ];
+    if (roles.main) {
+      this._unsubscribes.push(this._hub.on(fields.view(roles.main), state => this._onMainViewUpdate(state)));
+    }
   }
 
   _initSession() {
@@ -123,7 +125,11 @@ export default class Workflow extends Component {
   }
 
   _emitInterruptEventIfNecessary() {
-    const state = this._hub.states[fields.view(this._roles.main)] || {};
+    const { main } = this._roles;
+    if (!main) {
+      return;
+    }
+    const state = this._hub.states[fields.view(main)] || {};
     if (state.session && state.status === STATUS.LOADING) {
       // it's interrupted by a new question
       this._emitLifecycleEvent('interrupt', state);

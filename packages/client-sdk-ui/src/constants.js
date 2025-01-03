@@ -48,10 +48,6 @@ export function isDataRole(role) {
   return DATA_ROLE_SET.has(role);
 }
 
-export const DATA_ASPECT = Object.freeze({
-  AUTOCOMPLETE: 'autocomplete',
-});
-
 const PRODUCT_ROLE_SET = new Set([
   ROLE.PRODUCTS,
   ROLE.SOURCES,

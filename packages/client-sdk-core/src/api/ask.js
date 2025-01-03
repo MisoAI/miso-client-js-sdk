@@ -39,6 +39,14 @@ export default class Ask extends ApiBase {
     return this._run(`${NAME.QUESTIONS}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
+  async autocomplete(payload, options) {
+    return this._run(NAME.AUTOCOMPLETE, payload, options);
+  }
+
+  async searchAutocomplete(payload, options) {
+    return this._run(NAME.SEARCH_AUTOCOMPLETE, payload, options);
+  }
+
 }
 
 class Answer extends IdBasedIterableApiStub {

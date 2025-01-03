@@ -33,7 +33,7 @@ misocmd.push(() => {
   const client = new MisoClient('...');
   const workflow = client.ui.search;
   workflow.useApi('search', { rows: 10 });
-  workflow.useAutocomplete(true);
+  workflow.autocomplete.enable();
 });
 </script>
 {% endraw %}

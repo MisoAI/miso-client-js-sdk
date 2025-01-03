@@ -10,6 +10,7 @@ export const NAME = Object.freeze({
   RELATED_QUESTIONS: 'related_questions',
   SEARCH: 'search',
   AUTOCOMPLETE: 'autocomplete',
+  SEARCH_AUTOCOMPLETE: 'search_autocomplete',
   MGET: 'mget',
   USER_TO_PRODUCTS: 'user_to_products',
   USER_TO_CATEGORIES: 'user_to_categories',

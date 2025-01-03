@@ -1,8 +1,7 @@
-import { trimObj, API } from '@miso.ai/commons';
+import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
-// import * as sources from '../source.js';
-import { fields, FeedbackActor, AutocompleteActor } from '../actor/index.js';
-import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE, DATA_ASPECT } from '../constants.js';
+import { fields, FeedbackActor } from '../actor/index.js';
+import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions } from './options.js';
@@ -70,12 +69,6 @@ export default class AnswerBasedWorkflow extends Workflow {
   _initActors(args) {
     super._initActors(args);
     this._feedback = new FeedbackActor(this._hub);
-    /*
-    this._autocomplete = new AutocompleteActor(this._hub, {
-      source: sources.api(this._client),
-      options: this._options,
-    });
-    */
   }
 
   _initSubscriptions(args) {
@@ -196,7 +189,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   /*
   updateCompletions(event) {
     // TODO: verify
-    this._hub.update(fields.data(DATA_ASPECT.AUTOCOMPLETE), {
+    this._hub.update(fields.completions(), {
       ...event,
       source: 'manual',
     });

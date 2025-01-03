@@ -1,9 +1,9 @@
 import { API } from '@miso.ai/commons';
-import * as sources from '../source.js';
-import { fields, AutocompleteActor } from '../actor/index.js';
-import { ROLE, DATA_ASPECT } from '../constants.js';
+import { fields } from '../actor/index.js';
+import { ROLE } from '../constants.js';
 import { makeConfigurable } from './options.js';
 import SearchBasedWorkflow from './search-based.js';
+import Autocomplete from './autocomplete.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.SEARCH,
@@ -14,16 +14,11 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 });
 
 const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
-  actor: false,
+  active: false,
   api: {
     group: API.GROUP.SEARCH,
     name: API.NAME.AUTOCOMPLETE,
-    payload: {
-      completion_fields: ['suggested_queries', 'title'],
-      fl: ['title', 'url', 'cover_image'],
-    },
   },
-  throttle: 300,
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
@@ -56,12 +51,13 @@ export default class Search extends SearchBasedWorkflow {
     });
   }
 
-  _initActors(args) {
-    super._initActors(args);
-    this._autocomplete = new AutocompleteActor(this._hub, {
-      source: sources.api(this._client),
-      options: this._options,
-    });
+  _initProperties(args) {
+    super._initProperties(args);
+    this._autocomplete = new Autocomplete(this, { defaults: DEFAULT_AUTOCOMPLETE_OPTIONS});
+  }
+
+  get autocomplete() {
+    return this._autocomplete;
   }
 
   autoQuery({ setValue = true, focus = true } = {}) {
@@ -80,12 +76,8 @@ export default class Search extends SearchBasedWorkflow {
     }
   }
 
-  updateCompletions(event) {
-    // TODO: verify
-    this._hub.update(fields.data(DATA_ASPECT.AUTOCOMPLETE), {
-      ...event,
-      source: 'manual',
-    });
+  updateCompletions(data) {
+    this._hub.update(fields.completions(), data);
     return this;
   }
 
@@ -95,5 +87,3 @@ export default class Search extends SearchBasedWorkflow {
   }
 
 }
-
-makeConfigurable(Search.prototype, ['autocomplete']);
