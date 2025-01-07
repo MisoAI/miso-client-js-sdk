@@ -53,6 +53,10 @@
     gap: var(--miso-autocomplete-item-gap);
     padding: var(--miso-autocomplete-item-gap);
     margin: 0;
+
+    &:empty {
+      display: none;
+    }
   }
   .miso-autocomplete__product-item {
     place-self: stretch;

@@ -78,10 +78,7 @@ function product(layout, { product }) {
 
 function completionList(layout, type, items) {
   const { className, templates } = layout;
-  return `
-<ul class="${className}__${type}-list" data-role="${type}-list">
-  ${items.map(item => templates.completionItem(layout, type, item)).join('')}
-</ul>`.trim();
+  return `<ul class="${className}__${type}-list" data-role="${type}-list">${items.map(item => templates.completionItem(layout, type, item)).join('')}</ul>`;
 }
 
 function completionItem(layout, type, item) {
@@ -289,7 +286,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   _handleKeyDown({ key, target, isComposing }) {
-    if (!isComposing && key === 'Enter' && target.matches('input')) {
+    if (!isComposing && key === 'Enter' && target.matches('[data-role="input"]')) {
       this._submit(target.value);
       target.blur();
     }
