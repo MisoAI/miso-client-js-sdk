@@ -1,9 +1,9 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE } from '../constants.js';
+import { STATUS, ROLE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, MoreButtonLayout } from '../layout/index.js';
-import { writeKeywordsToData, writeFiltersToPayload, retainFacetCounts, markExhaustion, concatResults } from './processors.js';
+import { writeKeywordsToData, writeFiltersToPayload, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
 import { mergeRolesOptions, makeConfigurable } from './options.js';
 
 const DEFAULT_ROWS = 10;
@@ -79,6 +79,10 @@ export default class SearchBasedWorkflow extends Workflow {
     return !!(data && data.meta && data.meta.exhausted);
   }
 
+  get page() {
+    return this._page;
+  }
+
   // query //
   query(args) {
     if (!args.q) {
@@ -116,23 +120,29 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   _more() {
+    // if still loading, complain
+    if (this.status !== STATUS.READY) {
+      throw new Error(`Can not call more() while loading.`);
+    }
+    // no more pages, ignore
     if (this.exhausted || this._page >= DEFAULT_PAGE_LIMIT - 1) {
-      return; // ignore
+      return;
     }
     // don't create a new session!
+
+    this._page++;
 
     // payload
     const query = this._getQuery();
     const filters = this._hub.states[fields.filters()]; // get stored filters
-    const start = (this._page + 1) * this._getPageSize();
-    const payload = this._buildPayload({ ...query, filters, start });
+    let payload = this._buildPayload({ ...query, filters });
+    payload = this._processPayloadForMoreRequest(payload);
 
     this._request({ payload });
-
-    this._page++;
   }
 
   _getQuery() {
+    // TODO: just get from the hub
     return this._queryArgs;
   }
 
@@ -142,15 +152,40 @@ export default class SearchBasedWorkflow extends Workflow {
 
   _buildPayload({ filters, ...payload } = {}) {
     payload = writeFiltersToPayload(payload, filters);
+    payload = this._writePageInfoToPayload(payload);
     return payload;
+  }
+
+  _writePageInfoToPayload(payload) {
+    return {
+      ...payload,
+      _meta: {
+        ...payload._meta,
+        page: this._page,
+      },
+    };
+  }
+
+  _processPayloadForMoreRequest(payload = {}) {
+    const data = this._hub.states[fields.data()];
+    const { [this._roles.main]: items = [] } = (data && data.value) || {};
+    const productIds = items.map(item => item.product_id).filter(v => v);
+    const exclude = [...(payload.exclude || []), ...productIds];
+    if (exclude.length === 0) {
+      return payload;
+    }
+    return {
+      ...payload,
+      exclude,
+    };
   }
 
   // data //
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
-    data = retainFacetCounts(data, this._currentFacetCounts);
-    data = markExhaustion(data);
+    data = retainFacetCountsInData(data, this._currentFacetCounts);
+    data = writeExhaustionToData(data, { role: this._roles.main });
     return data;
   }
 
@@ -161,12 +196,16 @@ export default class SearchBasedWorkflow extends Workflow {
 
   _appendResultsFromMoreRequest(data) {
     const { request } = data;
-    if (!request || !request.payload.start) {
-      return data; // the initial state, or not from "more" request
+    if (!request) {
+      return data; // the initial state
+    }
+    const { _meta } = request.payload;
+    if (!_meta || !_meta.page) {
+      return data; // not from "more" request
     }
     // concat records if it's from "more" request
     const currentData = this._hub.states[fields.data()];
-    return concatResults(currentData, data);
+    return concatItemsFromMoreResponse(currentData, data, { role: this._roles.main });
   }
 
 }

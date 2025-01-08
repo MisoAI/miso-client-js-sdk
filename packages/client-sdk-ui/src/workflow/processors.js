@@ -113,7 +113,7 @@ function composeFacetFilters(facets) {
   return Object.keys(filters).length ? filters : undefined;
 }
 
-export function retainFacetCounts(data, currentFacetCounts) {
+export function retainFacetCountsInData(data, currentFacetCounts) {
   if (!currentFacetCounts) {
     return data;
   }
@@ -137,16 +137,20 @@ export function retainFacetCounts(data, currentFacetCounts) {
   };
 }
 
-export function concatResults(oldData, newData, { role = ROLE.PRODUCTS } = {}) {
+export function concatItemsFromMoreResponse(oldData, newData, { role = ROLE.PRODUCTS } = {}) {
   if (!newData.value) {
     return oldData;
   }
-  const { [role]: oldProducts = [] } = oldData.value;
+  const { [role]: oldProducts = [], facet_counts, total } = oldData.value;
   const { [role]: newProducts = [] } = newData.value;
-  // keep exhaustion flag
+  // keep old exhaustion flag, just in case
   // TODO
+
+  // use old values of facet_counts and total, for they are affected by product_id exclusion
   return {
     ...newData,
+    facet_counts,
+    total,
     value: {
       ...newData.value,
       [role]: [...oldProducts, ...newProducts],
@@ -154,18 +158,18 @@ export function concatResults(oldData, newData, { role = ROLE.PRODUCTS } = {}) {
   }
 }
 
-export function markExhaustion(data, { role = ROLE.PRODUCTS } = {}) {
+export function writeExhaustionToData(data, { role = ROLE.PRODUCTS } = {}) {
   const { status, request, value } = data;
   // keep track of the exhaustion state
   if (status !== STATUS.READY || !request || !value) {
     return data;
   }
-  const { [role]: products } = value;
-  if (!products) {
+  const { [role]: items } = value;
+  if (!items) {
     return data;
   }
   const { rows } = request.payload;
-  const { length } = products;
+  const { length } = items;
   const exhausted = length < rows;
   if (!exhausted) {
     return data;

@@ -3,7 +3,6 @@ import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options.js';
-import { writeFiltersToPayload } from './processors.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(SearchBasedWorkflow.ROLES_OPTIONS, {
   members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.MORE],
@@ -45,7 +44,7 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
   _buildPayload({ filters, ...payload } = {}) {
     // borrow the work from the sibling
     payload = this._superworkflow._answer._buildPayload(payload);
-    payload = writeFiltersToPayload(payload, filters);
+    payload = SearchBasedWorkflow.prototype._buildPayload.call(this, payload);
     payload = this._writeQuestionIdToPayload(payload);
     return { ...payload, answer: false };
   }
