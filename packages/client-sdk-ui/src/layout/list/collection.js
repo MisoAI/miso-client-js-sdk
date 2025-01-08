@@ -8,7 +8,7 @@ function root(layout, state) {
   const { className, role, templates } = layout;
   const { status } = state;
   const roleAttr = role ? `data-role="${role}"` : '';
-  return `<div class="${className} ${status}" ${roleAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loadingBar(layout, state)}</div>`;
+  return `<div class="${className} ${status}" ${roleAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loading(layout, state)}</div>`;
 }
 
 function ready(layout, state) {
@@ -48,9 +48,8 @@ function trigger(layout, state) {
   return `<div class="${className}__trigger" data-role="trigger"></div>`;
 }
 
-function loadingBar(layout, state) {
-  const { className } = layout;
-  return `<div class="${className}__loading-bar"></div>`;
+function loading() {
+  return `<div class="miso-loading" aria-label="Loading" data-role="loading"></div>`;
 }
 
 // TODO: let templates.js control what to be included here
@@ -79,7 +78,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
   imageBlock,
   indexBlock,
   trigger,
-  loadingBar,
+  loading,
 });
 
 export default class CollectionLayout extends TemplateBasedLayout {

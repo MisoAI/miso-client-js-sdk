@@ -1,0 +1,45 @@
+:root {
+  --miso-loading-bar-color: #8f96a380;
+}
+
+.miso-loading {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+
+  &::before {
+    content: '';
+    height: 2rem;
+    aspect-ratio: 1.25;
+    --bar: no-repeat linear-gradient(var(--miso-loading-bar-color) 0 0);
+    background:
+      var(--bar) 0%   100%,
+      var(--bar) 25%  100%,
+      var(--bar) 50%  100%,
+      var(--bar) 75%  100%,
+      var(--bar) 100% 100%;
+    background-size: 11.11% 65%;
+    animation: miso-loading 1.5s infinite linear;
+  }
+}
+@keyframes miso-loading {
+  10% { background-position: 0% 50%,  25% 100%, 50% 100%, 75% 100%, 100% 100%; }
+  20% { background-position: 0% 0%,   25% 50%,  50% 100%, 75% 100%, 100% 100%; }
+  30% { background-position: 0% 100%, 25% 0%,   50% 50%,  75% 100%, 100% 100%; }
+  40% { background-position: 0% 100%, 25% 100%, 50% 0%,   75% 50%,  100% 100%; }
+  50% { background-position: 0% 100%, 25% 100%, 50% 100%, 75% 0%,   100% 50%;  }
+  60% { background-position: 0% 100%, 25% 100%, 50% 100%, 75% 100%, 100% 0%;   }
+  70% { background-position: 0% 100%, 25% 100%, 50% 100%, 75% 100%, 100% 100%; }
+}
+miso-ask,
+miso-hybrid-search,
+miso-explore,
+miso-search,
+miso-recommendation {
+  &[status~="loading"] {
+    [data-role="loading"] {
+      display: flex;
+    }
+  }
+}

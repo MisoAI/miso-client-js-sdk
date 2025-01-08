@@ -105,5 +105,7 @@ sections:
 - title: Misc
   path: /misc
   pages:
+  - title: Loading
+    path: /misc/loading
   - title: Citation link
     path: /misc/citation-link
