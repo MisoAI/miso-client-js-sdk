@@ -24,7 +24,6 @@ export class UseLinkMixin {
     if (options.open === false) {
       window.location.href = url;
     } else {
-      // TODO: open options
       const target = options.target || '_blank';
       const windowFeatures = options.windowFeatures || '';
       window.open(url, target, windowFeatures);
