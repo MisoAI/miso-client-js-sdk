@@ -1,0 +1,35 @@
+workflows:
+- slug: ask
+  name: Ask
+- slug: hybrid-search
+  name: Hybrid Search
+  abv: H. Search
+- slug: explore
+  name: Explore
+- slug: search
+  name: Search
+- slug: recommendation
+  name: Recommendation
+  abv: Rec.
+features:
+- slug: 'use-api'
+  name: useApi()
+  available: '*'
+- slug: 'use-link'
+  name: useLink()
+  available: ahes
+- slug: follow-up
+  name: Follow Up
+  available: a
+- slug: auto-query
+  name: Auto Query
+  available: ahes
+- slug: autocomplete
+  name: Autocomplete
+  available: hs
+- slug: pagination
+  name: Pagination
+  available: hs
+- slug: facets
+  name: Facets
+  available: hs

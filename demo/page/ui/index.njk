@@ -1,0 +1,38 @@
+---
+---
+
+<style>
+section {
+  padding: 1rem 1rem 0;
+}
+table {
+  table-layout: fixed;
+}
+td[data-available="true"] {
+  background-color: #d4edda;
+}
+</style>
+
+<section id="features">
+  <h1>Features</h1>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th></th>
+        {%- for workflow in data.spec.ui.workflows -%}
+        <th>{{ workflow.abv | default(workflow.name) }}</th>
+        {%- endfor -%}
+      </tr>
+    </thead>
+    <tbody>
+      {%- for feature in data.spec.ui.features -%}
+      <tr>
+        <td>{{ feature.name }}</td>
+        {%- for workflow in data.spec.ui.workflows -%}
+        <td data-workflow="{{ workflow.slug }}" data-available="{{ feature.workflows[loop.index - 1].available }}"></td>
+        {%- endfor -%}
+      </tr>
+      {%- endfor -%}
+    </tbody>
+  </table>
+</section>
