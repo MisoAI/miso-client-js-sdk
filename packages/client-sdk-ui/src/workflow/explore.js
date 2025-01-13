@@ -4,6 +4,7 @@ import { fields } from '../actor/index.js';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { mergeRolesOptions } from './options.js';
+import { enableUseLink, UseLinkMixin } from './use-link.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...Workflow.DEFAULT_API_OPTIONS,
@@ -61,7 +62,7 @@ export default class Explore extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleRelatedQuestionClick(event)),
-      this._hub.on(fields.query(), args => this._submit(args)),
+      this._hub.on(fields.query(), args => this._query(args)),
     ];
   }
 
@@ -81,18 +82,10 @@ export default class Explore extends Workflow {
     return super.useApi(options);
   }
 
-  useLink(fn) {
-    if (typeof fn !== 'function' && fn !== false) {
-      throw new Error('useLink(fn) expects fn to be a function or false');
-    }
-    this._linkFn = fn;
-    return this;
-  }
-
   // lifecycle //
   start({ relatedQuestions = true } = {}) {
     if (this._linkFn === undefined) {
-      throw new Error('Define link mapping function before calling start()');
+      throw new Error('Must define link mapping function with useLink(fn) before calling start()');
     }
     // in explore workflow, start() triggers query
     // TODO: we should still make the query lifecycle
@@ -113,12 +106,17 @@ export default class Explore extends Workflow {
 
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
-    let { value } = data;
-    if (!value) {
+    data = this._addUrlToRelatedQuestions(data);
+    return data;
+  }
+
+  _addUrlToRelatedQuestions(data) {
+    const { value } = data;
+    if (!value || !value.related_questions) {
       return data;
     }
-    // patch value with links
-    const related_questions = value.related_questions.map(this._linkFn ? (text => ({ text, url: this._getAnswersUrl(text, true) })) : (text => ({ text })));
+    const linkFn = this._linkFn && this._linkFn[0];
+    const related_questions = value.related_questions.map(linkFn ? (text => ({ text, url: this._getSubmitUrl({ q: text }, { generated: true }) })) : (text => ({ text })));
     return {
       ...data,
       value: {
@@ -139,19 +137,12 @@ export default class Explore extends Workflow {
     this._hub.update(fields.query(), args);
   }
 
-  _submit({ q } = {}) {
-    if (!this._linkFn) {
-      return;
-    }
-    const url = this._getAnswersUrl(q);
-    window.open(url, '_blank');
+  _query(args) {
+    this._submitToPage(args);
   }
 
-  _getAnswersUrl(text, generated = false) {
-    if (!this._linkFn) {
-      return;
-    }
-    const url = this._linkFn(text);
+  _getSubmitUrl(args, { generated = false } = {}) {
+    let url = UseLinkMixin.prototype._getSubmitUrl.call(this, args);
     if (!generated || !this._productId) {
       return url;
     }
@@ -159,3 +150,5 @@ export default class Explore extends Workflow {
   }
 
 }
+
+enableUseLink(Explore.prototype);

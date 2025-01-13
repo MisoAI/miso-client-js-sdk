@@ -6,6 +6,7 @@ import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayo
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions } from './options.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
+import { enableUseLink } from './use-link.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...Workflow.DEFAULT_API_OPTIONS,
@@ -80,15 +81,6 @@ export default class AnswerBasedWorkflow extends Workflow {
     ];
   }
 
-  // configuration //
-  useLink(fn) {
-    if (typeof fn !== 'function' && fn !== false) {
-      throw new Error('useLink(fn) expects fn to be a function or false');
-    }
-    this._linkFn = fn;
-    return this;
-  }
-
   // lifecycle //
   restart() {
     // clear question id from previous session
@@ -154,7 +146,7 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   _query(args = {}) {
     if (this._linkFn) {
-      this._submit(args);
+      this._submitToPage(args);
       return;
     }
     // start a new session
@@ -166,15 +158,6 @@ export default class AnswerBasedWorkflow extends Workflow {
     // build payload and trigger request
     const payload = this._buildPayload(args);
     this._request({ payload });
-  }
-
-  _submit(args) {
-    if (!this._linkFn) {
-      return;
-    }
-    // TODO: we want a submit event, but only with linkFn
-    const url = this._linkFn(args.q);
-    window.open(url, '_blank');
   }
 
   _writeQuestionSourceToSession(args) {
@@ -293,6 +276,8 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
 }
+
+enableUseLink(AnswerBasedWorkflow.prototype);
 
 Object.assign(AnswerBasedWorkflow, {
   DEFAULT_API_OPTIONS,

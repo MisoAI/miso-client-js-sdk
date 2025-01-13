@@ -111,8 +111,8 @@ export default class HybridSearch extends Workflow {
   }
 
   // configuration //
-  useLink(fn) {
-    this._answer.useLink(fn);
+  useLink(fn, options) {
+    this._answer.useLink(fn, options);
     return this;
   }
 
