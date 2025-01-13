@@ -19,7 +19,7 @@ export default class ApiPlugin extends Component {
 
   _suppressMetaObject(args) {
     if (!this._shallSuppressMetaObject(args)) {
-      return payload;
+      return args.payload;
     }
     const { payload: { _meta, ...payload } = {} } = args;
     return payload;
