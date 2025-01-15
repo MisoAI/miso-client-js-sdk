@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Search - Quick start</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/search/ui/quick-start/" />
+<title>Miso SDK for JavaScript - Answers - Quick start</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/quick-start/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Search - Quick start" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Quick start" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/search/ui/quick-start/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/quick-start/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Search - Quick start">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Quick start">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/search/ui/quick-start/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/quick-start/">
 
 
 
@@ -102,31 +102,62 @@
         <nav id="aside-nav" class="collapse" aria-label="Docs navigation">
           <div>
   <ul class="sidebar-list list-unstyled mb-0 py-3 pt-md-1"><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/search/">Search UI</a>
+      <a href="/miso-client-js-sdk/answers/">Overview</a>
       <div>
-        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active ">
-            <a href="/miso-client-js-sdk/search/ui/quick-start/">Quick start</a>
+        <ul class="list-unstyled fw-normal pb-1 small"></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/ask/">Ask</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/quick-start/">Quick start</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/ui/elements/">Elements</a>
+            <a href="/miso-client-js-sdk/answers/ask/templates/">Template helpers</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/ui/data/">Data</a>
+            <a href="/miso-client-js-sdk/answers/ask/elements/">Elements</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/ui/tracking/">Tracking</a>
+            <a href="/miso-client-js-sdk/answers/ask/data/">Data</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/events/">Events</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/ask/affiliation/">Affiliation</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
-      <a href="/miso-client-js-sdk/search/api/">API</a>
+      <a href="/miso-client-js-sdk/answers/explore/">Explore</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
-            <a href="/miso-client-js-sdk/search/api/setup/">Setup</a>
+            <a href="/miso-client-js-sdk/answers/explore/quick-start/">Quick start</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/api/search/">Search</a>
+            <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/hybrid-search/">Hybrid search</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page active ">
+            <a href="/miso-client-js-sdk/answers/hybrid-search/quick-start/">Quick start</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/api/autocomplete/">Autocomplete</a>
+            <a href="/miso-client-js-sdk/answers/hybrid-search/elements/">Elements</a>
+          </li></ul>
+      </div>
+    </li><li class="section mb-3  ">
+      <a href="/miso-client-js-sdk/answers/api/">API</a>
+      <div>
+        <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/setup/">Setup</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/api/interactions/">Interactions</a>
+            <a href="/miso-client-js-sdk/answers/api/questions/">Questions</a>
           </li><li class="page  ">
-            <a href="/miso-client-js-sdk/search/api/context/">Context</a>
+            <a href="/miso-client-js-sdk/answers/api/related_questions/">Related questions</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/interactions-explore/">Interactions (explore)</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/api/context/">Context</a>
           </li></ul>
       </div>
     </li></ul>
@@ -136,19 +167,18 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Search UI - quick start</h1>
+          <h1 class="intro-title">Hybrid search module - quick start</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>Build your search UI in simple steps:</p>
-<ol>
+          <ol>
 <li>Obtain your API key from Miso <a href="https://dojo.askmiso.com/" target="_blank" rel="noopener">dashboard</a></li>
 <li>Add Miso SDK to your webpage</li>
 <li>Place Miso elements in your webpage</li>
-<li>Create a Miso client instance</li>
+<li>Configure the workflows</li>
 </ol>
 <h3 id="1.-obtain-your-api-key" tabindex="-1">1. Obtain your API key</h3>
 <ol>
@@ -170,13 +200,15 @@
 </ul>
 <p><code>MisoClient</code> is available on <code>window</code> object. However, it won't be available until the SDK is loaded. The SDK provides a way to access it regardless of the loading status:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token comment">// work with MisoClient</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h3 id="3.-place-miso-elements-in-your-webpage" tabindex="-1">3. Place Miso elements in your webpage</h3>
-<p>In an article page of your webpage, add the following elements for search box:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-search</span><span class="token punctuation">></span></span><br>  <span class="token comment">&lt;!-- search box --></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-query</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-query</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-search</span><span class="token punctuation">></span></span></code></pre>
-<p>Add the following elements for search results:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-search</span><span class="token punctuation">></span></span><br>  <span class="token comment">&lt;!-- results --></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-products</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-products</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-search</span><span class="token punctuation">></span></span></code></pre>
-<h3 id="4.-create-a-miso-client-instance" tabindex="-1">4. Create a Miso client instance</h3>
-<pre class="language-js"><code class="language-js"><span class="token comment">// 1. create a Miso client instance</span><br><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>apiKey<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="3.-place-an-element-in-your-webpage" tabindex="-1">3. Place an element in your webpage</h3>
+<p>In your webpage, add the following elements where you want to display the hybrid search module:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>miso-hybrid-search-combo<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>miso-hybrid-search-combo<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span></code></pre>
+<h3 id="4.-configure-the-workflows" tabindex="-1">4. Configure the workflows</h3>
+<p>Configure the workflows as the following:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// setup client</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'your_api_key'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>hybridSearch<span class="token punctuation">;</span><br><br>  <span class="token comment">// wait for styles to be loaded</span><br>  <span class="token keyword">await</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>ready<span class="token punctuation">;</span><br><br>  <span class="token comment">// render DOM and get element references</span><br>  <span class="token keyword">const</span> defaults <span class="token operator">=</span> MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>hybridSearch<span class="token punctuation">;</span><br>  <span class="token keyword">const</span> templates <span class="token operator">=</span> defaults<span class="token punctuation">.</span>templates<span class="token punctuation">;</span><br>  <span class="token keyword">const</span> wireAnswerBox <span class="token operator">=</span> defaults<span class="token punctuation">.</span>wireAnswerBox<span class="token punctuation">;</span><br><br>  <span class="token keyword">const</span> rootElement <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'#miso-hybrid-search-combo'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  rootElement<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> templates<span class="token punctuation">.</span><span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">answerBox</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  <span class="token function">wireAnswerBox</span><span class="token punctuation">(</span>client<span class="token punctuation">,</span> rootElement<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  <span class="token comment">// start query if specified in URL parameters</span><br>  workflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>See the <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/defaults/hybrid-search/answer-box.js" target="_blank" rel="noopener">implementation</a> of the logic helper functions <code>wireAnswerBox</code> for more details.</li>
+</ul>
 
         </div>
       </main>

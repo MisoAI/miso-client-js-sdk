@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - Context</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/api/context/" />
+<title>Miso SDK for JavaScript - Answers - Elements</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/elements/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - Context" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Elements" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/context/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/elements/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Context">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Elements">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/context/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/elements/">
 
 
 
@@ -139,7 +139,7 @@
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
             <a href="/miso-client-js-sdk/answers/hybrid-search/quick-start/">Quick start</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/hybrid-search/elements/">Elements</a>
           </li></ul>
       </div>
@@ -156,7 +156,7 @@
             <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/interactions-explore/">Interactions (explore)</a>
-          </li><li class="page active ">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/context/">Context</a>
           </li></ul>
       </div>
@@ -167,30 +167,71 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask API - context</h1>
+          <h1 class="intro-title">Explore module - elements</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <h2 id="user-context" tabindex="-1">User context</h2>
-<p>To personalize search and recommendation results or provide authorization feature, you can specify user information (anonymous and/or signed-in) in client context so they will be passed into API calls automatically.</p>
-<h3 id="user-id-and-user-hash" tabindex="-1">User ID and user hash</h3>
-<p>You can set <code>user_id</code> and <code>user_hash</code>:</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_hash <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span></code></pre>
-<p>See <a href="https://api.askmiso.com/#operation/search_v1_search_search_post" target="_blank" rel="noopener">REST API</a> for more details about <code>user_hash</code>.</p>
-<h3 id="user-type" tabindex="-1">User type</h3>
-<p><div class="since">Since 1.10.0</div></p>
-<p>You can set <code>user_type</code>:</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_id <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span><br>client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user_type <span class="token operator">=</span> <span class="token string">'...'</span><span class="token punctuation">;</span></code></pre>
-<p>The <code>user_type</code> value is passed into API calls only when <code>user_id</code> is also set.</p>
-<p>When including <code>user_type</code>, you must modify your <code>user_hash</code> generation process. Instead of hashing only the <code>user_id</code>, you should hash the combination of <code>user_type</code> and <code>user_id</code> in the format <code>user_type:user_id</code>. Here's a Python script demonstrating how to generate the <code>user_hash</code>:</p>
-<pre class="language-python"><code class="language-python"><span class="token keyword">import</span> hashlib<br><span class="token keyword">import</span> hmac<br><br><span class="token keyword">def</span> <span class="token function">generate_user_hash</span><span class="token punctuation">(</span>secret_key<span class="token punctuation">,</span> user_id<span class="token punctuation">,</span> user_type<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span><br>    key_bytes <span class="token operator">=</span> secret_key<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><br>    <br>    <span class="token keyword">if</span> user_type<span class="token punctuation">:</span><br>        message <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>user_type<span class="token punctuation">}</span></span><span class="token string">:</span><span class="token interpolation"><span class="token punctuation">{</span>user_id<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><br>    <span class="token keyword">else</span><span class="token punctuation">:</span><br>        message <span class="token operator">=</span> user_id<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><br>    <br>    user_hash <span class="token operator">=</span> hmac<span class="token punctuation">.</span>new<span class="token punctuation">(</span>key_bytes<span class="token punctuation">,</span> message<span class="token punctuation">,</span> hashlib<span class="token punctuation">.</span>sha256<span class="token punctuation">)</span><span class="token punctuation">.</span>hexdigest<span class="token punctuation">(</span><span class="token punctuation">)</span><br>    <span class="token keyword">return</span> user_hash</code></pre>
-<h3 id="anonymous-id" tabindex="-1">Anonymous ID</h3>
-<p>The SDK takes care of <code>anonymous_id</code> automatically using session storage, so you don't need to set it manually.</p>
-<p>However, you can also override the <code>anonymous_id</code> value by yourself:</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>context<span class="token punctuation">.</span>anonymous_id <span class="token operator">=</span> <span class="token string">'my_anonymous_id'</span><span class="token punctuation">;</span></code></pre>
+          <p>You can customize the elements with the following API:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>For example, to customize the <code>miso-query</code> element:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The following elements are used in the hybrid-search workflow. See their references for customization options:</p>
+<table class="table"><thead>
+<tr>
+<th>Tag</th>
+<th>Type</th>
+<th>Property in API response</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;miso-hybrid-search&gt;</code></td>
+<td>container</td>
+<td>--</td>
+<td><a href="/miso-client-js-sdk/elements/miso-hybrid-search/" target="_blank" rel="noopener">miso-hybrid-search</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-query&gt;</code></td>
+<td>component</td>
+<td>--</td>
+<td><a href="/miso-client-js-sdk/elements/miso-query/" target="_blank" rel="noopener">miso-query</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-products&gt;</code></td>
+<td>component</td>
+<td><code>products</code></td>
+<td><a href="/miso-client-js-sdk/elements/collections/" target="_blank" rel="noopener">collections</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-feedback&gt;</code></td>
+<td>component</td>
+<td>--</td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;miso-question&gt;</code></td>
+<td>component</td>
+<td><code>question</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;miso-answer&gt;</code></td>
+<td>component</td>
+<td><code>answer</code></td>
+<td><a href="/miso-client-js-sdk/elements/miso-answer/" target="_blank" rel="noopener">miso-answer</a></td>
+</tr>
+<tr>
+<td><code>&lt;miso-sources&gt;</code></td>
+<td>component</td>
+<td><code>sources</code></td>
+<td><a href="/miso-client-js-sdk/elements/collections/" target="_blank" rel="noopener">collections</a></td>
+</tr>
+</tbody>
+</table>
 
         </div>
       </main>
