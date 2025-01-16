@@ -59,7 +59,7 @@ export default class MoreButtonLayout extends TemplateBasedLayout {
     if (event.button !== 0) {
       return;
     }
-    const button = event.target.closest('data-role="more"');
+    const button = event.target.closest('[data-role="more"]');
     if (!button || button.disabled) {
       return;
     }
