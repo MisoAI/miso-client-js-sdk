@@ -44,7 +44,7 @@ Miso provides a JavaScript SDK for browser that gives you the power to integrate
 
 ```html
 <head>
-  <script async src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.9.0/dist/umd/miso.min.js?api_key={{api_key}}"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/umd/miso.min.js?api_key={{api_key}}"></script>
 </head>
 <body>
   ...

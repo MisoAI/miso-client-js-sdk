@@ -8,6 +8,7 @@ import { SearchBoxLayout, TextLayout } from '../layout/index.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';
+import { makeConfigurable } from './options.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -117,6 +118,14 @@ export default class HybridSearch extends Workflow {
   }
 
   // properties //
+  get answer() {
+    return this._answer;
+  }
+
+  get results() {
+    return this._results;
+  }
+
   get questionId() {
     return this._answer.questionId;
   }
@@ -152,3 +161,5 @@ export default class HybridSearch extends Workflow {
   }
 
 }
+
+makeConfigurable(HybridSearch.prototype, ['pagination']);

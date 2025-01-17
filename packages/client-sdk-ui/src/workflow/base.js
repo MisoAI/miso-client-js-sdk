@@ -61,6 +61,7 @@ export default class Workflow extends Component {
     this._defaults = args.defaults;
     this._options = options || new WorkflowOptions(context && context._options, args.defaults);
     this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
+    this._sessionContext = new WeakMap();
 
     this._initProperties(args);
     this._initActors(args);
@@ -97,6 +98,15 @@ export default class Workflow extends Component {
     this.restart();
   }
 
+  _getSessionContext(session) {
+    let context = this._sessionContext.get(session);
+    if (!context) {
+      this._sessionContext.set(session, context = {});
+    }
+    return context;
+  }
+
+  // properties //
   get uuid() {
     return this.session && this.session.uuid;
   }
@@ -152,7 +162,18 @@ export default class Workflow extends Component {
     }
   }
 
+  _shallEmitLifecycleEvent(name, { session }) {
+    const context = this._getSessionContext(session);
+    const events = context.lifecycleEvents || (context.lifecycleEvents = new Set());
+    const emitted = events.has(name);
+    events.add(name);
+    return !emitted;
+  }
+
   _emitLifecycleEvent(name, event) {
+    if (!this._shallEmitLifecycleEvent(name, event)) {
+      return;
+    }
     this._emit(name, event);
   }
 

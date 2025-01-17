@@ -34,10 +34,6 @@ export function view(role) {
   return role ? `view:${role}` : 'view';
 }
 
-export function event() {
-  return 'event';
-}
-
 export function tracker() {
   return 'tracker';
 }

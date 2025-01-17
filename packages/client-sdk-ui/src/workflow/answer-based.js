@@ -91,6 +91,10 @@ export default class AnswerBasedWorkflow extends Workflow {
     super.restart();
   }
 
+  _shallEmitLifecycleEvent(name, event) {
+    return name === 'answer-stage' || super._shallEmitLifecycleEvent(name, event);
+  }
+
   _emitInterruptEventIfNecessary() {
     const state = this._hub.states[fields.view(this._roles.main)] || {};
     if (state.session && state.status !== STATUS.INITIAL && (state.status !== STATUS.READY || state.ongoing)) {
@@ -101,12 +105,22 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _onMainViewUpdate(state) {
-    const { status } = state;
+    const { status, session } = state;
     const done = status === STATUS.READY && !state.ongoing;
     const erroneous = status === STATUS.ERRONEOUS;
     const eventName = done ? 'done' : erroneous ? 'error' : status;
+    // answer-stage
+    const context = this._getSessionContext(session);
+    const oldAnswerStage = context.answerStage;
+    const newAnswerStage = state.meta && state.meta.answer_stage;
+    if (newAnswerStage && newAnswerStage !== oldAnswerStage) {
+      this._emitLifecycleEvent('answer-stage', Object.freeze({ ...state, answer_stage: newAnswerStage }));
+      context.answerStage = newAnswerStage;
+    }
+    // ready, done, or error
     this._emitLifecycleEvent(eventName, state);
     if (done || erroneous) {
+      // finally
       this._emitLifecycleEvent('finally', state);
     }
   }

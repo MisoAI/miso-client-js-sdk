@@ -130,7 +130,8 @@ export default class TypewriterLayout extends ProgressiveLayout {
     const container = containerElement(this, element, state);
     // TODO: distinguish between first render and element replacement
     let result;
-    if (!rendered || state.streak !== rendered.streak) {
+    const newStreak = !rendered || state.streak !== rendered.streak;
+    if (newStreak) {
       // new typing streak
       result = this._renderer.clear(container, rendered);
     } else {
@@ -141,7 +142,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
 
     const ongoing = state.status === STATUS.READY && !result.done;
     // silence on consecutive ongoing renders
-    const silent = ongoing && (!rendered || rendered.status === STATUS.READY);
+    const silent = ongoing && (!rendered || rendered.status === STATUS.READY) && !newStreak;
     notifyUpdate({ ongoing }, { silent });
 
     ongoing && loop();
