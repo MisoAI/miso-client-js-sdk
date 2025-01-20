@@ -2,7 +2,7 @@ import { defineValues, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
-import { mergeRolesOptions } from './options.js';
+import { mergeRolesOptions } from './options/index.js';
 import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({

@@ -3,7 +3,7 @@ import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } f
 import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
-import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options.js';
+import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
 import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
 
 // TODO: just bury this into hub

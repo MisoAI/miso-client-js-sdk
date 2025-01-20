@@ -4,7 +4,7 @@ import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
-import { mergeRolesOptions } from './options.js';
+import { mergeRolesOptions } from './options/index.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 

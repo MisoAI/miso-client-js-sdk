@@ -8,7 +8,7 @@ import { SearchBoxLayout, TextLayout } from '../layout/index.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';
-import { makeConfigurable } from './options.js';
+import { makeConfigurable } from './options/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,

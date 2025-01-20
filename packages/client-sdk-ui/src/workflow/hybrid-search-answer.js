@@ -1,6 +1,6 @@
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { mergeRolesOptions } from './options.js';
+import { mergeRolesOptions } from './options/index.js';
 import { writeKeywordsToData } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
 

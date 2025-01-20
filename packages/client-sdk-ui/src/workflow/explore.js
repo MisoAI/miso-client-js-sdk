@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
-import { mergeRolesOptions } from './options.js';
+import { mergeRolesOptions } from './options/index.js';
 import { enableUseLink, UseLinkMixin } from './use-link.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({

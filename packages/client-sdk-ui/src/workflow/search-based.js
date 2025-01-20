@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { STATUS, ROLE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, MoreButtonLayout } from '../layout/index.js';
 import { writeKeywordsToData, writeFiltersToPayload, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
-import { mergeRolesOptions, makeConfigurable } from './options.js';
+import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;

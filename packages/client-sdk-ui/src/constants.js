@@ -114,3 +114,13 @@ export function validateTrackingStatus(value) {
     throw new Error(`Unrecognized tracking status: ${value}`);
   }
 }
+
+export const WORKFLOW_CONFIGURABLE = Object.freeze({
+  API: 'api',
+  LAYOUTS: 'layouts',
+  DATA_PROCESSOR: 'dataProcessor',
+  TRACKERS: 'trackers',
+  INTERACTIONS: 'interactions',
+  SORT: 'sort',
+  PAGINATION: 'pagination',
+});

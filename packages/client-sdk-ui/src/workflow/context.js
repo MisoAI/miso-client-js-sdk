@@ -1,5 +1,5 @@
 import { Component } from '@miso.ai/commons';
-import { WorkflowContextOptions, makeConfigurable } from './options.js';
+import { WorkflowContextOptions, makeConfigurable } from './options/index.js';
 
 export default class WorkflowContext extends Component {
 
