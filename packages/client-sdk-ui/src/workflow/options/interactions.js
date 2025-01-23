@@ -1,5 +1,5 @@
 import { asArray } from '@miso.ai/commons';
-import { mergeOptions } from './utils.js';
+import { mergeOptions, concatArrays } from './utils.js';
 
 export function normalizeInteractionsOptions(options) {
   if (options === undefined) {
