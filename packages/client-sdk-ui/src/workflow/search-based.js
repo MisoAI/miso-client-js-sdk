@@ -1,9 +1,9 @@
-import { API } from '@miso.ai/commons';
+import { API, asArray, trimObj } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { STATUS, ROLE } from '../constants.js';
-import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, MoreButtonLayout } from '../layout/index.js';
-import { writeKeywordsToData, writeFiltersToPayload, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
+import { STATUS, ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
+import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
@@ -26,6 +26,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
   [ROLE.TOTAL]: [TextLayout.type, { raw: true, format: 'number' }],
   [ROLE.FACETS]: [FacetsLayout.type],
+  [ROLE.SORT]: [SelectLayout.type],
   [ROLE.MORE]: [MoreButtonLayout.type],
 });
 
@@ -53,6 +54,7 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   members: Object.keys(DEFAULT_LAYOUTS),
   mappings: {
     [ROLE.FACETS]: 'facet_counts',
+    [ROLE.SORT]: mappingSortData,
   },
 });
 
@@ -63,8 +65,9 @@ export default class SearchBasedWorkflow extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._query(args)),
-      this._hub.on(fields.filters(), filters => this._refine(filters)),
+      this._hub.on(fields.filters(), () => this._refine()),
       this._hub.on(fields.more(), () => this._more()),
+      this._views.get(ROLE.SORT).on('select', event => this._handleSortSelect(event)),
     ];
   }
 
@@ -104,7 +107,7 @@ export default class SearchBasedWorkflow extends Workflow {
     this._request({ payload });
   }
 
-  _refine(filters) {
+  _refine() {
     // remember current facet_counts
     const { facet_counts } = this._hub.states[fields.data()].value || {};
     this._currentFacetCounts = facet_counts;
@@ -114,7 +117,7 @@ export default class SearchBasedWorkflow extends Workflow {
 
     // payload
     const query = this._getQuery();
-    const payload = this._buildPayload({ ...query, filters });
+    const payload = this._buildPayload(query);
 
     this._request({ payload });
   }
@@ -134,8 +137,7 @@ export default class SearchBasedWorkflow extends Workflow {
 
     // payload
     const query = this._getQuery();
-    const filters = this._hub.states[fields.filters()]; // get stored filters
-    let payload = this._buildPayload({ ...query, filters });
+    let payload = this._buildPayload(query);
     payload = this._processPayloadForMoreRequest(payload);
 
     this._request({ payload });
@@ -150,10 +152,44 @@ export default class SearchBasedWorkflow extends Workflow {
     return this._options.resolved.api.payload.rows;
   }
 
-  _buildPayload({ filters, ...payload } = {}) {
-    payload = writeFiltersToPayload(payload, filters);
+  _buildPayload(payload) {
+    payload = this._writeFiltersToPayload(payload);
     payload = this._writePageInfoToPayload(payload);
     return payload;
+  }
+
+  _writeFiltersToPayload(payload) {
+    const filters = this._hub.states[fields.filters()];
+    const { facets, sort } = filters || {};
+    return trimObj({
+      ...payload,
+      facet_filters: this._buildFacetFilters(facets),
+      order_by: this._buildOrderBy(sort),
+    });
+  }
+
+  _buildFacetFilters(facets) {
+    if (!facets) {
+      return undefined;
+    }
+    const filters = {};
+    for (const field in facets) {
+      const values = facets[field];
+      if (!values || !values.length) {
+        continue; // just in case
+      }
+      filters[field] = {
+        terms: values,
+      };
+    }
+    return Object.keys(filters).length ? filters : undefined;
+  }
+
+  _buildOrderBy(sort) {
+    if (!sort) {
+      return undefined;
+    }
+    return asArray(sort);
   }
 
   _writePageInfoToPayload(payload) {
@@ -208,9 +244,18 @@ export default class SearchBasedWorkflow extends Workflow {
     return concatItemsFromMoreResponse(currentData, data, { role: this._roles.main });
   }
 
+  // view actions //
+  _handleSortSelect({ value } = {}) {
+    if (!value) {
+      return;
+    }
+    this._views.filters.update({ sort: value });
+    this._views.filters.apply();
+  }
+
 }
 
-makeConfigurable(SearchBasedWorkflow.prototype, ['pagination']);
+makeConfigurable(SearchBasedWorkflow.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION, WORKFLOW_CONFIGURABLE.FILTERS]);
 
 Object.assign(SearchBasedWorkflow, {
   DEFAULT_API_OPTIONS,

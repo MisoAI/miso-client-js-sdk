@@ -3,7 +3,7 @@ import { InteractionsActor } from '../actor/index.js';
 import Workflow from './base.js';
 import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
-import { ROLE } from '../constants.js';
+import { ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { SearchBoxLayout, TextLayout } from '../layout/index.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
@@ -162,4 +162,4 @@ export default class HybridSearch extends Workflow {
 
 }
 
-makeConfigurable(HybridSearch.prototype, ['pagination']);
+makeConfigurable(HybridSearch.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION, WORKFLOW_CONFIGURABLE.FILTERS]);

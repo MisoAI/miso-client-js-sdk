@@ -14,4 +14,5 @@ export { default as MisoKeywordsElement } from './miso-keywords.js';
 export { default as MisoTotalElement } from './miso-total.js';
 export { default as MisoFacetsElement } from './miso-facets.js';
 export { default as MisoMoreElement } from './miso-more.js';
+export { default as MisoSortElement } from './miso-sort.js';
 export { default as MisoErrorElement } from './miso-error.js';

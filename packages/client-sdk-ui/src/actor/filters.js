@@ -12,43 +12,84 @@ function mergeState(state = {}, update = {}) {
   }));
 }
 
+function optionsToState({ sort } = {}) {
+  // TODO: facets
+  return trimObj({
+    facets: Object.freeze({}),
+    sort: sortOptionsToState(sort),
+  });
+}
+
+function sortOptionsToState(sort) {
+  if (!sort) {
+    return undefined;
+  }
+  const { options = [] } = sort;
+  for (const option of options) {
+    if (option.default) {
+      return Object.freeze(option);
+    }
+  }
+  return Object.freeze(options[0]);
+}
+
 export default class Filters {
 
   constructor(views, { facets: facetsOptions } = {}) {
     this._views = views;
     this._hub = views._hub;
-    this._states = this._initialStates = mergeState({}); // TODO: support custom initial states
     const error = this._error = this._error.bind(this);
     this._events = new EventEmitter({ target: this, error });
     defineValues(this, { facets: new Facets(this, facetsOptions) });
+
+    this._unsubscribes = [
+      views._options.on('filters', () => this._syncOptions()),
+    ];
+
+    this._syncOptions();
+    this._states = undefined;
   }
 
-  get states() {
-    return this._states;
+  _syncOptions() {
+    const options = this._views._options.resolved.filters;
+    this._initialStates = optionsToState(options);
+    this.apply({ silent: true });
+  }
+
+  _getStates() {
+    return this._states || this._initialStates;
   }
 
   update(updates) {
-    const oldStates = this._states;
-    const states = this._states = mergeState({ ...this._states, ...updates });
+    const oldStates = this._getStates();
+    this._states = mergeState({ ...oldStates, ...updates });
+    const states = this._getStates();
     this._events.emit('update', { updates, states, oldStates });
   }
 
   reset() {
-    const oldStates = this._states;
-    const states = this._states = this._initialStates;
+    const oldStates = this.states;
+    this._states = undefined;
+    const states = this._getStates();
     this._events.emit('reset', { states, oldStates });
   }
 
-  apply() {
-    this._hub.update(fields.filters(), this._states);
-    this._events.emit('apply');
+  apply({ silent = false } = {}) {
+    const states = this._getStates();
+    this._hub.update(fields.filters(), states, { silent });
+    !silent && this._events.emit('apply');
   }
 
   _error(error) {
     this._views._error(error);
   }
 
-  _destroy() {}
+  _destroy() {
+    for (const unsubscribe of this._unsubscribes) {
+      unsubscribe();
+    }
+    this._unsubscribes = [];
+  }
 
 }
 
@@ -87,7 +128,7 @@ class Facets {
   }
 
   _select(field, value) {
-    const values = this._options.multiple ? [...(this._filters._states.facets[field] || []), value] : [value];
+    const values = this._options.multivalued ? [...(this._filters._states.facets[field] || []), value] : [value];
     values.sort();
     this._filters.update({ facets: { [field]: values } });
   }

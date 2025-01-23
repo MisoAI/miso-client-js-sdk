@@ -5,6 +5,7 @@ import { normalizeLayoutsOptions, mergeLayoutsOptions } from './layouts.js';
 import { normalizeDataProcessorOptions, mergeDataProcessorOptions } from './data-processor.js';
 import { normalizeTrackersOptions, mergeTrackersOptions } from './trackers.js';
 import { normalizeInteractionsOptions, mergeInteractionsOptions } from './interactions.js';
+import { normalizeFiltersOptions, mergeFiltersOptions } from './filters.js';
 import { normalizePaginationOptions, mergePaginationOptions } from './pagination.js';
 
 const FEATURES = [
@@ -34,6 +35,11 @@ const FEATURES = [
     merge: mergeInteractionsOptions,
   },
   {
+    key: WORKFLOW_CONFIGURABLE.FILTERS,
+    normalize: normalizeFiltersOptions,
+    merge: mergeFiltersOptions,
+  },
+  {
     key: WORKFLOW_CONFIGURABLE.PAGINATION,
     normalize: normalizePaginationOptions,
     merge: mergePaginationOptions,
@@ -50,7 +56,8 @@ export class WorkflowContextOptions {
   }
 
   _notify(name) {
-    this._events.emit(name, { name, value: this[name] });
+    this._events.emit(name);
+    this._events.emit('_update', name);
   }
 
 }
@@ -70,13 +77,14 @@ export class WorkflowOptions {
 
     if (context && context.on) {
       this._unsubscribes = [
-        context.on('*', event => this._notify(event.name)),
+        context.on('_update', name => this._notify(name)),
       ];
     }
   }
 
   _notify(name) {
-    this._events.emit(name, { name, value: this.resolved[name] });
+    this.resolved._invalidate(name);
+    this._events.emit(name);
   }
 
   _destroy() {
@@ -84,6 +92,28 @@ export class WorkflowOptions {
       unsubscribe();
     }
     this._unsubscribes = [];
+  }
+
+}
+
+class ResolvedWorkflowOptions {
+
+  constructor(options) {
+    this._options = options;
+    this._cache = {};
+  }
+
+  _invalidate(key) {
+    this._cache[key] = undefined;
+  }
+
+  _get({ key, merge }) {
+    if (this._cache[key] === undefined) {
+      const options = this._options;
+      const contextFeature = options._context[key];
+      this._cache[key] = merge(options._defaults[key], contextFeature && contextFeature.get(), options._locals[key]);
+    }
+    return this._cache[key];
   }
 
 }
@@ -117,15 +147,8 @@ class WorkflowConfigurableFeature {
 
 }
 
-class ResolvedWorkflowOptions {
-
-  constructor(options) {
-    this._options = options;
-  }
-
-}
-
-for (const { key, normalize, merge } of FEATURES) {
+for (const feature of FEATURES) {
+  const { key, normalize, merge } = feature;
   Object.defineProperty(WorkflowContextOptions.prototype, key, {
     get: function() {
       const _key = `_${key}`;
@@ -140,9 +163,7 @@ for (const { key, normalize, merge } of FEATURES) {
   });
   Object.defineProperty(ResolvedWorkflowOptions.prototype, key, {
     get: function() {
-      const options = this._options;
-      const contextFeature = options._context[key];
-      return merge(options._defaults[key], contextFeature && contextFeature.get(), options._locals[key]);
+      return this._get(feature);
     },
   });
 }

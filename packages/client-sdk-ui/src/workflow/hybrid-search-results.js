@@ -2,11 +2,12 @@ import { trimObj } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
-import { mergeRolesOptions } from './options/index.js';
 
-const ROLES_OPTIONS = mergeRolesOptions(SearchBasedWorkflow.ROLES_OPTIONS, {
-  members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.MORE],
-});
+// we want to override members, not adding to it
+const ROLES_OPTIONS = {
+  ...SearchBasedWorkflow.ROLES_OPTIONS,
+  members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.SORT, ROLE.MORE, ROLE.ERROR],
+};
 
 export default class HybridSearchResults extends SearchBasedWorkflow {
 
@@ -41,12 +42,21 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
     return this._superworkflow._answer._hub.states[fields.query()];
   }
 
-  _buildPayload({ filters, ...payload } = {}) {
+  _buildPayload(payload) {
     // borrow the work from the sibling
-    payload = this._superworkflow._answer._buildPayload(payload);
-    payload = SearchBasedWorkflow.prototype._buildPayload.call(this, { filters, ...payload });
+    payload = this._superworkflow._answer._writeQuestionSourceToPayload(payload);
+    payload = this._writeFiltersToPayload(payload);
+    payload = this._writePageInfoToPayload(payload);
     payload = this._writeQuestionIdToPayload(payload);
     return { ...payload, answer: false };
+  }
+
+  _buildOrderBy(sort) {
+    if (!sort) {
+      return undefined;
+    }
+    // works differently than search
+    return sort.field;
   }
 
   _writeQuestionIdToPayload(payload) {
@@ -60,3 +70,7 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
   }
 
 }
+
+Object.assign(HybridSearchResults, {
+  ROLES_OPTIONS,
+});

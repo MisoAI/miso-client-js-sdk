@@ -14,3 +14,13 @@ export function mergeOptions(optionsList, merge) {
   }
   return trimObj(merged);
 }
+
+export function normalizeOptions(options) {
+  if (options === undefined) {
+    throw new Error(`Expect options to be an object or a boolean value: ${options}`);
+  }
+  if (typeof options === 'boolean') {
+    options = { active: options };
+  }
+  return options;
+}

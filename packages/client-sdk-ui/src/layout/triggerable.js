@@ -16,7 +16,7 @@ export class TriggerableMixin {
     if (!this.options.infiniteScroll) {
       return;
     }
-    const workflowPaginationOptions = this.workflowOptions.pagination;
+    const workflowPaginationOptions = this._view.workflowOptions.pagination;
     if (!workflowPaginationOptions.active || workflowPaginationOptions.mode !== 'infiniteScroll') {
       return;
     }

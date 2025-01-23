@@ -1,5 +1,35 @@
 import { trimObj } from '@miso.ai/commons';
 import { STATUS, ROLE, EVENT_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
+import { fields } from '../actor/index.js';
+
+// role mappings //
+export function mappingSortData(_, { hub, workflowOptions = {} } = {}) {
+  const { sort: { options = [] } = {} } = workflowOptions.filters || {};
+  if (!options.length) {
+    return [];
+  }
+  const { sort } = hub.states[fields.filters()] || {};
+  const selectedField = (sort && sort.field) || findDefaultSortOption(options).field;
+  if (!selectedField) {
+    return options;
+  }
+  // mark selected
+  return options.map(option => {
+    return {
+      ...option,
+      selected: option.field === selectedField,
+    };
+  });
+}
+
+function findDefaultSortOption(options) {
+  for (const option of options) {
+    if (option.default) {
+      return option;
+    }
+  }
+  return options[0];
+}
 
 // data //
 export function getRevision(data) {
@@ -77,40 +107,6 @@ export function writeAnswerStageToMeta(data) {
       answer_stage,
     },
   };
-}
-
-export function writeFiltersToPayload(payload = {}, filters) {
-  return trimObj({
-    ...payload,
-    ...composeFiltersPayload(filters),
-  });
-}
-
-function composeFiltersPayload(filters) {
-  if (!filters) {
-    return undefined;
-  }
-  const { facets } = filters;
-  return trimObj({
-    facet_filters: composeFacetFilters(facets),
-  });
-}
-
-function composeFacetFilters(facets) {
-  if (!facets) {
-    return undefined;
-  }
-  const filters = {};
-  for (const field in facets) {
-    const values = facets[field];
-    if (!values || !values.length) {
-      continue; // just in case
-    }
-    filters[field] = {
-      terms: values,
-    };
-  }
-  return Object.keys(filters).length ? filters : undefined;
 }
 
 export function retainFacetCountsInData(data, currentFacetCounts) {

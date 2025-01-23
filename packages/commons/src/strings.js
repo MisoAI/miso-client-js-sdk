@@ -21,3 +21,7 @@ export function lowerCamelToSnake(str) {
 export function kebabToSnake(str) {
   return str.replaceAll('-', '_');
 }
+
+export function kebabOrSnakeToHuman(str) {
+  return str.replace(/[-_][a-zA-Z]/g, ' $1');
+}

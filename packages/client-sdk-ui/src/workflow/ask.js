@@ -4,6 +4,7 @@ import { fields } from '../actor/index.js';
 import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
+import { mergeRolesOptions } from './options/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -38,7 +39,9 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_OPTIONS = AnswerBasedWorkflow.ROLES_OPTIONS;
+const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
+  members: Object.keys(DEFAULT_LAYOUTS),
+});
 
 export default class Ask extends AnswerBasedWorkflow {
 

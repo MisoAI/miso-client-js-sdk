@@ -1,17 +1,9 @@
 import { ROLE } from '../constants.js';
+import HybridSearchResults from './hybrid-search-results.js';
 
 function getSubworkflowByRole(role) {
   // TODO: ROLE.ERROR
-  switch (role) {
-    case ROLE.PRODUCTS:
-    case ROLE.TOTAL:
-    case ROLE.FACETS:
-    case ROLE.KEYWORDS:
-    case ROLE.MORE:
-      return 'results';
-    default:
-      return 'answer';
-  }
+  return HybridSearchResults.ROLES_OPTIONS.members.includes(role) ? 'results' : 'answer';
 }
 
 export default class HybridSearchViewsActor {
@@ -102,10 +94,10 @@ export default class HybridSearchViewsActor {
         // find the conflicting element
         for (const component of container.components) {
           if (otherSubviews.containsElement(component)) {
-            throw new Error(`<${container.tagName}> cannot contain both <${component.tagName}> and <${child.tagName}>, for they don't share the same data lifecycle.`);
+            throw new Error(`<${container.tagName.toLowerCase()}> cannot contain both <${component.tagName.toLowerCase()}> and <${child.tagName.toLowerCase()}>, for they don't share the same data lifecycle.`);
           }
         }
-        throw new Error(`Failed to add container <${container.tagName}> with child component <${child.tagName}>.`);
+        throw new Error(`Failed to add container <${container.tagName.toLowerCase()}> with child component <${child.tagName.toLowerCase()}>.`);
       }
     }
     // add the container to the subviews

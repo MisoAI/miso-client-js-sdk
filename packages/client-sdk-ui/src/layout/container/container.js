@@ -82,7 +82,7 @@ export default class ContainerLayout extends RafLayout {
   }
 
   _trackImpression() {
-    const { impression: options } = this._view.tracker.options || {};
+    const { impression: options } = this._view.trackerOptions || {};
     if (!options) {
       return;
     }
@@ -94,7 +94,7 @@ export default class ContainerLayout extends RafLayout {
   }
 
   async _trackViewable(element) {
-    const { viewable: options } = this._view.tracker.options || {};
+    const { viewable: options } = this._view.trackerOptions || {};
     if (!options) {
       return;
     }

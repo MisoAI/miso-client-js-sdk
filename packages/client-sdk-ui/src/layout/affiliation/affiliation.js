@@ -165,7 +165,7 @@ export default class AffiliationLayout extends CollectionLayout {
 
   initialize(view) {
     super.initialize(view);
-    const { viewable: options } = this._view.tracker.options || {};
+    const { viewable: options } = this._view.trackerOptions || {};
     this._viewable = new CarouselItemViewabilityObserver(this._onViewable.bind(this), options);
   }
 

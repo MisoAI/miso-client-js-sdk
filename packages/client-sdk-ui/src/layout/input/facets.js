@@ -1,4 +1,5 @@
 import { escapeHtml } from '@miso.ai/commons';
+import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import Bindings from '../../util/bindings.js';
 
@@ -109,7 +110,7 @@ export default class FacetsLayout extends TemplateBasedLayout {
   }
 
   initialize(view) {
-    const { proxyElement, hub, filters } = view;
+    const { proxyElement, filters } = view;
     this._unsubscribes = [
       ...this._unsubscribes,
       proxyElement.on('click', (e) => this._handleClick(e)),
@@ -132,7 +133,7 @@ export default class FacetsLayout extends TemplateBasedLayout {
   }
 
   _syncSelections() {
-    const selectedValues = getSelectedValues(this._view.filters.states.facets);
+    const selectedValues = getSelectedValues(this._view.hub.states[fields.filters()].facets);
     for (const { value: { field, value }, element } of this._bindings.entries) {
       this._setSelected(element, selectedValues[field] && selectedValues[field].has(value));
     }

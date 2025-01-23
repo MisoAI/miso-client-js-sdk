@@ -24,6 +24,7 @@ export const ROLE = Object.freeze({
   FACETS: 'facets',
   TOTAL: 'total',
   MORE: 'more',
+  SORT: 'sort',
   ERROR: 'error',
 });
 
@@ -121,6 +122,6 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
   DATA_PROCESSOR: 'dataProcessor',
   TRACKERS: 'trackers',
   INTERACTIONS: 'interactions',
-  SORT: 'sort',
+  FILTERS: 'filters',
   PAGINATION: 'pagination',
 });

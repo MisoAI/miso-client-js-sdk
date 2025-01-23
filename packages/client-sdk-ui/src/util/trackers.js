@@ -1,5 +1,7 @@
 import { findInAncestors, trimObj } from '@miso.ai/commons';
 
+// TODO: think about how to incorporate this with workflow options
+
 const DEFAULT_TRACKER_OPTIONS = Object.freeze({
   impression: Object.freeze({
   }),

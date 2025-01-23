@@ -7,18 +7,13 @@ const VALUELESS_ITEMS = [Symbol('valueless')];
 
 export default class Tracker {
 
-  constructor({ hub, role, valueless = false, options }) {
+  constructor({ hub, role, valueless = false }) {
     this._hub = hub;
     this._role = role;
     this._valueless = !!valueless;
-    this._options = options;
     // TODO: know item type
 
     this._states = new States(this._getSessionId());
-  }
-
-  get options() {
-    return typeof this._options === 'function' ? this._options() : this._options;
   }
 
   getState(item) {

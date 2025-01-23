@@ -42,10 +42,15 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   // query //
-  _buildPayload({ q, qs, ...payload } = {}) {
+  _buildPayload(payload) {
+    payload = this._writeQuestionSourceToPayload(payload);
+    payload = this._superworkflow._results._writeFiltersToPayload(payload);
+    return payload;
+  }
+
+  _writeQuestionSourceToPayload({ qs, ...payload } = {}) {
     return {
       ...payload,
-      q, // q, not question
       _meta: {
         ...payload._meta,
         question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined

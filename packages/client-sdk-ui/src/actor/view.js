@@ -97,13 +97,17 @@ export default class ViewActor {
     }
     if (!this._tracker) {
       const { hub } = this;
-      this._tracker = new Tracker({ hub, role, options: () => this._getTrackerOptions() });
+      this._tracker = new Tracker({ hub, role });
     }
     return this._tracker;
   }
   
   get workflowOptions() {
-    return this._views._getWorkflowOptions();
+    return this._views._options.resolved;
+  }
+
+  get trackerOptions() {
+    return this._views._getTrackerOptions(this.role);
   }
 
   get filters() {
@@ -154,15 +158,10 @@ export default class ViewActor {
     this.hub.update(fields.view(role), state, { silent });
   }
 
-  _getTrackerOptions() {
-    // used by tracker to expose tracker options to layout
-    return this._views._getTrackerOptions(this.role);
-  }
-
   _sliceData(data) {
     const { value, error, status, meta, ...rest } = data;
     const sliced = {
-      value: this._mapping(data),
+      value: this._mapping(data, this),
       status,
       data: value,
       meta,

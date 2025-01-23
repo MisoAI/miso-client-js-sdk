@@ -1,0 +1,92 @@
+:root {
+  --miso-select-border: 1px solid #ccc;
+  --miso-select-border-radius: 9999px;
+  --miso-select-background: #fff;
+  --miso-select-border-color: #a0a8be;
+  --miso-select-color: var(--miso-text-color);
+  --miso-select-font-size: 0.85rem;
+  --miso-select-line-height: 1.5;
+  --miso-select-padding-x: 1em;
+  --miso-select-padding-y: 0.5em;
+  --miso-select-border-radius-computed: calc(var(--miso-select-padding-y) + var(--miso-select-font-size) * var(--miso-select-line-height) / 2 + 1px);
+}
+.miso-select {
+  position: relative;
+
+  .miso-select__button {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--miso-select-padding-y) var(--miso-select-padding-x);
+    font-size: var(--miso-select-font-size);
+    line-height: var(--miso-select-line-height);
+    width: 100%;
+    background: var(--miso-select-background);
+    border: 1px solid var(--miso-select-border-color);
+    border-radius: var(--miso-select-border-radius);
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      display: block;
+      border: 0.3em solid transparent;
+      border-top-color: currentColor;
+      border-bottom: 0;
+    }
+  }
+  .miso-select__button-icon {
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+  .miso-select__button-text {
+    flex-shrink: 0;
+    flex-grow: 1;
+  }
+  ul, ol {
+    &.miso-select__options {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+  }
+  &.open {
+    .miso-select__button {
+      border-radius: var(--miso-select-border-radius-computed) var(--miso-select-border-radius-computed) 0 0 ;
+    }
+    .miso-select__options {
+      display: block;
+    }
+  }
+  .miso-select__options {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    display: none;
+    border: 1px solid var(--miso-select-border-color);
+    border-top: none;
+    border-radius: 0 0 var(--miso-select-border-radius-computed) var(--miso-select-border-radius-computed);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+  }
+  .miso-select__option {
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.25rem 0.5em;
+    font-size: 0.85rem;
+    user-select: none;
+    text-decoration: none;
+    cursor: pointer;
+
+    &::before {
+      content: '✓';
+      visibility: hidden;
+    }
+    &.selected::before {
+      visibility: visible;
+    }
+  }
+}

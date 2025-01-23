@@ -69,6 +69,8 @@ sections:
     path: /hybrid-search/no-box
   - title: Use link
     path: /hybrid-search/use-link
+  - title: Sort
+    path: /hybrid-search/sort
   - title: Templates
     path: /hybrid-search/templates
 - title: Search

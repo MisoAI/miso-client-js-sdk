@@ -44,15 +44,9 @@ export default class ViewsActor {
     this._unsubscribes = [
       () => window.removeEventListener('resize', syncSize),
       hub.on(fields.data(), data => this.refresh({ data })),
-      options.on('autocomplete', () => this._syncAutocompleteOptions()),
-      options.on('pagination', () => this._syncPaginationOptions()),
-      options.on('trackers', () => this._syncTrackers()),
       options.on('layouts', () => this._syncLayouts()),
     ];
 
-    this._syncAutocompleteOptions();
-    this._syncPaginationOptions();
-    this._syncTrackers();
     this._syncLayouts();
   }
 
@@ -150,13 +144,16 @@ export default class ViewsActor {
     } else {
       for (let [role, [name, options]] of Object.entries(layouts)) {
         // TODO: try to omit if unchanged
-        const fn = () => this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName, workflowOptions: this._getWorkflowOptions() });
+        const fn = () => this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
         if (role === ROLE.CONTAINER) {
           for (const view of this._containers.values()) {
             view.layout = fn();
           }
         } else {
-          this.get(role).layout = fn();
+          const view = this.get(role);
+          if (view) {
+            view.layout = fn();
+          }
         }
       }
     }
@@ -168,11 +165,11 @@ export default class ViewsActor {
       return undefined;
     }
     const [name, options] = args;
-    return this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName, workflowOptions: this._getWorkflowOptions() });
+    return this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
   }
 
   get(role) {
-    return this._views[role] || (this._views[role] = new ViewActor(this, role));
+    return this._views[role];
   }
 
   get views() {
@@ -218,12 +215,9 @@ export default class ViewsActor {
     return data || this._hub.states[fields.data()];
   }
 
-  _syncTrackers() {
-    this._trackerOptions = this._options.resolved.trackers;
-  }
-
   _getTrackerOptions(role) {
-    return normalizeTrackerOptions((this._trackerOptions && this._trackerOptions[role]) || false);
+    const allTrackerOptions = this._options.resolved.trackers;
+    return normalizeTrackerOptions((allTrackerOptions && allTrackerOptions[role]) || false);
   }
 
   _getContainerTracker() {
@@ -233,21 +227,6 @@ export default class ViewsActor {
       this._containerTracker = new Tracker({ hub, role, valueless: true, options: () => this._getTrackerOptions(role) });
     }
     return this._containerTracker;
-  }
-
-  _syncAutocompleteOptions() {
-    this._autocompleteOptions = this._options.resolved.autocomplete;
-  }
-
-  _syncPaginationOptions() {
-    this._paginationOptions = this._options.resolved.pagination;
-  }
-
-  _getWorkflowOptions() {
-    return trimObj({
-      autocomplete: this._autocompleteOptions,
-      pagination: this._paginationOptions,
-    });
   }
 
   _error(e) {
