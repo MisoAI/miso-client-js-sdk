@@ -101,8 +101,7 @@ class Facets {
   }
 
   isSelected(field, value) {
-    const state = this._filters._states.facets[field];
-    return state && state.includes(value);
+    return this._getFieldValues(field).includes(value);
   }
 
   select(field, value) {
@@ -127,14 +126,18 @@ class Facets {
     }
   }
 
+  _getFieldValues(field) {
+    return this._filters._getStates().facets[field] || [];
+  }
+
   _select(field, value) {
-    const values = this._options.multivalued ? [...(this._filters._states.facets[field] || []), value] : [value];
+    const values = this._options.multivalued ? [...this._getFieldValues(field), value] : [value];
     values.sort();
     this._filters.update({ facets: { [field]: values } });
   }
 
   _unselect(field, value) {
-    let values = this._filters._states.facets[field].filter(v => v !== value);
+    let values = this._getFieldValues(field).filter(v => v !== value);
     if (values.length === 0) {
       values = undefined;
     }
