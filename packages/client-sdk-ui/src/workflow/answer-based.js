@@ -58,6 +58,10 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   members: Object.keys(DEFAULT_LAYOUTS),
 });
 
+function normalizeAutoQueryOptions({ setValue = true, focus = true, param = 'q', sourceParam = 'qs', ...options } = {}) {
+  return { setValue, focus, param, sourceParam, ...options };
+}
+
 export default class AnswerBasedWorkflow extends Workflow {
 
   // constructor //
@@ -132,10 +136,10 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   // query //
   autoQuery(options = {}) {
-    const { setValue = true, focus = true } = this._autoQuery = options;
+    const { setValue, focus, param, sourceParam } = this._autoQuery = normalizeAutoQueryOptions(options);
     const searchParams = new URLSearchParams(window.location.search);
-    const q = searchParams.get('q');
-    const qs = searchParams.get('qs');
+    const q = searchParams.get(param);
+    const qs = searchParams.get(sourceParam);
     const { layout } = this._views.get(ROLE.QUERY);
     if (layout) {
       if (q && setValue) {
@@ -219,14 +223,15 @@ export default class AnswerBasedWorkflow extends Workflow {
     if (!value || !this._autoQuery || this._autoQuery.updateUrl === false) { // explicitly false
       return;
     }
+    const { param } = this._autoQuery;
     const { question } = value;
     const organic = request && request.payload && request.payload._meta && request.payload._meta.question_source === ORGANIC_QUESTION_SOURCE;
 
     const url = new URL(window.location);
-    const currentQuestion = url.searchParams.get('q');
+    const currentQuestion = url.searchParams.get(param);
     // TODO: review this, handle &qs=
     if (question !== currentQuestion && (!organic || this._autoQuery.updateUrl === true)) {
-      url.searchParams.set('q', question);
+      url.searchParams.set(param, question);
       window.history.replaceState({}, '', url);
     }
   }

@@ -57,8 +57,9 @@ export default class Search extends SearchBasedWorkflow {
     this._initAutocomplete(args);
   }
 
-  autoQuery({ setValue = true, focus = true } = {}) {
-    const q = new URLSearchParams(window.location.search).get('q');
+  autoQuery({ setValue = true, focus = true, param = 'q' } = {}) {
+    // TODO: align implementation with AnswerBasedWorkflow
+    const q = new URLSearchParams(window.location.search).get(param);
     const { layout } = this._views.get(ROLE.QUERY);
     if (layout) {
       if (q && setValue) {
