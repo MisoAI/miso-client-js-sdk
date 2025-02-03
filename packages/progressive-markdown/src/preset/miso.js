@@ -3,16 +3,20 @@ import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
 import rehypeLinkClass from '../rehype-link-class.js';
 import { mergeRendererOptions } from '../utils.js';
 
-export default function miso({ onCitationLink, onRefChange, onDone, cursorClass, getSource, ...options } = {}) {
+export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cursorClass, getSource, applyOperation, ...options } = {}) {
   validateType('onCitationLink', onCitationLink, 'function');
   validateType('onRefChange', onRefChange, 'function');
   validateType('onDone', onDone, 'function');
+  validateType('onDebug', onDebug, 'function');
   validateType('cursorClass', cursorClass, 'string');
   validateType('getSource', getSource, 'function');
+  validateType('applyOperation', applyOperation, 'function');
 
-  getSource = runSafely(getSource);
+  // don't apply runSafely() to 'applyOperation'
   onRefChange = runSafely(onRefChange);
   onDone = runSafely(onDone);
+  onDebug = runSafely(onDebug);
+  getSource = runSafely(getSource);
 
   if (onCitationLink) {
     const originalOnCitationLink = onCitationLink;
@@ -38,11 +42,13 @@ export default function miso({ onCitationLink, onRefChange, onDone, cursorClass,
         newRef && newRef.classList.add(cursorClass);
       }
       onRefChange(oldRef, newRef);
-    }, 
+    },
     onDone: (element) => {
       element.classList.add('done');
       onDone(element);
     },
+    onDebug,
+    applyOperation,
   }, options);
 }
 

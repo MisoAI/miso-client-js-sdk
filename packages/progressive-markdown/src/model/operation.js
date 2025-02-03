@@ -1,4 +1,5 @@
 const TYPE = Object.freeze({
+  CLEAR: 'clear',
   APPEND: 'append',
   SET: 'set',
   ASCEND: 'ascend',
@@ -10,6 +11,10 @@ export default class Operation {
 
   static get TYPE() {
     return TYPE;
+  }
+
+  static clear() {
+    return new Operation({ type: TYPE.CLEAR });
   }
 
   static set(html) {
@@ -39,6 +44,10 @@ export default class Operation {
   applyTo(element, ref) {
     const { type, level, html } = this;
     switch (type) {
+      case TYPE.CLEAR:
+        element.innerHTML = '';
+        ref = element;
+        break;
       case TYPE.APPEND:
         ref.insertAdjacentHTML('beforeend', html);
         break;
@@ -65,6 +74,8 @@ export default class Operation {
 
   toString() {
     switch (this.type) {
+      case TYPE.CLEAR:
+        return 'CLR';
       case TYPE.APPEND:
         return `APP('${summarize(this.html)}')`;
       case TYPE.SET:
@@ -74,7 +85,7 @@ export default class Operation {
       case TYPE.DESCEND:
         return `DES(${this.level})`;
       case TYPE.SOLIDIFY:
-        return `SOL(${summarize(this.html)})`;
+        return `SLD(${summarize(this.html)})`;
     }
   }
 

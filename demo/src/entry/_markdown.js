@@ -1,3 +1,17 @@
+function defaultOnDebug(start = performance.now()) {
+  return function({ summary, timestamp, elapsed, ref, operation, conflict }) {
+    console.log('<progressive-markdown>', `[${formatTimeInSeconds(timestamp - start)}](${formatTimeInMilliseconds(elapsed[0])}, ${formatTimeInMilliseconds(elapsed[1])})`, summary, `${operation}`, ref, conflict);
+  };
+}
+
+function formatTimeInSeconds(t) {
+  return `${Math.floor(t) / 1000}s`;
+}
+
+function formatTimeInMilliseconds(t) {
+  return `${Math.floor(t * 100) / 100}ms`;
+}
+
 export default function run({ Controller, presetMiso, loadStyles }) {
   const DEFAULT_API_KEY = __DEFAULT_ASK_API_KEY__;
   const API_KEY = new URL(window.location).searchParams.get('api_key') || DEFAULT_API_KEY;
@@ -12,6 +26,7 @@ export default function run({ Controller, presetMiso, loadStyles }) {
   const controller = new Controller(answerElement, {
     presets: [presetMiso],
     onCitationLink,
+    onDebug: defaultOnDebug(),
   });
   
   input.addEventListener('keyup', (event) => (event.key === 'Enter') && handleSubmit(event));

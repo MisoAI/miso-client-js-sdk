@@ -1,21 +1,47 @@
 import Query from './query.js';
+import { Operation } from './model/index.js';
+
+function defaultApplyOperation(operation, element, ref) {
+  return operation.applyTo(element, ref);
+}
+
+function wrapDebug(applyOperation, onDebug) {
+  if (!onDebug) {
+    return applyOperation;
+  }
+  return (operation, element, ref, debugContext) => {
+    const { timestamp } = debugContext;
+    const t0 = performance.now();
+    ref = applyOperation(operation, element, ref);
+    const t1 = performance.now();
+    const event = { ...debugContext, operation, ref, elapsed: [t0 - timestamp, t1 - t0] };
+    onDebug({ ...event, summary: summarize(event) });
+    return ref;
+  };
+}
+
+function summarize({ index, cursors = [0, 0], conflict, tree = { rightBound: 0 } }) {
+  return `[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`;
+}
 
 export default class Renderer {
 
-  constructor({ parser, compiler, query, onRefChange, onDone, onDebug } = {}) {
+  constructor({ parser, compiler, query, onRefChange, onDone, onDebug, applyOperation = defaultApplyOperation } = {}) {
     this._onRefChange = onRefChange;
     this._onDone = onDone;
     this._onDebug = onDebug;
+    this._applyOperation = wrapDebug(applyOperation, onDebug);
     this._query = new Query({ ...query, parser, compiler });
     this._index = 0;
   }
 
-  clear(element, prevState) {
+  clear(element, prevState, { timestamp = performance.now() } = {}) {
     const index = this._index++;
     this._query.clear();
-    element.innerHTML = '';
-    this._handleRefChange(prevState ? prevState.ref : element, element);
-    return { cursor: 0, done: false, ref: element, index };
+    const prevRef = prevState ? prevState.ref : element;
+    const ref = this._applyOperation(Operation.clear(), element, prevRef, { index, timestamp });
+    this._handleRefChange(prevRef, ref);
+    return { cursor: 0, done: false, ref, index };
   }
 
   update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor: rawCursor, timestamp, done: dataDone }) {
@@ -48,22 +74,14 @@ export default class Renderer {
 
     // we have to overwrite the whole thing if we had rendered pass the conflict point
     const overwrite = conflict !== undefined && prevCursor >= conflict.index;
-
-    let ref = prevRef;
-    let t0, t1;
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
+
+    const debugContext = { index, timestamp, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } };
+    let ref = prevRef;
     for (const operation of operations) {
-      if (this._onDebug) {
-        t0 = performance.now();
-      }
-      ref = operation.applyTo(element, ref);
-      if (this._onDebug) {
-        t1 = performance.now();
-        const info = { index, timestamp, operation, ref, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound }, elapsed: [t0 - timestamp, t1 - t0] };
-        info.summary = summarize(info);
-        this._onDebug(info);
-      }
+      ref = this._applyOperation(operation, element, ref, debugContext);
     }
+
     viewDone && this._onDone && this._onDone(element);
     this._handleRefChange(prevRef, ref);
 
@@ -74,8 +92,4 @@ export default class Renderer {
     oldRef !== newRef && this._onRefChange && this._onRefChange(oldRef, newRef);
   }
 
-}
-
-function summarize({ index, cursors, conflict, tree }) {
-  return `[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`;
 }

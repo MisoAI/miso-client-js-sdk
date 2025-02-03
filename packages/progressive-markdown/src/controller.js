@@ -78,7 +78,7 @@ export default class Controller {
     let result;
     if (!this._rendered || answer_stage !== this._rendered.answer_stage) {
       // new typing streak
-      result = this._renderer.clear(this._element, this._rendered);
+      result = this._renderer.clear(this._element, this._rendered, { timestamp });
     } else {
       const cursor = this._getNextCursor(this._rendered.cursor, doneAt, this._rendered.timestamp, timestamp);
       result = this._renderer.update(this._element, this._rendered, { value: answer, timestamp, cursor, done });
