@@ -72,13 +72,14 @@ export default class TypewriterLayout extends ProgressiveLayout {
       return; // destroyed
     }
     const cursorClass = cursorClassName(this.className);
-    const { onDebug, onCitationLink } = this.options;
+    const { onDebug, onCitationLink, variant } = this.options;
     // TODO: options
     this._renderer = context.createRenderer({
       cursorClass,
       getSource: index => this._getSource(index),
       onCitationLink,
       onDebug: normalizeOnDebug(onDebug),
+      variant,
     });
     // capture citation link click if necessary
     this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._onClick(e)));

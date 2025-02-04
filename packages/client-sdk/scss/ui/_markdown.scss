@@ -169,4 +169,26 @@
   mark {
     background-color: var(--miso-mark-background);
   }
+
+  // slot //
+  .miso-markdown-upper,
+  .miso-markdown-lower {
+    margin-bottom: 0 !important;
+
+    > * {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+  }
+  .miso-markdown-slot {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  &[data-slot-status="ready"],
+  &.done {
+    > .miso-markdown-slot {
+      display: block;
+    }
+  }
 }

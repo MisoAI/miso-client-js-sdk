@@ -23,6 +23,8 @@ sections:
     path: /ask/production
   - title: Affiliation
     path: /ask/affiliation
+  - title: Images
+    path: /ask/images
   - title: Lorem (client)
     path: /ask/lorem-client
   - title: Plaintext
@@ -71,6 +73,8 @@ sections:
     path: /hybrid-search/use-link
   - title: Sort
     path: /hybrid-search/sort
+  - title: Images
+    path: /hybrid-search/images
   - title: Templates
     path: /hybrid-search/templates
 - title: Search

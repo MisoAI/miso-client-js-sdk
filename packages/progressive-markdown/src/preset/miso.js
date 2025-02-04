@@ -2,21 +2,21 @@ import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
 import rehypeLinkClass from '../rehype-link-class.js';
 import { mergeRendererOptions } from '../utils.js';
+import { applyOperationWithSlot } from './slot.js';
 
-export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cursorClass, getSource, applyOperation, ...options } = {}) {
+export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cursorClass, getSource, variant, ...options } = {}) {
   validateType('onCitationLink', onCitationLink, 'function');
   validateType('onRefChange', onRefChange, 'function');
   validateType('onDone', onDone, 'function');
   validateType('onDebug', onDebug, 'function');
   validateType('cursorClass', cursorClass, 'string');
   validateType('getSource', getSource, 'function');
-  validateType('applyOperation', applyOperation, 'function');
 
-  // don't apply runSafely() to 'applyOperation'
   onRefChange = runSafely(onRefChange);
   onDone = runSafely(onDone);
   onDebug = runSafely(onDebug);
   getSource = runSafely(getSource);
+  variant = normalizeVariantOptions(variant);
 
   if (onCitationLink) {
     const originalOnCitationLink = onCitationLink;
@@ -28,6 +28,13 @@ export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cur
         console.error(error);
       }
     };
+  }
+
+  let applyOperation = undefined;
+  switch (variant[0]) {
+    case 'slot':
+      applyOperation = applyOperationWithSlot(variant[1] || {});
+      break;
   }
 
   return mergeRendererOptions({
@@ -50,6 +57,10 @@ export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cur
     onDebug,
     applyOperation,
   }, options);
+}
+
+function normalizeVariantOptions(options) {
+  return typeof options === 'string' ? [options, {}] : Array.isArray(options) ? options : [];
 }
 
 function validateType(name, value, type) {
