@@ -12,7 +12,6 @@ const DEFAULT_TRACKER_OPTIONS = Object.freeze({
   click: Object.freeze({
     lenient: false,
   }),
-  watch: false,
 });
 
 function mergeOptions(def, opt) {
@@ -21,6 +20,7 @@ function mergeOptions(def, opt) {
 }
 
 export function normalizeTrackerOptions(options) {
+  // TODO: make this { active: false } to keep it an object
   if (options === false) {
     return false; // turn off all tracking
   }

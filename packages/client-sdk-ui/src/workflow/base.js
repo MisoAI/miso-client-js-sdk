@@ -48,7 +48,7 @@ export default class Workflow extends Component {
   constructor(args) {
     super(args.name || 'workflow', args.plugin);
 
-    let { context, plugin, client, options } = args;
+    let { context, plugin, client, defaults, options } = args;
     this._context = context;
     this._plugin = plugin = plugin || context._plugin;
     this._client = client = client || context._client;
@@ -58,8 +58,8 @@ export default class Workflow extends Component {
     this._roles = args.roles;
 
     this._extensions = plugin._getExtensions(client);
-    this._defaults = args.defaults;
-    this._options = options || new WorkflowOptions(context && context._options, args.defaults);
+    this._defaults = defaults;
+    this._options = options || new WorkflowOptions(context && context._options, defaults);
     this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
     this._sessionContext = new WeakMap();
 

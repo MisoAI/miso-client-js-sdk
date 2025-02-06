@@ -95,9 +95,10 @@ export default class ViewActor {
     if (role === ROLE.CONTAINER) {
       return this._views._getContainerTracker();
     }
+    // TODO: we should move this to workflow level, as there could be multiple view of the same role in the future
     if (!this._tracker) {
       const { hub } = this;
-      this._tracker = new Tracker({ hub, role });
+      this._tracker = new Tracker({ hub, role, options: () => this.trackerOptions });
     }
     return this._tracker;
   }

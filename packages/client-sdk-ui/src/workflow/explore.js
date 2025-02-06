@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
-import { mergeRolesOptions } from './options/index.js';
+import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { enableUseLink, UseLinkMixin } from './use-link.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -20,10 +20,15 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 const DEFAULT_TRACKERS = Object.freeze({
   ...Workflow.DEFAULT_TRACKERS,
-  [ROLE.RELATED_QUESTIONS]: {},
-  [ROLE.CONTAINER]: {},
+  [ROLE.RELATED_QUESTIONS]: DEFAULT_TRACKER_OPTIONS,
+  [ROLE.CONTAINER]: {
+    ...DEFAULT_TRACKER_OPTIONS,
+    itemless: true,
+  },
   [ROLE.QUERY]: {
-    [EVENT_TYPE.SUBMIT]: {},
+    [EVENT_TYPE.SUBMIT]: {
+      active: true,
+    },
   },
 });
 

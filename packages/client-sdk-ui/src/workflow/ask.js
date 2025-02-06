@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
-import { mergeRolesOptions } from './options/index.js';
+import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -24,10 +24,12 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 const DEFAULT_TRACKERS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_TRACKERS,
-  [ROLE.RELATED_RESOURCES]: {},
+  [ROLE.RELATED_RESOURCES]: DEFAULT_TRACKER_OPTIONS,
   [ROLE.QUERY_SUGGESTIONS]: {
+    ...DEFAULT_TRACKER_OPTIONS,
     click: {
-      validate: event => event.button === 0, // left click only
+      ...DEFAULT_TRACKER_OPTIONS.click,
+      validate: event => event.button === 0, // loosen criteria, for it's not a hyperlink
     },
   },
 });

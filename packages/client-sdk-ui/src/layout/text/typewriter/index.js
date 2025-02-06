@@ -150,16 +150,48 @@ export default class TypewriterLayout extends ProgressiveLayout {
   }
 
   // event //
-  _onClick({ target }) {
-    const element = target.closest(`[data-role="citation-link"]`);
-    if (!element) {
+  _onClick(event) {
+    const { target } = event;
+    const citationLinkElement = target.closest(`[data-role="citation-link"]`);
+    // citation link click
+    if (citationLinkElement) {
+      const index = parseInt(citationLinkElement.dataset.index);
+      if (!Number.isNaN(index)) {
+        this._view._events.emit('citation-click', { index });
+      }
       return;
     }
-    const index = parseInt(element.dataset.index);
-    if (Number.isNaN(index)) {
+    // generic link click
+    const anchorElement = target.closest('a');
+    if (anchorElement) {
+      if (!event.defaultPrevented) {
+        // TODO: classList, attributes
+        const { href, innerText, className } = anchorElement;
+        if (href) {
+          this._view._events.emit('link-click', trimObj({
+            url: href,
+            text: innerText ? innerText.trim() : '',
+            className: className || '',
+            attributes: dumpElementAttributes(anchorElement),
+          }));
+        }
+      }
       return;
     }
-    this._view._events.emit('citation-click', { index });
   }
+}
 
+function dumpElementAttributes(element) {
+  const { attributes } = element;
+  const attrs = {};
+  for (const { name, value } of attributes) {
+    if (name.startsWith('data-')) {
+      attrs[name] = value;
+    }
+  }
+  try {
+    return JSON.stringify(attrs);
+  } catch (e) {
+    return '{}';
+  }
 }

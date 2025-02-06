@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { STATUS, ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
-import { mergeRolesOptions, makeConfigurable } from './options/index.js';
+import { mergeRolesOptions, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
@@ -32,7 +32,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 const DEFAULT_TRACKERS = Object.freeze({
   ...Workflow.DEFAULT_TRACKERS,
-  [ROLE.PRODUCTS]: {},
+  [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
 });
 
 const DEFAULT_PAGINATION = Object.freeze({

@@ -2,7 +2,7 @@ import { defineValues, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
-import { mergeRolesOptions } from './options/index.js';
+import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -22,7 +22,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 const DEFAULT_TRACKERS = Object.freeze({
   ...Workflow.DEFAULT_TRACKERS,
-  [ROLE.PRODUCTS]: {},
+  [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
 });
 
 const DEFAULT_OPTIONS = Object.freeze({

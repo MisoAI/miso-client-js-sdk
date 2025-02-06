@@ -24,7 +24,6 @@ export default class ViewsActor {
     this._containers = new Map();
     this._containerTracker = undefined;
     this._views = {};
-    this._trackers = new Trackers(this, roles.members);
     this._filters = new Filters(this);
 
     for (const role of roles.members) {
@@ -36,6 +35,7 @@ export default class ViewsActor {
 
     defineValues(this, {
       interface: new Views(this),
+      trackers: new Trackers(this, roles.members),
     });
 
     const syncSize = () => this.syncSize();
@@ -48,10 +48,6 @@ export default class ViewsActor {
     ];
 
     this._syncLayouts();
-  }
-
-  get trackers() {
-    return this._trackers;
   }
 
   get filters() {
@@ -224,7 +220,7 @@ export default class ViewsActor {
     if (!this._containerTracker) {
       const hub = this._hub;
       const role = ROLE.CONTAINER;
-      this._containerTracker = new Tracker({ hub, role, valueless: true, options: () => this._getTrackerOptions(role) });
+      this._containerTracker = new Tracker({ hub, role, itemless: true, options: () => this._getTrackerOptions(role) });
     }
     return this._containerTracker;
   }

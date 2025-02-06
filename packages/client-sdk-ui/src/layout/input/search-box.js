@@ -338,7 +338,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   _trackSubmit(value) {
-    const { [EVENT_TYPE.SUBMIT]: options } = this._view.trackerOptions || {};
+    const { [EVENT_TYPE.SUBMIT]: options } = this._view.tracker.options || {};
     if (!options) {
       return;
     }

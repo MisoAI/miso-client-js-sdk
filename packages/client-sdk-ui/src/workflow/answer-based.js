@@ -4,7 +4,7 @@ import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
-import { mergeRolesOptions } from './options/index.js';
+import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 
@@ -40,9 +40,15 @@ const DEFAULT_LAYOUTS = Object.freeze({
 
 const DEFAULT_TRACKERS = Object.freeze({
   ...Workflow.DEFAULT_TRACKERS,
-  [ROLE.SOURCES]: {},
-  [ROLE.AFFILIATION]: {},
-  [ROLE.PRODUCTS]: {},
+  [ROLE.ANSWER]: {
+    active: true,
+    itemless: true,
+    deduplicated: false,
+    click: DEFAULT_TRACKER_OPTIONS.click, // click only
+  },
+  [ROLE.SOURCES]: DEFAULT_TRACKER_OPTIONS,
+  [ROLE.AFFILIATION]: DEFAULT_TRACKER_OPTIONS,
+  [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
@@ -82,6 +88,7 @@ export default class AnswerBasedWorkflow extends Workflow {
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._query(args)),
       this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
+      this._views.get(ROLE.ANSWER).on('link-click', event => this._onAnswerLinkClick(event)),
     ];
   }
 
@@ -240,6 +247,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   _defaultProcessInteraction(payload, args) {
     payload = super._defaultProcessInteraction(payload, args);
     payload = this._writeAskPropertiesToInteraction(payload, args);
+    payload = this._writeAnswerClickInteraction(payload, args);
     return payload;
   }
 
@@ -251,6 +259,24 @@ export default class AnswerBasedWorkflow extends Workflow {
         custom_context: {
           question_source,
           question_id,
+        },
+      },
+    });
+  }
+
+  _writeAnswerClickInteraction(payload, args) {
+    if (args.role !== ROLE.ANSWER) {
+      return payload;
+    }
+    console.log('writeAnswerClickInteraction', payload, args);
+    const { items = [] } = args;
+    return mergeInteraction(payload, {
+      context: {
+        custom_context: {
+          urls: items.map(item => item.url),
+          texts: items.map(item => item.text),
+          class_names: items.map(item => item.className),
+          attributes: items.map(item => item.attributes),
         },
       },
     });
@@ -272,7 +298,13 @@ export default class AnswerBasedWorkflow extends Workflow {
       return;
     }
     // TODO: should we track impression as well?
-    this._trackers.sources.click([source.product_id], { manual: false });
+    this._views.trackers.sources.click([source.product_id]);
+  }
+
+  _onAnswerLinkClick(item) {
+    // put everything into args and let _defaultProcessInteraction() handles it
+    // for it's hard to make it a standard item
+    this._views.trackers.answer.click([], { items: [item] });
   }
 
   // helpers //

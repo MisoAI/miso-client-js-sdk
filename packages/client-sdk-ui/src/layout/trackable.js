@@ -51,7 +51,7 @@ export class TrackableMixin {
     if (entries.length === 0) {
       return;
     }
-    const { impression: options } = this._view.trackerOptions || {};
+    const { impression: options } = this._view.tracker.options || {};
     if (!options) {
       return;
     }
@@ -68,7 +68,7 @@ export class TrackableMixin {
     if (entries.length === 0) {
       return;
     }
-    const { viewable: options } = this._view.trackerOptions || {};
+    const { viewable: options } = this._view.tracker.options || {};
     if (!options) {
       return;
     }
@@ -78,7 +78,7 @@ export class TrackableMixin {
   }
 
   _trackClick(event, binding) {
-    const { click: options } = this._view.trackerOptions || {};
+    const { click: options } = this._view.tracker.options || {};
     if (validateClick(options, event, binding)) {
       this._view.tracker.click([binding.value]);
     }

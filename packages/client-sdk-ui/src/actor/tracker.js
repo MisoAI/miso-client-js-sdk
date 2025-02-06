@@ -3,40 +3,55 @@ import { PERFORMANCE_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType
 import * as fields from './fields.js';
 import States from '../util/states.js';
 
-const VALUELESS_ITEMS = [Symbol('valueless')];
+// a dummy item array for manipulating deduplication
+const ITEMLESS_DUMMY_ITEMS = [Symbol('itemless')];
 
 export default class Tracker {
 
-  constructor({ hub, role, valueless = false }) {
+  constructor({ hub, role, options }) {
     this._hub = hub;
     this._role = role;
-    this._valueless = !!valueless;
+    this._options = options;
     // TODO: know item type
 
     this._states = new States(this._getSessionId());
+  }
+
+  get options() {
+    return typeof this._options === 'function' ? this._options() : this._options;
   }
 
   getState(item) {
     return this._states.getFullState(item);
   }
 
-  _trigger(type, items) {
+  _trigger(type, items, meta) {
     validateEventType(type);
-    if (this._valueless) {
-      items = VALUELESS_ITEMS;
+
+    const { options } = this;
+    if (!options) {
+      return;
     }
 
     this._syncSession();
 
-    items = this._states.untriggered(asArray(items), type);
-    if (items.length === 0) {
-      return;
+    const { deduplicated = true, itemless = false } = options;
+
+    if (deduplicated) {
+      if (itemless) {
+        items = ITEMLESS_DUMMY_ITEMS;
+      }
+      items = this._states.untriggered(asArray(items), type);
+      if (items.length === 0) {
+        return;
+      }
+      this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
     }
-    this._states.set(items, type, TRACKING_STATUS.TRIGGERED);
 
     this._sendToHub({
       type,
-      items: this._valueless ? undefined : items,
+      items: itemless ? undefined : items,
+      ...meta,
     });
   }
 
