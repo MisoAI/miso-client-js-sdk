@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - Affiliation</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/affiliation/" />
+<title>Miso SDK for JavaScript - Answers - Workflow</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/workflow/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - Affiliation" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Workflow" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/affiliation/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/workflow/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Affiliation">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Workflow">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/affiliation/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/hybrid-search/workflow/">
 
 
 
@@ -123,7 +123,7 @@
             <a href="/miso-client-js-sdk/answers/ask/events/">Events</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
-          </li><li class="page active ">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/ask/affiliation/">Affiliation</a>
           </li></ul>
       </div>
@@ -145,7 +145,7 @@
             <a href="/miso-client-js-sdk/answers/hybrid-search/templates/">Template helpers</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/hybrid-search/elements/">Elements</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/hybrid-search/workflow/">Workflow</a>
           </li></ul>
       </div>
@@ -173,18 +173,25 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask module - affiliation</h1>
+          <h1 class="intro-title">Hybrid search module - workflow</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p><div class="since">Since 1.10.0</div></p>
-<h3 id="setup-affiliation" tabindex="-1">Setup affiliation</h3>
-<p>Contact Miso to enable the affiliation feature. Once enabled, the affiliation feature will be available in the ask module.</p>
-<h3 id="customize-affiliation" tabindex="-1">Customize affiliation</h3>
-<p>See <a href="/miso-client-js-sdk/elements/miso-affiliation/" target="_blank" rel="noopener">Affiliation element</a> for more details.</p>
+          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display.</p>
+<h3 id="access-workflow" tabindex="-1">Access workflow</h3>
+<p>You can access the workflow as the following:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>hybridSearch<span class="token punctuation">;</span></code></pre>
+<h3 id="properties" tabindex="-1">Properties</h3>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> questionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span></code></pre>
+<h3 id="methods" tabindex="-1">Methods</h3>
+<p>Takes the search term from URL parameter <code>q</code> and starts the query:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><div class="since">Since 1.11.4</div></p>
+<p>You can use a parameter other than <code>q</code>:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">param</span><span class="token operator">:</span> <span class="token string">'s'</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

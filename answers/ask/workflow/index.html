@@ -145,6 +145,8 @@
             <a href="/miso-client-js-sdk/answers/hybrid-search/templates/">Template helpers</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/hybrid-search/elements/">Elements</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/hybrid-search/workflow/">Workflow</a>
           </li></ul>
       </div>
     </li><li class="section mb-3  ">
@@ -190,6 +192,12 @@
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br><br>context<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">workflow</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token comment">// When a new workflow is created</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="properties" tabindex="-1">Properties</h3>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> questionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span><br><span class="token keyword">const</span> parentQuestionId <span class="token operator">=</span> workflow<span class="token punctuation">.</span>parentQuestionId<span class="token punctuation">;</span></code></pre>
+<h3 id="methods" tabindex="-1">Methods</h3>
+<p>Takes the question from URL parameter <code>q</code> and starts the query:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><div class="since">Since 1.11.4</div></p>
+<p>You can use a parameter other than <code>q</code>:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">param</span><span class="token operator">:</span> <span class="token string">'s'</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>
