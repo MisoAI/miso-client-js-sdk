@@ -6,10 +6,13 @@
   // how many lines to show for title text
   --miso-carousel-title-lines: 2;
   // previous/next button
+  --miso-carousel-control-button-effective-size: 2.5rem;
   --miso-carousel-control-button-size: 1.5rem;
   --miso-carousel-control-button-color: rgba(255, 255, 255, 0.5);
   --miso-carousel-control-button-color-hover: #fff;
   // the dots which indicate the current active item
+  --miso-carousel-control-index-indicator-gap: 0.65rem;
+  --miso-carousel-control-index-indicator-size: 0.4rem;
   --miso-carousel-control-index-indicator-color: rgba(255, 255, 255, 0.75);
   --miso-carousel-control-index-indicator-color-active: #fff;
 }
@@ -97,7 +100,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
   }
   .miso-carousel__control-container-previous {
     left: 0;
@@ -116,7 +118,7 @@
     justify-content: center;
     cursor: pointer;
 
-    .miso-ui-icon-triangle-eq {
+    .miso-ui-icon {
       height: var(--miso-carousel-control-button-size);
       aspect-ratio: 1;
       stroke-width: 2;
@@ -125,19 +127,21 @@
     }
 
     &:hover {
-      .miso-ui-icon-triangle-eq {
+      .miso-ui-icon {
         stroke: var(--miso-border-color-medium);
         fill: var(--miso-carousel-control-button-color-hover);
       }
     }
   }
   .miso-carousel__control-previous {
-    .miso-ui-icon-triangle-eq {
+    .miso-ui-icon-chevron-negative {
+      border-radius: 50%;
       transform: rotate(-90deg);
     }
   }
   .miso-carousel__control-next {
-    .miso-ui-icon-triangle-eq {
+    .miso-ui-icon-chevron-negative {
+      border-radius: 50%;
       transform: rotate(90deg);
     }
   }
@@ -156,8 +160,8 @@
     left: 0;
     right: 0;
     display: flex;
-    gap: 0.65rem;
-    padding: 0.5rem;
+    gap: var(--miso-carousel-control-index-indicator-gap);
+    padding: var(--miso-carousel-control-index-indicator-gap);
     flex-direction: row;
     flex-grow: 0;
     flex-shrink: 0;
@@ -174,7 +178,7 @@
     background-color: var(--miso-carousel-control-index-indicator-color);
     border-radius: 50%;
     aspect-ratio: 1;
-    height: 0.4rem;
+    height: var(--miso-carousel-control-index-indicator-size);
 
     &.active {
       background-color: var(--miso-carousel-control-index-indicator-color-active);

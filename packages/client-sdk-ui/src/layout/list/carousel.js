@@ -1,6 +1,6 @@
 import CollectionLayout from './collection.js';
 import { makeSwipeable } from '../mixin/swipeable.js';
-import { TRIANGLE_EQ } from '../../asset/svgs.js';
+import { CHEVRON_NEGATIVE } from '../../asset/svgs.js';
 
 const TYPE = 'carousel';
 const DEFAULT_CLASSNAME = 'miso-carousel';
@@ -42,7 +42,7 @@ function control(layout, state, direction) {
 }
 
 function controlIcon(layout, state, direction) {
-  return TRIANGLE_EQ;
+  return CHEVRON_NEGATIVE;
 }
 
 function indexIndicator(layout, state, values) {
