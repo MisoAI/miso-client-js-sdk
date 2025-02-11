@@ -12,11 +12,11 @@ function asFunction(fn) {
   return typeof fn === 'function' ? fn : () => fn;
 }
 
-function normalizeOptions(options) {
+function normalizeOptions(options = {}) {
   if (typeof options === 'string') {
     options = { content: options };
   }
-  let { templates, tag = 'p', index = 1, content, ...rest } = options;
+  let { templates, tag = 'p', index = 1, content = '', ...rest } = options;
   return Object.freeze({
     templates: normalizeTemplates({ ...templates, content }),
     tag,

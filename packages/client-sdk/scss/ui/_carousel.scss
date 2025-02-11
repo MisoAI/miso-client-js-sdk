@@ -1,172 +1,183 @@
 :root {
-  // the width of a carousel item
-  --miso-carousel-item-min-width: 9rem;
+  // the height of a carousel item
+  --miso-carousel-item-height: 20rem;
   // the gap between carousel items
   --miso-carousel-item-gap: 1rem;
-  // the size of carousel previous/next controls
-  --miso-carousel-control-size: 2rem;
-  // the aspect ratio of cover image
-  --miso-carousel-image-aspect-ratio: 1;
   // how many lines to show for title text
-  --miso-carousel-title-lines: 3;
+  --miso-carousel-title-lines: 2;
+  // previous/next button
+  --miso-carousel-control-button-size: 1.5rem;
+  --miso-carousel-control-button-color: rgba(255, 255, 255, 0.5);
+  --miso-carousel-control-button-color-hover: #fff;
+  // the dots which indicate the current active item
+  --miso-carousel-control-index-indicator-color: rgba(255, 255, 255, 0.75);
+  --miso-carousel-control-index-indicator-color-active: #fff;
 }
 
 .miso-carousel {
   position: relative;
-  display: flex;
 
-  .miso-carousel__control-previous,
-  .miso-carousel__control-next {
-    flex-basis: var(--miso-carousel-control-size);
-    flex-grow: 0;
-    flex-shrink: 0;
+  .miso-carousel__viewport {
     position: relative;
+    overflow: hidden;
+  }
+  .miso-carousel__viewport-inner {
+    position: relative;
+    margin: 0 calc(var(--miso-carousel-item-gap) * -1);
+  }
+  ol.miso-carousel__list,
+  ul.miso-carousel__list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .miso-carousel__list {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    left: 0;
+    transition: left 0.2s;
+  }
+  .miso-carousel__item {
+    width: 100%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin: 0;
+    padding: 0 var(--miso-carousel-item-gap);
+    display: flex;
+    justify-content: center;
+  }
+  .miso-carousel__item-body {
+    position: relative;
+    height: var(--miso-carousel-item-height);
+    width: 100%;
+    cursor: pointer;
+  }
 
-    &:hover {
-      cursor: pointer;
-
-      .miso-carousel__control-button {
-        color: #8f96a3;
+  .miso-carousel__list {
+    // item type: image
+    &[data-item-type="image"] {
+      .miso-carousel__item-image-container {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+      .miso-carousel__item-image {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+      }
+      .miso-carousel__item-info-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        text-overflow: ellipsis;
+        text-decoration: none;
+      }
+      .miso-carousel__item-title {
+        -webkit-line-clamp: var(--miso-carousel-title-lines);
+        padding: 0.25em 0.5em;
+        font-size: 1rem;
+        color: #fff;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
       }
     }
   }
 
-  .miso-carousel__control-button {
+  // controls //
+  .miso-carousel__control-container-previous,
+  .miso-carousel__control-container-next {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    aspect-ratio: 358 / 572;
-    color: #e3e5e8;
-  }
-
-  .miso-carousel__control-next .miso-carousel__control-button {
-    transform: translate(-50%, -50%) scaleX(-1);
-  }
-
-  .miso-carousel__viewport {
-    flex-grow: 1;
-    position: relative;
-    overflow: hidden;
-    margin: 0 var(--miso-carousel-item-gap);
-  }
-
-  ol.miso-carousel__list,
-  ul.miso-carousel__list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--miso-carousel-item-min-width), 1fr));
-    grid-template-rows: 1fr repeat(10, 0);
-    gap: 0 var(--miso-carousel-item-gap);
-    width: 100%;
-    padding: 0;
-    margin: 0;
-  }
-  ul li .miso-carousel__item-index {
-    display: none;
-  }
-
-  li.miso-carousel__item {
-    place-self: stretch;
-    overflow: hidden;
-  }
-
-  .miso-carousel__item-body {
+    top: 0;
+    bottom: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    position: relative;
-    height: 100%;
-    padding: 1rem;
-    user-select: none;
-    border: 1px solid #e3e5e8;
-    border-radius: .5rem;
-    background-color: #fff;
+    justify-content: center;
+    padding: 0.5rem;
+  }
+  .miso-carousel__control-container-previous {
+    left: 0;
+  }
+  .miso-carousel__control-container-next {
+    right: 0;
+  }
+  .miso-carousel__control-previous,
+  .miso-carousel__control-next {
+    height: var(--miso-carousel-control-button-effective-size);
+    aspect-ratio: 1;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    .miso-ui-icon-triangle-eq {
+      height: var(--miso-carousel-control-button-size);
+      aspect-ratio: 1;
+      stroke-width: 2;
+      stroke: var(--miso-border-color-light);
+      fill: var(--miso-carousel-control-button-color);
+    }
 
     &:hover {
-      border-color: #8f96a3;
-      box-shadow: 0 0 3px rgba(0, 0, 0, .1);
+      .miso-ui-icon-triangle-eq {
+        stroke: var(--miso-border-color-medium);
+        fill: var(--miso-carousel-control-button-color-hover);
+      }
     }
   }
-  a.miso-carousel__item-body {
-    cursor: pointer;
-    text-decoration: none;
-  }
-
-  .miso-carousel__item-cover-image-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: var(--miso-carousel-image-aspect-ratio);
-    border-radius: .4rem .4rem 0 0;
-    overflow: hidden;
-
-    &::before {
-      content: " ";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      background: radial-gradient(50% 50% at 50% 50%, transparent 0, rgba(0, 0, 0, .004) 82.81%, rgba(0, 0, 0, .016) 100%);
-      background-blend-mode: normal, luminosity;
+  .miso-carousel__control-previous {
+    .miso-ui-icon-triangle-eq {
+      transform: rotate(-90deg);
     }
   }
-  img.miso-carousel__item-cover-image {
-    object-fit: contain;
-    height: 100%;
-    width: 100%;
-    max-width: 100%;
-    border-style: none;
+  .miso-carousel__control-next {
+    .miso-ui-icon-triangle-eq {
+      transform: rotate(90deg);
+    }
   }
-
-  .miso-carousel__item-info-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    margin-top: 1rem;
-    width: 100%;
-    color: #5c6370;
-
-    > hr {
+  &[data-item-count="0"],
+  &[data-item-count="1"] {
+    .miso-carousel__control-previous,
+    .miso-carousel__control-next {
       display: none;
     }
   }
 
-  .miso-carousel__item-title,
-  .miso-carousel__item-desc {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  // index indicator //
+  .miso-carousel__index-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 0.65rem;
+    padding: 0.5rem;
+    flex-direction: row;
+    flex-grow: 0;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
   }
+  ul, ol {
+    &.miso-carousel__index-indicator {
+      list-style: none;
+      margin: 0;
+    }
+  }
+  .miso-carousel__index-indicator-item {
+    background-color: var(--miso-carousel-control-index-indicator-color);
+    border-radius: 50%;
+    aspect-ratio: 1;
+    height: 0.4rem;
 
-  .miso-carousel__item-title {
-    -webkit-line-clamp: var(--miso-carousel-title-lines);
-    font-weight: 500;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    margin-bottom: .25rem;
-    color: #23262b;
-  }
-
-  .miso-carousel__item-desc {
-    display: none;
-  }
-
-  .miso-carousel__item-price-container {
-    margin-top: auto;
-  }
-  .miso-carousel__item-price {
-    color: var(--miso-text-color);
-  }
-  .miso-carousel__item-original-price {
-    font-size: 0.9rem;
-    color: var(--miso-text-color-gray);
-    text-decoration: line-through;
-  }
-
-  mark {
-    background-color: var(--miso-mark-background);
+    &.active {
+      background-color: var(--miso-carousel-control-index-indicator-color-active);
+    }
   }
 }

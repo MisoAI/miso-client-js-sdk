@@ -42,6 +42,17 @@ export function article(layout, state, data, meta) {
   ].join('');
 }
 
+export function image(layout, state, data, meta) {
+  const { templates } = layout;
+  const [openTag, closeTag] = tagPair(layout, data);
+  return [
+    openTag,
+    (templates.imageBlock || imageBlock)(layout, data, meta),
+    (templates.infoBlock || templates.imageInfoBlock || imageInfoBlock)(layout, data, meta),
+    closeTag,
+  ].join('');
+}
+
 export function affiliation(layout, state, data, meta) {
   const { templates } = layout;
   const [openTag, closeTag] = tagPair(layout, data, { link: false});
@@ -79,6 +90,13 @@ export function articleInfoBlock(layout, data, meta) {
     (templates.dateBlock || dateBlock)(layout, data, meta),
     (templates.descriptionBlock || descriptionBlock)(layout, data, meta),
     (templates.ctaBlock || ctaBlock)(layout, data, meta),
+  ].join('')}</div>`;
+}
+
+export function imageInfoBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  return `<div class="${className}__item-info-container">${[
+    (templates.titleBlock || titleBlock)(layout, data, meta),
   ].join('')}</div>`;
 }
 
@@ -134,13 +152,16 @@ export function discountRateText(layout, { discount_rate_percent }) {
 
 export function imageBlock(layout, data, meta = {}) {
   const { className, templates } = layout;
-  const { cover_image } = data;
-  if (!cover_image) {
+  const { cover_image, image_src, image_alt } = data;
+  if (!cover_image && !image_src) {
     return '';
   }
-  const img = `<img class="${className}__item-cover-image" src="${cover_image}">`;
-  const brand = meta.brand ? (templates.brandBlock || brandBlock)(layout, data, meta) : '';
-  return `<div class="${className}__item-cover-image-container">${img}${brand}</div>`;
+  const subtype = image_src ? 'image' : 'cover-image';
+  const img = subtype === 'image' ?
+    `<img class="${className}__item-${subtype}" src="${image_src}"${image_alt ? ` alt="${image_alt}"` : ''}>` :
+    `<img class="${className}__item-${subtype}" src="${cover_image}">`;
+  const brand = subtype === 'cover-image' && meta.brand ? (templates.brandBlock || brandBlock)(layout, data, meta) : '';
+  return `<div class="${className}__item-${subtype}-container">${img}${brand}</div>`;
 }
 
 export function indexBlock({ className }, data, { index }) {

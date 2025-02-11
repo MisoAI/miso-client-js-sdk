@@ -14,6 +14,7 @@ const ICON_NAME = {
   SEND: 'send',
   SEARCH: 'search',
   TRIANGLE: 'triangle',
+  TRIANGLE_EQ: 'triangle-eq',
 };
 
 // CC0 SVGs
@@ -23,7 +24,9 @@ const ICON_SEARCH = `<symbol id="${PREFIX}-${ICON_NAME.SEARCH}" viewBox="0 0 24 
 // Custom SVGs
 const ICON_TRIANGLE = `<symbol id="${PREFIX}-${ICON_NAME.TRIANGLE}" viewBox="-5 -5 105 105"><path d="${trianglePath(5)}"/></symbol>`;
 
-const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE];
+const ICON_TRIANGLE_EQ = `<symbol id="${PREFIX}-${ICON_NAME.TRIANGLE_EQ}" viewBox="-100 -100 200 200"><path d="M12.99 -77.5A15 15,0,0,0,-12.99 -77.5L-73.61 27.5A15 15,0,0,0,-60.62 50L60.62 50A15 15,0,0,0,73.61 27.5L12.99 -77.5Z"/></symbol>`;
+
+const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ];
 
 const SPRITES_SVG = `<svg id="${ID}" style="display:none;">${ICONS.join('')}</svg>`;
 
@@ -52,3 +55,4 @@ export function getIcon(name) {
 export const SEND = _icon(ICON_NAME.SEND);
 export const SEARCH = _icon(ICON_NAME.SEARCH);
 export const TRIANGLE = _icon(ICON_NAME.TRIANGLE);
+export const TRIANGLE_EQ = _icon(ICON_NAME.TRIANGLE_EQ);

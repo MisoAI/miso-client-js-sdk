@@ -1,8 +1,8 @@
 import { STATUS } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
-import { makeTrackable } from '../trackable.js';
-import { makeTriggerable } from '../triggerable.js';
-import { product, article, question, productInfoBlock, articleInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
+import { makeTrackable } from '../mixin/trackable.js';
+import { makeTriggerable } from '../mixin/triggerable.js';
+import { product, article, image, question, productInfoBlock, articleInfoBlock, imageInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
 
 function root(layout, state) {
   const { className, role, templates } = layout;
@@ -13,14 +13,18 @@ function root(layout, state) {
 
 function ready(layout, state) {
   const { templates } = layout;
-  const values = layout._getItems(state);
+  const values = layout._getItems(state) || [];
 
   // TODO: handle categories, attributes, etc. by introducing sublayout
-  if ((values && values.length > 0) || state.ongoing) { // TODO: ad-hoc ongoing?
-    return templates.list(layout, state, values);
+  if (values.length > 0 || state.ongoing) { // TODO: ad-hoc ongoing?
+    return templates.body(layout, state, values);
   } else {
     return templates.empty(layout, state);
   }
+}
+
+function body(layout, state, values) {
+  return layout.templates.list(layout, state, values);
 }
 
 function list(layout, state, values) {
@@ -57,16 +61,19 @@ function loading() {
 const DEFAULT_TEMPLATES = Object.freeze({
   product,
   article,
+  image,
   question,
   root,
   [STATUS.READY]: ready,
   empty: () => ``,
+  body,
   list,
   ordered: false,
   items,
   item,
   productInfoBlock,
   articleInfoBlock,
+  imageInfoBlock,
   brandBlock,
   titleBlock,
   descriptionBlock,

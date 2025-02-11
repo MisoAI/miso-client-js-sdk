@@ -1,7 +1,7 @@
 import { escapeHtml } from '@miso.ai/commons';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
-import { makeTrackable } from '../trackable.js';
+import { makeTrackable } from '../mixin/trackable.js';
 
 const TYPE = 'option-list';
 const DEFAULT_CLASSNAME = 'miso-option-list';
