@@ -1,6 +1,14 @@
 import { findInAncestors, trimObj } from '@miso.ai/commons';
 
-// TODO: think about how to incorporate this with workflow options
+const TRACKED = Symbol.for('miso:tracked');
+
+export function isTracked(event) {
+  return !!event[TRACKED];
+}
+
+export function markAsTracked(event) {
+  event[TRACKED] = true;
+}
 
 const DEFAULT_TRACKER_OPTIONS = Object.freeze({
   impression: Object.freeze({
@@ -19,6 +27,7 @@ function mergeOptions(def, opt) {
   return !!opt && { ...def, ...opt };
 }
 
+// TODO: don't need this anymore
 export function normalizeTrackerOptions(options) {
   // TODO: make this { active: false } to keep it an object
   if (options === false) {
@@ -54,15 +63,19 @@ export function validateClick(options = {}, event) {
   }
 
   // standard criteria
-  // 1. it must be a left click
+  // 1. each event can only be tracked once
+  if (isTracked(event)) {
+    return false;
+  }
+  // 2. it must be a left click
   if (event.button !== 0) {
     return false;
   }
-  // 2. event default must not be prevented
+  // 3. event default must not be prevented
   if (event.defaultPrevented) {
     return false;
   }
-  // 3. must go through a real link
+  // 4. must go through a real link
   if (!findInAncestors(event.target, element => (element.tagName === 'A' && element.href) || undefined)) {
     return false;
   }

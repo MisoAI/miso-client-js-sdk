@@ -213,6 +213,7 @@ export default class ViewsActor {
 
   _getTrackerOptions(role) {
     const allTrackerOptions = this._options.resolved.trackers;
+    // TODO: don't need this anymore
     return normalizeTrackerOptions((allTrackerOptions && allTrackerOptions[role]) || false);
   }
 

@@ -1,7 +1,7 @@
 import { mixin } from '@miso.ai/commons';
 import Bindings from '../../util/bindings.js';
 import Viewables from '../../util/viewables.js';
-import { validateClick } from '../../util/trackers.js';
+import { validateClick, markAsTracked } from '../../util/trackers.js';
 
 export function makeTrackable(prototype) {
   mixin(prototype, TrackableMixin.prototype);
@@ -80,6 +80,7 @@ export class TrackableMixin {
   _trackClick(event, binding) {
     const { click: options } = this._view.tracker.options || {};
     if (validateClick(options, event, binding)) {
+      markAsTracked(event);
       this._view.tracker.click([binding.value]);
     }
   }

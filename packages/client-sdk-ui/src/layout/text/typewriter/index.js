@@ -157,7 +157,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
     if (citationLinkElement) {
       const index = parseInt(citationLinkElement.dataset.index);
       if (!Number.isNaN(index)) {
-        this._view._events.emit('citation-click', { index });
+        this._view._events.emit('citation-click', { event, index });
       }
       return;
     }
@@ -169,6 +169,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
         const { href, innerText, className } = anchorElement;
         if (href) {
           this._view._events.emit('link-click', trimObj({
+            event,
             url: href,
             text: innerText ? innerText.trim() : '',
             className: className || '',

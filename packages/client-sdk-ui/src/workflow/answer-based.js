@@ -7,6 +7,7 @@ import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
+import { isTracked, markAsTracked } from '../util/trackers.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...Workflow.DEFAULT_API_OPTIONS,
@@ -47,6 +48,7 @@ const DEFAULT_TRACKERS = Object.freeze({
     deduplicated: false,
     click: DEFAULT_TRACKER_OPTIONS.click, // click only
   },
+  [ROLE.IMAGES]: DEFAULT_TRACKER_OPTIONS,
   [ROLE.SOURCES]: DEFAULT_TRACKER_OPTIONS,
   [ROLE.AFFILIATION]: DEFAULT_TRACKER_OPTIONS,
   [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
@@ -289,7 +291,10 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   // handlers //
-  _onCitationClick({ index }) {
+  _onCitationClick({ index, event }) {
+    if (isTracked(event)) {
+      return;
+    }
     const { value } = this.states[fields.data()] || {};
     const { sources } = value || {};
     // index is 1-based
@@ -298,10 +303,15 @@ export default class AnswerBasedWorkflow extends Workflow {
       return;
     }
     // TODO: should we track impression as well?
+    markAsTracked(event);
     this._views.trackers.sources.click([source.product_id]);
   }
 
-  _onAnswerLinkClick(item) {
+  _onAnswerLinkClick({ event, ...item }) {
+    if (isTracked(event)) {
+      return;
+    }
+    markAsTracked(event);
     // put everything into args and let _defaultProcessInteraction() handles it
     // for it's hard to make it a standard item
     this._views.trackers.answer.click([], { items: [item] });

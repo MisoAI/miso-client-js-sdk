@@ -53,6 +53,7 @@ export function isDataRole(role) {
 
 const PRODUCT_ROLE_SET = new Set([
   ROLE.PRODUCTS,
+  ROLE.IMAGES,
   ROLE.SOURCES,
   ROLE.RELATED_RESOURCES,
 ]);
