@@ -11,10 +11,10 @@
   --miso-carousel-control-button-color: rgba(255, 255, 255, 0.5);
   --miso-carousel-control-button-color-hover: #fff;
   // the dots which indicate the current active item
-  --miso-carousel-control-index-indicator-gap: 0.65rem;
-  --miso-carousel-control-index-indicator-size: 0.4rem;
-  --miso-carousel-control-index-indicator-color: rgba(255, 255, 255, 0.75);
-  --miso-carousel-control-index-indicator-color-active: #fff;
+  --miso-carousel-index-indicator-gap: 0.65rem;
+  --miso-carousel-index-indicator-size: 0.4rem;
+  --miso-carousel-index-indicator-color: rgba(255, 255, 255, 0.75);
+  --miso-carousel-index-indicator-color-active: #fff;
 }
 
 .miso-carousel {
@@ -160,8 +160,8 @@
     left: 0;
     right: 0;
     display: flex;
-    gap: var(--miso-carousel-control-index-indicator-gap);
-    padding: var(--miso-carousel-control-index-indicator-gap);
+    gap: var(--miso-carousel-index-indicator-gap);
+    padding: var(--miso-carousel-index-indicator-gap);
     flex-direction: row;
     flex-grow: 0;
     flex-shrink: 0;
@@ -175,13 +175,13 @@
     }
   }
   .miso-carousel__index-indicator-item {
-    background-color: var(--miso-carousel-control-index-indicator-color);
+    background-color: var(--miso-carousel-index-indicator-color);
     border-radius: 50%;
     aspect-ratio: 1;
-    height: var(--miso-carousel-control-index-indicator-size);
+    height: var(--miso-carousel-index-indicator-size);
 
     &.active {
-      background-color: var(--miso-carousel-control-index-indicator-color-active);
+      background-color: var(--miso-carousel-index-indicator-color-active);
     }
   }
 }
