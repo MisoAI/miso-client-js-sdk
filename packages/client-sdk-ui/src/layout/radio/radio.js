@@ -50,7 +50,7 @@ export default class RadioLayout extends TemplateBasedLayout {
       view.hub.on(this._field, () => this._refresh()),
       proxyElement.on('click', (e) => this._handleClick(e)),
     ];
-    this._defaultValue ? this._select(this._defaultValue) : this._clear();
+    this._defaultValue ? this._select(this._defaultValue, { silent: true }) : this._clear({ silent: true });
   }
 
   _preprocess(states, controls) {
@@ -98,16 +98,16 @@ export default class RadioLayout extends TemplateBasedLayout {
     this._state = undefined;
   }
 
-  _select(value) {
-    this._submit({ value });
+  _select(value, options) {
+    this._submit({ value }, options);
   }
 
-  _clear() {
-    this._submit({ unselected: true });
+  _clear(options) {
+    this._submit({ unselected: true }, options);
   }
 
-  async _submit(state) {
-    this._view.hub.update(this._field, state);
+  async _submit(state, options) {
+    this._view.hub.update(this._field, state, options);
   }
 
 }

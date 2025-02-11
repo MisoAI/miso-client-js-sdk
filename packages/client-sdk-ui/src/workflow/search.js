@@ -81,7 +81,6 @@ export default class Search extends SearchBasedWorkflow {
 
   // destroy //
   _destroy(options) {
-    this._feedback._destroy();
     this._destroyAutocomplete();
     super._destroy(options);
   }
