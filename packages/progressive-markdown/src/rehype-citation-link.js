@@ -2,7 +2,7 @@ import { visit } from 'unist-util-visit';
 import { fromHtml } from 'hast-util-from-html';
 import { removeItem, escapeHtml } from '@miso.ai/commons';
 
-export default function rehypeLinkClass(handler) {
+export default function rehypeCitationLink(handler) {
   return tree => {
     visit(tree, 'element', node => visitor(node, handler));
   };
@@ -29,8 +29,6 @@ function visitor(node, handler) {
   // add other attributes
   node.properties['data-role'] = 'citation-link';
   node.properties['data-index'] = value;
-  node.properties.target = '_blank';
-  node.properties.rel = 'noopener';
 
   // remove original text node
   //child.value = '';

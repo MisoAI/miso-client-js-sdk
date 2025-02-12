@@ -1,6 +1,7 @@
 import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
-import rehypeLinkClass from '../rehype-link-class.js';
+import rehypeLinkAttrs from '../rehype-link-attrs.js';
+import rehypeCitationLink from '../rehype-citation-link.js';
 import { mergeRendererOptions } from '../utils.js';
 import { applyOperationWithSlot } from './slot.js';
 
@@ -40,7 +41,7 @@ export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cur
   return mergeRendererOptions({
     parser: {
       remark: [remarkGfm],
-      rehype: [rehypeMinifyWhitespace, () => rehypeLinkClass(onCitationLink)],
+      rehype: [rehypeMinifyWhitespace, rehypeLinkAttrs, () => rehypeCitationLink(onCitationLink)],
     },
     onCitationLink,
     onRefChange: (oldRef, newRef) => {
