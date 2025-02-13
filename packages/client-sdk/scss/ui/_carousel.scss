@@ -3,6 +3,7 @@
   --miso-carousel-item-height: 20rem;
   // the gap between carousel items
   --miso-carousel-item-gap: 1rem;
+  --miso-carousel-item-content-spacing: 0.75rem;
   // how many lines to show for title text
   --miso-carousel-title-lines: 2;
   // previous/next button
@@ -15,6 +16,11 @@
   --miso-carousel-index-indicator-size: 0.4rem;
   --miso-carousel-index-indicator-color: rgba(255, 255, 255, 0.75);
   --miso-carousel-index-indicator-color-active: #fff;
+
+  // the aspect ratio of cover image
+  --miso-carousel-cover-image-aspect-ratio: 1;
+  // the height of cover image
+  --miso-carousel-cover-image-height: 100%;
 }
 
 .miso-carousel {
@@ -59,50 +65,12 @@
     cursor: pointer;
   }
 
-  &[data-item-type="image"] {
-    .miso-carousel__item-image-container {
-      position: relative;
-      height: 100%;
-      width: 100%;
-      border-radius: 0.5rem;
-      overflow: hidden;
-    }
-    .miso-carousel__item-image {
-      height: 100%;
-      width: 100%;
-      object-fit: cover;
-    }
-    .miso-carousel__item-info-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      text-overflow: ellipsis;
-      text-decoration: none;
-    }
-    .miso-carousel__item-title {
-      -webkit-line-clamp: var(--miso-carousel-title-lines);
-      padding: 0.25em 0.5em;
-      font-size: 1rem;
-      color: #fff;
-      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    }
-  }
-
   // controls //
   .miso-carousel__control-container-previous,
   .miso-carousel__control-container-next {
-    position: absolute;
-    top: 0;
-    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .miso-carousel__control-container-previous {
-    left: 0;
-  }
-  .miso-carousel__control-container-next {
-    right: 0;
   }
   .miso-carousel__control-previous,
   .miso-carousel__control-next {
@@ -152,10 +120,6 @@
 
   // index indicator //
   .miso-carousel__index-indicator {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     display: flex;
     gap: var(--miso-carousel-index-indicator-gap);
     padding: var(--miso-carousel-index-indicator-gap);
@@ -179,6 +143,173 @@
 
     &.active {
       background-color: var(--miso-carousel-index-indicator-color-active);
+    }
+  }
+
+  // item type: image //
+  &[data-item-type="image"] {
+    .miso-carousel__item-image-container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    .miso-carousel__item-image {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+    .miso-carousel__item-info-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      text-overflow: ellipsis;
+      text-decoration: none;
+    }
+    .miso-carousel__item-title {
+      -webkit-line-clamp: var(--miso-carousel-title-lines);
+      padding: 0.25em 0.5em;
+      font-size: 1rem;
+      color: #fff;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+    .miso-carousel__control-container-previous,
+    .miso-carousel__control-container-next {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+    }
+    .miso-carousel__control-container-previous {
+      left: 0;
+    }
+    .miso-carousel__control-container-next {
+      right: 0;
+    }
+    .miso-carousel__index-indicator {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  // item type: other //
+  &:not([data-item-type="image"]) {
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    grid-template-rows: auto min-content;
+    grid-template-areas:
+      "previous viewport next"
+      "indicator indicator indicator";
+
+    .miso-carousel__viewport {
+      grid-area: viewport;
+    }
+    .miso-carousel__control-container-previous {
+      grid-area: previous;
+    }
+    .miso-carousel__control-container-next {
+      grid-area: next;
+    }
+    .miso-carousel__index-indicator {
+      grid-area: indicator;
+    }
+
+    .miso-carousel__item-body {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--miso-carousel-item-content-spacing);
+      position: relative;
+      padding: var(--miso-carousel-item-content-spacing);
+      border: 1px solid var(--miso-border-color-light);
+      border-radius: 0.75rem;
+      background-color: #fff;
+      user-select: none;
+
+      &:hover {
+        border-color: var(--miso-border-color-medium);
+        box-shadow: 0 0 3px var(--miso-box-shadow-hover);
+      }
+    }
+    a.miso-carousel__item-body {
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .miso-carousel__item-cover-image-container {
+      position: relative;
+      height: var(--miso-carousel-cover-image-height);
+      aspect-ratio: var(--miso-carousel-cover-image-aspect-ratio);
+      flex-shrink: 0;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+  
+      &::before {
+        content: " ";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: radial-gradient(50% 50% at 50% 50%, transparent 0, rgba(0, 0, 0, .004) 82.81%, rgba(0, 0, 0, .016) 100%);
+        background-blend-mode: normal, luminosity;
+      }
+    }
+    img.miso-carousel__item-cover-image {
+      object-fit: contain;
+      height: 100%;
+      width: 100%;
+      max-width: 100%;
+      border-style: none;
+    }
+    .miso-carousel__item-date {
+      // TODO: parameterize
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+      color: #777;
+    }
+    .miso-carousel__item-info-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      color: var(--miso-text-color);
+      margin-top: -0.3rem; // to align text and image
+  
+      > hr {
+        display: none;
+      }
+    }
+    .miso-carousel__item-title,
+    .miso-carousel__item-snippet,
+    .miso-carousel__item-desc {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .miso-carousel__item-title {
+      flex-shrink: 0;
+      font-weight: 600;
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: .25rem;
+      color: var(--miso-text-color);
+    }
+    .miso-carousel__item-snippet,
+    .miso-carousel__item-desc {
+      font-weight: 400;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      margin-bottom: .5rem;
+    }
+    .miso-carousel__item-price {
+      color: var(--miso-text-color);
+    }
+    .miso-carousel__item-original-price {
+      font-size: 0.9rem;
+      color: var(--miso-text-color-gray);
+      text-decoration: line-through;
     }
   }
 }
