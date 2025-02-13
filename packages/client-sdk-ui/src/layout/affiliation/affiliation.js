@@ -8,7 +8,7 @@ const TYPE = 'affiliation';
 const DEFAULT_CLASSNAME = 'miso-affiliation';
 
 function root(layout, state) {
-  const { className, role, templates } = layout;
+  const { className, role, templates, options } = layout;
   const { status } = state;
   const roleAttr = role ? ` data-role="${role}"` : '';
   const data = state.value || {};
@@ -16,7 +16,8 @@ function root(layout, state) {
   const items = layout._getItems(state);
   const itemCount = items ? items.length : undefined;
   const itemCountAttr = itemCount !== undefined ? ` data-item-count="${itemCount}"` : '';
-  return `<div class="${className} ${status}"${roleAttr}${channelAttr}${itemCountAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}</div>`;
+  const itemTypeAttr = options.itemType ? ` data-item-type="${options.itemType}"` : '';
+  return `<div class="${className} ${status}"${roleAttr}${channelAttr}${itemTypeAttr}${itemCountAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}</div>`;
 }
 
 function ready(layout, state) {

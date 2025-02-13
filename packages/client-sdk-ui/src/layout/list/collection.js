@@ -5,10 +5,11 @@ import { makeTriggerable } from '../mixin/triggerable.js';
 import { product, article, image, question, productInfoBlock, articleInfoBlock, imageInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
 
 function root(layout, state) {
-  const { className, role, templates } = layout;
+  const { className, role, templates, options } = layout;
   const { status } = state;
-  const roleAttr = role ? `data-role="${role}"` : '';
-  return `<div class="${className} ${status}" ${roleAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loading(layout, state)}</div>`;
+  const roleAttr = role ? ` data-role="${role}"` : '';
+  const itemTypeAttr = options.itemType ? ` data-item-type="${options.itemType}"` : '';
+  return `<div class="${className} ${status}"${roleAttr}${itemTypeAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loading(layout, state)}</div>`;
 }
 
 function ready(layout, state) {
@@ -30,8 +31,9 @@ function body(layout, state, values) {
 function list(layout, state, values) {
   const { className, templates, options } = layout;
   const listTag = templates.ordered ? 'ol' : 'ul';
+  const itemTypeAttr = options.itemType ? ` data-item-type="${options.itemType}"` : ''; // backward compatible
   // TODO: support separator?
-  return `<${listTag} class="${className}__list" data-role="list" data-item-type="${options.itemType}">${templates.items(layout, state, values)}</${listTag}>`;
+  return `<${listTag} class="${className}__list" data-role="list"${itemTypeAttr}>${templates.items(layout, state, values)}</${listTag}>`;
 }
 
 function items(layout, state, values, { offset = 0 } = {}) {

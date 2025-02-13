@@ -59,35 +59,32 @@
     cursor: pointer;
   }
 
-  .miso-carousel__list {
-    // item type: image
-    &[data-item-type="image"] {
-      .miso-carousel__item-image-container {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        border-radius: 0.5rem;
-        overflow: hidden;
-      }
-      .miso-carousel__item-image {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-      }
-      .miso-carousel__item-info-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        text-overflow: ellipsis;
-        text-decoration: none;
-      }
-      .miso-carousel__item-title {
-        -webkit-line-clamp: var(--miso-carousel-title-lines);
-        padding: 0.25em 0.5em;
-        font-size: 1rem;
-        color: #fff;
-        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      }
+  &[data-item-type="image"] {
+    .miso-carousel__item-image-container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    .miso-carousel__item-image {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+    .miso-carousel__item-info-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      text-overflow: ellipsis;
+      text-decoration: none;
+    }
+    .miso-carousel__item-title {
+      -webkit-line-clamp: var(--miso-carousel-title-lines);
+      padding: 0.25em 0.5em;
+      font-size: 1rem;
+      color: #fff;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     }
   }
 
