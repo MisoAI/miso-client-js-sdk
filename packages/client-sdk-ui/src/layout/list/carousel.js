@@ -1,6 +1,6 @@
 import CollectionLayout from './collection.js';
 import { makeSwipeable } from '../mixin/swipeable.js';
-import { CHEVRON_NEGATIVE } from '../../asset/svgs.js';
+import { CHEVRON, CHEVRON_NEGATIVE } from '../../asset/svgs.js';
 
 const TYPE = 'carousel';
 const DEFAULT_CLASSNAME = 'miso-carousel';
@@ -41,8 +41,8 @@ function control(layout, state, direction) {
   return `<div class="${className}__control-${direction}" data-role="${direction}">${templates.controlIcon(layout, state, direction)}</div>`;
 }
 
-function controlIcon(layout, state, direction) {
-  return CHEVRON_NEGATIVE;
+function controlIcon(layout) {
+  return layout.options.itemType === 'image' ? CHEVRON_NEGATIVE : CHEVRON;
 }
 
 function indexIndicator(layout, state, values) {

@@ -8,12 +8,10 @@
   --miso-carousel-title-lines: 2;
   // previous/next button
   --miso-carousel-control-button-effective-size: 2.5rem;
-  --miso-carousel-control-button-size: 1.5rem;
   --miso-carousel-control-button-color: rgba(255, 255, 255, 0.5);
   --miso-carousel-control-button-color-hover: #fff;
   // the dots which indicate the current active item
   --miso-carousel-index-indicator-gap: 0.65rem;
-  --miso-carousel-index-indicator-size: 0.4rem;
   --miso-carousel-index-indicator-color: rgba(255, 255, 255, 0.75);
   --miso-carousel-index-indicator-color-active: #fff;
 
@@ -25,7 +23,47 @@
 
 .miso-carousel {
   position: relative;
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: auto min-content;
+  grid-template-areas:
+    "previous viewport next"
+    "indicator indicator indicator";
 
+  .miso-carousel__viewport {
+    grid-area: viewport;
+  }
+  .miso-carousel__control-container-previous {
+    grid-area: previous;
+  }
+  .miso-carousel__control-container-next {
+    grid-area: next;
+  }
+  .miso-carousel__index-indicator {
+    grid-area: indicator;
+  }
+  &[data-item-type="image"] {
+    .miso-carousel__control-container-previous,
+    .miso-carousel__control-container-next {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+    }
+    .miso-carousel__control-container-previous {
+      left: 0;
+    }
+    .miso-carousel__control-container-next {
+      right: 0;
+    }
+    .miso-carousel__index-indicator {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  // viewport //
   .miso-carousel__viewport {
     position: relative;
     overflow: hidden;
@@ -84,30 +122,52 @@
     cursor: pointer;
 
     .miso-ui-icon {
-      height: var(--miso-carousel-control-button-size);
       aspect-ratio: 1;
-      stroke-width: 2;
-      stroke: var(--miso-border-color-light);
       fill: var(--miso-carousel-control-button-color);
     }
 
     &:hover {
       .miso-ui-icon {
-        stroke: var(--miso-border-color-medium);
         fill: var(--miso-carousel-control-button-color-hover);
       }
     }
   }
-  .miso-carousel__control-previous {
+  .miso-carousel__control-previous,
+  .miso-carousel__control-next {
+    .miso-ui-icon-chevron {
+      height: 2.5rem;
+      stroke: var(--miso-border-color-light);
+      stroke-width: 3%;
+    }
     .miso-ui-icon-chevron-negative {
+      height: 1.5rem;
       border-radius: 50%;
+    }
+    &:hover {
+      .miso-ui-icon-chevron {
+        stroke: var(--miso-border-color-medium);
+      }
+    }
+  }
+  .miso-carousel__control-previous {
+    .miso-ui-icon-chevron,
+    .miso-ui-icon-chevron-negative {
       transform: rotate(-90deg);
     }
   }
   .miso-carousel__control-next {
+    .miso-ui-icon-chevron,
     .miso-ui-icon-chevron-negative {
-      border-radius: 50%;
       transform: rotate(90deg);
+    }
+  }
+  &:not([data-item-type="image"]) {
+    .miso-carousel__control-previous,
+    .miso-carousel__control-next {
+      .miso-ui-icon-chevron-negative {
+        border-radius: 50%;
+        border: 1px solid var(--miso-border-color-light);
+      }
     }
   }
   &[data-item-count="0"],
@@ -139,10 +199,23 @@
     background-color: var(--miso-carousel-index-indicator-color);
     border-radius: 50%;
     aspect-ratio: 1;
-    height: var(--miso-carousel-index-indicator-size);
+    height: 0.4rem;
 
     &.active {
       background-color: var(--miso-carousel-index-indicator-color-active);
+    }
+  }
+  &:not([data-item-type="image"]) {
+    .miso-carousel__index-indicator {
+      padding: 1rem;
+    }
+    .miso-carousel__index-indicator-item {
+      border: 1px solid var(--miso-border-color-light);
+      height: 0.5rem;
+
+      &.active {
+        border-color: var(--miso-border-color-dark);
+      }
     }
   }
 
@@ -174,48 +247,10 @@
       color: #fff;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     }
-    .miso-carousel__control-container-previous,
-    .miso-carousel__control-container-next {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-    }
-    .miso-carousel__control-container-previous {
-      left: 0;
-    }
-    .miso-carousel__control-container-next {
-      right: 0;
-    }
-    .miso-carousel__index-indicator {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
   }
 
   // item type: other //
   &:not([data-item-type="image"]) {
-    display: grid;
-    grid-template-columns: min-content 1fr min-content;
-    grid-template-rows: auto min-content;
-    grid-template-areas:
-      "previous viewport next"
-      "indicator indicator indicator";
-
-    .miso-carousel__viewport {
-      grid-area: viewport;
-    }
-    .miso-carousel__control-container-previous {
-      grid-area: previous;
-    }
-    .miso-carousel__control-container-next {
-      grid-area: next;
-    }
-    .miso-carousel__index-indicator {
-      grid-area: indicator;
-    }
-
     .miso-carousel__item-body {
       display: flex;
       justify-content: space-between;

@@ -15,6 +15,7 @@ const ICON_NAME = {
   SEARCH: 'search',
   TRIANGLE: 'triangle',
   TRIANGLE_EQ: 'triangle-eq',
+  CHEVRON: 'chevron',
   CHEVRON_NEGATIVE: 'chevron-negative',
 };
 
@@ -27,9 +28,11 @@ const ICON_TRIANGLE = `<symbol id="${PREFIX}-${ICON_NAME.TRIANGLE}" viewBox="-5 
 
 const ICON_TRIANGLE_EQ = `<symbol id="${PREFIX}-${ICON_NAME.TRIANGLE_EQ}" viewBox="-100 -100 200 200"><path d="M12.99 -77.5A15 15,0,0,0,-12.99 -77.5L-73.61 27.5A15 15,0,0,0,-60.62 50L60.62 50A15 15,0,0,0,73.61 27.5L12.99 -77.5Z"/></symbol>`;
 
+const ICON_CHEVRON = `<symbol id="${PREFIX}-${ICON_NAME.CHEVRON}" viewBox="-100 -100 200 200"><path d="M10.61 -43.94A15 15,0,0,0,-10.61 -43.94L-60.61 6.06A15 15,0,0,0,-39.39 27.27L0 -12.12L39.39 27.27A15 15,0,0,0,60.61 6.06L10.61 -43.94Z"/></symbol>`;
+
 const ICON_CHEVRON_NEGATIVE = `<symbol id="${PREFIX}-${ICON_NAME.CHEVRON_NEGATIVE}" viewBox="-100 -100 200 200"><path d="M100 100V-200H-200V200H200ZM-10.61 -43.94A15 15,0,0,1,10.61 -43.94L60.61 6.06A15 15,0,0,1,39.39 27.27L0 -12.12L-39.39 27.27A15 15,0,0,1,-60.61 6.06L-10.61 -43.94Z"/></symbol>`;
 
-const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ, ICON_CHEVRON_NEGATIVE];
+const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ, ICON_CHEVRON, ICON_CHEVRON_NEGATIVE];
 
 const SPRITES_SVG = `<svg id="${ID}" style="display:none;">${ICONS.join('')}</svg>`;
 
@@ -59,4 +62,5 @@ export const SEND = _icon(ICON_NAME.SEND);
 export const SEARCH = _icon(ICON_NAME.SEARCH);
 export const TRIANGLE = _icon(ICON_NAME.TRIANGLE);
 export const TRIANGLE_EQ = _icon(ICON_NAME.TRIANGLE_EQ);
+export const CHEVRON = _icon(ICON_NAME.CHEVRON);
 export const CHEVRON_NEGATIVE = _icon(ICON_NAME.CHEVRON_NEGATIVE);
