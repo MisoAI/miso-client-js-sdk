@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - CSS styles</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/combo/styles/" />
+<title>Miso SDK for JavaScript - Answers - Advanced usages</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/ask/advanced/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - CSS styles" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Advanced usages" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/combo/styles/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/advanced/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - CSS styles">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Advanced usages">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/combo/styles/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/ask/advanced/">
 
 
 
@@ -125,7 +125,7 @@
             <a href="/miso-client-js-sdk/answers/ask/workflow/">Workflow</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/ask/affiliation/">Affiliation</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/ask/advanced/">Advanced usages</a>
           </li></ul>
       </div>
@@ -175,44 +175,20 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask module (combo) - customize CSS styles</h1>
+          <h1 class="intro-title">Ask module - advanced usages</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>You can customize the styles with CSS by:</p>
+          <h2 id="show-images-in-answers" tabindex="-1">Show images in answers</h2>
+<p><div class="since">Since 1.11.5</div></p>
+<p>To display images in answers, we need to specify to insert the <code>&lt;miso-images&gt;</code> element in the answer layout.</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">answer</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">variant</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'slot'</span><span class="token punctuation">,</span> <span class="token string">'&lt;miso-images>&lt;/miso-images>'</span><span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <ul>
-<li>Providing your own CSS rules to override the existing ones.</li>
-<li>Levergae the CSS variables provided by Miso.</li>
+<li>The images will be displayed right after the first <code>&lt;p&gt;</code> element in the answer section.</li>
 </ul>
-<h2 id="css-variables" tabindex="-1">CSS Variables</h2>
-<pre class="language-css"><code class="language-css"><span class="token selector">:root</span> <span class="token punctuation">{</span><br>  <span class="token property">--miso-ask-combo-section-padding</span><span class="token punctuation">:</span> 2rem<span class="token punctuation">;</span><br>  <span class="token property">--miso-ask-combo-content-max-width</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span> <br>  <span class="token property">--miso-ask-combo-content-padding</span><span class="token punctuation">:</span> 2rem<span class="token punctuation">;</span><br>  <span class="token property">--miso-ask-combo-question-phrase-color</span><span class="token punctuation">:</span> #a6a5bb<span class="token punctuation">;</span><br>  <span class="token property">--miso-ask-combo-related-resources-background</span><span class="token punctuation">:</span> #fffaf5<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
-<h4 id="--miso-ask-combo-section-padding-(a)--miso-ask-combo-content-max-width-(b)--miso-ask-combo-content-padding-(c)" tabindex="-1">--miso-ask-combo-section-padding (A)<br>--miso-ask-combo-content-max-width (B)<br>--miso-ask-combo-content-padding (C)</h4>
-<style>
-#ask-combo-css-variables .frame {
-  position: relative;
-}
-#ask-combo-css-variables .svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-}
-</style>
-<div id="ask-combo-css-variables" class="screenshot-container">
-  <div class="frame">
-    <img class="svg" src="/miso-client-js-sdk/img/ask-combo-css-variables-0.svg">
-    <img src="/miso-client-js-sdk/img/ask-combo-css-variables-0.png">
-  </div>
-</div>
-<h4 id="--miso-ask-combo-question-phrase-color" tabindex="-1">--miso-ask-combo-question-phrase-color</h4>
-<p>The text color of the phrase right before the question (&quot;You asked...&quot;).</p>
-<h4 id="--miso-ask-combo-related-resources-background" tabindex="-1">--miso-ask-combo-related-resources-background</h4>
-<p>The background color of the related resources section.</p>
 
         </div>
       </main>
