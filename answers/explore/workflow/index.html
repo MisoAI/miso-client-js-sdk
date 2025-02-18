@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - Interactions (explore)</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/api/interactions-explore/" />
+<title>Miso SDK for JavaScript - Answers - Workflow</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/explore/workflow/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - Interactions (explore)" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Workflow" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/interactions-explore/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/workflow/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Interactions (explore)">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Workflow">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/interactions-explore/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/workflow/">
 
 
 
@@ -136,7 +136,7 @@
             <a href="/miso-client-js-sdk/answers/explore/quick-start/">Quick start</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
           </li></ul>
       </div>
@@ -164,7 +164,7 @@
             <a href="/miso-client-js-sdk/answers/api/related_questions/">Related questions</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
-          </li><li class="page active ">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/interactions-explore/">Interactions (explore)</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/context/">Context</a>
@@ -177,90 +177,24 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask API - interactions (explore)</h1>
+          <h1 class="intro-title">Explore module - workflow</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <h2 id="performance-events" tabindex="-1">Performance events</h2>
-<p>To generate performance measurement data for analytics, you can send the following events to Miso API:</p>
-<ul>
-<li>Impression</li>
-<li>Viewable impression</li>
-<li>Click</li>
-</ul>
-<p>See <a href="/miso-client-js-sdk/advanced/performance/" target="_blank" rel="noopener">Performance measurement</a> for detailed definitions.</p>
-<h4 id="syntax" tabindex="-1">Syntax</h4>
-<p>To send an event using SDK that works with analytics, specifying <code>api_group</code>, <code>api_name</code>, and <code>property</code> in <code>custom_context</code> is required.</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'impression'</span><span class="token punctuation">,</span> <span class="token comment">// or 'viewable_impression', 'click'</span><br>  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// if subjects are catalog items</span><br>  <span class="token literal-property property">context</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">custom_context</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">api_group</span><span class="token operator">:</span> <span class="token string">'ask'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">api_name</span><span class="token operator">:</span> <span class="token string">'related_questions'</span><span class="token punctuation">,</span> <br>      <span class="token literal-property property">property</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">items</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// if subjects are not catalog items</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<table class="table"><thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>type</code></td>
-<td>string</td>
-<td>Event type: <code>impression</code>, <code>viewable_impression</code>, or <code>click</code>.</td>
-</tr>
-<tr>
-<td><code>product_ids</code></td>
-<td>array of strings</td>
-<td>Product ids of the event subjects</td>
-</tr>
-<tr>
-<td><code>items</code></td>
-<td>array of strings</td>
-<td>Event subjects (when they are not catalog items)</td>
-</tr>
-<tr>
-<td><code>api_group</code></td>
-<td>string</td>
-<td>The first segment of API path, in snake case</td>
-</tr>
-<tr>
-<td><code>api_name</code></td>
-<td>string</td>
-<td>The second segment of API path, in snake case</td>
-</tr>
-<tr>
-<td><code>property</code></td>
-<td>string</td>
-<td>The property name of the event subjects, which corresponds to the API response</td>
-</tr>
-</tbody>
-</table>
-<h4 id="api-and-key-properties" tabindex="-1">API and key properties</h4>
-<table class="table"><thead>
-<tr>
-<th>API</th>
-<th>Property</th>
-<th>Is catalog item?</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>related_questions</code></td>
-<td><code>related_questions</code></td>
-<td>✗</td>
-</tr>
-</tbody>
-</table>
-<h4 id="examples" tabindex="-1">Examples</h4>
-<p>For example, suppose we call the API with the following response:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// response</span><br><span class="token punctuation">{</span><br>  <span class="token literal-property property">related_questions</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token string">'question_1'</span><span class="token punctuation">,</span><br>    <span class="token string">'question_2'</span><span class="token punctuation">,</span><br>    <span class="token string">'question_3'</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token operator">...</span><br><span class="token punctuation">}</span></code></pre>
-<p>And we want to track click events on the first two items from the <code>related_questions</code> property, then we send the following interaction:</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'click'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">context</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">custom_context</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">api_group</span><span class="token operator">:</span> <span class="token string">'ask'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">api_name</span><span class="token operator">:</span> <span class="token string">'related_questions'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">property</span><span class="token operator">:</span> <span class="token string">'related_questions'</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">items</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'question_1'</span><span class="token punctuation">,</span> <span class="token string">'question_2'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<h2 id="references" tabindex="-1">References</h2>
-<ul>
-<li>See <a href="https://api.askmiso.com/#tag/Interaction-APIs/operation/interaction_upload_api_v1_interactions_post" target="_blank" rel="noopener">Rest API</a> for more details.</li>
-<li>For passing user data, see <a href="/miso-client-js-sdk/answers/api/context/" target="_blank" rel="noopener">Context</a>.</li>
-</ul>
+          <p>Workflows are JavaScript objects that control the process of the entire data flow from SDK API request to UI display.</p>
+<h3 id="access-workflow" tabindex="-1">Access workflow</h3>
+<p>You can access the workflow as the following:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explore<span class="token punctuation">;</span></code></pre>
+<h2 id="methods" tabindex="-1">Methods</h2>
+<h3 id="link-function" tabindex="-1">Link function</h3>
+<p>The link function is used to generate the URL for the answers page given a question. The URL should match the path of the answers page in your website.</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLink</span><span class="token punctuation">(</span><span class="token parameter">question</span> <span class="token operator">=></span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/answers?q=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">encodeURIComponent</span><span class="token punctuation">(</span>question<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><div class="since">Since 1.11.5</div></p>
+<p>You can access more parameters in the link function:</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useLink</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">question<span class="token punctuation">,</span> args</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> generated <span class="token operator">=</span> args<span class="token punctuation">.</span>generated<span class="token punctuation">;</span> <span class="token comment">// whether the question is generated by Miso API</span><br>  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/answers?q=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">encodeURIComponent</span><span class="token punctuation">(</span>question<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>
