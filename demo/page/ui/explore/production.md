@@ -13,6 +13,7 @@ misocmd.push(() => {
     product_id: window.DEFAULT_PRODUCT_ID || 'aaa',
   });
   workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`);
+  //workflow.useLink((question, args) => console.log(args) || `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`);
   workflow.start();
 });
 </script>

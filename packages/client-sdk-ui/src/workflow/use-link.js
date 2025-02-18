@@ -30,11 +30,11 @@ export class UseLinkMixin {
     }
   }
 
-  _getSubmitUrl(args) {
+  _getSubmitUrl({ q, ...args } = {}) {
     if (!this._linkFn) {
       throw new Error('useLink(fn) must be called before _getSubmitUrl()');
     }
-    return this._linkFn[0](args.q);
+    return this._linkFn[0](q, args);
   }
 
 }

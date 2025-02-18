@@ -121,7 +121,7 @@ export default class Explore extends Workflow {
       return data;
     }
     const linkFn = this._linkFn && this._linkFn[0];
-    const related_questions = value.related_questions.map(linkFn ? (text => ({ text, url: this._getSubmitUrl({ q: text }, { generated: true }) })) : (text => ({ text })));
+    const related_questions = value.related_questions.map(linkFn ? (text => ({ text, url: this._getSubmitUrl({ q: text, generated: true }) })) : (text => ({ text })));
     return {
       ...data,
       value: {
@@ -143,12 +143,12 @@ export default class Explore extends Workflow {
   }
 
   _query(args) {
-    this._submitToPage(args);
+    this._submitToPage({ ...args, generated: false });
   }
 
-  _getSubmitUrl(args, { generated = false } = {}) {
+  _getSubmitUrl(args) {
     let url = UseLinkMixin.prototype._getSubmitUrl.call(this, args);
-    if (!generated || !this._productId) {
+    if (!args.generated || !this._productId) {
       return url;
     }
     return `${url}&qs=${encodeURIComponent(this._productId)}`;
