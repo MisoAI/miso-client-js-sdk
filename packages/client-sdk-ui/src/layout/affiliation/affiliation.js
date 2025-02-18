@@ -3,6 +3,7 @@ import { STATUS } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
 import { affiliation, helpers } from '../templates.js';
 import { TRIANGLE } from '../../asset/svgs.js';
+import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = 'affiliation';
 const DEFAULT_CLASSNAME = 'miso-affiliation';
@@ -257,12 +258,8 @@ export default class AffiliationLayout extends CollectionLayout {
     if (!element) {
       return;
     }
+    setOrRemoveAttribute(element, 'data-item-count', itemCount);
     this._displayedCount = itemCount;
-    if (itemCount === undefined) {
-      element.removeAttribute('data-item-count');
-    } else {
-      element.setAttribute('data-item-count', itemCount);
-    }
   }
 
   _syncItemIndex() {

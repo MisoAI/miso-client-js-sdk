@@ -1,4 +1,5 @@
 import { mixin, requestAnimationFrame as raf } from '@miso.ai/commons';
+import { setOrRemoveAttribute, addOrRemoveClass } from '../../util/dom.js';
 
 export function makeSwipeable(prototype) {
   mixin(prototype, SwipeableMixin.prototype);
@@ -33,7 +34,7 @@ export class SwipeableMixin {
       index = 0;
     }
     context.itemIndex = index;
-    raf(() => this._syncSwipeableItemIndex());
+    raf(() => this._syncDisplayedSwipeableItemIndex());
   }
 
   next() {
@@ -52,7 +53,8 @@ export class SwipeableMixin {
 
   _renderSwipeable(element, states, controls) {
     this._syncSwipeableItemCount(states);
-    this._syncSwipeableItemIndex();
+    this._syncDisplayedSwipeableItemCount();
+    this._syncDisplayedSwipeableItemIndex();
   }
 
   _afterRenderSwipeable() {
@@ -74,8 +76,6 @@ export class SwipeableMixin {
     } else if (oldItemCount === undefined) {
       context.itemIndex = 0;
     }
-
-    this._syncDisplayedSwipeableItemCount();
   }
 
   _syncDisplayedSwipeableItemCount() {
@@ -89,24 +89,20 @@ export class SwipeableMixin {
     if (!element) {
       return;
     }
+    setOrRemoveAttribute(element, 'data-item-count', itemCount);
     context.displayedCount = itemCount;
-    if (itemCount === undefined) {
-      element.removeAttribute('data-item-count');
-    } else {
-      element.setAttribute('data-item-count', itemCount);
-    }
   }
 
-  _syncSwipeableItemIndex() {
+  _syncDisplayedSwipeableItemIndex() {
     const context = this._swipeableContext;
-    const index = context.itemIndex;
-    if (index === context.displayedIndex) {
+    const { itemIndex } = context;
+    if (itemIndex === context.displayedIndex) {
       return;
     }
-    context.displayedIndex = index;
+    context.displayedIndex = itemIndex;
 
-    this._syncSwipeableListIndex(index);
-    this._syncSwipeableIndicatorIndex(index);
+    this._syncSwipeableListIndex(itemIndex);
+    this._syncSwipeableIndicatorIndex(itemIndex);
   }
 
   _syncSwipeableListIndex(index) {
@@ -126,7 +122,7 @@ export class SwipeableMixin {
     }
     let i = 0;
     for (const item of indicatorElement.children) {
-      item.classList[ i === index ? 'add' : 'remove' ]('active');
+      addOrRemoveClass(item, 'active', i === index);
       i++;
     }
   }

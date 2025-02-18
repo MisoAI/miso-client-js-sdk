@@ -4,6 +4,7 @@ import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { imageBlock, productInfoBlock } from '../templates.js';
 import { getIcon } from '../../asset/svgs.js';
+import { addOrRemoveClass } from '../../util/dom.js';
 
 const TYPE = 'search-box';
 const DEFAULT_CLASSNAME = 'miso-search-box';
@@ -215,7 +216,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
 
     const items = context.trackItems(completions);
 
-    element.classList[items.length > 0 ? 'add' : 'remove']('nonempty');
+    addOrRemoveClass(element, 'nonempty', items.length > 0);
     autocompleteElement.setAttribute('data-status', status);
     autocompleteElement.innerHTML = this.templates.completions(this, items);
 

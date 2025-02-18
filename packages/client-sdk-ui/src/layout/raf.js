@@ -89,6 +89,7 @@ export default class RafLayout {
 
     notifyUpdate && notifyUpdate(...argsForNotifyUpdate.value);
 
+    // TODO: should the signature be aligned with _render?
     this._afterRender(this._element, state);
   }
 

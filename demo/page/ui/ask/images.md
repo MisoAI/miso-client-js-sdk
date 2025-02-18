@@ -10,6 +10,12 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
+  /*
+  const client = new MisoClient(window.DEFAULT_ASK_API_KEY);
+  client.ui.asks.useApi({
+    _env: 'staging_sandbox',
+  });
+  */
   client.ui.asks.useLayouts({
     answer: {
       variant: ['slot', '<miso-images></miso-images>'],

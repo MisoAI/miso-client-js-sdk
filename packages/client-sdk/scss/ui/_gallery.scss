@@ -1,0 +1,82 @@
+:root {
+  // the gap between list items
+  --miso-gallery-item-gap: 1.25rem;
+  // the spacing among list item content
+  --miso-gallery-item-content-spacing: 0.75rem;
+  // how many lines to show for title text
+  --miso-gallery-title-lines: 2;
+
+  --miso-gallery-height: 16rem;
+  --miso-gallery-item-1x1-aspect-ratio: 1;
+  --miso-gallery-item-1x2-aspect-ratio: 0.5;
+}
+
+.miso-gallery {
+  .miso-gallery__list {
+    list-style: none !important;
+    height: var(--miso-gallery-height);
+    padding: 0;
+    margin: 0 calc(var(--miso-gallery-item-gap) * -0.5);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: start;
+  }
+  .miso-gallery__item {
+    height: 50%;
+    width: min-content;
+    aspect-ratio: var(--miso-gallery-item-1x1-aspect-ratio);
+    padding: calc(var(--miso-gallery-item-gap) / 2);
+  }
+  .miso-gallery__item-large,
+  .miso-gallery__item-medium {
+    height: 100%;
+  }
+  .miso-gallery__item-medium {
+    aspect-ratio: var(--miso-gallery-item-1x2-aspect-ratio);
+  }
+  .miso-gallery__item-body {
+    position: relative;
+  }
+  a.miso-gallery__item-body {
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .miso-gallery__item-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: var(--miso-carousel-title-lines);
+  }
+
+  // item type: image //
+  &[data-item-type="image"] {
+    .miso-gallery__item-image-container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+    }
+    .miso-gallery__item-image {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+    .miso-gallery__item-info-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+    .miso-gallery__item-title {
+      padding: 0.25em 0.5em;
+      font-size: 1rem;
+      color: #fff;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+  }
+}

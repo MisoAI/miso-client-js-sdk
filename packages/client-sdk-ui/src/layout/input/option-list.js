@@ -2,6 +2,7 @@ import { escapeHtml } from '@miso.ai/commons';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../mixin/trackable.js';
+import { addOrRemoveClass } from '../../util/dom.js';
 
 const TYPE = 'option-list';
 const DEFAULT_CLASSNAME = 'miso-option-list';
@@ -96,7 +97,7 @@ export default class OptionListLayout extends TemplateBasedLayout {
       return;
     }
     const optionValues = this._getItems(state) || [];
-    optionsElement.classList[optionValues.length === 0 ? 'add' : 'remove']('empty');
+    addOrRemoveClass(optionsElement, 'empty', optionValues.length === 0);
   }
 
   _getItems(state) {

@@ -6,6 +6,7 @@ export { default as CollectionLayout } from './list/collection.js';
 export { default as ListLayout } from './list/list.js';
 export { default as CardsLayout } from './list/cards.js';
 export { default as CarouselLayout } from './list/carousel.js';
+export { default as GalleryLayout } from './list/gallery.js';
 export { default as SearchBoxLayout } from './input/search-box.js';
 export { default as OptionListLayout } from './input/option-list.js';
 export { default as FeedbackLayout } from './radio/feedback.js';

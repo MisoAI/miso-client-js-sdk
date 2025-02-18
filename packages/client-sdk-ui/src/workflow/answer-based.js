@@ -2,7 +2,7 @@ import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { SearchBoxLayout, TextLayout, ListLayout, CarouselLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
+import { SearchBoxLayout, TextLayout, ListLayout, CarouselLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
@@ -35,7 +35,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
   [ROLE.ANSWER]: TypewriterLayout.type,
   [ROLE.FEEDBACK]: FeedbackLayout.type,
-  [ROLE.IMAGES]: [CarouselLayout.type, { incremental: true, itemType: 'image' }],
+  [ROLE.IMAGES]: [GalleryLayout.type, { incremental: true, itemType: 'image' }],
   [ROLE.SOURCES]: [ListLayout.type, { incremental: true, itemType: 'article', templates: { ordered: true } }],
   [ROLE.AFFILIATION]: [AffiliationLayout.type, { incremental: true, itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
 });
