@@ -39,3 +39,42 @@ On GitHub
 * Go to `Actions` tab
 * Select workflow: `Publish doc site`
 * Click on `Run workflow` -> use branch `main` -> `Run workflow`
+
+
+
+# Debug mode
+
+```js
+// ==UserScript==
+// @name         Miso SDK debug mode
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Turn on Miso SDK debug mode
+// @author       simonpai
+// @match        https://*/*
+// @match        http://*/*
+// @run-at       document-start
+// @noframes
+// @grant        none
+// ==/UserScript==
+
+(function() {
+  'use strict';
+  console.log('[Userscript] MISO DEBUG!');
+
+  function setup(MisoClient) {
+    if (!MisoClient) {
+      return;
+    }
+    MisoClient.plugins.use('std:dry-run');
+    MisoClient.plugins.use('std:debug');
+  }
+  const misodev = window.misodev || (window.misodev = []);
+  misodev.push(() => {
+    setup(window.MisoClient);
+    for (const MisoClient of window.MisoClients || []) {
+      setup(MisoClient);
+    }
+  });
+})();
+```
