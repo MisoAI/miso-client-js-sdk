@@ -127,7 +127,7 @@ export default class GalleryLayout extends CollectionLayout {
 
   _updateItems(listElement, { state }) {
     const { itemSizes } = this._galleryContext;
-    const values = this._writeItemSizes(this._getItems(state), itemSizes);
+    const values = this._writeItemSizes(this._getItems(state) || [], itemSizes);
     listElement.innerHTML = this.templates.items(this, state, values);
   }
 
@@ -137,11 +137,11 @@ export default class GalleryLayout extends CollectionLayout {
     this._syncItemSizes(listElement);
     // append new items
     const offset = listElement.children.length;
-    const values = this._writeItemSizes(this._getItems(state).slice(offset), itemSizes, offset);
+    const values = this._writeItemSizes((this._getItems(state) || []).slice(offset), itemSizes, offset);
     listElement.insertAdjacentHTML('beforeend', this.templates.items(this, state, values, { offset }));
   }
 
-  _writeItemSizes(values = [], [large = 0, medium = 0] = [], offset = 0) {
+  _writeItemSizes(values, [large = 0, medium = 0] = [], offset = 0) {
     let omitted = 0;
     if (offset > 0) {
       omitted = Math.min(offset, large);
