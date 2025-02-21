@@ -44,6 +44,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   // query //
   _buildPayload(payload) {
     payload = this._writeQuestionSourceToPayload(payload);
+    payload = this._writeWikiLinkTemplateToPayload(payload);
     payload = this._superworkflow._results._writeFiltersToPayload(payload);
     return payload;
   }

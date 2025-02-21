@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { STATUS, ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
-import { mergeRolesOptions, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mergeRolesOptions, autoQuery as autoQueryFn, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
@@ -87,6 +87,10 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   // query //
+  autoQuery(options = {}) {
+    autoQueryFn.call(this, options);
+  }
+
   query(args) {
     if (!args.q) {
       throw new Error(`q is required in query() call`);

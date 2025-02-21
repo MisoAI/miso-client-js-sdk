@@ -115,17 +115,19 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   // query //
-  _buildPayload({ q, qs, ...payload } = {}) {
+  _buildPayload({ q, qs, ...options } = {}) {
     const { parentQuestionId } = this;
-    return trimObj({
-      ...payload,
+    let payload = trimObj({
+      ...options,
       question: q, // question, not q
       parent_question_id: parentQuestionId,
       _meta: {
-        ...payload._meta,
+        ...options._meta,
         question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
       },
     });
+    payload = this._writeWikiLinkTemplateToPayload(payload);
+    return payload;
   }
 
   // interactions //

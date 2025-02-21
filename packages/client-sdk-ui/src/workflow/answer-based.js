@@ -2,9 +2,9 @@ import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { SearchBoxLayout, TextLayout, ListLayout, CarouselLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
+import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
-import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mergeRolesOptions, autoQuery as autoQueryFn, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
@@ -66,10 +66,6 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.ANSWER,
   members: Object.keys(DEFAULT_LAYOUTS),
 });
-
-function normalizeAutoQueryOptions({ setValue = true, focus = true, param = 'q', sourceParam = 'qs', ...options } = {}) {
-  return { setValue, focus, param, sourceParam, ...options };
-}
 
 export default class AnswerBasedWorkflow extends Workflow {
 
@@ -146,22 +142,7 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   // query //
   autoQuery(options = {}) {
-    const { setValue, focus, param, sourceParam } = this._autoQuery = normalizeAutoQueryOptions(options);
-    const searchParams = new URLSearchParams(window.location.search);
-    const q = searchParams.get(param);
-    const qs = searchParams.get(sourceParam);
-    const { layout } = this._views.get(ROLE.QUERY);
-    if (layout) {
-      if (q && setValue) {
-        layout.value = q;
-      }
-      if (!q && focus) {
-        layout.focus();
-      }
-    }
-    if (q) {
-      this.query({ q, qs });
-    }
+    autoQueryFn.call(this, options);
   }
 
   query(args) {
@@ -194,6 +175,16 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   _buildPayload() {
     throw new Error(`Not implemented`);
+  }
+
+  _writeWikiLinkTemplateToPayload(payload) {
+    if (!this._autoQuery || !this._autoQuery.param || this._autoQuery.param === DEFAULT_AUTO_QUERY_PARAM) {
+      return payload;
+    }
+    return {
+      ...payload,
+      wiki_link_template: `?${this._autoQuery.param}=%s`,
+    };
   }
 
   // data //
@@ -304,6 +295,8 @@ export default class AnswerBasedWorkflow extends Workflow {
     }
     // TODO: should we track impression as well?
     markAsTracked(event);
+    // distinguish from regular sources element click
+    // TODO
     this._views.trackers.sources.click([source.product_id]);
   }
 
