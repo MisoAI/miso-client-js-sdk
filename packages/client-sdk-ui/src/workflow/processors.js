@@ -230,6 +230,19 @@ export function writeAffiliationInfoToInteraction(payload, args) {
   });
 }
 
+export function writeEventTargetToInteraction(payload, { event_target } = {}) {
+  if (!event_target) {
+    return payload;
+  }
+  return mergeInteraction(payload, {
+    context: {
+      custom_context: {
+        event_target,
+      },
+    },
+  });
+}
+
 export function mergeInteraction(base = {}, patch = {}) {
   return trimObj({
     ...base,

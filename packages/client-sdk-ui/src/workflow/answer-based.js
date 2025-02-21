@@ -5,7 +5,7 @@ import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { writeAnswerStageToMeta, mergeInteraction } from './processors.js';
+import { writeAnswerStageToMeta, writeEventTargetToInteraction, mergeInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 
@@ -242,6 +242,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     payload = super._defaultProcessInteraction(payload, args);
     payload = this._writeAskPropertiesToInteraction(payload, args);
     payload = this._writeAnswerClickInteraction(payload, args);
+    payload = writeEventTargetToInteraction(payload, args);
     return payload;
   }
 
@@ -297,7 +298,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     markAsTracked(event);
     // distinguish from regular sources element click
     // TODO
-    this._views.trackers.sources.click([source.product_id]);
+    this._views.trackers.sources.click([source.product_id], { event_target: 'citation-link' });
   }
 
   _onAnswerLinkClick({ event, ...item }) {
