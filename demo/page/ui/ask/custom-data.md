@@ -17,7 +17,9 @@ misocmd.push(async () => {
   const api = window.doggoganger.buildApi();
   workflow.on('request', async ({ session, payload }) => {
     workflow.updateData({ session });
-    const { question_id } = await api.ask.questions(payload);
+    const headResponse = await api.ask.questions(payload);
+    const { question_id } = headResponse;
+    workflow.updateData({ session, value: headResponse });
     let intervalId;
     intervalId = setInterval(async () => {
       const value = await api.ask.answer(question_id);
@@ -26,9 +28,11 @@ misocmd.push(async () => {
     }, 1000);
   });
   await client.ui.ready;
-  const { templates } = MisoClient.ui.defaults.ask;
+  const { templates, wireFollowUps, wireRelatedResources } = MisoClient.ui.defaults.ask;
   const rootElement = document.querySelector('#miso-ask-combo');
   rootElement.innerHTML = templates.root();
+  wireFollowUps(client, rootElement.querySelector(`.miso-ask-combo__follow-ups`));
+  wireRelatedResources(client, rootElement.querySelector(`.miso-ask-combo__related-resources`));
 });
 </script>
 {% endraw %}
