@@ -185,13 +185,14 @@ export default class ViewActor {
     }
     // iterate over all member components' roles
     for (const { role } of element.components) {
-      // not a data role -> nonempty
+      // not a data role -> irrelevant
       if (!isDataRole(role)) {
-        return false;
+        continue;
       }
       let sliced = value && value[role];
       if (role === ROLE.QUERY_SUGGESTIONS) {
         // special case: query suggestions -> look up value from hub
+        // TODO: adhoc
         const data = this.hub.states[fields.suggestions()];
         sliced = data && data.value;
       }
