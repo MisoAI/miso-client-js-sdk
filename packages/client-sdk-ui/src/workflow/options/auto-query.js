@@ -4,8 +4,8 @@ import { ROLE } from '../../constants.js';
 export const DEFAULT_AUTO_QUERY_PARAM = 'q';
 export const DEFAULT_AUTO_QUERY_SOURCE_PARAM = 'qs';
 
-export function normalizeAutoQueryOptions({ setValue = true, focus = true, param = DEFAULT_AUTO_QUERY_PARAM, sourceParam = DEFAULT_AUTO_QUERY_SOURCE_PARAM, ...options } = {}) {
-  return { setValue, focus, param, sourceParam, ...options };
+export function normalizeAutoQueryOptions({ setValue = true, focus = true, updateUrl = true, param = DEFAULT_AUTO_QUERY_PARAM, sourceParam = DEFAULT_AUTO_QUERY_SOURCE_PARAM, ...options } = {}) {
+  return { setValue, focus, updateUrl, param, sourceParam, ...options };
 }
 
 export function autoQuery(options = {}) {

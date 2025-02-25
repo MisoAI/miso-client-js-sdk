@@ -189,6 +189,9 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   // data //
   _updateData(data) {
+    // capture question ID and register at context
+    this._writeQuestionIdFromData(data);
+
     // if it's the head response, write question id and return
     if (data.value && !data.value.answer_stage) {
       this._handleHeadResponse(data);
@@ -200,10 +203,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     this._updateUrlIfNecessary(data);
   }
 
-  _handleHeadResponse(data) {
-    // capture question ID and register at context
-    this._writeQuestionIdFromData(data);
-  }
+  _handleHeadResponse(data) {}
 
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
@@ -213,28 +213,34 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _writeQuestionIdFromData({ value }) {
-    if (!value) {
-      return;
-    }
-    const { question_id: questionId } = value;
-    this._writeQuestionId(questionId);
+    value && this._writeQuestionId(value.question_id);
   }
 
   _updateUrlIfNecessary({ value, request }) {
-    if (!value || !this._autoQuery || this._autoQuery.updateUrl === false) { // explicitly false
+    if (!this._autoQuery || !this._autoQuery.updateUrl) {
       return;
     }
-    const { param } = this._autoQuery;
-    const { question } = value;
-    const organic = request && request.payload && request.payload._meta && request.payload._meta.question_source === ORGANIC_QUESTION_SOURCE;
+    const { param, sourceParam } = this._autoQuery;
+    const question = (value && value.question) || (request && request.payload && request.payload.question);
+    const questionSource = request && request.payload && request.payload._meta && request.payload._meta.question_source;
+
+    if (!question) {
+      return; // at initial phase
+    }
 
     const url = new URL(window.location);
     const currentQuestion = url.searchParams.get(param);
-    // TODO: review this, handle &qs=
-    if (question !== currentQuestion && (!organic || this._autoQuery.updateUrl === true)) {
-      url.searchParams.set(param, question);
-      window.history.replaceState({}, '', url);
+    const currentQuestionSource = url.searchParams.get(sourceParam) || ORGANIC_QUESTION_SOURCE;
+    if (question === currentQuestion && questionSource === currentQuestionSource) {
+      return;
     }
+    url.searchParams.set(param, question);
+    if (questionSource === ORGANIC_QUESTION_SOURCE) {
+      url.searchParams.delete(sourceParam);
+    } else {
+      url.searchParams.set(sourceParam, questionSource);
+    }
+    window.history.replaceState({}, '', url);
   }
 
   // interactions //
