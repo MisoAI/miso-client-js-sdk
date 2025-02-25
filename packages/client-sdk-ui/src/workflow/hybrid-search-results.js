@@ -2,6 +2,7 @@ import { trimObj } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
+import { writeMisoIdToSession } from './processors.js';
 
 // we want to override members, not adding to it
 const ROLES_OPTIONS = {
@@ -67,6 +68,22 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
         question_id: this._superworkflow._answer.questionId,
       }),
     };
+  }
+
+  // data //
+  _defaultProcessData(data) {
+    data = super._defaultProcessData(data);
+    writeMisoIdToSession(data);
+    return data;
+  }
+
+  // interactions //
+  _defaultProcessInteraction(payload, args) {
+    return this._superworkflow._defaultProcessInteraction(payload, args);
+  }
+
+  _defaultProcessInteraction0(payload, args) {
+    return super._defaultProcessInteraction(payload, args);
   }
 
 }

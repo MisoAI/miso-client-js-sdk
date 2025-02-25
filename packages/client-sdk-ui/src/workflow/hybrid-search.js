@@ -98,12 +98,7 @@ export default class HybridSearch extends Workflow {
   }
 
   _initActors() {
-    const hub = this._hub;
-    const client = this._client;
-    const options = this._options;
-
     this._views = new HybridSearchViewsActor(this);
-    this._interactions = new InteractionsActor(hub, { client, options });
   }
 
   _initSession() {
@@ -149,7 +144,9 @@ export default class HybridSearch extends Workflow {
 
   // interactions //
   _defaultProcessInteraction(payload, args) {
-    return this._answer._defaultProcessInteraction(payload, args);
+    payload = this._answer._defaultProcessInteraction0(payload, args);
+    payload = this._results._defaultProcessInteraction0(payload, args);
+    return payload;
   }
 
   // destroy //

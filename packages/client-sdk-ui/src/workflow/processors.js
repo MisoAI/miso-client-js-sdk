@@ -68,6 +68,36 @@ export function writeMisoIdToMeta(data) {
   };
 }
 
+export function writeMisoIdToSession(data) {
+  const { session, value } = data;
+  if (!session || !value) {
+    return;
+  }
+  const { miso_id } = value;
+  if (!miso_id) {
+    return;
+  }
+  session.meta.miso_id = miso_id;
+}
+
+export function writeMisoIdFromSession(data) {
+  const { session, value } = data;
+  if (!session || !value) {
+    return data;
+  }
+  const { meta: { miso_id } = {} } = session;
+  if (!miso_id) {
+    return data;
+  }
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      miso_id,
+    },
+  };
+}
+
 export function writeKeywordsToData(data) {
   const { request, value } = data;
   // we still want the value in loading status

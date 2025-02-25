@@ -1,7 +1,7 @@
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { writeKeywordsToData } from './processors.js';
+import { writeKeywordsToData, writeMisoIdToSession, writeMisoIdFromSession } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
@@ -63,6 +63,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   _defaultProcessData(data) {
     data = super._defaultProcessData(data);
     data = writeKeywordsToData(data);
+    data = writeMisoIdFromSession(data);
     return data;
   }
 
@@ -79,12 +80,23 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
 
   _handleHeadResponse(data) {
     super._handleHeadResponse(data);
+    // keep track of miso_id in session
+    writeMisoIdToSession(data);
     // share the search results with its sibling
     this._dispatchDataToSibling(data);
   }
 
   _dispatchDataToSibling(data) {
     this._resultsSession && this._superworkflow._results.updateData({ ...data, session: this._resultsSession });
+  }
+
+  // interactions //
+  _defaultProcessInteraction(payload, args) {
+    return this._superworkflow._defaultProcessInteraction(payload, args);
+  }
+
+  _defaultProcessInteraction0(payload, args) {
+    return super._defaultProcessInteraction(payload, args);
   }
 
   // destroy //
