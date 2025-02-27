@@ -12,10 +12,13 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
-  const workflow = client.ui.ask;
-  workflow.useApi(false);
+  const context = client.ui.asks;
+  context.useApi(false);
   const api = window.doggoganger.buildApi();
-  workflow.on('request', async ({ session, payload }) => {
+  context.on('session', async ({ workflow, ...session }) => {
+    workflow.updateData({ session });
+  });
+  context.on('request', async ({ workflow, session, payload }) => {
     workflow.updateData({ session });
     const headResponse = await api.ask.questions(payload);
     const { question_id } = headResponse;

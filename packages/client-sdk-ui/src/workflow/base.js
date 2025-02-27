@@ -10,14 +10,16 @@ import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, 
 function injectLogger(hub, callback) {
   const { update, trigger } = hub;
   hub.update = (name, state, options) => {
+    const result = update.call(hub, name, state, options);
     if (!options || !options.silent) {
       callback('update', name, state, options);
     }
-    return update.call(hub, name, state, options);
+    return result;
   }
   hub.trigger = (...args) => {
+    const result = trigger.apply(hub, args);
     callback('trigger', ...args);
-    return trigger.apply(hub, args);
+    return result;
   }
   return hub;
 }
