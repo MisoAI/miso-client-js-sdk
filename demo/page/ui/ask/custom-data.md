@@ -15,9 +15,6 @@ misocmd.push(async () => {
   const context = client.ui.asks;
   context.useApi(false);
   const api = window.doggoganger.buildApi();
-  context.on('session', async ({ workflow, ...session }) => {
-    workflow.updateData({ session });
-  });
   context.on('request', async ({ workflow, session, payload }) => {
     workflow.updateData({ session });
     const headResponse = await api.ask.questions(payload);

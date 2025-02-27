@@ -22,11 +22,12 @@ export default class DataActor {
   }
 
   _handleSession(session) {
-    // protocol: inactive -> no reaction
+    // this is mandatory in any case
+    /*
     if (!this.active) {
       return;
     }
-
+    */
     // abort ongoing data fetch if any
     if (!this._session || (session.index !== this._session.index)) {
       // new session, abort preview data fetch if necessary
@@ -38,6 +39,7 @@ export default class DataActor {
     }
     this._session = session;
 
+    // TODO: move this to workflow
     // reflect session update
     this._emitResponse({ session });
   }
