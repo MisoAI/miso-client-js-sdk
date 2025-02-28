@@ -194,7 +194,7 @@ function tagPair({ className, options = {} }, { product_id, url }, { classSuffix
   return [`<${tag} class="${className}__${classSuffix}" ${roleAttrs} ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
 }
 
-function linkAttrs(link) {
+function linkAttrs(link = {}) {
   const { target = '_blank', rel = 'noopener', open = true } = link; // TODO: other properties
   let attrs = '';
   if (open) {
