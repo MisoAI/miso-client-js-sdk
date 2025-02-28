@@ -87,6 +87,17 @@ export default class Explore extends Workflow {
     return super.useApi(options);
   }
 
+  useLink(fn, options) {
+    UseLinkMixin.prototype.useLink.call(this, fn, options);
+    // also put options to layouts
+    if (options) {
+      this.useLayouts({
+        [ROLE.RELATED_QUESTIONS]: { link: options },
+      });
+    }
+    return this;
+  }
+
   // lifecycle //
   start({ relatedQuestions = true } = {}) {
     if (this._linkFn === undefined) {

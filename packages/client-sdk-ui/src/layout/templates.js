@@ -187,13 +187,25 @@ export function cta(layout, data, meta) {
 
 // helpers //
 function tagPair({ className, options = {} }, { product_id, url }, { classSuffix = 'item-body', role = 'item', ...meta } = {}) {
-  const { link = {} } = options;
-  const { target = '_blank', rel = 'noopener' } = link; // TODO: other properties
   const tag = meta.link !== false && url ? 'a' : 'div';
-  const urlAttrs = meta.link !== false && url ? `href="${url}" target="${target}" rel="${rel}"` : '';
+  const urlAttrs = meta.link !== false && url ? `href="${url}" ${linkAttrs(options.link)}` : '';
   const productAttrs = product_id ? `${ATTR_DATA_MISO_PRODUCT_ID}="${product_id}"` : '';
   const roleAttrs = role ? `data-role="${role}"` : '';
   return [`<${tag} class="${className}__${classSuffix}" ${roleAttrs} ${productAttrs} ${urlAttrs}>`, `</${tag}>`];
+}
+
+function linkAttrs(link) {
+  const { target = '_blank', rel = 'noopener', open = true } = link; // TODO: other properties
+  let attrs = '';
+  if (open) {
+    if (target) {
+      attrs += ` target="${target}"`;
+    }
+    if (rel) {
+      attrs += ` rel="${rel}"`;
+    }
+  }
+  return attrs;
 }
 
 const DEFAULT_DATE_OPTIONS = Object.freeze({ locale: 'en-US', year: 'numeric', month: 'short', day: 'numeric' });

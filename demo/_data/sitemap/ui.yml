@@ -60,6 +60,8 @@ sections:
     path: /explore/lorem-client
   - title: Linkless
     path: /explore/linkless
+  - title: Current page
+    path: /explore/current-page
 - title: Hybrid Search
   path: /hybrid-search
   pages:
