@@ -170,14 +170,13 @@ export default class GalleryLayout extends CollectionLayout {
 
   _syncCssVariables() {
     const context = this._galleryContext;
-    let { itemAspectRatio = 1, height = DEFAULT_HEIGHT } = this.options;
+    let { itemAspectRatio = 1 } = this.options;
     itemAspectRatio = context.itemAspectRatio = cssAspectRatio(itemAspectRatio);
     const { element } = this._view;
     if (!element) {
       return;
     }
     // TODO: skip if equal to default values
-    element.style.setProperty('--miso-gallery-height', `${height}`);
     element.style.setProperty('--miso-gallery-item-1x1-aspect-ratio', `${itemAspectRatio}`);
     element.style.setProperty('--miso-gallery-item-1x2-aspect-ratio', `${itemAspectRatio.scaleBy([1, 2])}`);
   }
@@ -198,7 +197,7 @@ export default class GalleryLayout extends CollectionLayout {
 
     // update DOM
     listElement.style.aspectRatio = `${columnCount} / 2`;
-    listElement.style.height = 'auto';
+    listElement.style.height = itemCount > 0 ? 'auto' : '0';
   }
 
   _syncItemCount({ state } = {}) {

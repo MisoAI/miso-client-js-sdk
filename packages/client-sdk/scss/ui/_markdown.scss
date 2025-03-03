@@ -171,24 +171,22 @@
   }
 
   // slot //
-  .miso-markdown-upper,
-  .miso-markdown-lower {
-    margin-bottom: 0 !important;
-
-    > * {
+  &.miso-markdown-with-slot {
+    .miso-markdown-upper,
+    .miso-markdown-slot,
+    .miso-markdown-lower {
       margin-top: 0;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
-  }
-  .miso-markdown-slot {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    display: none;
-  }
-  &[data-slot-status="ready"],
-  &.done {
-    > .miso-markdown-slot {
-      display: block;
+    .miso-markdown-slot {
+      margin-bottom: 1rem;
+      display: none;
+    }
+    &[data-slot-status="ready"],
+    &.done {
+      > .miso-markdown-slot {
+        display: block;
+      }
     }
   }
 }

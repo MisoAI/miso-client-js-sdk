@@ -6,17 +6,19 @@
   // how many lines to show for title text
   --miso-gallery-title-lines: 2;
 
-  --miso-gallery-height: 16rem;
   --miso-gallery-item-1x1-aspect-ratio: 1;
   --miso-gallery-item-1x2-aspect-ratio: 0.5;
 }
 
 .miso-gallery {
+  overflow: hidden;
+
   .miso-gallery__list {
     list-style: none !important;
-    height: var(--miso-gallery-height);
+    overflow: hidden;
+    height: 0; // start with 0, so it won't flash when there is no image
     padding: 0;
-    margin: 0 calc(var(--miso-gallery-item-gap) * -0.5);
+    margin: calc(var(--miso-gallery-item-gap) * -0.5);
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
