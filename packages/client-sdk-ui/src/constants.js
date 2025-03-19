@@ -105,6 +105,7 @@ export const STATUS = Object.freeze({
   DONE: 'done',
   EMPTY: 'empty',
   NONEMPTY: 'nonempty',
+  UNANSWERABLE: 'unanswerable',
 });
 
 export function validateEventType(value) {

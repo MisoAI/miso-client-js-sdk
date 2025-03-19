@@ -60,10 +60,13 @@ export default class ContainerLayout extends RafLayout {
     if (!element) {
       return;
     }
-    const { status, ongoing, meta: { miso_id, empty = false } = {} } = state;
+    const { status, ongoing, meta: { miso_id, empty = false, unanswerable = false } = {} } = state;
     const statuses = [status, empty ? STATUS.EMPTY : STATUS.NONEMPTY];
     if (status === STATUS.READY) {
       statuses.push(ongoing ? STATUS.ONGOING : STATUS.DONE);
+    }
+    if (unanswerable) {
+      statuses.push(STATUS.UNANSWERABLE);
     }
     element.setAttribute('status', statuses.join(' '));
     if (miso_id) {

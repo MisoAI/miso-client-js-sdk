@@ -287,3 +287,20 @@ export function mergeInteraction(base = {}, patch = {}) {
     }),
   });
 }
+
+export function writeUnanswerableToMeta(data) {
+  const { value } = data;
+  if (!value) {
+    return data;
+  }
+  if (!value.finished || value.finish_reason !== 'success' || (value.sources && value.sources.length > 0)) {
+    return data;
+  }
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      unanswerable: true,
+    },
+  };
+}

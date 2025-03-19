@@ -9,6 +9,15 @@ class Sections extends _Sections {
     super({ helpers });
   }
 
+  answer(options) {
+    const { container } = this._helpers;
+    return container(options, { name: 'answer', visibleWhen: 'ready !unanswerable' }, [
+      ...this.question(options),
+      '<miso-answer></miso-answer>',
+      '<miso-feedback></miso-feedback>',
+    ]);
+  }
+
   answerBox(options) {
     const { element } = this._helpers;
     const { classPrefix } = options;

@@ -43,6 +43,15 @@ miso-recommendation {
   }
 }
 
+miso-hybrid-search {
+  &[status~="unanswerable"] {
+    &[visible-when~="!unanswerable"],
+    [visible-when~="!unanswerable"] {
+      display: none !important;
+    }
+  }
+}
+
 miso-ask-combo,
 miso-hybrid-search-combo {
   display: block;

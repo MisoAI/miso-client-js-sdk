@@ -9,12 +9,13 @@ const TOGGLE_BUTTON_SELECTOR = '[data-role="answer-box-toggle"]';
 
 export default class AnswerBox {
 
-  constructor(client, element, { classPrefix = CLASS_PREFIX, phrases = {} } = {}) {
+  constructor(client, element, { classPrefix = CLASS_PREFIX, phrases = {}, hideWhenUnanswerable = true } = {}) {
     this._client = client;
     this._workflow = client.ui.hybridSearch;
     this._element = element;
     this._classPrefix = classPrefix;
     this._phrases = phrases;
+    this._hideWhenUnanswerable = hideWhenUnanswerable;
     this._init();
   }
 
@@ -58,10 +59,16 @@ export default class AnswerBox {
 
   _syncWofkflowStatus() {
     const { status } = this._workflow._answer;
+    const { meta: { unanswerable = false } = {} } = this._workflow._answer._hub.states[fields.data()];
+
     switch (status) {
       case STATUS.ERRONEOUS:
       case STATUS.READY:
-        this.show();
+        if (unanswerable && this._hideWhenUnanswerable) {
+          this.hide();
+        } else {
+          this.show();
+        }
         break;
       default:
         this.hide();
