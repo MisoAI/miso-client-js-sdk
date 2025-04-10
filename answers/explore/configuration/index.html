@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - API</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/api/" />
+<title>Miso SDK for JavaScript - Answers - Configuration</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/explore/configuration/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - API" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Configuration" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/configuration/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - API">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Configuration">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/configuration/">
 
 
 
@@ -138,7 +138,7 @@
             <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
       </div>
@@ -155,7 +155,7 @@
             <a href="/miso-client-js-sdk/answers/hybrid-search/workflow/">Workflow</a>
           </li></ul>
       </div>
-    </li><li class="section mb-3 active ">
+    </li><li class="section mb-3  ">
       <a href="/miso-client-js-sdk/answers/api/">API</a>
       <div>
         <ul class="list-unstyled fw-normal pb-1 small"><li class="page  ">
@@ -179,47 +179,21 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Ask API</h1>
+          <h1 class="intro-title">Explore module - configuration</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>You can access Miso API with SDK client without using the UI components.</p>
-<h3>Table of Content</h3><div class="section-toc">
-    <div class="page-list list-unstyled"><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/answers/api/setup/">Setup</a>
-        </h5><p class="mb-0">
-          Setup SDK client for using Miso API.
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/answers/api/questions/">Questions</a>
-        </h5><p class="mb-0">
-          Answer user&#39;s question.
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/answers/api/related_questions/">Related questions</a>
-        </h5><p class="mb-0">
-          Generate related questions against an article.
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
-        </h5><p class="mb-0">
-          Send user interaction events for analytics regarding ask module.
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/answers/api/interactions-explore/">Interactions (explore)</a>
-        </h5><p class="mb-0">
-          Send user interaction events for analytics regarding explore module.
-        </p></div><div class="page mb-4 ">
-        <h5 class="title mb-2">
-          <a href="/miso-client-js-sdk/answers/api/context/">Context</a>
-        </h5><p class="mb-0">
-          Context values that are included by all to API payloads.
-        </p></div></div>
-  </div>
+          <p>This page documents the configuration options available for the explore module.</p>
+<h3 id="configure-the-number-of-questions" tabindex="-1">Configure the number of questions</h3>
+<p>You can configure the number of questions to display in the explore module using the <code>rows</code> parameter in the <code>useApi</code> method. The default value is 5.</p>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'product_id_of_the_article'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">3</span> <span class="token comment">// default is 5</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="notes" tabindex="-1">Notes</h3>
+<ul>
+<li>The actual number of questions displayed may be less than the specified rows if there are not enough questions available</li>
+</ul>
 
         </div>
       </main>
