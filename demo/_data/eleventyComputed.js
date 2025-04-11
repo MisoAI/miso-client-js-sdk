@@ -1,5 +1,5 @@
-const { eleventyComputed } = require('@miso.ai/doc-utils');
+import { eleventyComputed } from '@miso.ai/doc-utils';
 
-module.exports = {
+export default {
   ...eleventyComputed,
 };

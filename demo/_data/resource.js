@@ -42,7 +42,7 @@ function sdkUrl(env, build) {
   return `${sdkUmdPath(env)}/${sdkUmdFileName(build)}${sdkUmdFileExt(env)}`;
 }
 
-module.exports = function() {
+export default function() {
   const env = process.env.NODE_ENV || 'production';
   return {
     env: env,
@@ -50,4 +50,4 @@ module.exports = function() {
       url: sdkUrl.bind(undefined, env)
     }
   };
-};
+}

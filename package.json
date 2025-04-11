@@ -13,6 +13,7 @@
     "packages/client-sdk-gtm",
     "packages/client-sdk-shopify",
     "packages/client-sdk",
+    "packages/client-sdk-codegen",
     "demo"
   ],
   "scripts": {

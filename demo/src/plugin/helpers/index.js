@@ -1,6 +1,6 @@
-import * as ui from './ui';
-import * as unit from './unit';
-import * as fetch from './fetch';
-import * as doggo from './doggo';
+import * as ui from './ui/index.js';
+import * as unit from './unit.js';
+import * as fetch from './fetch.js';
+import * as doggo from './doggo.js';
 
 export { ui, unit, fetch, doggo };

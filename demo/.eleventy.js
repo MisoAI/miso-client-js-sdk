@@ -1,15 +1,19 @@
-require ('dotenv/config');
+import 'dotenv/config';
+import { EleventyRenderPlugin } from "@11ty/eleventy";
+import markdownIt from 'markdown-it';
+import markdownItAnchor from 'markdown-it-anchor';
+import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
+import { codegen } from '@miso.ai/client-sdk-codegen';
+import yaml from 'js-yaml';
+import Data from './data.js';
 
-const { EleventyRenderPlugin } = require("@11ty/eleventy");
-const markdownIt = require('markdown-it');
-const markdownItAnchor = require('markdown-it-anchor');
-const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const yaml = require('js-yaml');
-const Data = require('./data');
+const markdown = markdownIt({
+  html: true,
+  breaks: true,
+  linkify: true,
+}).use(markdownItAnchor);
 
-const markdown = markdownIt({ html: true }).use(markdownItAnchor);
-
-module.exports = function(config) {
+export default function(config) {
   config.setLibrary('md', markdown);
   config.addPlugin(EleventyRenderPlugin);
   config.addPlugin(syntaxHighlight);
@@ -47,15 +51,40 @@ module.exports = function(config) {
       data: '../_data',
       output: 'dist'
     },
-  }
-};
+  };
+}
 
 class Helpers {
-
   constructor() {}
 
   isCurrentPage(pageUrl, chapter, path) {
     return pageUrl === '/' + chapter + (path || '') + '/';
   }
 
+  codegen(config) {
+    const apiKey = resolveApiKey(config);
+    const { js, html } = codegen({ ...config, apiKey });
+    return `
+<script async>
+${js}
+</script>
+${html}
+`;
+  }
+}
+
+function resolveApiKey(config) {
+  let { apiKey = '' } = config;
+  if (!apiKey) {
+    apiKey = config.workflow === 'search' || config.workflow === 'recommendation' ? 'env.DEFAULT_API_KEY' : 'env.DEFAULT_ASK_API_KEY';
+  }
+  let i = 0;
+  while (apiKey.startsWith('env.')) {
+    apiKey = process.env[apiKey.slice(4)] || '';
+    i++;
+    if (i > 10) {
+      break;
+    }
+  }
+  return apiKey;
 }

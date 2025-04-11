@@ -1,11 +1,11 @@
-const { join } = require('path');
-const { readFileSync } = require('fs');
-const { load: loadYaml } = require('js-yaml');
+import { join } from 'path';
+import { readFileSync } from 'fs';
+import yaml from 'js-yaml';
 
-const DATA_DIR = join(__dirname, '_data');
+const DATA_DIR = join('_data');
 
 function readYamlSync(file) {
-  return loadYaml(readFileSync(file, 'utf8'));
+  return yaml.load(readFileSync(file, 'utf8'));
 }
 
 function toWorkflowBitMap(workflows) {
@@ -76,4 +76,4 @@ class Data {
   }
 }
 
-module.exports = Data;
+export default Data;

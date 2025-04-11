@@ -1,4 +1,4 @@
-import alert from './ui/alert';
+import alert from './ui/alert.js';
 
 function shimType(type) {
   switch (type) {

@@ -1,3 +1,3 @@
-module.exports = {
-  dependency: 'none',
+export default {
+  dependency: 'ask-combo',
 };

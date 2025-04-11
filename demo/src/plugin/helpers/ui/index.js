@@ -1,2 +1,2 @@
-export { default as alert } from './alert';
-export * from './misc';
+export { default as alert } from './alert.js';
+export * from './misc.js';

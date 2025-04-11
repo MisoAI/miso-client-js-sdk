@@ -1,5 +1,5 @@
-import { toElement, main } from './misc';
-import getBootstrap from './bootstrap';
+import { toElement, main } from './misc.js';
+import getBootstrap from './bootstrap.js';
 
 export default async function alert(message, options) {
   if (typeof message === 'string') {

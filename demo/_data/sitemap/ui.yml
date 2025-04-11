@@ -1,17 +1,4 @@
 sections:
-- title: Ask (Combo)
-  path: /ask-combo
-  pages:
-  - title: Default
-    path: /ask-combo/default
-  - title: No related resources
-    path: /ask-combo/no-related-resources
-  - title: Custom
-    path: /ask-combo/custom
-  - title: Production
-    path: /ask-combo/production
-  - title: Tooltip
-    path: /ask-combo/tooltip
 - title: Ask
   path: /ask
   pages:
@@ -65,6 +52,8 @@ sections:
 - title: Hybrid Search
   path: /hybrid-search
   pages:
+  - title: Standard
+    path: /hybrid-search/standard
   - title: Lorem
     path: /hybrid-search/lorem
   - title: Production
@@ -117,3 +106,16 @@ sections:
     path: /misc/loading
   - title: Citation link
     path: /misc/citation-link
+- title: Ask (Combo)
+  path: /ask-combo
+  pages:
+  - title: Default
+    path: /ask-combo/default
+  - title: No related resources
+    path: /ask-combo/no-related-resources
+  - title: Custom
+    path: /ask-combo/custom
+  - title: Production
+    path: /ask-combo/production
+  - title: Tooltip
+    path: /ask-combo/tooltip

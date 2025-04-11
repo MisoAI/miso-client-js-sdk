@@ -1,0 +1,49 @@
+---
+dependency: codegen
+pagination:
+  data: workflows
+  size: 1
+  alias: workflow
+permalink: "/ui/{{ workflow }}/wildcard/"
+workflows:
+  - ask
+  - explore
+  - hybrid-search
+  - recommendation
+  - search
+---
+
+{#
+
+{% if workflow == 'ask' %}
+  <h1 class="hero-title">Miso Answers</h1>
+  <div id="miso-ask-combo" class="miso-ask-combo"></div>
+{% elif workflow == 'explore' %}
+  <div class="miso-explore-combo">
+    <miso-explore visible-when="ready">
+      <h3 class="miso-explore-combo__phrase miso-explore-combo__related-questions-phrase">Related questions</h3>
+      <miso-related-questions></miso-related-questions>
+      <miso-query></miso-query>
+    </miso-explore>
+  </div>
+{% elif workflow == 'hybrid-search' %}
+  <h1 class="hero-title">Miso Hybrid Search</h1>
+  <div id="miso-hybrid-search-combo" class="miso-hybrid-search-combo"></div>
+{% elif workflow == 'recommendation' %}
+  <miso-recommendation>
+    <miso-products></miso-products>
+  </miso-recommendation>
+{% elif workflow == 'search' %}
+  <section>
+    <miso-search>
+      <miso-query></miso-query>
+    </miso-search>
+  </section>
+  <section style="margin-top: 1rem;">
+    <miso-search>
+      <miso-products></miso-products>
+    </miso-search>
+  </section>
+{% endif %}
+
+#}

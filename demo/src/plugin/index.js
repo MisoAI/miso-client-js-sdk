@@ -1,1 +1,1 @@
-export { default as DemoPlugin } from './demo';
+export { default as DemoPlugin } from './demo.js';

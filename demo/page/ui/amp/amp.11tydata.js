@@ -1,3 +1,4 @@
-module.exports = {
-  layout: 'amp',
+export default {
+  layout: 'amp.njk',
+  dependency: 'amp',
 };

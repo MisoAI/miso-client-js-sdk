@@ -1,6 +1,7 @@
 {
   "name": "@miso.ai/client-sdk-demo",
   "private": true,
+  "type": "module",
   "scripts": {
     "clean": "npx rimraf dist",
     "build:11ty": "npx eleventy",
@@ -8,15 +9,15 @@
     "build:sass": "npx sass scss:dist/css",
     "start:sass": "npx sass --watch scss:dist/css",
     "build:js": "rollup -c",
-    "start:js": "rollup -w -c rollup.config.dev.mjs",
+    "start:js": "rollup -w -c rollup.config.dev.js",
     "start:service": "[[ -f \"$(npm config get prefix -ws=false)/bin/doggoganger\" ]] && (\"$(npm config get prefix -ws=false)/bin/doggoganger\" -w) || (npx -p @miso.ai/doggoganger doggoganger)",
     "_build": "npm-run-all build:*",
     "start": "npm-run-all build:sass --parallel start:*",
     "debug": "DEBUG=* npx eleventy"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^2.0.1",
-    "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
     "@koa/cors": "^5.0.0",
     "@koa/router": "^12.0.0",
     "js-yaml": "^4.1.0",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@miso.ai/client-sdk": "file:packages/client-sdk",
     "@miso.ai/client-sdk-algolia": "file:packages/client-sdk-algolia",
+    "@miso.ai/client-sdk-codegen": "file:packages/client-sdk-codegen",
     "@miso.ai/client-sdk-dev-tool": "file:packages/client-sdk-dev-tool",
     "@miso.ai/doc-utils": "^1.0.0",
     "@miso.ai/progressive-markdown": "file:packages/progressive-markdown",

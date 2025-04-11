@@ -1,5 +1,5 @@
 import LocalStorageProperty from "../util/local-storage-property";
-import * as helpers from './helpers';
+import * as helpers from './helpers/index.js';
 
 // inject with .env or process.env
 const DEFAULT_API_KEY = __DEFAULT_API_KEY__;
