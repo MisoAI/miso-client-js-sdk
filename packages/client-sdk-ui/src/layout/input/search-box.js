@@ -329,7 +329,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   async _submit(value) {
-    if (!value) {
+    if (!value || !value.trim()) {
       return;
     }
     this.close();
