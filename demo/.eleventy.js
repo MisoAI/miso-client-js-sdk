@@ -63,7 +63,7 @@ class Helpers {
 
   codegen(config) {
     const apiKey = resolveApiKey(config);
-    const { js, html } = codegen({ ...config, apiKey });
+    const { js, html } = codegen({ dryRun: true, ...config, apiKey });
     return `
 <script async>
 ${js}

@@ -1,4 +1,4 @@
-- path: /hybrid-search/standard
+- path: hybrid-search/standard
   config:
     workflow: hybrid-search
     preset: standard

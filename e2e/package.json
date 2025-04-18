@@ -1,0 +1,13 @@
+{
+  "name": "@miso.ai/client-sdk-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.30.0"
+  }
+}

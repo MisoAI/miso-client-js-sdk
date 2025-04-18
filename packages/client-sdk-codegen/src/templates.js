@@ -1,4 +1,4 @@
-import { indent } from './utils.js';
+import { indent, blocks } from './utils.js';
 
 export function misocmd(body) {
   return `
@@ -10,11 +10,19 @@ ${indent(body, 2)}
 }
 
 export function createClient(options) {
-  return `
-// client
-const MisoClient = window.MisoClient;
-const client = new MisoClient(${clientOptions(options)});
-`.trim();
+  return blocks(
+    `const MisoClient = window.MisoClient;`,
+    ...clientPlugins(options),
+    `const client = new MisoClient(${clientOptions(options)});`
+  );
+}
+
+function clientPlugins(options) {
+  const blocks = [];
+  if (options.dryRun) {
+    blocks.push(`MisoClient.plugins.use("std:dry-run");`);
+  }
+  return blocks;
 }
 
 function clientOptions({ apiKey, apiKeyParam = false } = {}) {

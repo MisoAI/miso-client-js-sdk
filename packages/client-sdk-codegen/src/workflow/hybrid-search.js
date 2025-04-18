@@ -22,6 +22,7 @@ export function hybridSearch(options) {
 
 function js(options) {
   return misocmd(`
+// client
 ${createClient(options)}
 
 // workflow
