@@ -115,6 +115,20 @@ export default class PluginRoot extends Registry {
     this._root._customSendBeacon = sendBeacon;
   }
 
+  onHubUpdate(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${callback}`);
+    }
+    this._root._hubUpdateCallbacks.push(callback);
+  }
+
+  onHubEmit(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${callback}`);
+    }
+    this._root._hubEmitCallbacks.push(callback);
+  }
+
   _tryConfig(instance, options) {
     if (options === undefined) {
       return;
@@ -229,7 +243,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'whenInstalled', 'whenRegistered']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'onHubUpdate', 'onHubEmit', 'whenInstalled', 'whenRegistered']);
     defineValues(this, { classes });
   }
 

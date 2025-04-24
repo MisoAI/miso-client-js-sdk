@@ -107,6 +107,7 @@ export default class Autocomplete extends Workflow {
   }
 
   _updateCompletions(data) {
+    // TODO: session is different
     this._superworkflow.updateCompletions(data);
   }
 

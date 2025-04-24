@@ -16,6 +16,8 @@ class Root extends Component {
     this._urlPasses = [];
     this._customFetch = undefined;
     this._customSendBeacon = undefined;
+    this._hubUpdateCallbacks = [];
+    this._hubEmitCallbacks = [];
     this.version = version || 'dev';
     this._cmdRes = new Resolution();
   }

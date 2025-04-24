@@ -50,6 +50,7 @@ export default class RadioLayout extends TemplateBasedLayout {
       view.hub.on(this._field, () => this._refresh()),
       proxyElement.on('click', (e) => this._handleClick(e)),
     ];
+    // TODO: it shall not carry the responsibility of setting default value
     this._defaultValue ? this._select(this._defaultValue, { silent: true }) : this._clear({ silent: true });
   }
 

@@ -1,0 +1,72 @@
+export default class Sessions {
+
+  constructor() {
+    this._sessions = [];
+    this._current = undefined;
+  }
+
+  get current() {
+    return this._current;
+  }
+
+  add(session) {
+    this._sessions.push(this._current = new Session(session));
+  }
+
+  get(uuid) {
+    for (const session of this._sessions) {
+      if (session.uuid === uuid) {
+        return session;
+      }
+    }
+    return undefined;
+  }
+
+  [Symbol.iterator]() {
+    return this._sessions[Symbol.iterator]();
+  }
+
+  _handleEvent(event) {
+    if (event._event === 'session') {
+      // TODO: make sure not redundant
+      this._sessions.push(this._current = new Session(event));
+      return true;
+    }
+    const session = event.session ? this.get(event.session.uuid) : this._current;
+    if (!session) {
+      // TODO: it's legit for silent event without session (to set default values)
+      throw new Error(event.session ? 
+        `Session "${event.session.uuid}" is not found in event ${JSON.stringify(event)}` :
+        `No current session when event occurs: ${JSON.stringify(event)}`
+      );
+    }
+    return session._handleEvent(event);
+  }
+
+}
+
+class Session {
+
+  constructor(data) {
+    Object.assign(this, data);
+    this._lifecycle = {};
+  }
+
+  get lifecycle() {
+    return Object.freeze({ ...this._lifecycle });
+  }
+
+  // states
+  // interactions
+
+  _handleEvent(event) {
+    // TODO
+    return true;
+  }
+
+  _handleUnknownEvent(event) {
+    console.log('Unknown event (session)', event);
+    return true;
+  }
+
+}

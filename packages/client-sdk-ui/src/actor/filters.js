@@ -68,7 +68,7 @@ export default class Filters {
   }
 
   reset() {
-    const oldStates = this.states;
+    const oldStates = this._states;
     this._states = undefined;
     const states = this._getStates();
     this._events.emit('reset', { states, oldStates });

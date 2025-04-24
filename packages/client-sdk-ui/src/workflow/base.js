@@ -6,24 +6,6 @@ import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
 import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
 
-// TODO: just bury this into hub
-function injectLogger(hub, callback) {
-  const { update, trigger } = hub;
-  hub.update = (name, state, options) => {
-    const result = update.call(hub, name, state, options);
-    if (!options || !options.silent) {
-      callback('update', name, state, options);
-    }
-    return result;
-  }
-  hub.trigger = (...args) => {
-    const result = trigger.apply(hub, args);
-    callback('trigger', ...args);
-    return result;
-  }
-  return hub;
-}
-
 const DEFAULT_API_OPTIONS = Object.freeze({});
 
 const DEFAULT_LAYOUTS = Object.freeze({
@@ -62,8 +44,13 @@ export default class Workflow extends Component {
     this._extensions = plugin._getExtensions(client);
     this._defaults = defaults;
     this._options = options || new WorkflowOptions(context && context._options, defaults);
-    this._hub = injectLogger(new Hub(), (...args) => this._log(...args));
+    this._hub = new Hub({
+      onUpdate: event => this._onHubUpdate(event),
+      onEmit: event => this._onHubEmit(event),
+    });
     this._sessionContext = new WeakMap();
+
+    client._events.emit('workflow', this);
 
     this._initProperties(args);
     this._initActors(args);
@@ -108,8 +95,25 @@ export default class Workflow extends Component {
     return context;
   }
 
+  // hub //
+  _onHubUpdate(event) {
+    this._runCallbacks(this._client.meta.parent._hubUpdateCallbacks, event);
+  }
+
+  _onHubEmit(event) {
+    this._runCallbacks(this._client.meta.parent._hubEmitCallbacks, event);
+    this._emitAsWorkflowEvent(event);
+  }
+
+  _emitAsWorkflowEvent({ action: _action, name, state, silent }) {
+    if (!silent) {
+      this._emit(name, { _action, ...state });
+    }
+  }
+
   // properties //
   get uuid() {
+    // TODO: review this
     return this.session && this.session.uuid;
   }
 
@@ -319,14 +323,20 @@ export default class Workflow extends Component {
   }
 
   // helper //
-  _log(action, name, data) {
-    this._emit(name, { _action: action, ...data });
+  _runCallbacks(callbacks, event) {
+    for (const callback of callbacks) {
+      try {
+        callback({ workflow: this, ...event });
+      } catch(e) {
+        this._error(e);
+      }
+    }
   }
 
   _emit(name, data) {
-    this._events.emit(name, data);
+    this._events.emit(name, { _event: name, ...data });
     if (this._context) {
-      this._context._events.emit(name, { workflow: this, ...data });
+      this._context._events.emit(name, { workflow: this, _event: name, ...data });
     }
   }
 

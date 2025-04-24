@@ -9,6 +9,10 @@ ${indent(body, 2)}
 `.trim();
 }
 
+export function pw() {
+  return `if (window._pw$) { await window._pw$; }`;
+}
+
 export function createClient(options) {
   return blocks(
     `const MisoClient = window.MisoClient;`,
