@@ -175,10 +175,10 @@ export function concatItemsFromMoreResponse(oldData, newData, { role = ROLE.PROD
   // use old values of facet_counts and total, for they are affected by product_id exclusion
   return {
     ...newData,
-    facet_counts,
-    total,
     value: {
       ...newData.value,
+      facet_counts,
+      total,
       [role]: [...oldProducts, ...newProducts],
     },
   }
