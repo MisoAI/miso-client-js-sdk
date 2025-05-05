@@ -26,14 +26,17 @@ export default class Workflows {
   _handleEvent(event) {
     if (event._event === 'workflow') {
       // TODO: make sure not redundant
-      this._workflows.push(new Workflow(event));
+      this._workflows.push(new Workflow(this, event));
       return true;
     }
     if (event._workflow) {
       const { uuid } = event._workflow;
       const workflow = this.get(uuid);
       if (!workflow) {
-        throw new Error(`Workflow "${uuid}" is not found in event ${JSON.stringify(event)}`);
+        if (this._miso._options.verifyEvents) {
+          throw new Error(`Workflow "${uuid}" is not found in event ${JSON.stringify(event)}`);
+        }
+        return false;
       }
       return workflow._handleEvent(event);
     }
@@ -44,9 +47,11 @@ export default class Workflows {
 
 class Workflow {
 
-  constructor(data) {
+  constructor(workflows, data) {
+    this._miso = workflows._miso;
+    this._workflows = workflows;
     Object.assign(this, data);
-    this._sessions = new Sessions();
+    this._sessions = new Sessions(this);
   }
 
   _handleEvent(event) {
@@ -54,6 +59,7 @@ class Workflow {
   }
 
   _handleUnknownEvent(event) {
+    // TODO: only when verbose
     console.log('Unknown event (workflow)', event);
     return true;
   }

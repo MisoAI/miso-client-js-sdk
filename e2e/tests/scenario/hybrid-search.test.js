@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createMisoProxy } from '../util/index.js';
+import { createMisoProxy } from '../../util/index.js';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript({ path: './client/probe.js' });
@@ -8,7 +8,9 @@ test.beforeEach(async ({ page }) => {
 test('Standard', async ({ page }) => {
   await page.goto('/ui/hybrid-search/standard');
 
-  const proxy = await createMisoProxy(page);
+  const proxy = await createMisoProxy(page, {
+    verifyEvents: true,
+  });
 
   // query by input
   const input = page.locator('miso-query [data-role="input"]');

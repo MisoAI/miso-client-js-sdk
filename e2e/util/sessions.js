@@ -1,6 +1,8 @@
 export default class Sessions {
 
-  constructor() {
+  constructor(workflow) {
+    this._miso = workflow._miso;
+    this._workflow = workflow;
     this._sessions = [];
     this._current = undefined;
   }
@@ -35,10 +37,13 @@ export default class Sessions {
     const session = event.session ? this.get(event.session.uuid) : this._current;
     if (!session) {
       // TODO: it's legit for silent event without session (to set default values)
-      throw new Error(event.session ? 
-        `Session "${event.session.uuid}" is not found in event ${JSON.stringify(event)}` :
-        `No current session when event occurs: ${JSON.stringify(event)}`
-      );
+      if (this._miso._options.verifyEvents) {
+        throw new Error(event.session ?
+          `Session "${event.session.uuid}" is not found in event ${JSON.stringify(event)}` :
+          `No current session when event occurs: ${JSON.stringify(event)}`
+        );
+      }
+      return false;
     }
     return session._handleEvent(event);
   }
@@ -65,6 +70,7 @@ class Session {
   }
 
   _handleUnknownEvent(event) {
+    // TODO: only when verbose
     console.log('Unknown event (session)', event);
     return true;
   }

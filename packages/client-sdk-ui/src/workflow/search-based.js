@@ -126,6 +126,7 @@ export default class SearchBasedWorkflow extends Workflow {
     this._request({ payload });
   }
 
+  // TODO: expose API
   _more() {
     // if still loading, complain
     if (this.status !== STATUS.READY) {

@@ -19,11 +19,11 @@ class PlaywrightPlugin {
   install(MisoClient, { onHubUpdate }) {
     MisoClient.on('create', client => {
       client.on('workflow', workflow => {
-        window._pw({ _event: 'workflow', ...this._getWorkflowInfo(workflow) });
+        window._pw('event', { _event: 'workflow', ...this._getWorkflowInfo(workflow) });
       });
     });
     onHubUpdate(({ workflow, action: _action, name: _event, state, ...event }) => {
-      window._pw({ _workflow: this._getWorkflowInfo(workflow), _action, _event, ...state, ...event });
+      window._pw('event', { _workflow: this._getWorkflowInfo(workflow), _action, _event, ...state, ...event });
     });
   }
 
@@ -37,3 +37,18 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   window.MisoClient.plugins.use(PlaywrightPlugin);
 });
+
+class Playwright {
+
+  done() {
+    return this.signal('done');
+  }
+
+  signal(name, data) {
+    window._pw('signal', name, data);
+    return this;
+  }
+
+}
+
+window.pw = new Playwright();
