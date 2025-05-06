@@ -1,5 +1,5 @@
 import { resolvePreset } from '../utils.js';
-import { misocmd, createClient, pw } from '../templates.js';
+import { misocmd, createClient } from '../templates.js';
 import { facets, autoQuery } from '../features.js';
 
 export const searchPresets = Object.freeze({
@@ -31,8 +31,6 @@ export function search(options) {
 
 function js(options) {
   return misocmd(`
-${options._pw ? pw() : ''}
-
 // client
 ${createClient(options)}
 

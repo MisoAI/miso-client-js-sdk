@@ -2,8 +2,6 @@
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
-  // TODO: make this universal by explcitly loading the SDK after this, or hack misocmd
-  if (window._pw$) { await window._pw$; }
   // setup client
   const MisoClient = window.MisoClient;
   const client = new MisoClient('...');

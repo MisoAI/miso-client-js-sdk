@@ -33,8 +33,14 @@ class PlaywrightPlugin {
 
 }
 
-const misocmd = window.misocmd || (window.misocmd = []);
-misocmd.push(async () => {
+const misodev = window.misodev || (window.misodev = []);
+misodev.push(async ({ addCmdTransform }) => {
+  addCmdTransform(fn => async () => {
+    if (window._pw$) {
+      await window._pw$;
+    }
+    fn();
+  });
   window.MisoClient.plugins.use(PlaywrightPlugin);
 });
 
