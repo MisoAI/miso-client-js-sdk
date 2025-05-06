@@ -2,3 +2,12 @@
   config:
     workflow: hybrid-search
     preset: standard
+- path: search/standard
+  config:
+    workflow: search
+    preset: standard
+- path: search/facets
+  config:
+    workflow: search
+    preset: standard
+    facets: true

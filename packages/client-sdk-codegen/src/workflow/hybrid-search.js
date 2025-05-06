@@ -2,7 +2,7 @@ import { resolvePreset } from '../utils.js';
 import { misocmd, createClient, pw } from '../templates.js';
 import { autoQuery } from '../features.js';
 
-export const presets = Object.freeze({
+export const hybridSearchPresets = Object.freeze({
   standard: Object.freeze({
     workflow: 'hybrid-search',
     autoQuery: true,
@@ -13,7 +13,7 @@ export const presets = Object.freeze({
 });
 
 export function hybridSearch(options) {
-  options = resolvePreset(presets, options);
+  options = resolvePreset(hybridSearchPresets, options);
   return {
     js: js(options),
     html: html(options),
@@ -21,6 +21,7 @@ export function hybridSearch(options) {
 }
 
 function js(options) {
+  // TODO: useLink
   return misocmd(`
 ${options._pw ? pw() : ''}
 

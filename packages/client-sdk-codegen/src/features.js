@@ -1,5 +1,10 @@
 import { format } from './utils.js';
 
-export function autoQuery(autoQuery) {
-  return autoQuery ? `workflow.autoQuery(${typeof autoQuery === 'object' ? format(autoQuery, { multiline: true }) : ''});` : '';
+export function facets(options) {
+  return options ? `workflow.useFacets(${format(options, { multiline: true })});` : '';
+}
+
+export function autoQuery(options) {
+  // TODO: consider when options === false
+  return options ? `workflow.autoQuery(${typeof options === 'object' ? format(options, { multiline: true }) : ''});` : '';
 }

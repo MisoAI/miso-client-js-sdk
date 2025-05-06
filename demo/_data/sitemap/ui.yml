@@ -71,6 +71,10 @@ sections:
 - title: Search
   path: /search
   pages:
+  - title: Standard
+    path: /search/standard
+  - title: Full
+    path: /search/full
   - title: Basic
     path: /search/basic
   - title: Autocomplete
