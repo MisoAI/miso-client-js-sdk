@@ -3,6 +3,7 @@ node_modules/
 dist/
 examples/**/package-lock.json
 package-lock.json
+e2e/test-results/
 
 # env
 .env
