@@ -102,6 +102,10 @@ export default class SearchBasedWorkflow extends Workflow {
     // keep track of the query args for refine and more calls
     this._queryArgs = args;
 
+    // reset filters view
+    this._views.filters.reset();
+    this._views.filters.apply();
+
     // start a new session
     this.restart();
 
