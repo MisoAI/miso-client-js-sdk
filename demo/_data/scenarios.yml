@@ -2,6 +2,11 @@
   config:
     workflow: hybrid-search
     preset: standard
+- path: hybrid-search/blank
+  config:
+    workflow: hybrid-search
+    preset: standard
+    elements: false
 - path: search/standard
   config:
     workflow: search

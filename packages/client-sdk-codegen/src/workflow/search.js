@@ -45,6 +45,9 @@ ${autoQuery(options.autoQuery)}
 }
 
 function html(options) {
+  if (options.elements === false) {
+    return '';
+  }
   return `
 ${htmlQuery(options)}
 <hr>

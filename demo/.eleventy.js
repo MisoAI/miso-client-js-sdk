@@ -25,6 +25,7 @@ export default function(config) {
   config.addPassthroughCopy('page/**/*.js');
   config.addWatchTarget('./scss/');
   config.addWatchTarget('./src/');
+  config.addWatchTarget('./node_modules/@miso.ai/client-sdk-codegen/');
   config.setServerOptions({
     liveReload: false, // for AMP
     domDiff: false,
@@ -63,6 +64,7 @@ class Helpers {
 
   codegen(config) {
     const apiKey = resolveApiKey(config);
+    // TODO: we need this to watch for codegen package changes
     const { js, html } = codegen({ dryRun: true, ...config, apiKey });
     return `
 <script async>

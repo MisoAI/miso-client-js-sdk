@@ -48,7 +48,9 @@ function _config({ input, output: { filename: outputFilename, ...output } }, env
       ...output,
       indent: !prod,
     },
-    watch: !prod,
+    watch: !prod && {
+      include: [`src/**/*`, `/node_modules/@miso.ai/client-sdk-codegen/**/*`],
+    },
     plugins,
   };
 }

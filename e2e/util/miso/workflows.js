@@ -23,13 +23,13 @@ export default class Workflows {
     return this._workflows[Symbol.iterator]();
   }
 
-  _handleEvent(event) {
-    if (event._event === 'workflow') {
+  _handleEvent(name, event) {
+    if (name === 'workflow') {
       // TODO: make sure not redundant
       this._workflows.push(new Workflow(this, event));
       return true;
     }
-    if (event._workflow) {
+    if (event && event._workflow) {
       const { uuid } = event._workflow;
       const workflow = this.get(uuid);
       if (!workflow) {
@@ -38,7 +38,7 @@ export default class Workflows {
         }
         return false;
       }
-      return workflow._handleEvent(event);
+      return workflow._handleEvent(name, event);
     }
     return false;
   }
@@ -54,13 +54,13 @@ class Workflow {
     this._sessions = new Sessions(this);
   }
 
-  _handleEvent(event) {
-    return this._sessions._handleEvent(event) || this._handleUnknownEvent(event);
+  _handleEvent(name, event) {
+    return this._sessions._handleEvent(name, event) || this._handleUnknownEvent(name, event);
   }
 
-  _handleUnknownEvent(event) {
+  _handleUnknownEvent(name, event) {
     // TODO: only when verbose
-    console.log('Unknown event (workflow)', event);
+    console.log(`Unknown event "${name}" (workflow)`, event);
     return true;
   }
 
