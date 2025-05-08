@@ -104,7 +104,8 @@ export default class SearchBasedWorkflow extends Workflow {
 
     // reset filters view
     this._views.filters.reset();
-    this._views.filters.apply();
+    this._views.filters.apply({ silent: true });
+    this._views.filters._events.emit('reset'); // TODO: ad-hoc
 
     // start a new session
     this.restart();
