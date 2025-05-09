@@ -67,10 +67,11 @@ export default class Filters {
     this._events.emit('update', { updates, states, oldStates });
   }
 
-  reset() {
+  reset({ silent = false } = {}) {
     const oldStates = this._states;
     this._states = undefined;
     const states = this._getStates();
+    this._hub.update(fields.filters(), states, { silent });
     this._events.emit('reset', { states, oldStates });
   }
 
