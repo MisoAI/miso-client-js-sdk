@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createMisoProxy, equalFacetCounts } from '../../util/index.js';
+import { createMisoProxy } from '../../util/index.js';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript({ path: './client/probe.js' });
@@ -57,7 +57,7 @@ test('[Hybrid Search] data layer', async ({ page }) => {
     return [data0, data1];
   });
 
-  expect(data1.products.length).toBe(data0.products.length + 10);
-  expect(data1.total).toBe(data0.total);
-  expect(equalFacetCounts(data0.facet_counts, data1.facet_counts)).toBe(true);
+  expect.soft(data1.products.length).toBe(data0.products.length + 10);
+  expect.soft(data1.total).toBe(data0.total);
+  expect.soft(data1.facet_counts).toEqual(data0.facet_counts);
 });
