@@ -1,0 +1,22 @@
+---
+dependency: codegen-code
+pagination:
+  data: workflows
+  size: 1
+  alias: workflow
+permalink: "/ui/{{ workflow }}/codegen/"
+workflows:
+  - ask
+  - explore
+  - hybrid-search
+  - recommendation
+  - search
+---
+
+<div class="codegen-code">
+  <div class="codegen-code__options" data-role="options">
+    <div class="codegen-code__options__presets" data-role="presets"></div>
+    <div class="codegen-code__options__features" data-role="features"></div>
+  </div>
+  <div class="codegen-code__code" data-role="code"></div>
+</div>
