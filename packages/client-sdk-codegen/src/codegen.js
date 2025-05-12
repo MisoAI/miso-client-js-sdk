@@ -1,23 +1,10 @@
-import * as workflows from './workflow/index.js';
+import { ui } from './ui/index.js';
 
-function normalizeOptions({ workflow, ...options } = {}) {
-  // turn workflow into camel case
-  if (!workflow) {
-    throw new Error('Workflow is required');
+export function codegen({ schema = 'ui', ...options } = {}) {
+  switch (schema) {
+    case 'ui':
+      return ui(options);
+    default:
+      throw new Error(`Unrecognized schema: "${schema}"`);
   }
-  workflow = workflow.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-
-  return {
-    workflow,
-    ...options,
-  };
-}
-
-export function codegen(options) {
-  options = normalizeOptions(options);
-  const { workflow } = options;
-  if (!workflows[workflow]) {
-    throw new Error(`Workflow "${workflow}" is not found`);
-  }
-  return workflows[workflow](options);
 }

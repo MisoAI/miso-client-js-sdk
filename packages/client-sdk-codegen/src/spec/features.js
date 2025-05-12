@@ -1,43 +1,42 @@
-import { resolveWorkflows } from './workflows.js';
+import { kebabOrSnakeToHuman } from '@miso.ai/commons';
+import { resolveWorkflows } from './workflows.slug.js';
 
-export const FEATURES = [
+export const features = [
   {
     slug: 'use-api',
-    name: 'useApi()',
-    workflows: resolveWorkflows('*'),
+    workflows: '*',
   },
   {
     slug: 'use-link',
-    name: 'useLink()',
-    workflows: resolveWorkflows('ahes'),
-  },
-  {
-    slug: 'follow-up',
-    name: 'Follow Up',
-    workflows: resolveWorkflows('a'),
-  },
-  {
-    slug: 'auto-query',
-    name: 'Auto Query',
-    workflows: resolveWorkflows('ahes'),
+    workflows: 'ahes',
   },
   {
     slug: 'autocomplete',
-    name: 'Autocomplete',
-    workflows: resolveWorkflows('hs'),
+    workflows: 'hs',
   },
   {
     slug: 'pagination',
-    name: 'Pagination',
-    workflows: resolveWorkflows('hs'),
+    workflows: 'hs',
   },
   {
     slug: 'facets',
-    name: 'Facets',
-    workflows: resolveWorkflows('hs'),
+    workflows: 'hs',
   },
-];
+  {
+    slug: 'follow-up',
+    workflows: 'a',
+  },
+  {
+    slug: 'auto-query',
+    workflows: 'ahes',
+  },
+].map(({ slug, workflows, ...feature }) => ({
+  slug,
+  name: kebabOrSnakeToHuman(slug),
+  workflows: resolveWorkflows(workflows),
+  ...feature,
+}));
 
 export function getFeatures(workflow) {
-  return FEATURES.filter(feature => feature.workflows.includes(workflow));
+  return features.filter(feature => feature.workflows.includes(workflow));
 }

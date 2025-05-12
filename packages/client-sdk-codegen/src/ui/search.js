@@ -1,15 +1,7 @@
-import { resolvePreset } from '../utils.js';
-import { misocmd, createClient } from '../templates.js';
-import { facets, autoQuery } from '../features.js';
-
-export const searchPresets = Object.freeze({
-  standard: Object.freeze({
-    workflow: 'search',
-    autoQuery: true,
-    autocomplete: true,
-    //facets: ['categories'],
-  }),
-});
+import { presets } from '../spec/index.js';
+import { resolvePreset } from '../template/helpers.js';
+import { misocmd, createClient } from '../template/index.js';
+import { facets, autoQuery } from '../template/features.js';
 
 function normalizeOptions({ facets, ...options } = {}) {
   if (facets === true) {
@@ -22,7 +14,7 @@ function normalizeOptions({ facets, ...options } = {}) {
 }
 
 export function search(options) {
-  options = normalizeOptions(resolvePreset(searchPresets, options));
+  options = normalizeOptions(resolvePreset(presets.search, options));
   return {
     js: js(options),
     html: html(options),

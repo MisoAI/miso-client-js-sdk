@@ -1,4 +1,4 @@
-import { format } from './utils.js';
+import { format } from './helpers.js';
 
 export function facets(options) {
   return options ? `workflow.useFacets(${format(options, { multiline: true })});` : '';

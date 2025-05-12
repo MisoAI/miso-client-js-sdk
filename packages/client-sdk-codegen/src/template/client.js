@@ -1,13 +1,4 @@
-import { indent, blocks } from './utils.js';
-
-export function misocmd(body) {
-  return `
-const misocmd = window.misocmd || (window.misocmd = []);
-misocmd.push(async () => {
-${indent(body, 2)}
-});
-`.trim();
-}
+import { indent, blocks } from './helpers.js';
 
 export function createClient(options) {
   return blocks(

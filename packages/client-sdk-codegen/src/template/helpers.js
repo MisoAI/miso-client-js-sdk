@@ -26,6 +26,15 @@ export function blocks(...blocks) {
 }
 
 /**
+ * Join paragraphs with proper newlines
+ * @param {string[]} paragraphs - Paragraphs to join
+ * @returns {string}
+ */
+export function paragraphs(...paragraphs) {
+  return paragraphs.map(paragraph => paragraph.trim()).filter(paragraph => paragraph).join('\n\n');
+}
+
+/**
  * Resolve preset options
  * @param {Object} presets - Available presets
  * @param {Object} options - Options to resolve

@@ -1,19 +1,10 @@
-import { resolvePreset } from '../utils.js';
-import { misocmd, createClient } from '../templates.js';
-import { autoQuery } from '../features.js';
-
-export const hybridSearchPresets = Object.freeze({
-  standard: Object.freeze({
-    workflow: 'hybrid-search',
-    autoQuery: true,
-    autocomplete: true,
-    facets: ['categories'],
-    answerBox: true,
-  }),
-});
+import { presets } from '../spec/index.js';
+import { resolvePreset } from '../template/helpers.js';
+import { misocmd, createClient } from '../template/index.js';
+import { autoQuery } from '../template/features.js';
 
 export function hybridSearch(options) {
-  options = resolvePreset(hybridSearchPresets, options);
+  options = resolvePreset(presets.hybridSearch, options);
   return {
     js: js(options),
     html: html(options),
