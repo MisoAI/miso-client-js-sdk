@@ -68,6 +68,7 @@ export default class Filters {
   }
 
   reset({ silent = false } = {}) {
+    // TODO: review this
     const oldStates = this._states;
     this._states = undefined;
     const states = this._getStates();

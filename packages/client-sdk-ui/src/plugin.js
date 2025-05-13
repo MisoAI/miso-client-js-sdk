@@ -1,5 +1,5 @@
 import { Component, Resolution, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Asks, HybridSearch, Explore, Search, Recommendations } from './workflow/index.js';
+import { Asks, HybridSearch, Explores, Search, Recommendations } from './workflow/index.js';
 import { AskCombo } from './combo/index.js';
 import Layouts from './layouts.js';
 import * as elements from './element/index.js';
@@ -23,6 +23,7 @@ export default class UiPlugin extends Component {
     super('ui');
     this.layouts = new Layouts(this);
     this._recommendations = new WeakMap();
+    this._explores = new WeakMap();
     this._asks = new WeakMap();
     this._extensions = new WeakMap();
     this._ready = new Resolution();
@@ -114,6 +115,14 @@ export default class UiPlugin extends Component {
     return recommendations;
   }
 
+  _getExplores(client) {
+    let explores = this._explores.get(client);
+    if (!explores) {
+      this._explores.set(client, explores = new Explores(this, client));
+    }
+    return explores;
+  }
+
   _getAsks(client) {
     let asks = this._asks.get(client);
     if (!asks) {
@@ -180,8 +189,12 @@ class Ui {
     return this._hybridSearch || (this._hybridSearch = new HybridSearch(this._plugin, this._client));
   }
 
+  get explores() {
+    return this._explores || (this._explores = this._plugin._getExplores(this._client));
+  }
+
   get explore() {
-    return this._explore || (this._explore = new Explore(this._plugin, this._client));
+    return this.explores.get(); // get default explore unit
   }
 
   get ready() {

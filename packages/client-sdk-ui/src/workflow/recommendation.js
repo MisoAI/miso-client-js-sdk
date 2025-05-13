@@ -1,43 +1,42 @@
-import { defineValues, API } from '@miso.ai/commons';
-import Workflow from './base.js';
+import { API } from '@miso.ai/commons';
+import UnitWorkflow from './unit.js';
 import { ListLayout } from '../layout/index.js';
 import { ROLE } from '../constants.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_API_OPTIONS,
+  ...UnitWorkflow.DEFAULT_API_OPTIONS,
   group: API.GROUP.RECOMMENDATION,
   name: API.NAME.USER_TO_PRODUCTS,
   payload: {
-    ...Workflow.DEFAULT_API_OPTIONS.payload,
+    ...UnitWorkflow.DEFAULT_API_OPTIONS.payload,
     fl: ['*'],
   },
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  ...Workflow.DEFAULT_LAYOUTS,
+  ...UnitWorkflow.DEFAULT_LAYOUTS,
   [ROLE.PRODUCTS]: ListLayout.type,
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
-  ...Workflow.DEFAULT_TRACKERS,
+  ...UnitWorkflow.DEFAULT_TRACKERS,
   [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_OPTIONS,
+  ...UnitWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
+const ROLES_OPTIONS = mergeRolesOptions(UnitWorkflow.ROLES_OPTIONS, {
   main: ROLE.PRODUCTS,
   members: Object.keys(DEFAULT_LAYOUTS),
 });
 
-export default class Recommendation extends Workflow {
+export default class Recommendation extends UnitWorkflow {
 
   constructor(context, id) {
     super({
@@ -47,17 +46,6 @@ export default class Recommendation extends Workflow {
       defaults: DEFAULT_OPTIONS,
       id,
     });
-  }
-
-  _initProperties(args) {
-    super._initProperties(args);
-    const { id } = args;
-    defineValues(this, { id });
-  }
-
-  _initSession(args) {
-    this._context._members.set(args.id, this);
-    super._initSession(args);
   }
 
   // lifecycle //
@@ -70,32 +58,6 @@ export default class Recommendation extends Workflow {
   notifyViewUpdate(role = ROLE.PRODUCTS, ...args) {
     super.notifyViewUpdate(role, ...args);
     return this;
-  }
-
-  // interactions //
-  _defaultProcessInteraction(payload, args) {
-    payload = super._defaultProcessInteraction(payload, args);
-    payload = this._writeUnitIdToInteraction(payload, args);
-    return payload;
-  }
-
-  _writeUnitIdToInteraction(payload) {
-    const unit_id = this.id;
-    const unit_instance_uuid = this.uuid;
-    return mergeInteraction(payload, {
-      context: {
-        custom_context: {
-          unit_id,
-          unit_instance_uuid,
-        },
-      },
-    });
-  }
-
-  // destroy //
-  _destroy(options) {
-    this._context._members.delete(this.id);
-    super._destroy(options);
   }
 
 }

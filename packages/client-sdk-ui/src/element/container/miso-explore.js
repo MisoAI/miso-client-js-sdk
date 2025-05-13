@@ -1,19 +1,19 @@
-import MisoContainerElement from './miso-container.js';
+import MisoUnitElement from './miso-unit.js';
 
 const TAG_NAME = 'miso-explore';
 
-export default class MisoExploreElement extends MisoContainerElement {
-
-  static get observedAttributes() {
-    return MisoContainerElement.observedAttributes;
-  }
+export default class MisoExploreElement extends MisoUnitElement {
 
   static get tagName() {
     return TAG_NAME;
   }
 
-  _getWorkflow(client) {
-    return client.ui.explore;
+  static get observedAttributes() {
+    return MisoUnitElement.observedAttributes;
+  }
+
+  _getWorkflowByUnitId(client, unitId) {
+    return client.ui.explores.get(unitId);
   }
 
 }

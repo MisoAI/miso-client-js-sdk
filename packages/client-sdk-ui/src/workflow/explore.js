@@ -1,5 +1,5 @@
 import { API } from '@miso.ai/commons';
-import Workflow from './base.js';
+import UnitWorkflow from './unit.js';
 import { fields } from '../actor/index.js';
 import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
@@ -7,19 +7,19 @@ import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { enableUseLink, UseLinkMixin } from './use-link.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_API_OPTIONS,
+  ...UnitWorkflow.DEFAULT_API_OPTIONS,
   group: API.GROUP.ASK,
   name: API.NAME.RELATED_QUESTIONS,
 });
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  ...Workflow.DEFAULT_LAYOUTS,
+  ...UnitWorkflow.DEFAULT_LAYOUTS,
   [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question', link: { rel: 'noopener nofollow' } }],
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
-  ...Workflow.DEFAULT_TRACKERS,
+  ...UnitWorkflow.DEFAULT_TRACKERS,
   [ROLE.RELATED_QUESTIONS]: DEFAULT_TRACKER_OPTIONS,
   [ROLE.CONTAINER]: {
     ...DEFAULT_TRACKER_OPTIONS,
@@ -33,26 +33,26 @@ const DEFAULT_TRACKERS = Object.freeze({
 });
 
 const DEFAULT_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_OPTIONS,
+  ...UnitWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
 });
 
-const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
+const ROLES_OPTIONS = mergeRolesOptions(UnitWorkflow.ROLES_OPTIONS, {
   main: ROLE.RELATED_QUESTIONS,
   members: Object.keys(DEFAULT_LAYOUTS),
 });
 
-export default class Explore extends Workflow {
+export default class Explore extends UnitWorkflow {
 
-  constructor(plugin, client) {
+  constructor(context, id) {
     super({
       name: 'explore',
-      plugin,
-      client,
+      context,
       roles: ROLES_OPTIONS,
       defaults: DEFAULT_OPTIONS,
+      id,
     });
   }
 
