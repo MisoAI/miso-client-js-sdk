@@ -139,6 +139,8 @@
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
       </div>
@@ -203,7 +205,9 @@
 <p>In your project directory, run:</p>
 <pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">--save</span> @miso.ai/client-sdk</code></pre>
 <p>Then you can import <code>MisoClient</code> from the SDK:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> MisoClient <span class="token keyword">from</span> <span class="token string">'@miso.ai/client-sdk'</span><span class="token punctuation">;</span><br><br><span class="token comment">// work with MisoClient</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> MisoClient <span class="token keyword">from</span> <span class="token string">'@miso.ai/client-sdk'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// work with MisoClient</span></code></pre>
 <h4 id="using-a-script-tag" tabindex="-1">Using a script tag</h4>
 <p>Add the SDK script tag to your webpage:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">&gt;</span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@<npm-version package="@miso.ai/client-sdk">latest</npm-version>/dist/umd/miso.min.js<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">&gt;</span></span></code></pre>
@@ -211,7 +215,11 @@
 <li>You can put the script tag anywhere in the document.</li>
 </ul>
 <p><code>MisoClient</code> is available on <code>window</code> object. However, it won't be available until the SDK is loaded. The SDK provides a way to access it regardless of the loading status:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span><br>  <span class="token comment">// work with MisoClient</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> misocmd <span class="token operator">=</span> window<span class="token punctuation">.</span>misocmd <span class="token operator">||</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>misocmd <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+misocmd<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> MisoClient <span class="token operator">=</span> window<span class="token punctuation">.</span>MisoClient<span class="token punctuation">;</span>
+  <span class="token comment">// work with MisoClient</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="3.-create-a-client-instance" tabindex="-1">3. Create a client instance</h3>
 <p>Create a Miso client instance as the following:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>apiKey<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>

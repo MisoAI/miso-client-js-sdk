@@ -169,16 +169,39 @@
 </div>
 <h4 id="customize-header" tabindex="-1">Customize header</h4>
 <p>You can customize the header content of the affiliation element:</p>
-<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">affiliation</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">ctaText</span><span class="token operator">:</span> <span class="token string">"View deal"</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">itemHeaderLeftText</span><span class="token operator">:</span> <span class="token string">"Today's best deals"</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">logoText</span><span class="token operator">:</span> <span class="token string">"Selected by"</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">logoUrl</span><span class="token operator">:</span> <span class="token operator">...</span><span class="token punctuation">,</span> <span class="token comment">// your site logo image URL</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">affiliation</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">templates</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">ctaText</span><span class="token operator">:</span> <span class="token string">"View deal"</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">itemHeaderLeftText</span><span class="token operator">:</span> <span class="token string">"Today's best deals"</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">logoText</span><span class="token operator">:</span> <span class="token string">"Selected by"</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">logoUrl</span><span class="token operator">:</span> <span class="token operator">...</span><span class="token punctuation">,</span> <span class="token comment">// your site logo image URL</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>If you provide a logo image URL, the image will be displayed on the right side of the header, along with the logo text:</p>
 <div class="screenshot-container small">
   <img src="/miso-client-js-sdk/img/affiliation-logo.png">
 </div>
 <p>Tip: you may want to align the logo image with the logo text by specifying a vertical offset in the CSS:</p>
-<pre class="language-css"><code class="language-css"><span class="token selector">.miso-affiliation__item-header-logo-text</span> <span class="token punctuation">{</span><br>  <span class="token property">position</span><span class="token punctuation">:</span> relative<span class="token punctuation">;</span><br>  <span class="token property">top</span><span class="token punctuation">:</span> -2px<span class="token punctuation">;</span> <span class="token comment">/* adjust the value as needed */</span><br><span class="token punctuation">}</span></code></pre>
+<pre class="language-css"><code class="language-css"><span class="token selector">.miso-affiliation__item-header-logo-text</span> <span class="token punctuation">{</span>
+  <span class="token property">position</span><span class="token punctuation">:</span> relative<span class="token punctuation">;</span>
+  <span class="token property">top</span><span class="token punctuation">:</span> -2px<span class="token punctuation">;</span> <span class="token comment">/* adjust the value as needed */</span>
+<span class="token punctuation">}</span></code></pre>
 <h4 id="customize-colors" tabindex="-1">Customize colors</h4>
 <p>You can override some CSS variables to customize the colors of the affiliation element:</p>
-<pre class="language-css"><code class="language-css"><span class="token comment">/* The values below are default ones */</span><br><span class="token selector">:root</span> <span class="token punctuation">{</span><br>  <span class="token comment">/* header */</span><br>  <span class="token property">--miso-affiliation-item-header-bg-color</span><span class="token punctuation">:</span> #e0e0e0<span class="token punctuation">;</span><br>  <span class="token property">--miso-affiliation-item-header-text-color</span><span class="token punctuation">:</span> #333<span class="token punctuation">;</span><br>  <span class="token comment">/* "View Deal" button */</span><br>  <span class="token property">--miso-affiliation-item-cta-bg-color</span><span class="token punctuation">:</span> #408048<span class="token punctuation">;</span><br>  <span class="token property">--miso-affiliation-item-cta-text-color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span><br>  <span class="token comment">/* previous/next buttons */</span><br>  <span class="token property">--miso-affiliation-control-button-color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span><br>  <span class="token property">--miso-affiliation-control-button-color-hover</span><span class="token punctuation">:</span> #f0f0f0<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<pre class="language-css"><code class="language-css"><span class="token comment">/* The values below are default ones */</span>
+<span class="token selector">:root</span> <span class="token punctuation">{</span>
+  <span class="token comment">/* header */</span>
+  <span class="token property">--miso-affiliation-item-header-bg-color</span><span class="token punctuation">:</span> #e0e0e0<span class="token punctuation">;</span>
+  <span class="token property">--miso-affiliation-item-header-text-color</span><span class="token punctuation">:</span> #333<span class="token punctuation">;</span>
+  <span class="token comment">/* "View Deal" button */</span>
+  <span class="token property">--miso-affiliation-item-cta-bg-color</span><span class="token punctuation">:</span> #408048<span class="token punctuation">;</span>
+  <span class="token property">--miso-affiliation-item-cta-text-color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span>
+  <span class="token comment">/* previous/next buttons */</span>
+  <span class="token property">--miso-affiliation-control-button-color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span>
+  <span class="token property">--miso-affiliation-control-button-color-hover</span><span class="token punctuation">:</span> #f0f0f0<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
 
         </div>
       </main>

@@ -139,6 +139,8 @@
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
       </div>
@@ -188,9 +190,35 @@
         <div class="content ps-lg-4">
           <p>The <code>questions</code> API takes time to process and generate answer. The SDK provides a simple polling mechanism to retrieve the answer.</p>
 <h4 id="syntax" tabindex="-1">Syntax</h4>
-<pre class="language-js"><code class="language-js"><span class="token comment">// get answer object</span><br><span class="token keyword">const</span> answer <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">questions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token comment">// get question ID if you are interested</span><br><span class="token keyword">const</span> questionId <span class="token operator">=</span> answer<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span><br><br><span class="token comment">// polling response</span><br><span class="token keyword">let</span> intervalId<span class="token punctuation">;</span><br>intervalId <span class="token operator">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> answer<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  <span class="token comment">// do something with response</span><br>  <span class="token comment">// ...</span><br><br>  <span class="token keyword">if</span> <span class="token punctuation">(</span>response<span class="token punctuation">.</span>finished<span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token function">clearInterval</span><span class="token punctuation">(</span>intervalId<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token comment">// get answer object</span>
+<span class="token keyword">const</span> answer <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">questions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// get question ID if you are interested</span>
+<span class="token keyword">const</span> questionId <span class="token operator">=</span> answer<span class="token punctuation">.</span>questionId<span class="token punctuation">;</span>
+
+<span class="token comment">// polling response</span>
+<span class="token keyword">let</span> intervalId<span class="token punctuation">;</span>
+intervalId <span class="token operator">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> answer<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// do something with response</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>response<span class="token punctuation">.</span>finished<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">clearInterval</span><span class="token punctuation">(</span>intervalId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>Alternatively, the <code>answer</code> object is also <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols" target="_blank" rel="noopener">async iterable</a>, which can be processed with <code>for await ... of</code> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of" target="_blank" rel="noopener">pattern</a>:</p>
-<pre class="language-js"><code class="language-js"><span class="token comment">// get answer object</span><br><span class="token keyword">const</span> answer <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">questions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token keyword">for</span> <span class="token keyword">await</span> <span class="token punctuation">(</span><span class="token keyword">const</span> response <span class="token keyword">of</span> answer<span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token comment">// do something with response</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span><br><br><span class="token comment">// abort polling when necessary</span><br>answer<span class="token punctuation">.</span><span class="token function">abort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token comment">// get answer object</span>
+<span class="token keyword">const</span> answer <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">questions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token keyword">await</span> <span class="token punctuation">(</span><span class="token keyword">const</span> response <span class="token keyword">of</span> answer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// do something with response</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// abort polling when necessary</span>
+answer<span class="token punctuation">.</span><span class="token function">abort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h4 id="payload" tabindex="-1">Payload</h4>
 <p>The <code>payload</code> parameter is an object with the following properties:</p>
 <table class="table">
@@ -278,7 +306,14 @@ Default: <code>[&quot;cover_image&quot;]</code>.
     </tr></tbody>
 </table>
 <h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">question</span><span class="token operator">:</span> <span class="token string">'How was the economy in 2022?'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><br><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token punctuation">{</span> answer<span class="token punctuation">,</span> sources <span class="token punctuation">}</span> <span class="token keyword">of</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">questions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token comment">// do something with response</span><br>  <span class="token comment">// ...</span><br><span class="token punctuation">}</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">question</span><span class="token operator">:</span> <span class="token string">'How was the economy in 2022?'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token punctuation">{</span> answer<span class="token punctuation">,</span> sources <span class="token punctuation">}</span> <span class="token keyword">of</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">questions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// do something with response</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span></code></pre>
 <h4 id="learn-more" tabindex="-1">Learn more</h4>
 <p>For advanced usage, see <a href="https://api.askmiso.com/#tag/Ask-APIs/operation/questions_v1_ask_questions_post" target="_blank" rel="noopener">REST API</a>.</p>
 

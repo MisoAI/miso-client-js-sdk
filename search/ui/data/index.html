@@ -147,11 +147,15 @@
         <div class="content ps-lg-4">
           <h3 id="configure-api-request" tabindex="-1">Configure API request</h3>
 <p>You can configure the base API payload (request body) for the search workflow:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>search<span class="token punctuation">;</span><br>workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>search<span class="token punctuation">;</span>
+workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>For example, to make the API return <code>8</code> products instead of the default value:</p>
 <pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">8</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>When user submit a keyword <code>shiba</code>, the API payload will be:</p>
-<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"shiba"</span><span class="token punctuation">,</span><br>  <span class="token property">"rows"</span><span class="token operator">:</span> <span class="token number">8</span><br><span class="token punctuation">}</span></code></pre>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"q"</span><span class="token operator">:</span> <span class="token string">"shiba"</span><span class="token punctuation">,</span>
+  <span class="token property">"rows"</span><span class="token operator">:</span> <span class="token number">8</span>
+<span class="token punctuation">}</span></code></pre>
 <p>See the <a href="/miso-client-js-sdk/search/api/search/" target="_blank" rel="noopener">API reference</a> for more payload options.</p>
 <h4 id="user-data" tabindex="-1">User data</h4>
 <p>To pass user data to the API, see <a href="/miso-client-js-sdk/search/api/context/" target="_blank" rel="noopener">API context</a>.</p>

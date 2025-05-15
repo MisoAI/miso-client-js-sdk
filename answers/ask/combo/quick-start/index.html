@@ -139,6 +139,8 @@
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
       </div>
@@ -207,14 +209,18 @@
 </ol>
 <h3 id="2.-add-miso-sdk-to-your-webpage" tabindex="-1">2. Add Miso SDK to your webpage</h3>
 <p>Add the SDK JavaScript to your webpage:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/umd/miso.min.js?api_key={{api_key}}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">async</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@latest/dist/umd/miso.min.js?api_key={{api_key}}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></code></pre>
 <ul>
 <li>You can put the script tag anywhere in the document.</li>
 <li>Make sure to use the <strong>publishable</strong> API key, rather than the secret one.</li>
 </ul>
 <h3 id="3.-place-an-element-in-your-webpage" tabindex="-1">3. Place an element in your webpage</h3>
 <p>In your webpage, add the following elements where you want to display the ask module:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-ask-combo</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-ask-combo</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-ask-combo</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-ask-combo</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span></code></pre>
 <h2 id="customization" tabindex="-1">Customization</h2>
 <ul>
 <li><a href="/miso-client-js-sdk/answers/ask/combo/configuration/" target="_blank" rel="noopener">Configuration</a></li>

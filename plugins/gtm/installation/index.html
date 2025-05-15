@@ -149,10 +149,15 @@
           <p>Install the npm modules:</p>
 <pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">--save</span> @miso.ai/client-sdk @miso.ai/client-sdk-gtm</code></pre>
 <p>In your app, import and setup the plugin:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> MisoClient <span class="token keyword">from</span> <span class="token string">'@miso.ai/client-sdk'</span><span class="token punctuation">;</span><br><span class="token keyword">import</span> <span class="token punctuation">{</span> GtmPlugin <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@miso.ai/client-sdk-gtm'</span><span class="token punctuation">;</span><br><br>MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>GtmPlugin<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> MisoClient <span class="token keyword">from</span> <span class="token string">'@miso.ai/client-sdk'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> GtmPlugin <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@miso.ai/client-sdk-gtm'</span><span class="token punctuation">;</span>
+
+MisoClient<span class="token punctuation">.</span>plugins<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>GtmPlugin<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="basic-usage" tabindex="-1">Basic Usage</h3>
 <p>The plugin captures Enhanced Ecommerce events from <code>dataLayer</code> and sends corresponding user interactions to Miso API.</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>client<span class="token punctuation">.</span>gtm<span class="token punctuation">.</span><span class="token function">ecommerce</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> client <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MisoClient</span><span class="token punctuation">(</span><span class="token string">'...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+client<span class="token punctuation">.</span>gtm<span class="token punctuation">.</span><span class="token function">ecommerce</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

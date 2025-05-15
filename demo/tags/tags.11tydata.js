@@ -1,10 +1,10 @@
-module.exports = {
+export default {
   layout: 'demo',
   pagination: {
     data: 'sdk_version',
     size: 1,
     alias: 'pginfo',
-    before: function(paginationData, { page }) {
+    before(paginationData, { page }) {
       const { filePathStem } = page;
       const path = filePathStem.replace('/index', '');
       return paginationData.map(sdk_version => ({

@@ -139,6 +139,8 @@
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
       </div>
@@ -189,7 +191,12 @@
           <h2 id="show-images-in-answers" tabindex="-1">Show images in answers</h2>
 <p><div class="since">Since 1.11.5</div></p>
 <p>To display images in answers, we need to specify to insert the <code>&lt;miso-images&gt;</code> element in the answer layout.</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span><br>context<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">answer</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">variant</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'slot'</span><span class="token punctuation">,</span> <span class="token string">'&lt;miso-images>&lt;/miso-images>'</span><span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> context <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>asks<span class="token punctuation">;</span>
+context<span class="token punctuation">.</span><span class="token function">useLayouts</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">answer</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">variant</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'slot'</span><span class="token punctuation">,</span> <span class="token string">'&lt;miso-images>&lt;/miso-images>'</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <ul>
 <li>The images will be displayed right after the first <code>&lt;p&gt;</code> element in the answer section.</li>
 </ul>

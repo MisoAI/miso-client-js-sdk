@@ -153,7 +153,9 @@
 <li>Other elements have to be placed inside these elements to be associated with the workflow.</li>
 <li>There can be multiple container elements that associate to the same workflow in a page.</li>
 </ul>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-products</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-products</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-products</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-products</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <h2 id="components" tabindex="-1">Components</h2>
 <p>The following table lists the components that are available in the container. Each component either associates to a property in the API response or some input element.</p>
 <table class="table"><thead>
@@ -174,11 +176,15 @@
 <h2 id="attributes" tabindex="-1">Attributes</h2>
 <h3 id="unit-id" tabindex="-1"><code>unit-id</code></h3>
 <p>Specify unit ID for <a href="/miso-client-js-sdk/recommendation/ui/multiple/" target="_blank" rel="noopener">multiple recommendation units</a>.</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>after-article-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token comment">&lt;!-- ... --></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>after-article-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token comment">&lt;!-- ... --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <h3 id="logo" tabindex="-1"><code>logo</code></h3>
 <p>Control Miso logo display.</p>
 <p>By default, Miso logo is appended at the end of the container that contains the main data component (<code>&lt;miso-products&gt;</code>) when data is ready. You can control the logo display by setting the <code>logo</code> attribute on the container element.</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token comment">&lt;!-- ... --></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">logo</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token comment">&lt;!-- ... --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <table class="table"><thead>
 <tr>
 <th>Value</th>

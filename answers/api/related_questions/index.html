@@ -139,6 +139,8 @@
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
           </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
       </div>
@@ -223,7 +225,10 @@
     </tr></tbody>
 </table>
 <h4 id="examples" tabindex="-1">Examples</h4>
-<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'...'</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span><br><span class="token keyword">const</span> <span class="token punctuation">{</span> related_questions <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'...'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> related_questions <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">relatedQuestions</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

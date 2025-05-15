@@ -153,9 +153,12 @@
         <div class="content ps-lg-4">
           <p>Sometimes you may want to display multiple recommendation blocks in a single page, or have different types of recommendation blocks across your site. You can achieve this by creating multiple recommendation workflows with different unit IDs.</p>
 <p>For example, specify a unit ID in the <code>&lt;miso-recommendation&gt;</code> element:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>after-article-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token comment">&lt;!-- ... --></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-recommendation</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>after-article-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token comment">&lt;!-- ... --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-recommendation</span><span class="token punctuation">></span></span></code></pre>
 <p>Then, you can access the workflow by the unit ID:</p>
-<pre class="language-js"><code class="language-js"><span class="token comment">// note the plural form of `recommendations`</span><br><span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendations<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token comment">// note the plural form of `recommendations`</span>
+<span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>recommendations<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

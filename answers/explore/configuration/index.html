@@ -138,6 +138,8 @@
             <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
+          </li><li class="page  ">
+            <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
           </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
           </li></ul>
@@ -189,7 +191,10 @@
           <p>This page documents the configuration options available for the explore module.</p>
 <h3 id="configure-the-number-of-questions" tabindex="-1">Configure the number of questions</h3>
 <p>You can configure the number of questions to display in the explore module using the <code>rows</code> parameter in the <code>useApi</code> method. The default value is 5.</p>
-<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'product_id_of_the_article'</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">3</span> <span class="token comment">// default is 5</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-js"><code class="language-js">workflow<span class="token punctuation">.</span><span class="token function">useApi</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">product_id</span><span class="token operator">:</span> <span class="token string">'product_id_of_the_article'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">rows</span><span class="token operator">:</span> <span class="token number">3</span> <span class="token comment">// default is 5</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <h3 id="notes" tabindex="-1">Notes</h3>
 <ul>
 <li>The actual number of questions displayed may be less than the specified rows if there are not enough questions available</li>
