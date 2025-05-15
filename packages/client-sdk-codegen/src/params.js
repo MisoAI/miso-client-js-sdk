@@ -1,11 +1,20 @@
-export function encodeParameters(params = {}) {
+export function encodeParameters(params) {
+  if (params === undefined || params === null) {
+    return undefined;
+  }
+  if (typeof params !== 'object') {
+    throw new Error('params must be an object');
+  }
   // JSON string -> base64
   return base64Encode(JSON.stringify(params));
 }
 
 export function decodeParameters(params) {
+  if (params === undefined || params === null) {
+    return undefined;
+  }
   // base64 -> JSON string
-  return params ? JSON.parse(base64Decode(params)) : {};
+  return JSON.parse(base64Decode(params));
 }
 
 function base64Encode(str) {

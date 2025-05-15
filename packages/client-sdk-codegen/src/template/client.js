@@ -8,9 +8,9 @@ export function createClient(options) {
   );
 }
 
-function clientPlugins(options) {
+function clientPlugins({ dryRun } = {}) {
   const blocks = [];
-  if (options.dryRun) {
+  if (dryRun) {
     blocks.push(`MisoClient.plugins.use("std:dry-run");`);
   }
   return blocks;

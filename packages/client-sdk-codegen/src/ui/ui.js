@@ -2,17 +2,14 @@ import { hybridSearch } from './hybrid-search.js';
 import { search } from './search.js';
 
 const workflows = {
-  hybridSearch,
+  ['hybrid-search']: hybridSearch,
   search,
 };
 
 function normalizeOptions({ workflow, ...options } = {}) {
-  // turn workflow into camel case
   if (!workflow) {
     throw new Error('Workflow is required');
   }
-  workflow = workflow.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-
   return {
     workflow,
     ...options,

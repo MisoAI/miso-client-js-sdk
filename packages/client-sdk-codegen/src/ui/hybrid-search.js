@@ -1,17 +1,38 @@
-import { presets } from '../spec/index.js';
+import { hybridSearch as presets } from '../spec/presets.js';
 import { resolvePreset } from '../template/helpers.js';
 import { misocmd, createClient } from '../template/index.js';
 import { autoQuery } from '../template/features.js';
 
-export function hybridSearch(options) {
-  options = resolvePreset(presets.hybridSearch, options);
+// TODO: refactor these
+function normalizeOptions({ facets, ...options } = {}) {
+  if (facets === true) {
+    facets = ['categories'];
+  }
   return {
-    js: js(options),
-    html: html(options),
+    ...options,
+    facets,
   };
 }
 
+export function hybridSearch(options) {
+  options = normalizeOptions(resolvePreset(presets, options));
+  const items = [
+    {
+      type: 'html',
+      name: 'HTML',
+      content: html(options),
+    },
+    {
+      type: 'js',
+      name: 'JavaScript',
+      content: js(options),
+    },
+  ];
+  return items;
+}
+
 function js(options) {
+  // TODO: support loading from Node module
   // TODO: useLink
   return misocmd(`
 // client
@@ -46,8 +67,5 @@ function html(options) {
   if (options.elements === false) {
     return '';
   }
-  return `
-<h1 class="hero-title">Miso Hybrid Search</h1>
-<div id="miso-hybrid-search-combo" class="miso-hybrid-search-combo"></div>
-`.trim();
+  return `<div id="miso-hybrid-search-combo" class="miso-hybrid-search-combo"></div>`.trim();
 }

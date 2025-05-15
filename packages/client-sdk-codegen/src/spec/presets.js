@@ -6,6 +6,9 @@ export const hybridSearch = Object.freeze({
     facets: ['categories'],
     answerBox: true,
   }),
+  minimal: Object.freeze({
+    workflow: 'hybrid-search',
+  }),
 });
 
 export const search = Object.freeze({
@@ -14,5 +17,8 @@ export const search = Object.freeze({
     autoQuery: true,
     autocomplete: true,
     //facets: ['categories'],
+  }),
+  minimal: Object.freeze({
+    workflow: 'search',
   }),
 });

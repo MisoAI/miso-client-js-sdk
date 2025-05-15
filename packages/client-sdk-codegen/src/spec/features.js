@@ -1,7 +1,7 @@
-import { kebabOrSnakeToHuman } from '@miso.ai/commons';
+import { toName } from './utils.js';
 import { resolveWorkflows } from './workflows.slug.js';
 
-export const features = [
+export default [
   {
     slug: 'use-api',
     workflows: '*',
@@ -30,13 +30,12 @@ export const features = [
     slug: 'auto-query',
     workflows: 'ahes',
   },
-].map(({ slug, workflows, ...feature }) => ({
-  slug,
-  name: kebabOrSnakeToHuman(slug),
-  workflows: resolveWorkflows(workflows),
-  ...feature,
-}));
-
-export function getFeatures(workflow) {
-  return features.filter(feature => feature.workflows.includes(workflow));
-}
+].reduce((map, { slug, workflows, ...rest }) => {
+  map[slug] = Object.freeze({
+    slug,
+    name: toName(slug),
+    workflows: resolveWorkflows(workflows),
+    ...rest,
+  });
+  return map;
+}, {});

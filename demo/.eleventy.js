@@ -62,23 +62,17 @@ class Helpers {
     return pageUrl === '/' + chapter + (path || '') + '/';
   }
 
-  codegen(config) {
-    const apiKey = resolveApiKey(config);
+  codegen(options) {
+    const apiKey = resolveApiKey(options);
     // TODO: we need this to watch for codegen package changes
-    const { js, html } = codegen({ dryRun: true, ...config, apiKey });
-    return `
-<script async>
-${js}
-</script>
-${html}
-`;
+    return codegen({ ...options, dryRun: true, apiKey }).concat();
   }
 }
 
-function resolveApiKey(config) {
-  let { apiKey = '' } = config;
+function resolveApiKey(options) {
+  let { apiKey = '' } = options;
   if (!apiKey) {
-    apiKey = config.workflow === 'search' || config.workflow === 'recommendation' ? 'env.DEFAULT_API_KEY' : 'env.DEFAULT_ASK_API_KEY';
+    apiKey = options.workflow === 'search' || options.workflow === 'recommendation' ? 'env.DEFAULT_API_KEY' : 'env.DEFAULT_ASK_API_KEY';
   }
   let i = 0;
   while (apiKey.startsWith('env.')) {

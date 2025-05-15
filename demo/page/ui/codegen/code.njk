@@ -13,10 +13,39 @@ workflows:
   - search
 ---
 
-<div class="codegen-code">
+<style>
+.codegen-code {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+.codegen-code__options,
+.codegen-code__code {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.accordion-header,
+pre {
+  margin-bottom: 0 !important;
+}
+.accordion-collapse {
+  transition: height 0.1s ease-in-out;
+}
+</style>
+<div id="root" class="codegen-code">
   <div class="codegen-code__options" data-role="options">
-    <div class="codegen-code__options__presets" data-role="presets"></div>
-    <div class="codegen-code__options__features" data-role="features"></div>
+    <section>
+      <h2>Presets</h2>
+      <div class="codegen-code__options__presets" data-role="presets">
+      </div>
+    </section>
+    <section>
+      <h2>Features</h2>
+      <div class="codegen-code__options__features" data-role="features">
+      </div>
+    </section>
   </div>
-  <div class="codegen-code__code" data-role="code"></div>
+  <div class="codegen-code__code" data-role="code">
+  </div>
 </div>

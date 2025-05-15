@@ -16,6 +16,9 @@ class Miso {
     return this._workflows;
   }
 
+  mockApi(handler) {
+  }
+
   async _init() {
     await this._page.exposeFunction('_pw', this._handleEvent.bind(this));
     return this;
