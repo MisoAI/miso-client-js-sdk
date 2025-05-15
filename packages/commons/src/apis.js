@@ -8,6 +8,7 @@ export const GROUP = Object.freeze({
 export const NAME = Object.freeze({
   QUESTIONS: 'questions',
   RELATED_QUESTIONS: 'related_questions',
+  TRENDING_QUESTIONS: 'trending_questions',
   SEARCH: 'search',
   AUTOCOMPLETE: 'autocomplete',
   SEARCH_AUTOCOMPLETE: 'search_autocomplete',

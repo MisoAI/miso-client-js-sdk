@@ -30,6 +30,10 @@ export default class Ask extends ApiBase {
     return this._run(NAME.RELATED_QUESTIONS, payload, options);
   }
 
+  async trendingQuestions(payload, options = {}) {
+    return this._run(NAME.TRENDING_QUESTIONS, payload, options);
+  }
+
   async search(payload, options = {}) {
     const response = await this._run(NAME.SEARCH, payload, options);
     return response.question_id ? new SearchResult(this, response, options) : response;

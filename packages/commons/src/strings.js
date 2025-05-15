@@ -23,5 +23,9 @@ export function kebabToSnake(str) {
 }
 
 export function kebabOrSnakeToHuman(str) {
-  return str.replace(/[-_][a-zA-Z]/g, ' $1');
+  return str.replace(/[-_]([a-zA-Z])/g, (_, ch) => ` ${ch}`);
+}
+
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

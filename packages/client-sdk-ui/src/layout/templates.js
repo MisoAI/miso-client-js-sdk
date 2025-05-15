@@ -100,8 +100,9 @@ export function imageInfoBlock(layout, data, meta) {
   ].join('')}</div>`;
 }
 
-export function titleBlock({ className }, { title }) {
-  return title ? `<div class="${className}__item-title">${escapeHtml(title)}</div>` : '';
+export function titleBlock({ className }, { title, _title_with_markups }) {
+  const text = _title_with_markups || escapeHtml(title);
+  return text ? `<div class="${className}__item-title">${text}</div>` : '';
 }
 
 export function brandBlock({ className }, { brand, brand_logo }) {

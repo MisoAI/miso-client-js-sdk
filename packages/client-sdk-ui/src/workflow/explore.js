@@ -79,12 +79,13 @@ export default class Explore extends UnitWorkflow {
     });
   }
 
-  useApi(options) {
+  useApi(...args) {
+    const options = (typeof args[0] === 'object' ? args[0] : args[1]) || {};
     const { product_id } = options;
     if (product_id) {
       this._productId = product_id;
     }
-    return super.useApi(options);
+    return super.useApi(...args);
   }
 
   useLink(fn, options) {
