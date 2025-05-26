@@ -1,4 +1,5 @@
 :root {
+  --miso-select-width: 7rem;
   --miso-select-border: 1px solid #ccc;
   --miso-select-border-radius: 9999px;
   --miso-select-background: #fff;
@@ -22,7 +23,7 @@
     padding: var(--miso-select-padding-y) var(--miso-select-padding-x);
     font-size: var(--miso-select-font-size);
     line-height: var(--miso-select-line-height);
-    width: 100%;
+    width: var(--miso-select-width);
     background: var(--miso-select-background);
     border: 1px solid var(--miso-select-border-color);
     border-radius: var(--miso-select-border-radius);
@@ -64,10 +65,12 @@
     width: 100%;
     top: 100%;
     display: none;
+    background: var(--miso-select-background);
     border: 1px solid var(--miso-select-border-color);
     border-top: none;
     border-radius: 0 0 var(--miso-select-border-radius-computed) var(--miso-select-border-radius-computed);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+    z-index: 10;
   }
   .miso-select__option {
     display: flex;

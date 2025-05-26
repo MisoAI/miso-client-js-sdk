@@ -60,6 +60,15 @@ const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
   },
 });
 
+const DEFAULT_FILTERS_OPTIONS = Object.freeze({
+  sort: {
+    options: [
+      { field: 'relevance', text: 'Relevance', default: true },
+      { field: 'published_at', text: 'Date' },
+    ],
+  },
+});
+
 const DEFAULT_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_OPTIONS,
   ...SearchBasedWorkflow.DEFAULT_OPTIONS,
@@ -68,6 +77,7 @@ const DEFAULT_OPTIONS = Object.freeze({
   trackers: DEFAULT_TRACKERS,
   autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
   pagination: DEFAULT_PAGINATION,
+  filters: DEFAULT_FILTERS_OPTIONS,
 });
 
 const ROLES_OPTIONS = Object.freeze({

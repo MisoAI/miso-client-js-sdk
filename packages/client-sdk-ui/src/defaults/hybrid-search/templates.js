@@ -64,6 +64,7 @@ class Sections extends _Sections {
     const { classPrefix } = options;
     return element('div', { classes: [`${classPrefix}__search-results-filters`] }, [
       '<miso-facets></miso-facets>',
+      '<miso-sort></miso-sort>',
     ]);
   }
 

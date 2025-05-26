@@ -1,7 +1,7 @@
 :root {
   --miso-hybrid-search-combo-section-padding: 2rem;
   --miso-hybrid-search-combo-section-spacing: 4rem;
-  --miso-hybrid-search-combo-content-max-width: none; 
+  --miso-hybrid-search-combo-content-max-width: none;
   --miso-hybrid-search-combo-content-padding: 2rem;
   --miso-hybrid-search-combo-content-spacing: 2rem;
   --miso-hybrid-search-combo-question-phrase-color: #a6a5bb; // TODO: -> --miso-hint-text-color
@@ -28,7 +28,7 @@ miso-hybrid-search-combo,
   .miso-feedback {
     margin-top: var(--miso-hybrid-search-combo-content-spacing);
   }
-  
+
   // section //
   .miso-hybrid-search-combo__section {
     padding: 0 var(--miso-hybrid-search-combo-section-padding);
@@ -58,9 +58,11 @@ miso-hybrid-search-combo,
     margin-bottom: 1rem;
   }
   .miso-hybrid-search-combo__search-results-filters {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: var(--miso-hybrid-search-combo-content-spacing);
   }
-  
+
   // answer box //
   .miso-hybrid-search-combo__question {
     position: relative;

@@ -64,8 +64,6 @@ sections:
     path: /hybrid-search/answer-box
   - title: Use link
     path: /hybrid-search/use-link
-  - title: Sort
-    path: /hybrid-search/sort
   - title: Images
     path: /hybrid-search/images
   - title: Templates
