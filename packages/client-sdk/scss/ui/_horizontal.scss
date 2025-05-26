@@ -1,0 +1,97 @@
+:root {
+  --miso-horizontal-item-width: 40%;
+  --miso-horizontal-item-gap: 0.5rem;
+  --miso-horizontal-item-padding: 1rem;
+  --miso-horizontal-item-content-spacing: 0.5rem;
+  --miso-horizontal-item-index-size: 1.2rem;
+}
+
+.miso-horizontal {
+  &[data-item-type="product"],
+  &[data-item-type="article"] {
+    .miso-horizontal__list {
+      list-style: none !important;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: var(--miso-horizontal-item-gap);
+      overflow-x: auto;
+    }
+    .miso-horizontal__item {
+      flex: 0 0 auto;
+      width: var(--miso-horizontal-item-width);
+      border: 1px solid var(--miso-border-color-light);
+      border-radius: 0.75rem;
+      background-color: #fff;
+
+      &:hover {
+        border-color: var(--miso-border-color-medium);
+        box-shadow: 0 0 3px var(--miso-box-shadow-hover);
+      }
+    }
+    .miso-horizontal__item-body {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: var(--miso-horizontal-item-content-spacing);
+      position: relative;
+      height: auto;
+      padding: var(--miso-horizontal-item-padding);
+      user-select: none;
+    }
+    a.miso-horizontal__item-body {
+      cursor: pointer;
+      text-decoration: none;
+    }
+  }
+
+  .miso-horizontal__item-index-container {
+    width: var(--miso-horizontal-item-index-size);
+  }
+  .miso-horizontal__item-index {
+    display: block;
+    line-height: var(--miso-horizontal-item-index-size);
+    font-size: var(--miso-horizontal-item-index-size);
+    text-align: center;
+    margin-top: -0.25rem;
+  }
+
+  .miso-horizontal__item-info-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    color: var(--miso-text-color);
+    margin-top: -0.3rem; // to align text and image
+
+    > hr {
+      display: none;
+    }
+  }
+
+  .miso-horizontal__item-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    flex-shrink: 0;
+    line-height: 1.5;
+    margin-bottom: .5rem;
+    color: var(--miso-text-color);
+  }
+
+  .miso-horizontal__item-authors-and-date-container {
+    font-size: 0.8rem;
+  }
+
+  .miso-horizontal__item-authors-and-date-container > div {
+    display: inline;
+  }
+
+  .miso-horizontal__item-authors-and-date-container > *:not(:first-child)::before {
+    content: "•";
+    margin: 0 0.5rem;
+  }
+}

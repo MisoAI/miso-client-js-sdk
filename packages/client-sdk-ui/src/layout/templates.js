@@ -42,6 +42,17 @@ export function article(layout, state, data, meta) {
   ].join('');
 }
 
+export function compactArticle(layout, state, data, meta) {
+  const { templates } = layout;
+  const [openTag, closeTag] = tagPair(layout, data);
+  return [
+    openTag,
+    (templates.indexBlock || indexBlock)(layout, data, meta),
+    (templates.infoBlock || templates.articleInfoBlock || compactArticleInfoBlock)(layout, data, meta),
+    closeTag,
+  ].join('');
+}
+
 export function image(layout, state, data, meta) {
   const { templates } = layout;
   const [openTag, closeTag] = tagPair(layout, data);
@@ -93,6 +104,14 @@ export function articleInfoBlock(layout, data, meta) {
   ].join('')}</div>`;
 }
 
+export function compactArticleInfoBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  return `<div class="${className}__item-info-container">${[
+    (templates.titleBlock || titleBlock)(layout, data, meta),
+    (templates.authorsAndDateBlock || authorsAndDateBlock)(layout, data, meta),
+  ].join('')}</div>`;
+}
+
 export function imageInfoBlock(layout, data, meta) {
   const { className, templates } = layout;
   return `<div class="${className}__item-info-container">${[
@@ -120,6 +139,18 @@ export function descriptionBlock({ className }, { snippet, description }) {
 export function dateBlock({ className, templates }, { created_at, updated_at, published_at }) {
   const date = published_at || created_at || updated_at;
   return date ? `<div class="${className}__item-date">${formatDate(date, templates.date)}</div>` : '';
+}
+
+export function authorsBlock({ className }, { authors }) {
+  return authors && Array.isArray(authors) && authors.length ? `<div class="${className}__item-authors">${authors.join(', ')}</div>` : '';
+}
+
+export function authorsAndDateBlock(layout, data, meta) {
+  const { className, templates } = layout;
+  return `<div class="${className}__item-authors-and-date-container">${[
+    (templates.authorsBlock || authorsBlock)(layout, data, meta),
+    (templates.dateBlock || dateBlock)(layout, data, meta),
+  ].join('')}</div>`;
 }
 
 export function priceBlock(layout, data) {

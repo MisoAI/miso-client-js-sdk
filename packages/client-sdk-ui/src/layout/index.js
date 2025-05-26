@@ -4,6 +4,7 @@ export { default as ErrorLayout } from './error/error.js';
 export { default as BannerLayout } from './banner/banner.js';
 export { default as CollectionLayout } from './list/collection.js';
 export { default as ListLayout } from './list/list.js';
+export { default as HorizontalLayout } from './list/horizontal.js';
 export { default as CardsLayout } from './list/cards.js';
 export { default as CarouselLayout } from './list/carousel.js';
 export { default as GalleryLayout } from './list/gallery.js';

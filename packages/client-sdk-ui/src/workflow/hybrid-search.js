@@ -4,7 +4,8 @@ import Workflow from './base.js';
 import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
-import { SearchBoxLayout, TextLayout } from '../layout/index.js';
+import { SearchBoxLayout, TextLayout, HorizontalLayout } from '../layout/index.js';
+import { compactArticle, compactArticleInfoBlock } from '../layout/templates.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchResults from './hybrid-search-results.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';
@@ -16,7 +17,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
   payload: {
     ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload,
     ...SearchBasedWorkflow.DEFAULT_API_OPTIONS.payload,
-    source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
+    source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title', 'authors'],
   },
 });
 
@@ -25,6 +26,18 @@ const DEFAULT_LAYOUTS = Object.freeze({
   ...SearchBasedWorkflow.DEFAULT_LAYOUTS,
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: '' }],
   [ROLE.QUESTION]: [TextLayout.type, { raw: true }],
+  [ROLE.SOURCES]: [
+    HorizontalLayout.type,
+    {
+      incremental: true,
+      itemType: 'article',
+      templates: {
+        ordered: true,
+        article: compactArticle,
+        articleInfoBlock: compactArticleInfoBlock
+      }
+    }
+  ],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
