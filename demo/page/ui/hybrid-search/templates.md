@@ -35,7 +35,7 @@ main .container {
     <button type="button" class="btn btn-outline-secondary" id="copy-btn">Copy</button>
     <div class="spacing"></div>
     <div class="form-check form-switch">
-      <input class="form-check-input" checked type="checkbox" id="answerbox-check">
+      <input class="form-check-input" type="checkbox" id="answerbox-check">
       <label class="form-check-label" for="answerbox-check">Answer box</label>
     </div>
     <div class="form-check form-switch">

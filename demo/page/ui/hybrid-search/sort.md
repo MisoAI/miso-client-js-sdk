@@ -46,10 +46,9 @@ misocmd.push(async () => {
   workflow.autocomplete.enable();
   // render DOM and get elements
   await client.ui.ready;
-  const { templates, wireAnswerBox } = MisoClient.ui.defaults.hybridSearch;
+  const { templates } = MisoClient.ui.defaults.hybridSearch;
   const rootElement = document.querySelector('#miso-hybrid-search-combo');
   rootElement.innerHTML = insertSortElement(templates.root());
-  wireAnswerBox(client, rootElement);
   // start query if specified in URL
   workflow.autoQuery();
 });

@@ -97,7 +97,7 @@ export function root(options = {}) {
   const { normalizeOptions, section, container } = helpers;
   options = normalizeOptions(options);
   const { answerBox, answerGroup, searchResultsGroup } = sections;
-  const { answerBox: answerBoxOptions = true } = options;
+  const { answerBox: answerBoxOptions = false } = options;
   return [
     section(options, { name: 'question' }, [
       container(options, { name: 'query' }, '<miso-query></miso-query>'),
