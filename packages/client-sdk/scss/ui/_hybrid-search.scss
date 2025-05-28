@@ -55,11 +55,13 @@ miso-hybrid-search-combo,
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
     margin-bottom: 1rem;
   }
   .miso-hybrid-search-combo__search-results-filters {
     display: flex;
     justify-content: space-between;
+    gap: 1rem;
     margin-bottom: var(--miso-hybrid-search-combo-content-spacing);
   }
 
