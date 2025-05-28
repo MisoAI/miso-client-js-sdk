@@ -240,19 +240,15 @@ misocmd<span class="token punctuation">.</span><span class="token function">push
   <span class="token comment">// render DOM and get element references</span>
   <span class="token keyword">const</span> defaults <span class="token operator">=</span> MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>hybridSearch<span class="token punctuation">;</span>
   <span class="token keyword">const</span> templates <span class="token operator">=</span> defaults<span class="token punctuation">.</span>templates<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> wireAnswerBox <span class="token operator">=</span> defaults<span class="token punctuation">.</span>wireAnswerBox<span class="token punctuation">;</span>
 
   <span class="token keyword">const</span> rootElement <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'#miso-hybrid-search-combo'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  rootElement<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> templates<span class="token punctuation">.</span><span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">answerBox</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-  <span class="token function">wireAnswerBox</span><span class="token punctuation">(</span>client<span class="token punctuation">,</span> rootElement<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  rootElement<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> templates<span class="token punctuation">.</span><span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
   <span class="token comment">// start query if specified in URL parameters</span>
   workflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <ul>
 <li>See <a href="/miso-client-js-sdk/answers/hybrid-search/templates/" target="_blank" rel="noopener">template helpers</a> for template customization.</li>
-<li>See the <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/defaults/hybrid-search/answer-box.js" target="_blank" rel="noopener">implementation</a> of the logic helper functions <code>wireAnswerBox</code> for more details.</li>
 </ul>
 
         </div>
