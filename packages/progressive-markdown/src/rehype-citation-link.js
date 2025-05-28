@@ -70,7 +70,7 @@ function createMethods(node) {
     removeItem(properties.className, className);
   }
   function setAttribute(key, value, options) {
-    const { skipEscape = false } = options || {};
+    const { escapeValue = true } = options || {};
 
     if (!key) {
       throw new Error(`Key is blank.`);
@@ -79,7 +79,7 @@ function createMethods(node) {
       return;
     }
     const properties = node.properties || (node.properties = {});
-    properties[escapeHtml(key)] = skipEscape ? value : escapeHtml(value);
+    properties[escapeHtml(key)] = escapeValue ? escapeHtml(value) : value;
   }
   function removeAttribute(key) {
     if (!key) {
