@@ -1,35 +1,10 @@
-class MisoCodegenPresetsElement extends HTMLElement {
-
-  constructor() {
-    super();
-    this._model = undefined;
-  }
-
-  connectedCallback() {
-    const model = window.misoCodegenModel;
-    if (!model) {
-      throw new Error('window.misoCodegenModel not found');
-    }
-    this._model = model;
-    this._render();
-  }
-
-  disconnectedCallback() {}
-
-  _render() {
-    const { spec, config } = this._model;
-    this.innerHTML = `<div class="btn-group" role="group" aria-label="Preset options">${spec.presets.map(preset => this._renderItem(preset, config.preset)).join('')}</div>`;
-  }
-
-  _renderItem(preset, selected) {
-    return `
-<input type="radio" class="btn-check" name="preset" id="preset-${preset.slug}" autocomplete="off" value="${preset.slug}" ${selected === preset.slug ? 'checked' : ''}>
-<label class="btn btn-outline-primary" for="preset-${preset.slug}">${preset.name}</label>
-`.trim();
-  }
-
-}
+import { defineAndUpgrade } from '@miso.ai/commons';
+import MisoCodegenSnippetElement from './_codegen-snippet-element.js';
+import MisoCodegenCodesElement from './_codegen-codes-element.js';
+import MisoCodegenPresetsElement from './_codegen-presets-element.js';
 
 export function defineElements() {
-  customElements.define('miso-codegen-presets', MisoCodegenPresetsElement);
+  defineAndUpgrade(MisoCodegenSnippetElement);
+  defineAndUpgrade(MisoCodegenCodesElement);
+  defineAndUpgrade(MisoCodegenPresetsElement);
 }

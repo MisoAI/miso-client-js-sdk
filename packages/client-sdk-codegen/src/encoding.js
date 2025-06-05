@@ -1,4 +1,4 @@
-export function encodeParameters(params) {
+export function encodeConfig(params) {
   if (params === undefined || params === null) {
     return undefined;
   }
@@ -9,7 +9,7 @@ export function encodeParameters(params) {
   return base64Encode(JSON.stringify(params));
 }
 
-export function decodeParameters(params) {
+export function decodeConfig(params) {
   if (params === undefined || params === null) {
     return undefined;
   }

@@ -33,25 +33,3 @@ export function blocks(...blocks) {
 export function paragraphs(...paragraphs) {
   return paragraphs.map(paragraph => paragraph.trim()).filter(paragraph => paragraph).join('\n\n');
 }
-
-/**
- * Resolve preset options
- * @param {Object} presets - Available presets
- * @param {Object} options - Options to resolve
- * @param {string} options.preset - Preset to use
- * @param {Object} options - Other options
- * @returns {Object} Resolved options
- */
-export function resolvePreset(presets, { preset, ...options } = {}) {
-  if (!preset) {
-    return options;
-  }
-  if (!presets[preset]) {
-    throw new Error(`Preset "${preset}" is not found`);
-  }
-  // let rest of options override
-  return {
-    ...presets[preset],
-    ...options,
-  };
-}

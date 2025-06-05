@@ -1,26 +1,23 @@
 import { hybridSearch } from './hybrid-search.js';
 import { search } from './search.js';
 
-const workflows = {
+const WORKFLOWS = {
   ['hybrid-search']: hybridSearch,
   search,
 };
 
-function normalizeOptions({ workflow, ...options } = {}) {
-  if (!workflow) {
+function normalizeOptions(options = {}) {
+  if (!options.workflow) {
     throw new Error('Workflow is required');
   }
-  return {
-    workflow,
-    ...options,
-  };
+  return options;
 }
 
 export function ui(options) {
   options = normalizeOptions(options);
   const { workflow } = options;
-  if (!workflows[workflow]) {
+  if (!WORKFLOWS[workflow]) {
     throw new Error(`Workflow "${workflow}" is not found`);
   }
-  return workflows[workflow](options);
+  return WORKFLOWS[workflow](options);
 }

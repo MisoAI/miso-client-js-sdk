@@ -1,8 +1,8 @@
-import { codegen, decodeParameters } from '@miso.ai/client-sdk-codegen';
+import { codegen, decodeConfig } from '@miso.ai/client-sdk-codegen';
 
 const workflow = window.location.pathname.replace(/\/$/, '').split('/').pop();
 const searchParams = new URLSearchParams(window.location.search);
-const config = decodeParameters(searchParams.get('c'));
+const config = decodeConfig(searchParams.get('c'));
 const apiKey = searchParams.get('api-key') || undefined;
 
 const styles = [];

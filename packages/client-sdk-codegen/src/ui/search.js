@@ -1,5 +1,4 @@
-import { search as presets } from '../spec/presets.js';
-import { resolvePreset } from '../template/helpers.js';
+import { resolvePreset } from '../spec/index.js';
 import { misocmd, createClient } from '../template/index.js';
 import { facets, autoQuery } from '../template/features.js';
 
@@ -14,7 +13,7 @@ function normalizeOptions({ facets, ...options } = {}) {
 }
 
 export function search(options) {
-  options = normalizeOptions(resolvePreset(presets, options));
+  options = normalizeOptions(resolvePreset(options));
   // TODO: extra styles for concatenate format
   const items = [];
   if (options.elements !== false) {
