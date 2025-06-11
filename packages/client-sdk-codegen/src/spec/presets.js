@@ -40,7 +40,10 @@ export function resolvePreset({ workflow, preset, ...options } = {}) {
     throw new Error(`Workflow "${workflow}" presets not found`);
   }
   if (!preset) {
-    return options;
+    return {
+      workflow,
+      ...options,
+    };
   }
   if (!presets[preset]) {
     throw new Error(`Preset "${preset}" not found in workflow "${workflow}"`);
