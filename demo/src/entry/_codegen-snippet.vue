@@ -80,7 +80,6 @@ onBeforeUnmount(() => {
 <style scoped>
 .miso-codegen-snippet {
   position: relative;
-  margin-bottom: 1rem;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
   overflow: hidden;

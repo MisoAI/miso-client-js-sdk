@@ -1,4 +1,4 @@
-import { kebabToLowerCamel, lowerCamelToKebab } from '@miso.ai/commons';
+import { lowerCamelToKebab } from '@miso.ai/commons';
 
 export const hybridSearch = Object.freeze({
   standard: Object.freeze({
@@ -6,7 +6,6 @@ export const hybridSearch = Object.freeze({
     autoQuery: true,
     autocomplete: true,
     facets: ['categories'],
-    answerBox: true,
   }),
   minimal: Object.freeze({
     workflow: 'hybrid-search',

@@ -1,6 +1,6 @@
 export function indent(str, level = 1) {
-  // TODO: trim and deal with blank lines
-  return str.replace(/\n/g, '\n' + ' '.repeat(level));
+  const spaces = ' '.repeat(level);
+  return str.split('\n').map(removeTrailingSpace).map(line => line ? spaces + line : '').join('\n');
 }
 
 /**
@@ -10,7 +10,10 @@ export function indent(str, level = 1) {
  * @param {boolean} options.multiline - Whether to use multiline
  * @returns {string}
  */
-export function format(value, { multiline = false } = {}) {
+export function format(value, { multiline = false, omitUndefined = true } = {}) {
+  if (omitUndefined && value === undefined) {
+    return '';
+  }
   // use single quote
   // no quote for simple key in object
   return JSON.stringify(value, null, multiline ? 2 : 0).replace(/"/g, "'").replace(/\s*:\s*/g, ': ');
@@ -22,7 +25,11 @@ export function format(value, { multiline = false } = {}) {
  * @returns {string}
  */
 export function blocks(...blocks) {
-  return blocks.map(block => block.trim()).filter(block => block).join('\n');
+  return blocks
+    .map(removeTrailingSpace)
+    .map(removeStartingNewLine)
+    .filter(block => block)
+    .join('\n');
 }
 
 /**
@@ -31,5 +38,18 @@ export function blocks(...blocks) {
  * @returns {string}
  */
 export function paragraphs(...paragraphs) {
-  return paragraphs.map(paragraph => paragraph.trim()).filter(paragraph => paragraph).join('\n\n');
+  return paragraphs
+    .map(removeTrailingSpace)
+    .map(removeStartingNewLine)
+    .filter(paragraph => paragraph)
+    .join('\n\n');
+}
+
+function removeTrailingSpace(str) {
+  return str.replace(/\s+$/g, '');
+}
+
+function removeStartingNewLine(str) {
+  // remove only leading newlines, preserve other leading whitespace
+  return str.replace(/^[\r\n]+/g, '');
 }

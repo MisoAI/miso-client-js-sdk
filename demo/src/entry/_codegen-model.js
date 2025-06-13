@@ -169,7 +169,7 @@ export function toVueUpdateHandler(state) {
 
 function syncPresetSelection(state, value) {
   state.config.preset = value;
-  for (const preset of state.spec.presets) {
+  for (const preset of state.presets) {
     const selected = preset.slug === value;
     if (preset.selected !== selected) {
       preset.selected = selected;

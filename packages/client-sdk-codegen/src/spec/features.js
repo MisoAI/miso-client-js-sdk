@@ -13,21 +13,25 @@ export default [
     workflows: '*',
   },
   */
+  /*
   {
     slug: 'use-link',
     workflows: 'ahes',
     options: DEFAULT_BOOLEAN_OPTIONS,
   },
+  */
   {
     slug: 'autocomplete',
     workflows: 'hs',
     options: DEFAULT_BOOLEAN_OPTIONS,
   },
+  /*
   {
     slug: 'pagination',
     workflows: 'hs',
     options: DEFAULT_BOOLEAN_OPTIONS,
   },
+  */
   {
     slug: 'facets',
     workflows: 'hs',
@@ -35,6 +39,11 @@ export default [
       { name: 'Off', value: undefined },
       { name: 'Categories', value: ['categories'] },
     ],
+  },
+  {
+    slug: 'answer-box',
+    workflows: 'h',
+    options: DEFAULT_BOOLEAN_OPTIONS,
   },
   {
     slug: 'follow-up',
