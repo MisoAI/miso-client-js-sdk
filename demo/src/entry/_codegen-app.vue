@@ -3,6 +3,7 @@ import { reactive, onMounted, onUnmounted } from 'vue';
 import { encodeConfig, decodeConfig } from '@miso.ai/client-sdk-codegen';
 import { toVueUpdateHandler } from './_codegen-model.js';
 import { deepClone } from './_codegen-utils.js';
+import CodegenSdks from './_codegen-sdks.vue';
 import CodegenPresets from './_codegen-presets.vue';
 import CodegenFeatures from './_codegen-features.vue';
 import CodegenCode from './_codegen-code.vue';
@@ -32,11 +33,17 @@ const handlePresetSelection = (preset) => {
 const handleFeatureSelection = (key, value) => {
   props.model.set(key, value);
 };
+
+const handleSdkSelection = (sdk) => {
+  props.model.sdk = sdk;
+};
 </script>
 
 <template>
   <div class="miso-codegen">
     <div class="miso-codegen__options">
+      <CodegenSdks :sdks="state.sdks" @select="handleSdkSelection" />
+      <hr>
       <CodegenPresets :presets="state.presets" @select="handlePresetSelection" />
       <hr>
       <CodegenFeatures :features="state.features" @select="handleFeatureSelection" />

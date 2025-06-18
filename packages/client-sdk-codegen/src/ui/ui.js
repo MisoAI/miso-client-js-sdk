@@ -6,11 +6,14 @@ const WORKFLOWS = {
   search,
 };
 
-function normalizeOptions(options = {}) {
+function normalizeOptions({ apiKey = 'your_api_key', ...options } = {}) {
   if (!options.workflow) {
     throw new Error('Workflow is required');
   }
-  return options;
+  return {
+    apiKey,
+    ...options,
+  };
 }
 
 export function ui(options) {

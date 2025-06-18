@@ -1,5 +1,5 @@
 import { resolvePreset } from '../spec/index.js';
-import { misocmd, createClient, helpers as h } from '../template/index.js';
+import { sdk, createClient, helpers as h } from '../template/index.js';
 import { autoQuery, autocomplete } from '../template/features.js';
 
 // TODO: refactor these
@@ -18,7 +18,7 @@ export function hybridSearch(options) {
   const items = [
     {
       type: 'html',
-      name: 'HTML',
+      name: 'HTML (Main)',
       content: html(options),
     },
     {
@@ -31,9 +31,8 @@ export function hybridSearch(options) {
 }
 
 function js(options) {
-  // TODO: support loading from Node module
   // TODO: useLink
-  return misocmd(h.paragraphs(
+  return sdk(options, h.paragraphs(
     client(options),
     workflow(options),
     setup(options),

@@ -1,3 +1,9 @@
+import { trimObj } from '@miso.ai/commons';
+
+export function trimAndFreeze(obj) {
+  return Object.freeze(trimObj(obj));
+}
+
 export function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }

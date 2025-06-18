@@ -1,6 +1,6 @@
 import { resolvePreset } from '../spec/index.js';
-import { misocmd, createClient } from '../template/index.js';
-import { facets, autoQuery } from '../template/features.js';
+import { sdk, createClient, helpers as h } from '../template/index.js';
+import { autoQuery } from '../template/features.js';
 
 function normalizeOptions({ facets, ...options } = {}) {
   if (facets === true) {
@@ -41,30 +41,48 @@ export function search(options) {
 }
 
 function js(options) {
-  // TODO: support loading from Node module
-  return misocmd(`
-// client
-${createClient(options)}
-
-// workflow
-const workflow = client.ui.search;
-
-// setup: TODO
-${facets(options.facets)}
-
-${autoQuery(options.autoQuery)}
-`);
+  return sdk(options, h.paragraphs(
+    client(options),
+    workflow(options),
+    setup(options),
+    autoQuery(options.autoQuery),
+  ));
 }
 
-function html(options) {
-  if (options.elements === false) {
-    return '';
-  }
+function client(options) {
   return `
-${htmlSearchBox(options)}
-<hr>
-${htmlResults(options)}
-`.trim();
+// access Miso client
+${createClient(options)}`;
+}
+
+function workflow(options) {
+  return `
+// access workflow
+const workflow = client.ui.search;`;
+}
+
+function setup(options) {
+  const items = [];
+  const useApiCall = useApi(options);
+  if (useApiCall) {
+    items.push(useApiCall);
+  }
+  if (options.autocomplete) {
+    items.push(autocomplete(options.autocomplete));
+  }
+  return items.length ? h.blocks(`// setup`, ...items) : '';
+}
+
+function useApi(options) {
+  const params = {};
+  if (options.facets) {
+    params.facets = options.facets;
+  }
+  return Object.keys(params).length ? `workflow.useApi(${h.format(params, { multiline: true })});` : '';
+}
+
+function autocomplete(options) {
+  return options ? `workflow.autocomplete.enable();` : '';
 }
 
 function htmlSearchBox(options) {

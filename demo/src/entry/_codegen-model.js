@@ -1,22 +1,20 @@
-import { kebabToLowerCamel, trimObj } from '@miso.ai/commons';
+import { kebabToLowerCamel } from '@miso.ai/commons';
 import { codegen, spec as _spec, encodeConfig, decodeConfig } from '@miso.ai/client-sdk-codegen';
-import { deepEquals, deepClone } from './_codegen-utils.js';
+import { trimAndFreeze, deepEquals, deepClone } from './_codegen-utils.js';
 
-export function getModel(workflow) {
-  /*
-  const searchParams = new URLSearchParams(window.location.search);
-  const { preset = 'minimal', ...config } = decodeConfig(searchParams.get('c')) || { preset: 'standard' };
-  */
-  return window.misoCodegenModel || (window.misoCodegenModel = new MisoCodegenConfigViewModel({ workflow, preset: 'standard' }));
-}
+/*
+const searchParams = new URLSearchParams(window.location.search);
+const { preset = 'minimal', ...config } = decodeConfig(searchParams.get('c')) || { preset: 'standard' };
+*/
 
-function trimAndFreeze(obj) {
-  return Object.freeze(trimObj(obj));
-}
-
-function toCode(config) {
-  const { items } = codegen(config);
-  return Object.freeze({ items });
+function toSdks(spec, config) {
+  const { sdk: value = 'misocmd' } = config;
+  return spec.sdks.map(sdk => {
+    return {
+      ...sdk,
+      selected: value === sdk.slug,
+    };
+  });
 }
 
 function toPresets(spec, config) {
@@ -43,6 +41,11 @@ function toFeatures(spec, config) {
   });
 }
 
+function toCode(config) {
+  const { items } = codegen(config);
+  return Object.freeze({ items });
+}
+
 export class MisoCodegenConfigViewModel {
 
   constructor(config = {}) {
@@ -52,6 +55,7 @@ export class MisoCodegenConfigViewModel {
       workflow,
       spec,
       config,
+      sdks: toSdks(spec, config),
       presets: toPresets(spec, config),
       features: toFeatures(spec, config),
       code: toCode(config),
@@ -72,6 +76,16 @@ export class MisoCodegenConfigViewModel {
 
   get state() {
     return this._state;
+  }
+
+  set sdk(sdk) {
+    if (!sdk) {
+      throw new Error('SDK is required');
+    }
+    if (this._state.config.sdk === sdk) {
+      return;
+    }
+    this._apply('sdk', { sdk });
   }
 
   set preset(preset) {
@@ -118,6 +132,11 @@ export class MisoCodegenConfigViewModel {
   _transitState(action) {
     const { workflow } = this._state.config;
     switch (action.type) {
+      case 'sdk':
+        return this._transitStateByConfig({
+          ...this._state.config,
+          sdk: action.sdk,
+        });
       case 'preset':
         // clear all other features
         return this._transitStateByConfig({
@@ -148,6 +167,9 @@ export class MisoCodegenConfigViewModel {
 export function toVueUpdateHandler(state) {
   return (action, newState) => {
     switch (action.type) {
+      case 'sdk':
+        syncSdkSelection(state, action.sdk);
+        break;
       case 'preset':
         state.config = deepClone(newState.config);
         syncPresetSelection(state, action.preset);
@@ -165,6 +187,16 @@ export function toVueUpdateHandler(state) {
     }
     state.code = deepClone(newState.code);
   };
+}
+
+function syncSdkSelection(state, value) {
+  state.config.sdk = value;
+  for (const sdk of state.sdks) {
+    const selected = sdk.slug === value;
+    if (sdk.selected !== selected) {
+      sdk.selected = selected;
+    }
+  }
 }
 
 function syncPresetSelection(state, value) {
