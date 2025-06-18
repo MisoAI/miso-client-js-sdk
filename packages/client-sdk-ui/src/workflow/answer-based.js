@@ -5,7 +5,7 @@ import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { writeAnswerStageToMeta, writeEventTargetToInteraction, mergeInteraction } from './processors.js';
+import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeEventTargetToInteraction, mergeInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 
@@ -65,6 +65,10 @@ const DEFAULT_OPTIONS = Object.freeze({
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.ANSWER,
   members: Object.keys(DEFAULT_LAYOUTS),
+  mappings: {
+    [ROLE.ANSWER]: mappingAnswerData,
+    [ROLE.REASONING]: mappingReasoningData,
+  },
 });
 
 export default class AnswerBasedWorkflow extends Workflow {

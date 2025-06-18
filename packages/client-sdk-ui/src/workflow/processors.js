@@ -22,6 +22,22 @@ export function mappingSortData(_, { hub, workflowOptions = {} } = {}) {
   });
 }
 
+export function mappingAnswerData(data) {
+  if (!data || !data.value) {
+    return data;
+  }
+  const { answer = '', answer_stage, finished } = data.value;
+  return Object.freeze({ value: answer, stage: answer_stage, finished: !!finished });
+}
+
+export function mappingReasoningData(data) {
+  if (!data || !data.value) {
+    return data;
+  }
+  const { reasoning = '', reasoning_finished } = data.value;
+  return Object.freeze({ value: reasoning, stage: 'reasoning', finished: !!reasoning_finished });
+}
+
 function findDefaultSortOption(options) {
   for (const option of options) {
     if (option.default) {

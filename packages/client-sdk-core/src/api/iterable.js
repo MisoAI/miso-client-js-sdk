@@ -46,7 +46,10 @@ export class IterableApiStub {
   }
 
   _isUpdated(previousResponse, newResponse) {
-    return !previousResponse || previousResponse.answer_stage !== newResponse.answer_stage || previousResponse.answer.length !== newResponse.answer.length;
+    return !previousResponse ||
+      previousResponse.answer_stage !== newResponse.answer_stage ||
+      lengthOf(previousResponse.answer) !== lengthOf(newResponse.answer) ||
+      lengthOf(previousResponse.reasoning) !== lengthOf(newResponse.reasoning);
   }
 
   _revisionOf(response) {
@@ -68,4 +71,8 @@ export class IdBasedIterableApiStub extends IterableApiStub {
     return this._api[this._method](this._id, options);
   }
 
+}
+
+function lengthOf(value = '') {
+  return value.length;
 }
