@@ -8,11 +8,10 @@ const { preset = 'minimal', ...config } = decodeConfig(searchParams.get('c')) ||
 */
 
 function toSdks(spec, config) {
-  const { sdk: value = 'misocmd' } = config;
   return spec.sdks.map(sdk => {
     return {
       ...sdk,
-      selected: value === sdk.slug,
+      selected: config.sdk === sdk.slug,
     };
   });
 }
@@ -46,9 +45,18 @@ function toCode(config) {
   return Object.freeze({ items });
 }
 
+function normalizeConfig({ sdk = 'misocmd', preset = 'standard', ...config } = {}) {
+  return {
+    sdk,
+    preset,
+    ...config,
+  };
+}
+
 export class MisoCodegenConfigViewModel {
 
-  constructor(config = {}) {
+  constructor(config) {
+    config = normalizeConfig(config);
     const { workflow } = config;
     const spec = this._spec = _spec.workflows[workflow];
     this._state = trimAndFreeze({
