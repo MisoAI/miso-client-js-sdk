@@ -22,8 +22,28 @@ class Sections extends _Sections {
     return container(options, { name: 'answer', visibleWhen: 'ready' }, [
       options.parentQuestionId ? '<hr>' : '',
       ...this.question(options),
+      this.reasoning(options),
       '<miso-answer></miso-answer>',
       '<miso-feedback></miso-feedback>',
+    ]);
+  }
+
+  reasoning({ phrases } = {}) {
+    const { element, phraseText } = this._helpers;
+    return element('miso-collapsible', {
+      name: 'reasoning-container',
+    }, [
+      element('div', {
+        classes: ['miso-collapsible__header'],
+        'data-role': 'toggle-expand',
+      }, [
+        `<div class="miso-collapsible__title" data-role="title">${phraseText(phrases, 'thoughts')}</div>`,
+      ]),
+      element('div', {
+        classes: ['miso-collapsible__body'],
+      }, [
+        '<miso-reasoning></miso-reasoning>',
+      ]),
     ]);
   }
 

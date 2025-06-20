@@ -6,6 +6,7 @@ export { default as MisoResultsElement } from './miso-results.js';
 export { default as MisoProductsElement } from './miso-products.js';
 export { default as MisoQuestionElement } from './miso-question.js';
 export { default as MisoAnswerElement } from './miso-answer.js';
+export { default as MisoReasoningElement } from './miso-reasoning.js';
 export { default as MisoSourcesElement } from './miso-sources.js';
 export { default as MisoImagesElement } from './miso-images.js';
 export { default as MisoRelatedResourcesElement } from './miso-related-resources.js';

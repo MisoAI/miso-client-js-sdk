@@ -1,0 +1,48 @@
+:root {
+  --miso-collapsible-background: #f0f0f0;
+  --miso-collapsible-body-max-height: 12rem;
+  --miso-collapsible-button-max-width: 20rem;
+  --miso-collapsible-border-radius: 0.5rem;
+  --miso-collapsible-content-spacing: 0.75rem;
+}
+miso-collapsible {
+  display: block;
+  position: relative;
+  border-radius: var(--miso-collapsible-border-radius);
+  background: var(--miso-collapsible-background);
+  margin: var(--miso-collapsible-content-spacing) calc(var(--miso-collapsible-content-spacing) * -1);
+
+  .miso-collapsible__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--miso-collapsible-content-spacing);
+  }
+  .miso-collapsible__title {
+    font-weight: 500;
+    user-select: none;
+  }
+  .miso-collapsible__body {
+    position: relative;
+    overflow: scroll;
+    max-height: var(--miso-collapsible-body-max-height);
+    padding: var(--miso-collapsible-content-spacing);
+    padding-top: 0;
+    display: none;
+  }
+
+  [data-role="toggle-expand"],
+  [data-role="expand"],
+  [data-role="collapse"] {
+    cursor: pointer;
+  }
+  
+  &.hidden {
+    display: none;
+  }
+  &.expanded {
+    .miso-collapsible__body {
+      display: block;
+    }
+  }
+}

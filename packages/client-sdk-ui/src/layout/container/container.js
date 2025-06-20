@@ -1,6 +1,6 @@
 import { ROLE, STATUS } from '../../constants.js';
 import RafLayout from '../raf.js';
-import MisoBannerElement from '../../element/miso-banner.js';
+import MisoBannerElement from '../../element/util/miso-banner.js';
 import Viewables from '../../util/viewables.js';
 
 const TYPE = 'container';

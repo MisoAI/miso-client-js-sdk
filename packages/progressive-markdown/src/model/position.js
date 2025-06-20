@@ -93,9 +93,9 @@ export default class Position {
     switch (this.type) {
       case TYPE.INTERIOR:
         return cropNode(this, toOffset);
-        default:
-          throw new Error(`Cannot crop position of type: ${this.type}`);
-      }
+      default:
+        throw new Error(`Cannot crop position of type: ${this.type}`);
+    }
   }
 
   get unlinked() {
@@ -195,15 +195,27 @@ function sliceNodeLeft(position) {
 function sliceTextNodeLeft({ node: { value, ...node }, offset }) {
   return {
     ...node,
-    value: value.slice(0, offset),
+    value: sliceStringSafely(value, 0, offset),
   };
 }
 
 function cropNode({ node: { value, ...node }, offset }, toOffset) {
   return {
     ...node,
-    value: toOffset !== undefined ? value.slice(offset, toOffset) : value.slice(offset),
+    value: sliceStringSafely(value, offset, toOffset),
   };
+}
+
+function sliceStringSafely(str, from, to) {
+  return str.slice(getSafeStringIndex(str, from), getSafeStringIndex(str, to));
+}
+
+function getSafeStringIndex(str, index) {
+  if (index === undefined || index === 0) {
+    return index;
+  }
+  // dodge surrogate pairs
+  return str.codePointAt(index - 1) > 0xffff ? index - 1 : index;
 }
 
 function formatType(type) {

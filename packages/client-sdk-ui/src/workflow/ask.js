@@ -2,7 +2,7 @@ import { defineValues, trimObj, API } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
-import { OptionListLayout, ListLayout, SearchBoxLayout } from '../layout/index.js';
+import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
@@ -18,6 +18,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 const DEFAULT_LAYOUTS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_LAYOUTS,
   [ROLE.QUERY]: [SearchBoxLayout.type, { templates: { buttonIcon: 'send' } }],
+  [ROLE.REASONING]: TypewriterLayout.type,
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, itemType: 'article' }],
   [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
 });

@@ -111,7 +111,7 @@ const GETTERS = {
 
 const METHODS = {
   toggleOpen: ['toggle', CLASS_OPEN],
-  open: ['open', CLASS_OPEN],
+  open: ['add', CLASS_OPEN],
   close: ['remove', CLASS_OPEN],
   toggleHidden: ['toggle', CLASS_SHOWN],
   show: ['add', CLASS_SHOWN],

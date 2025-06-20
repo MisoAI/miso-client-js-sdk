@@ -4,4 +4,4 @@ import * as combos from './combo/index.js';
 
 export { containers, roles, combos };
 
-export { default as MisoBannerElement } from './miso-banner.js';
+export * from './util/index.js';
