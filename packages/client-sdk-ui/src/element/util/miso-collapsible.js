@@ -13,9 +13,11 @@ const ACTIONS = {
   show: ['remove', STATUS_HIDDEN],
 };
 
-const EXPAND_BUTTON_SELECTOR = '[data-role="expand"]';
-const COLLAPSE_BUTTON_SELECTOR = '[data-role="collapse"]';
-const TOGGLE_EXPAND_BUTTON_SELECTOR = '[data-role="toggle-expand"]';
+const CLICKABLES = [
+  { role: 'expand', action: 'expand' },
+  { role: 'collapse', action: 'collapse' },
+  { role: 'toggle-expand', action: 'toggleExpand' },
+];
 
 export default class MisoCollapsibleElement extends MisoUtilityElement {
 
@@ -26,35 +28,15 @@ export default class MisoCollapsibleElement extends MisoUtilityElement {
   constructor() {
     super({
       actions: Object.keys(ACTIONS),
+      clickables: CLICKABLES,
     });
   }
 
   // lifecycle //
-  async connectedCallback() {
-    super.connectedCallback();
-    const handleClick = event => this._handleClick(event);
-    this.addEventListener('click', handleClick);
-    this._unsubscribes.push(() => this.removeEventListener('click', handleClick));
-  }
-
   toggleExpand() {
     this.expanded ? this.collapse() : this.expand();
   }
   
-  _handleClick({ target, button }) {
-    // only left click
-    if (button !== 0) {
-      return;
-    }
-    if (target.closest(EXPAND_BUTTON_SELECTOR)) {
-      this.expand();
-    } else if (target.closest(COLLAPSE_BUTTON_SELECTOR)) {
-      this.collapse();
-    } else if (target.closest(TOGGLE_EXPAND_BUTTON_SELECTOR)) {
-      this.toggleExpand();
-    }
-  }
-
 }
 
 defineStatusGetters(MisoCollapsibleElement.prototype, [STATUS_EXPANDED, STATUS_HIDDEN]);

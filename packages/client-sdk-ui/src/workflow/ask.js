@@ -131,6 +131,25 @@ export default class Ask extends AnswerBasedWorkflow {
     return payload;
   }
 
+  // data //
+  _updateData(data) {
+    super._updateData(data);
+    this._triggerReasoningShowIfNecessary(data);
+  }
+
+  _triggerReasoningShowIfNecessary({ session, value } = {}) {
+    if (!value || !value.reasoning) {
+      return;
+    }
+    const context = this._getSessionContext(session);
+    if (context.reasoningShown) {
+      return;
+    }
+    context.reasoningShown = true;
+    const view = this._views.get(ROLE.REASONING);
+    view && view.triggerAction({ name: 'show', target: '[data-role="reasoning-container"]' });
+  }
+
   // interactions //
   _writeAskPropertiesToInteraction(payload, args) {
     const root_question_id = this.rootQuestionId;

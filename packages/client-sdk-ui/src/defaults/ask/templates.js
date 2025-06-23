@@ -28,10 +28,14 @@ class Sections extends _Sections {
     ]);
   }
 
-  reasoning({ phrases } = {}) {
+  reasoning({ phrases, reasoning: options = {} } = {}) {
     const { element, phraseText } = this._helpers;
+    const classes = [];
+    options.hide !== false && classes.push('hidden');
+    options.expand && classes.push('expanded');
     return element('miso-collapsible', {
-      name: 'reasoning-container',
+      classes,
+      'data-role': 'reasoning-container',
     }, [
       element('div', {
         classes: ['miso-collapsible__header'],

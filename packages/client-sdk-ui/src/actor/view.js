@@ -3,6 +3,7 @@ import { STATUS, ROLE, isDataRole } from '../constants.js';
 import * as fields from './fields.js';
 import ProxyElement from '../util/proxy.js';
 import Tracker from './tracker.js';
+import { triggerMisoAction } from '../element/util/utils.js';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&
@@ -157,6 +158,14 @@ export default class ViewActor {
     state = this._state = Object.freeze(trimObj({ ...state, status }));
     const { role } = this;
     this.hub.update(fields.view(role), state, { silent });
+  }
+
+  triggerAction(data) {
+    const { element } = this;
+    if (!element) {
+      return;
+    }
+    triggerMisoAction(element, data);
   }
 
   _sliceData(data) {
