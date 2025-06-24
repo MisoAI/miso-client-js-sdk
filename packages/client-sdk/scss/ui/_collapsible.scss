@@ -15,12 +15,33 @@ miso-collapsible {
   .miso-collapsible__header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: start;
     padding: var(--miso-collapsible-content-spacing);
+    gap: 0.25rem;
+  }
+  .miso-collapsible__icon {
+    svg {
+      display: block;
+      height: 1rem;
+      width: 1rem;
+    }
   }
   .miso-collapsible__title {
     font-weight: 500;
     user-select: none;
+    margin-right: auto;
+  }
+  .miso-collapsible__toggle {
+    svg {
+      display: block;
+      height: 1.2rem;
+      width: 1.2rem;
+    }
+    .miso-ui-icon-chevron {
+      transition: transform 0.1s ease-in-out;
+      transform: rotate(90deg);
+      fill: #999;
+    }
   }
   .miso-collapsible__body {
     position: relative;
@@ -43,6 +64,23 @@ miso-collapsible {
   &.expanded {
     .miso-collapsible__body {
       display: block;
+    }
+    .miso-collapsible__toggle {
+      .miso-ui-icon-chevron {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .miso-markdown {
+    pre {
+      background: #282c34 !important;
+
+      code {
+        color: #abb2bf !important;
+        text-shadow: none !important;
+        font-size: 0.8rem !important;
+      }
     }
   }
 }

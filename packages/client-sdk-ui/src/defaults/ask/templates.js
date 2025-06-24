@@ -1,6 +1,7 @@
 import { externalize } from '@miso.ai/commons';
 import * as CONSTANTS from './constants.js';
 import * as DEFAULT_PHRASES from './phrases.js';
+import { CHEVRON, BULB } from '../../asset/svgs.js';
 import { Helpers, Sections as _Sections } from '../common/templates.js';
 
 class Sections extends _Sections {
@@ -41,7 +42,9 @@ class Sections extends _Sections {
         classes: ['miso-collapsible__header'],
         'data-role': 'toggle-expand',
       }, [
+        `<div class="miso-collapsible__icon">${options.icon || BULB}</div>`,
         `<div class="miso-collapsible__title" data-role="title">${phraseText(phrases, 'thoughts')}</div>`,
+        `<div class="miso-collapsible__toggle">${CHEVRON}</div>`,
       ]),
       element('div', {
         classes: ['miso-collapsible__body'],

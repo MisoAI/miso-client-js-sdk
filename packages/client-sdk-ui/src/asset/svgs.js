@@ -17,6 +17,7 @@ const ICON_NAME = {
   TRIANGLE_EQ: 'triangle-eq',
   CHEVRON: 'chevron',
   CHEVRON_NEGATIVE: 'chevron-negative',
+  BULB: 'bulb',
 };
 
 // CC0 SVGs
@@ -25,14 +26,14 @@ const ICON_SEARCH = `<symbol id="${PREFIX}-${ICON_NAME.SEARCH}" viewBox="0 0 24 
 
 // Custom SVGs
 const ICON_TRIANGLE = `<symbol id="${PREFIX}-${ICON_NAME.TRIANGLE}" viewBox="-5 -5 105 105"><path d="${trianglePath(5)}"/></symbol>`;
-
 const ICON_TRIANGLE_EQ = `<symbol id="${PREFIX}-${ICON_NAME.TRIANGLE_EQ}" viewBox="-100 -100 200 200"><path d="M12.99 -77.5A15 15,0,0,0,-12.99 -77.5L-73.61 27.5A15 15,0,0,0,-60.62 50L60.62 50A15 15,0,0,0,73.61 27.5L12.99 -77.5Z"/></symbol>`;
-
 const ICON_CHEVRON = `<symbol id="${PREFIX}-${ICON_NAME.CHEVRON}" viewBox="-100 -100 200 200"><path d="M10.61 -43.94A15 15,0,0,0,-10.61 -43.94L-60.61 6.06A15 15,0,0,0,-39.39 27.27L0 -12.12L39.39 27.27A15 15,0,0,0,60.61 6.06L10.61 -43.94Z"/></symbol>`;
-
 const ICON_CHEVRON_NEGATIVE = `<symbol id="${PREFIX}-${ICON_NAME.CHEVRON_NEGATIVE}" viewBox="-100 -100 200 200"><path d="M100 100V-200H-200V200H200ZM-10.61 -43.94A15 15,0,0,1,10.61 -43.94L60.61 6.06A15 15,0,0,1,39.39 27.27L0 -12.12L-39.39 27.27A15 15,0,0,1,-60.61 6.06L-10.61 -43.94Z"/></symbol>`;
 
-const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ, ICON_CHEVRON, ICON_CHEVRON_NEGATIVE];
+// from Bootstrap Icons (MIT)
+const ICON_BULB = `<symbol id="${PREFIX}-${ICON_NAME.BULB}" viewBox="0 0 16 16"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1"/></symbol>`;
+
+const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ, ICON_CHEVRON, ICON_CHEVRON_NEGATIVE, ICON_BULB];
 
 const SPRITES_SVG = `<svg id="${ID}" style="display:none;">${ICONS.join('')}</svg>`;
 
@@ -64,3 +65,4 @@ export const TRIANGLE = _icon(ICON_NAME.TRIANGLE);
 export const TRIANGLE_EQ = _icon(ICON_NAME.TRIANGLE_EQ);
 export const CHEVRON = _icon(ICON_NAME.CHEVRON);
 export const CHEVRON_NEGATIVE = _icon(ICON_NAME.CHEVRON_NEGATIVE);
+export const BULB = _icon(ICON_NAME.BULB);
