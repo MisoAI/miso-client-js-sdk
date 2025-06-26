@@ -8,6 +8,13 @@
   --miso-ask-combo-related-resources-background: #fffaf5;
 }
 
+@media (max-width: 768px) {
+  :root {
+    --miso-ask-combo-section-padding: 1rem;
+    --miso-ask-combo-content-padding: 0;
+  }
+}
+
 miso-ask-combo,
 .miso-ask-combo {
   &, * {
