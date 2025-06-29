@@ -32,6 +32,8 @@ sections:
     path: /ask/spa
   - title: Error
     path: /ask/error
+  - title: Templates
+    path: /ask/templates
 - title: Explore
   path: /explore
   pages:
