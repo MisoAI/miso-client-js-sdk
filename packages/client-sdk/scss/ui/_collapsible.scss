@@ -30,6 +30,11 @@ miso-collapsible {
     font-weight: 500;
     user-select: none;
     margin-right: auto;
+
+    &::after {
+      content: '';
+      animation: ellipsis 2s infinite;
+    }
   }
   .miso-collapsible__toggle {
     svg {
@@ -71,6 +76,11 @@ miso-collapsible {
       }
     }
   }
+  &.done {
+    .miso-collapsible__title::after {
+      display: none;
+    }
+  }
 
   .miso-markdown {
     pre {
@@ -82,5 +92,20 @@ miso-collapsible {
         font-size: 0.8rem !important;
       }
     }
+  }
+}
+
+@keyframes ellipsis {
+  0% {
+    content: '';
+  }
+  20% {
+    content: '.';
+  }
+  25% {
+    content: '..';
+  }
+  50% {
+    content: '...';
   }
 }

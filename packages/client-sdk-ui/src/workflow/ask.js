@@ -1,7 +1,7 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
-import { ROLE, ORGANIC_QUESTION_SOURCE } from '../constants.js';
+import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
@@ -87,6 +87,14 @@ export default class Ask extends AnswerBasedWorkflow {
     super._initSession(args);
   }
 
+  _initSubscriptions(args) {
+    super._initSubscriptions(args);
+    this._unsubscribes = [
+      ...this._unsubscribes,
+      this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
+    ];
+  }
+
   // lifecycle //
   restart() {
     if (this._questionId) {
@@ -134,20 +142,35 @@ export default class Ask extends AnswerBasedWorkflow {
   // data //
   _updateData(data) {
     super._updateData(data);
-    this._triggerReasoningShowIfNecessary(data);
+    this._showReasoningContainerIfNecessary(data);
   }
 
-  _triggerReasoningShowIfNecessary({ session, value } = {}) {
+  _showReasoningContainerIfNecessary({ session, value } = {}) {
     if (!value || !value.reasoning) {
       return;
     }
+    // TODO: shall we just look up on the container element?
     const context = this._getSessionContext(session);
     if (context.reasoningShown) {
       return;
     }
-    context.reasoningShown = true;
-    const view = this._views.get(ROLE.REASONING);
-    view && view.triggerAction({ name: 'show', target: '[data-role="reasoning-container"]' });
+    const element = this._getReasoningContainerElement();
+    if (!element) {
+      return;
+    }
+    if (typeof element.show === 'function') {
+      element.show();
+      context.reasoningShown = true;
+    }
+  }
+
+  // view //
+  _onReasoningViewUpdate({ status, ongoing }) {
+    if (status !== STATUS.READY || ongoing) {
+      return;
+    }
+    const element = this._getReasoningContainerElement();
+    element && element.classList.add('done');
   }
 
   // interactions //
@@ -195,6 +218,12 @@ export default class Ask extends AnswerBasedWorkflow {
       this._context._byQid.delete(this._questionId);
       this._questionId = undefined;
     }
+  }
+
+  _getReasoningContainerElement() {
+    const view = this._views.get(ROLE.REASONING);
+    const element = view && view.element;
+    return element && element.closest('[data-role="reasoning-container"]');
   }
 
   // destroy //
