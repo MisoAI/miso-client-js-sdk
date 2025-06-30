@@ -16,15 +16,15 @@
     <p>
       A dummy dummy dummy dummy dummy line.<br>
       Some dummy text. 
-      {%- for i in range(1, 11) -%}
+      {%- for i in range(1, 21) -%}
         <a href="#" class="miso-citation-link" data-index="{{ i }}"></a>
       {%- endfor -%}
       Some dummy text.<br>
       A dummy dummy dummy dummy dummy line.
     </p>
   </div>
-  <div class="miso-list ready" data-role="sources">
-    <ol class="miso-list__list" data-item-type="article">
+  <div class="miso-list ready" data-item-type="article" data-role="sources">
+    <ol class="miso-list__list">
       <li class="miso-list__item">
         <a class="miso-list__item-body" data-role="item" href="#">
           <div class="miso-list__item-cover-image-container">
@@ -51,15 +51,15 @@
     <p>
       A dummy dummy dummy dummy dummy line.<br>
       Some dummy text. 
-      {%- for i in range(1, 11) -%}
+      {%- for i in range(1, 21) -%}
         <a href="#" class="miso-citation-link" data-index="{{ i }}"></a>
       {%- endfor -%}
       Some dummy text.<br>
       A dummy dummy dummy dummy dummy line.
     </p>
   </div>
-  <div class="miso-list ready" data-role="sources">
-    <ol class="miso-list__list" data-item-type="article">
+  <div class="miso-list ready" data-item-type="article" data-role="sources">
+    <ol class="miso-list__list">
       <li class="miso-list__item">
         <a class="miso-list__item-body" data-role="item" href="#">
           <div class="miso-list__item-cover-image-container">
