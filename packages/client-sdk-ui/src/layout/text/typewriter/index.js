@@ -112,7 +112,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
     const sameStreak = sameSession && (stage === prev.stage);
     const streak = !prev ? 0 : sameStreak ? prev.streak : prev.streak + 1;
 
-    const doneAt = (sameSession && prev && prev.doneAt) || (status === STATUS.READY && finished ? Date.now() : undefined);
+    const doneAt = (sameSession && prev && prev.doneAt) || (status === STATUS.READY && finished ? performance.now() : undefined);
     const done = doneAt !== undefined;
 
     return this._prevState = Object.freeze(trimObj({
