@@ -63,18 +63,11 @@ export default class OptionListLayout extends TemplateBasedLayout {
   }
 
   initialize(view) {
-    const { proxyElement, hub } = view;
+    const { proxyElement } = view;
     this._unsubscribes = [
       ...this._unsubscribes,
       proxyElement.on('click', (e) => this._handleClick(e)),
-      hub.on(fields.suggestions(), () => this._handleInput()), // TODO: use data mapping
     ];
-  }
-
-  _preprocess() {
-    return super._preprocess({
-      state: this._view.hub.states[fields.suggestions()], // TODO: use data mapping
-    });
   }
 
   _render(element, data, controls) {

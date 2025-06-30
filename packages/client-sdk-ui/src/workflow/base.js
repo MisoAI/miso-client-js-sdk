@@ -60,7 +60,7 @@ export default class Workflow extends Component {
 
   _initProperties() {}
 
-  _initActors({ name, roles }) {
+  _initActors({ roles }) {
     const hub = this._hub;
     const client = this._client;
     const options = this._options;
@@ -69,7 +69,7 @@ export default class Workflow extends Component {
 
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source: sources.api(client), options });
-    this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: name });
+    this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: this });
     this._interactions = new InteractionsActor(hub, { client, options });
   }
 

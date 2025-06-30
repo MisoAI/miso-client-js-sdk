@@ -3,7 +3,7 @@ import { STATUS, ROLE, isDataRole } from '../constants.js';
 import * as fields from './fields.js';
 import ProxyElement from '../util/proxy.js';
 import Tracker from './tracker.js';
-import { triggerMisoAction } from '../element/util/utils.js';
+//import { triggerMisoAction } from '../element/util/utils.js';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&
@@ -23,6 +23,7 @@ export default class ViewActor {
   constructor(views, role) {
     this._events = new EventEmitter({ target: this });
     this._views = views;
+    // TODO: we should pull this up to views, for the results are also used in judging container emptyness
     this._mapping = asMappingFunction((views._roles.mappings || {})[role] || role);
 
     defineValues(this, {
@@ -103,6 +104,10 @@ export default class ViewActor {
     }
     return this._tracker;
   }
+
+  get workflow() {
+    return this._views._workflow;
+  }
   
   get workflowOptions() {
     return this._views._options.resolved;
@@ -160,6 +165,7 @@ export default class ViewActor {
     this.hub.update(fields.view(role), state, { silent });
   }
 
+  /*
   triggerAction(data) {
     const { element } = this;
     if (!element) {
@@ -167,6 +173,7 @@ export default class ViewActor {
     }
     triggerMisoAction(element, data);
   }
+  */
 
   _sliceData(data) {
     const { value, error, status, meta, ...rest } = data;
@@ -181,13 +188,13 @@ export default class ViewActor {
       // pass empty/nonempty information
       sliced.meta = {
         ...meta,
-        empty: this._isContainerEmpty(value),
+        empty: this._isContainerEmpty(data),
       };
     }
     return trimObj(sliced);
   }
 
-  _isContainerEmpty(value) {
+  _isContainerEmpty(data) {
     const { element } = this;
     if (!element) {
       return false;
@@ -198,13 +205,10 @@ export default class ViewActor {
       if (!isDataRole(role)) {
         continue;
       }
-      let sliced = value && value[role];
-      if (role === ROLE.QUERY_SUGGESTIONS) {
-        // special case: query suggestions -> look up value from hub
-        // TODO: adhoc
-        const data = this.hub.states[fields.suggestions()];
-        sliced = data && data.value;
-      }
+      // respect data mapping
+      const mapping = asMappingFunction((this._views._roles.mappings || {})[role] || role);
+      let sliced = mapping(data, this); // TODO: the view passed in should be the view of the role, not container role
+      // TODO: this won't work on answer/reasoning
       if (sliced && sliced.length !== 0) {
         return false;
       }

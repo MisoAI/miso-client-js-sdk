@@ -5,6 +5,7 @@ import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mappingSuggestionsData } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -44,6 +45,9 @@ const DEFAULT_OPTIONS = Object.freeze({
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   members: Object.keys(DEFAULT_LAYOUTS),
+  mappings: {
+    [ROLE.QUERY_SUGGESTIONS]: mappingSuggestionsData,
+  },
 });
 
 export default class Ask extends AnswerBasedWorkflow {
@@ -65,19 +69,11 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   _initSubscriptions(args) {
-    this._setSuggestedQuestions();
     super._initSubscriptions(args);
-  }
-
-  _setSuggestedQuestions() {
-    const { previous } = this;
-    if (!previous) {
-      return;
-    }
-    // TODO: write question_source from payload._meta, so we don't need to write it to session.meta
-    const values = previous.states[fields.data()].value;
-    const value = values.suggested_followup_questions || values.followup_questions || [];
-    this._hub.update(fields.suggestions(), { value: value.map(text => ({ text })) });
+    this._unsubscribes = [
+      ...this._unsubscribes,
+      this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
+    ];
   }
 
   _initSession(args) {
@@ -85,14 +81,6 @@ export default class Ask extends AnswerBasedWorkflow {
     args.parentQuestionId && this._context._byPqid.set(args.parentQuestionId, this);
     this._context._events.emit('create', this);
     super._initSession(args);
-  }
-
-  _initSubscriptions(args) {
-    super._initSubscriptions(args);
-    this._unsubscribes = [
-      ...this._unsubscribes,
-      this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
-    ];
   }
 
   // lifecycle //
@@ -142,14 +130,25 @@ export default class Ask extends AnswerBasedWorkflow {
   // data //
   _updateData(data) {
     super._updateData(data);
+    this._triggerSuggestionsRefreshIfNecessary();
     this._showReasoningContainerIfNecessary(data);
+  }
+
+  _triggerSuggestionsRefreshIfNecessary() {
+    const { next } = this;
+    if (!next) {
+      return;
+    }
+    const view = next._views.get(ROLE.QUERY_SUGGESTIONS);
+    view && view.refresh();
   }
 
   _showReasoningContainerIfNecessary({ session, value } = {}) {
     if (!value || !value.reasoning) {
       return;
     }
-    // TODO: shall we just look up on the container element?
+    // TODO: shall we solve this issue with container?
+    // TODO: shall we just look up on the miso-collapse element?
     const context = this._getSessionContext(session);
     if (context.reasoningShown) {
       return;

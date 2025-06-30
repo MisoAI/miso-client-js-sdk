@@ -16,7 +16,8 @@ export default class ViewsActor {
     options,
   }) {
     this._hub = hub;
-    this._workflowName = workflow;
+    this._workflow = workflow;
+    this._workflowName = workflow._name;
     this._extensions = extensions;
     this._layoutFactory = layouts;
     this._options = options;

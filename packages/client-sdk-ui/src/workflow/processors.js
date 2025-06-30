@@ -22,6 +22,15 @@ export function mappingSortData(_, { hub, workflowOptions = {} } = {}) {
   });
 }
 
+function findDefaultSortOption(options) {
+  for (const option of options) {
+    if (option.default) {
+      return option;
+    }
+  }
+  return options[0];
+}
+
 export function mappingAnswerData(data) {
   if (!data || !data.value) {
     return data;
@@ -38,13 +47,11 @@ export function mappingReasoningData(data) {
   return Object.freeze({ value: reasoning, stage: 'reasoning', finished: !!reasoning_finished });
 }
 
-function findDefaultSortOption(options) {
-  for (const option of options) {
-    if (option.default) {
-      return option;
-    }
-  }
-  return options[0];
+export function mappingSuggestionsData(_, { workflow } = {}) {
+  const previous = workflow.previous;
+  const values = previous && previous.states[fields.data()].value;
+  const value = values && (values.suggested_followup_questions || values.followup_questions || []);
+  return value && value.map(text => ({ text }));
 }
 
 // data //

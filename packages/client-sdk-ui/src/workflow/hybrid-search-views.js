@@ -1,4 +1,3 @@
-import { ROLE } from '../constants.js';
 import HybridSearchResults from './hybrid-search-results.js';
 
 function getSubworkflowByRole(role) {
