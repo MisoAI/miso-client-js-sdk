@@ -33,7 +33,7 @@ function findDefaultSortOption(options) {
 
 export function mappingAnswerData(data) {
   if (!data || !data.value) {
-    return data;
+    return undefined;
   }
   const { answer = '', answer_stage, finished } = data.value;
   return Object.freeze({ value: answer, stage: answer_stage, finished: !!finished });
@@ -41,7 +41,7 @@ export function mappingAnswerData(data) {
 
 export function mappingReasoningData(data) {
   if (!data || !data.value) {
-    return data;
+    return undefined;
   }
   const { reasoning = '', reasoning_finished } = data.value;
   return Object.freeze({ value: reasoning, stage: 'reasoning', finished: !!reasoning_finished });

@@ -1,5 +1,5 @@
 const DEFAULT_SPEED = 100; // characters per second
-const DEFAULT_ACCELERATION = 4; // characters per second
+const DEFAULT_ACCELERATION = 4; // characters per second^2
 
 export default function pacer(options) {
   const speedFn = normalizeSpeedFunction(options);

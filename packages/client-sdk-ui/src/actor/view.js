@@ -11,11 +11,16 @@ function statesEqual(a, b) {
     a.error === b.error &&
     a.value === b.value && // skip deep equals
     a.ongoing === b.ongoing &&
+    stateEmptyness(a) === stateEmptyness(b) && // TODO: ad-hoc
     sessionEquals(a.session, b.session));
 }
 
 function sessionEquals(a, b) {
   return a === b || (a && b && a.uuid === b.uuid);
+}
+
+function stateEmptyness(data) {
+  return data && data.meta && data.meta.empty;
 }
 
 export default class ViewActor {
@@ -143,7 +148,7 @@ export default class ViewActor {
     }
 
     const { session, status, ongoing, request, meta, value } = data;
-    const baseState = { session, status, ongoing, request, meta, data: value, ...getDataEmptyness(data) };
+    const baseState = { session, status, ongoing, request, meta, data: value, ...getDataEmptyness(this.role, data) };
 
     // render
     const notifyUpdate = (state = {}, options) => {
@@ -207,9 +212,8 @@ export default class ViewActor {
       }
       // respect data mapping
       const mapping = asMappingFunction((this._views._roles.mappings || {})[role] || role);
-      let sliced = mapping(data, this); // TODO: the view passed in should be the view of the role, not container role
-      // TODO: this won't work on answer/reasoning
-      if (sliced && sliced.length !== 0) {
+      const sliced = mapping(data, this); // TODO: the view passed in should be the view of the role, not container role
+      if (!isDateValueEmpty(role, sliced)) {
         return false;
       }
     }
@@ -261,15 +265,21 @@ function asMappingFunction(fn) {
   }
 }
 
-function getDataEmptyness(data) {
-  return isDataStatusRelevantToEmptyness(data) ? { empty: !!isDateValueEmpty(data) } : {};
+function getDataEmptyness(role, data) {
+  return isDataStatusRelevantToEmptyness(data) ? { empty: !!isDateValueEmpty(role, data && data.value) } : {};
 }
 
 function isDataStatusRelevantToEmptyness(data) {
   return data.status === STATUS.READY && !data.ongoing;
 }
 
-function isDateValueEmpty(data) {
-  const { value } = data;
-  return value === undefined || ((Array.isArray(value) || typeof value === 'string') && !value.length);
+function isDateValueEmpty(role, value) {
+  // TODO: ad-hoc
+  switch (role) {
+    case ROLE.ANSWER:
+    case ROLE.REASONING:
+      return !value || !value.value;
+    default:
+      return value === undefined || ((Array.isArray(value) || typeof value === 'string') && !value.length);
+  }
 }

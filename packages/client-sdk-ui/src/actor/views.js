@@ -194,17 +194,6 @@ export default class ViewsActor {
     // container first
     let views = this._getViews(true);
 
-    if (!force && data._inst) {
-      const { includes, excludes } = data._inst;
-      if (includes) {
-        // always include containers
-        views = views.filter(view => view.role === ROLE.CONTAINER || includes.includes(view.role));
-      }
-      if (excludes) {
-        views = views.filter(view => !excludes.includes(view.role));
-      }
-    }
-
     await Promise.all(views.map(view => view.refresh({ force, data })));
   }
 

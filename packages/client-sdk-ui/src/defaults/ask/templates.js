@@ -13,43 +13,56 @@ class Sections extends _Sections {
   answerGroup(options) {
     const { container } = this._helpers;
     return [
-      ...super.answerGroup(options),
+      this.question(options),
+      this.reasoning(options),
+      this.answer(options),
+      this.affiliation(options),
+      this.sources(options),
       container(options, { name: 'bottom-spacing', visibleWhen: 'ongoing' }),
     ];
+  }
+
+  question(options) {
+    const { container, phrase } = this._helpers;
+    return container(options, { name: 'question', visibleWhen: 'ready' }, [
+      options.parentQuestionId ? '<hr>' : '',
+      phrase(options, { name: 'question', tag: 'div' }),
+      '<miso-question></miso-question>',
+    ]);
   }
 
   answer(options) {
     const { container } = this._helpers;
     return container(options, { name: 'answer', visibleWhen: 'ready' }, [
-      options.parentQuestionId ? '<hr>' : '',
-      ...this.question(options),
-      this.reasoning(options),
       '<miso-answer></miso-answer>',
       '<miso-feedback></miso-feedback>',
     ]);
   }
 
-  reasoning({ phrases, reasoning: options = {} } = {}) {
-    const { element, phraseText } = this._helpers;
+  reasoning(options = {}) {
+    const { phrases, reasoning: reasoningOptions = {} } = options;
+    const { container, element, phraseText } = this._helpers;
     const classes = [];
-    options.hide !== false && classes.push('hidden');
-    options.expand && classes.push('expanded');
-    return element('miso-collapsible', {
-      classes,
-      'data-role': 'reasoning-container',
-    }, [
-      element('div', {
-        classes: ['miso-collapsible__header'],
-        'data-role': 'toggle-expand',
+    //reasoningOptions.hide !== false && classes.push('hidden');
+    reasoningOptions.expand && classes.push('expanded');
+    return container(options, { name: 'reasoning', visibleWhen: 'nonempty' }, [
+      element('miso-collapsible', {
+        classes,
+        'data-role': 'reasoning-container',
       }, [
-        `<div class="miso-collapsible__icon">${options.icon || BULB}</div>`,
-        `<div class="miso-collapsible__title" data-role="title">${phraseText(phrases, 'thoughts')}</div>`,
-        `<div class="miso-collapsible__toggle">${CHEVRON}</div>`,
-      ]),
-      element('div', {
-        classes: ['miso-collapsible__body'],
-      }, [
-        '<miso-reasoning></miso-reasoning>',
+        element('div', {
+          classes: ['miso-collapsible__header'],
+          'data-role': 'toggle-expand',
+        }, [
+          `<div class="miso-collapsible__icon">${reasoningOptions.icon || BULB}</div>`,
+          `<div class="miso-collapsible__title" data-role="title">${phraseText(phrases, 'thoughts')}</div>`,
+          `<div class="miso-collapsible__toggle">${CHEVRON}</div>`,
+        ]),
+        element('div', {
+          classes: ['miso-collapsible__body'],
+        }, [
+          '<miso-reasoning></miso-reasoning>',
+        ]),
       ]),
     ]);
   }
