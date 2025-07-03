@@ -131,7 +131,6 @@ export default class Ask extends AnswerBasedWorkflow {
   _updateData(data) {
     super._updateData(data);
     this._triggerSuggestionsRefreshIfNecessary();
-    this._showReasoningContainerIfNecessary(data);
   }
 
   _triggerSuggestionsRefreshIfNecessary() {
@@ -143,32 +142,12 @@ export default class Ask extends AnswerBasedWorkflow {
     view && view.refresh();
   }
 
-  _showReasoningContainerIfNecessary({ session, value } = {}) {
-    if (!value || !value.reasoning) {
-      return;
-    }
-    // TODO: shall we solve this issue with container?
-    // TODO: shall we just look up on the miso-collapse element?
-    const context = this._getSessionContext(session);
-    if (context.reasoningShown) {
-      return;
-    }
-    const element = this._getReasoningContainerElement();
-    if (!element) {
-      return;
-    }
-    if (typeof element.show === 'function') {
-      element.show();
-      context.reasoningShown = true;
-    }
-  }
-
   // view //
   _onReasoningViewUpdate({ status, ongoing }) {
     if (status !== STATUS.READY || ongoing) {
       return;
     }
-    const element = this._getReasoningContainerElement();
+    const element = this._getReasoningBoxElement();
     element && element.classList.add('done');
   }
 
@@ -219,10 +198,10 @@ export default class Ask extends AnswerBasedWorkflow {
     }
   }
 
-  _getReasoningContainerElement() {
+  _getReasoningBoxElement() {
     const view = this._views.get(ROLE.REASONING);
     const element = view && view.element;
-    return element && element.closest('[data-role="reasoning-container"]');
+    return element && element.closest('[data-role="reasoning-box"]');
   }
 
   // destroy //

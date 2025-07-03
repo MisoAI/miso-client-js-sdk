@@ -6,6 +6,7 @@ import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
 import * as sources from './source.js';
 import * as defaults from './defaults/index.js';
+import * as traits from './trait/index.js';
 import { loadStylesIfNecessary } from './styles.js';
 
 import MisoContainerElement from './element/container/miso-container.js';
@@ -33,7 +34,7 @@ export default class UiPlugin extends Component {
     context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
 
-    const ui = { defaults };
+    const ui = { defaults, traits };
     delegateGetters(ui, this, ['layouts', 'combo', 'ready']);
     defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });
@@ -59,9 +60,8 @@ export default class UiPlugin extends Component {
       ...Object.values(roles),
       ...Object.values(others),
     ];
-    MisoContainerElement.MisoClient = MisoClient;
-    MisoComboElement.MisoClient = MisoClient;
-    for (const ElementClass of ElementClasses) {
+    const ElementSuperClasses = [MisoContainerElement, MisoComboElement];
+    for (const ElementClass of [...ElementSuperClasses, ...ElementClasses]) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }
 

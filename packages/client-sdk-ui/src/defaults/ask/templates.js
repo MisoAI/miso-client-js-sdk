@@ -43,12 +43,12 @@ class Sections extends _Sections {
     const { phrases, reasoning: reasoningOptions = {} } = options;
     const { container, element, phraseText } = this._helpers;
     const classes = [];
-    //reasoningOptions.hide !== false && classes.push('hidden');
     reasoningOptions.expand && classes.push('expanded');
     return container(options, { name: 'reasoning', visibleWhen: 'nonempty' }, [
-      element('miso-collapsible', {
+      element('miso-stub', {
         classes,
-        'data-role': 'reasoning-container',
+        trait: 'collapsible',
+        'data-role': 'reasoning-box',
       }, [
         element('div', {
           classes: ['miso-collapsible__header'],

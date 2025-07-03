@@ -1,8 +1,12 @@
+import MisoStubElement from '../util/miso-stub.js';
 import { getClient } from '../utils.js';
 
 const ATTR_LOGO = 'logo';
 const DEFAULT_LOGO_VALUE = 'auto';
-const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_LOGO]);
+const OBSERVED_ATTRIBUTES = Object.freeze([
+  ...MisoStubElement.observedAttributes,
+  ATTR_LOGO,
+]);
 
 function logoAttrToProp(value) {
   if (!value) {
@@ -31,7 +35,7 @@ function logoPropToAttr(value) {
   }
 }
 
-export default class MisoContainerElement extends HTMLElement {
+export default class MisoContainerElement extends MisoStubElement {
 
   static get observedAttributes() {
     return OBSERVED_ATTRIBUTES;
@@ -74,6 +78,7 @@ export default class MisoContainerElement extends HTMLElement {
 
   // lifecycle //
   async connectedCallback() {
+    super.connectedCallback();
     const client = this._client = await getClient(MisoContainerElement);
     if (document.body.contains(this)) { // in case already disconnected
       this._setWorkflow(this._getWorkflow(client));
@@ -82,6 +87,7 @@ export default class MisoContainerElement extends HTMLElement {
 
   disconnectedCallback() {
     this._setWorkflow(undefined);
+    super.disconnectedCallback();
   }
 
   _getWorkflow(client) {
@@ -106,6 +112,8 @@ export default class MisoContainerElement extends HTMLElement {
       case ATTR_LOGO:
         this._handleLogoUpdate(oldValue, newValue);
         break;
+      default:
+        super.attributeChangedCallback(attr, oldValue, newValue);
     }
   }
 

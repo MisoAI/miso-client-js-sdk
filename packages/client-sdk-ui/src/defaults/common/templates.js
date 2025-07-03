@@ -126,10 +126,10 @@ export class Helpers {
     }, body);
   }
 
-  container({ classPrefix, circledCitationIndex, parentQuestionId }, { name, visibleWhen, logo = false }, body) {
+  container({ classPrefix, circledCitationIndex, parentQuestionId }, { name, visibleWhen, trait, logo = false }, body) {
     const classes = [`${classPrefix}__${name}-container`];
     circledCitationIndex && classes.push('miso-circled-citation-index');
-    return this.element(this._context.CONAINER_TAG, { classes, visibleWhen, logo, parentQuestionId }, body);
+    return this.element(this._context.CONAINER_TAG, { classes, visibleWhen, trait, logo, parentQuestionId }, body);
   }
 
   element(tag, attributes = {}, body = '') {

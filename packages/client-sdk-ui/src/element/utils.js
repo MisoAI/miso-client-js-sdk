@@ -83,13 +83,3 @@ function coerceDefault(str) {
   }
   return str;
 }
-
-export function defineStatusGetters(prototype, statuses) {
-  for (const status of statuses) {
-    Object.defineProperty(prototype, status, {
-      get() {
-        return this.classList.contains(status);
-      },
-    });
-  }
-}
