@@ -11,7 +11,7 @@ export { default as MisoSourcesElement } from './miso-sources.js';
 export { default as MisoImagesElement } from './miso-images.js';
 export { default as MisoRelatedResourcesElement } from './miso-related-resources.js';
 export { default as MisoRelatedQuestionsElement } from './miso-related-questions.js';
-export { default as MisoSovrnAffiliationElement } from './miso-affiliation.js';
+export { default as MisoAffiliationElement } from './miso-affiliation.js';
 export { default as MisoKeywordsElement } from './miso-keywords.js';
 export { default as MisoTotalElement } from './miso-total.js';
 export { default as MisoFacetsElement } from './miso-facets.js';

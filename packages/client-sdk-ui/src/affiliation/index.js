@@ -12,6 +12,15 @@ export function processData(data) {
 }
 
 function processValue(value) {
+  /*
+  if (value.affiliation_products) {
+    const { affiliation_products, ...rest } = value;
+    value = {
+      ...rest,
+      affiliation: processMisoData(affiliation_products),
+    };
+  } else
+  */
   if (value.sovrn_aff) {
     const { sovrn_aff, ...rest } = value;
     value = {
@@ -48,10 +57,17 @@ function postProcessValue(value) {
   };
 }
 
-function processSovrnData({ products, ...sovrn_aff }) {
+function processMisoData(products) {
+  return {
+    channel: 'miso',
+    products,
+  };
+}
+
+function processSovrnData({ products, ...data }) {
   return {
     channel: 'sovrn',
-    ...sovrn_aff,
+    ...data,
     products: products.map(processSovrnProduct),
   };
 }
