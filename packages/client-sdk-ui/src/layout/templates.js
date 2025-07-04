@@ -120,7 +120,7 @@ export function imageInfoBlock(layout, data, meta) {
 }
 
 export function titleBlock({ className }, { title, _title_with_markups }) {
-  const text = _title_with_markups || escapeHtml(title);
+  const text = formatHtmlWithMarkup(_title_with_markups) || escapeHtml(title);
   return text ? `<div class="${className}__item-title">${text}</div>` : '';
 }
 
@@ -133,7 +133,7 @@ export function brandBlock({ className }, { brand, brand_logo }) {
 }
 
 export function descriptionBlock({ className }, { snippet, description }) {
-  return snippet ? `<div class="${className}__item-snippet">${snippet}</div>` : description ? `<div class="${className}__item-desc">${escapeHtml(description)}</div>` : '';
+  return snippet ? `<div class="${className}__item-snippet">${formatHtmlWithMarkup(snippet)}</div>` : description ? `<div class="${className}__item-desc">${escapeHtml(description)}</div>` : '';
 }
 
 export function dateBlock({ className, templates }, { created_at, updated_at, published_at }) {
@@ -269,6 +269,11 @@ function formatNumber(number, fn = DEFAULT_NUMBER_OPTIONS) {
   }
 }
 
+function formatHtmlWithMarkup(html) {
+  // preserve space between two <mark> elements
+  return html && html.replace(/<\/mark>\s+<mark>/g, '</mark>&nbsp;<mark>');
+}
+
 function asFunction(template = '') {
   return typeof template === 'function' ? template : () => template;
 }
@@ -277,6 +282,7 @@ export const helpers = Object.freeze({
   tagPair,
   formatDate,
   formatNumber,
+  formatHtmlWithMarkup,
   escapeHtml,
   asFunction,
 });
