@@ -16,7 +16,6 @@
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
-  MisoClient.plugins.use('std:ui');
   const client = new MisoClient('...');
   const workflow = client.ui.search;
   workflow.useApi(false);
