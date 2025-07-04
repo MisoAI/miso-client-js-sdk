@@ -28,7 +28,7 @@ misocmd.push(() => {
       products: [
         {
           _title_with_markups: 'Lorem ipsum, <mark>Lorem</mark> <mark>ipsum</mark>.',
-          snippet: 'Lorem ipsum, <mark>Lorem</mark> <mark>ipsum</mark>.',
+          snippet: 'Lorem ipsum, <mark>Lorem</mark> <mark>ipsum</mark>, <mark>Lorem</mark> <mark>ipsum</mark>.',
         },
       ],
     },
