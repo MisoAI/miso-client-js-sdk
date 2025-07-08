@@ -15,19 +15,48 @@ function formatTimeInMilliseconds(t) {
 }
 
 const TEXT = `
-### **Matrix Flattening Methods Comparison**
-| Method               | Use Case                          | Pros                                      | Cons                                      | Source |
-|----------------------|-----------------------------------|-------------------------------------------|-------------------------------------------|--------|
-| **\`numpy.ndarray.flatten()\`** | General-purpose flattening (returns copy) | *Preserves original array; predictable output* | *Slower (memory copy); not memory-efficient* | *[Python for Data Analysis, 3rd Edition](https://learning.oreilly.com/library/view/-/9781098104023/app01.html)* [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html) |
-| **\`numpy.ndarray.ravel()\`**   | Memory-efficient views (no copy)  | *No memory overhead; modifies original if possible* | *May create views (unpredictable with strides)* | *[Python for Data Analysis, 3rd Edition](https://learning.oreilly.com/library/view/-/9781098104023/app01.html)* [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html)[[2]](https://learning.oreilly.com/library/view/-/9781789537864/87e215c8-84c8-4d15-a5f4-b3f1fae408f0.xhtml) |
-| **List Comprehension**        | Small matrices (Python lists)     | *Python-native; no dependencies*          | *Slow for large arrays; no vectorization* | *[Python for Data Analysis, 3rd Edition](https://learning.oreilly.com/library/view/-/9781098104023/ch03.html)* [[1]](https://learning.oreilly.com/library/view/-/9781098104023/ch03.html) |
-| **\`itertools.chain\`**         | Irregular nested lists            | *Lazy evaluation; memory-efficient*       | *Requires conversion to list for NumPy*   | *[Fluent Python, 2nd Edition](https://learning.oreilly.com/library/view/-/9781492056348/ch17.html)* [[3]](https://learning.oreilly.com/library/view/-/9781492056348/ch17.html)[[4]](https://learning.oreilly.com/library/view/-/9781617296239/kindle_split_011.html) |
-| **\`numpy.concatenate()\`**     | Stacked arrays (e.g., CSR matrices) | *Optimized for pre-allocated blocks*      | *Manual axis handling*                    | *[Python Data Science Essentials](https://learning.oreilly.com/library/view/-/9781789537864/87e215c8-84c8-4d15-a5f4-b3f1fae408f0.xhtml)* [[2]](https://learning.oreilly.com/library/view/-/9781789537864/87e215c8-84c8-4d15-a5f4-b3f1fae408f0.xhtml) |
+Here's a focused comparison of matrix flattening techniques for numerical computing, optimized for performance and memory efficiency:
 
----
+### Matrix Flattening Methods Comparison
 
-### **Key Insights**
-1. **NumPy-Specific Optimizations**: 
+| Method | Use Case | Performance | Memory | Libraries | Code Example |
+|--------|----------|-------------|--------|-----------|--------------|
+| **NumPy ravel()** | Views for read-only ops | O(1) | Minimal (view) | NumPy | \`matrix.ravel()\` [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html) |
+| **NumPy flatten()** | Safe copies | O(n) | High (copy) | NumPy | \`matrix.flatten()\` [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html) |
+| **List Comprehension** | Small matrices | O(n) | Medium | Built-in | \`[x for row in matrix for x in row]\` [[1]](https://learning.oreilly.com/library/view/-/9781098104023/ch03.html) |
+| **itertools.chain** | Large sparse data | O(n) | Low | Standard Library | \`list(itertools.chain(*matrix))\` [[2]](https://learning.oreilly.com/library/view/-/9781492056348/ch17.html)[[3]](https://learning.oreilly.com/library/view/-/9781803232577/Text/Chapter_04.xhtml) |
+| **np.concatenate()** | Stacked arrays | O(n) | Medium | NumPy | \`np.concatenate(matrix)\` [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html) |
+
+Key insights from numerical computing experts:
+
+> *"The flatten method behaves like ravel except it always returns a copy of the data"* - Wes McKinney in *[Python for Data Analysis, 3rd Edition](https://learning.oreilly.com/library/view/-/9781098104023/app01.html)*. This distinction is crucial for memory management in large matrices [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html).
+
+For numerical work, NumPy's optimized methods dominate. As Burkhard Meier demonstrates in *[Python GUI Programming Cookbook](https://learning.oreilly.com/library/view/-/9781785283758/ch05s09.html)*:
+\`\`\`python
+import numpy as np
+matrix = np.array([[1,2], [3,4]])
+flattened_view = matrix.ravel()  # No memory copy
+flattened_copy = matrix.flatten()  # New memory allocation
+\`\`\`
+
+### Special Cases
+
+1. **CSR/CSC Formats** (SciPy sparse matrices):
+\`\`\`python
+matrix.tocsr().data  # Returns flat nonzero elements
+\`\`\`
+
+2. **Memory-Mapped Arrays**:
+\`\`\`python
+np.memmap('large_array.dat').ravel()  # Handles out-of-core
+\`\`\`
+
+Would you like to explore [benchmark results for different matrix sizes](?q=What%20are%20the%20performance%20benchmarks%20for%20flattening%2010K%20x%2010K%20matrices%3F "What are the performance benchmarks for flattening 10K x 10K matrices?") or techniques for [flattening while preserving array metadata](?q=How%20to%20maintain%20dimensional%20information%20when%20flattening%20NumPy%20arrays%3F "How to maintain dimensional information when flattening NumPy arrays?")? 
+
+### Pro Tips
+- Use \`order='F'\` parameter for Fortran-style (column-major) flattening
+- For GPU arrays (CuPy), prefer \`ravel()\` over flatten() to avoid host-device transfers
+- Pandas DataFrames: \`df.values.ravel()\` is faster than \`df.to_numpy().flatten()\`
 `;
 
 const answerElement = document.getElementById('answer');
@@ -50,6 +79,4 @@ const controller = new Controller(answerElement, {
     controller.update({ answer: TEXT.slice(0, len), answer_stage: 'answer', finished });
     finished && intervalId && clearInterval(intervalId);
   }, 20);
-  //await new Promise(resolve => setTimeout(resolve, 1000));
-  //controller.update({ answer: TEXT, answer_stage: 'answer', finished: false });
 })();
