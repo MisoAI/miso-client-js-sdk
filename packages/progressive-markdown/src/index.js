@@ -10,6 +10,7 @@ export { default as rehypeHast } from './rehype-hast.js';
 export { default as rehypeCitationLink } from './rehype-citation-link.js';
 export { default as rehypeLinkClass } from './rehype-citation-link.js'; // backward compatible
 export { default as rehypeLinkAttrs } from './rehype-link-attrs.js';
+export { default as rehypeFollowUpLink } from './rehype-follow-up-link.js';
 export { trees };
 export * from './model/index.js';
 export * from './preset/index.js';
