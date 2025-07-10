@@ -77,8 +77,8 @@ class Sections extends _Sections {
   }
 
   followUps(options) {
-    const { classPrefix, features = {} } = options;
-    return features.followUpQuestions === false ? '' : `<div id="${classPrefix}__follow-ups" class="${classPrefix}__follow-ups"></div>`;
+    const { features = {} } = options;
+    return features.followUpQuestions === false ? '' : `<miso-follow-ups id="miso-ask-combo__follow-ups" class="miso-ask-combo__follow-ups"></miso-follow-ups>`;
   }
 
   relatedResourcesSection(options) {

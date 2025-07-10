@@ -6,6 +6,7 @@ import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from 
 import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { mappingSuggestionsData } from './processors.js';
+import { followUp as followUpTemplate } from '../defaults/ask/templates.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -36,11 +37,16 @@ const DEFAULT_TRACKERS = Object.freeze({
   },
 });
 
+const DEFAULT_TEMPLATES = Object.freeze({
+  followUp: followUpTemplate,
+});
+
 const DEFAULT_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
+  templates: DEFAULT_TEMPLATES,
 });
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {

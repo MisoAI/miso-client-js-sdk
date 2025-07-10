@@ -5,6 +5,7 @@ export default class WorkflowContext extends Component {
 
   constructor(name, plugin, client) {
     super(name, plugin);
+    this._name = name;
     this._plugin = plugin;
     this._client = client;
     this._options = new WorkflowContextOptions();

@@ -130,4 +130,5 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
   INTERACTIONS: 'interactions',
   FILTERS: 'filters',
   PAGINATION: 'pagination',
+  TEMPLATES: 'templates',
 });

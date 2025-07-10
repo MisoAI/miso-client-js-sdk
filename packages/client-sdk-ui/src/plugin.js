@@ -10,6 +10,7 @@ import * as traits from './trait/index.js';
 import { loadStylesIfNecessary } from './styles.js';
 
 import MisoContainerElement from './element/container/miso-container.js';
+import MisoContextElement from './element/context/miso-context.js';
 import MisoComboElement from './element/combo/miso-combo.js';
 
 const PLUGIN_ID = 'std:ui';
@@ -52,15 +53,16 @@ export default class UiPlugin extends Component {
     }
 
     // custom elements
-    const { containers, roles, combos, ...others } = elements;
+    const { containers, roles, combos, contexts, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
     const ElementClasses = [
       ...Object.values(combos),
+      ...Object.values(contexts),
       ...Object.values(containers),
       ...Object.values(roles),
       ...Object.values(others),
     ];
-    const ElementSuperClasses = [MisoContainerElement, MisoComboElement];
+    const ElementSuperClasses = [MisoContainerElement, MisoContextElement, MisoComboElement];
     for (const ElementClass of [...ElementSuperClasses, ...ElementClasses]) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }

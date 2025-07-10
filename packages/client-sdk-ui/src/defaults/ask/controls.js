@@ -1,29 +1,37 @@
 import { followUp as followUpTemplate } from './templates.js';
 
-export function wireFollowUps(client, element, { template = followUpTemplate, ...options } = {}) {
+export function wireFollowUps(client, element, options) {
   if (!client) {
     throw new Error('client is required');
   }
+  // backward compatible
+  setFollowUpTemplate(client, options);
+  replaceFollowUpsElement(element);
+}
+
+function setFollowUpTemplate(client, { template = followUpTemplate, ...options } = {}) {
   if (typeof template !== 'function') {
     throw new Error('template must be a function or undefined');
   }
-  if (!element) {
+  const hasExtraOptions = Object.keys(options).length > 0;
+  if (template === followUpTemplate && !hasExtraOptions) {
+    return; // same as default
+  }
+  client.ui.asks.useTemplates({
+    followUp: hasExtraOptions ? (args) => template({ ...options, ...args }) : template,
+  });
+}
+
+function replaceFollowUpsElement(element) {
+  if (!element || element.tagName.toLowerCase() === 'miso-follow-ups') {
     return;
   }
-  const context = client.ui.asks;
-  const rootWorkflow = client.ui.ask;
-
-  // 1. when an answer is fully populated, insert a new section for the follow-up question
-  context.on('done', (event) => {
-    element.insertAdjacentHTML('beforeend', template({ ...options, parentQuestionId: event.workflow.questionId }));
-  });
-  // 2. if user starts over, clean up existing follow-up questions
-  rootWorkflow.on('loading', () => {
-    // clean up the entire follow-ups section
-    element.innerHTML = '';
-    // destroy all follow-up workflows
-    context.reset({ root: false });
-  });
+  // replace element with <miso-follow-ups>, carrying over attributes
+  const newElement = document.createElement('miso-follow-ups');
+  for (const { name, value } of element.attributes) {
+    newElement.setAttribute(name, value);
+  }
+  element.parentNode.replaceChild(newElement, element);
 }
 
 export function wireRelatedResources(client, element) {

@@ -1,5 +1,7 @@
+import { WORKFLOW_CONFIGURABLE } from '../constants.js';
 import WorkflowContext from './context.js';
 import Ask from './ask.js';
+import { makeConfigurable } from './options/index.js';
 
 export default class Asks extends WorkflowContext {
 
@@ -60,3 +62,5 @@ export default class Asks extends WorkflowContext {
   }
 
 }
+
+makeConfigurable(Asks.prototype, [WORKFLOW_CONFIGURABLE.TEMPLATES]);

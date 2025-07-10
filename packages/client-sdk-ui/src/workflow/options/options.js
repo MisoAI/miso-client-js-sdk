@@ -7,6 +7,7 @@ import { normalizeTrackersOptions, mergeTrackersOptions } from './trackers.js';
 import { normalizeInteractionsOptions, mergeInteractionsOptions } from './interactions.js';
 import { normalizeFiltersOptions, mergeFiltersOptions } from './filters.js';
 import { normalizePaginationOptions, mergePaginationOptions } from './pagination.js';
+import { normalizeTemplatesOptions, mergeTemplatesOptions } from './templates.js';
 
 const FEATURES = [
   {
@@ -43,6 +44,11 @@ const FEATURES = [
     key: WORKFLOW_CONFIGURABLE.PAGINATION,
     normalize: normalizePaginationOptions,
     merge: mergePaginationOptions,
+  },
+  {
+    key: WORKFLOW_CONFIGURABLE.TEMPLATES,
+    normalize: normalizeTemplatesOptions,
+    merge: mergeTemplatesOptions,
   },
 ];
 
