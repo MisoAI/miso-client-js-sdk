@@ -3,6 +3,26 @@ import WorkflowContext from './context.js';
 import Ask from './ask.js';
 import { makeConfigurable } from './options/index.js';
 
+const DEFAULT_AUTO_NEXT_OPTIONS = { event: 'done' };
+
+function autoNextOptionsAsPredicate(options = DEFAULT_AUTO_NEXT_OPTIONS) {
+  if (options === true) {
+    options = DEFAULT_AUTO_NEXT_OPTIONS;
+  }
+  if (typeof options === 'string') {
+    options = { event: options };
+  }
+  switch (typeof options) {
+    case 'object':
+      // TODO: support more options
+      return event => options.event === event._event;
+    case 'function':
+      return options;
+    default:
+      return false;
+  }
+}
+
 export default class Asks extends WorkflowContext {
 
   constructor(plugin, client) {
@@ -10,6 +30,7 @@ export default class Asks extends WorkflowContext {
     this._byQid = new Map();
     this._byPqid = new Map();
     this._root = new Ask(this); // initialize with default workflow
+    this._events.on('*', event => this._createNextIfNecessary(event));
   }
 
   get root() {
@@ -59,6 +80,18 @@ export default class Asks extends WorkflowContext {
     if (root) {
       this._root.restart();
     }
+  }
+
+  autoNext(options) {
+    this._autoNextFn = autoNextOptionsAsPredicate(options);
+  }
+
+  _createNextIfNecessary(event) {
+    if (!this._autoNextFn || !this._autoNextFn(event)) {
+      return;
+    }
+    const { workflow } = event;
+    workflow && workflow.getOrCreateNext();
   }
 
 }
