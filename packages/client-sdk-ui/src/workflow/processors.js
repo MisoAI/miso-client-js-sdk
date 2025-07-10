@@ -245,7 +245,7 @@ export function buildBaseInteraction(args) {
   };
 
   if (isPerformanceEventType(type)) {
-    if (isProductRole(role)) {
+    if (areProducts(role, items)) {
       payload.product_ids = (items || []).map(v => typeof v === 'string' ? v : v.product_id).filter(v => v);
     } else {
       payload.product_ids = [];
@@ -264,6 +264,10 @@ export function buildBaseInteraction(args) {
   }
 
   return trimObj(payload);
+}
+
+function areProducts(role, items = []) {
+  return isProductRole(role) || (items.length > 0 && typeof items[0] === 'object' && items[0].product_id);
 }
 
 export function writeAffiliationInfoToInteraction(payload, args) {

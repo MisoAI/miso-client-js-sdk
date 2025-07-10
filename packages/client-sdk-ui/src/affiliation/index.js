@@ -12,21 +12,18 @@ export function processData(data) {
 }
 
 function processValue(value) {
-  /*
   if (value.affiliation_products) {
     const { affiliation_products, ...rest } = value;
     value = {
       ...rest,
       affiliation: processMisoData(affiliation_products),
     };
-  } else
-  */
-  if (value.sovrn_aff) {
+  } else if (value.sovrn_aff) {
     const { sovrn_aff, ...rest } = value;
     value = {
       ...rest,
       affiliation: processSovrnData(sovrn_aff),
-    }
+    };
   }
   return postProcessValue(value);
 }
