@@ -1,5 +1,4 @@
 import { API } from '@miso.ai/commons';
-import { InteractionsActor } from '../actor/index.js';
 import Workflow from './base.js';
 import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';

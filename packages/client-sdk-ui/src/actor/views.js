@@ -1,4 +1,4 @@
-import { defineValues, delegateGetters, trimObj } from '@miso.ai/commons';
+import { defineValues, delegateGetters } from '@miso.ai/commons';
 import { ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
