@@ -221,11 +221,6 @@ export default class AffiliationLayout extends CollectionLayout {
     this.itemIndex--;
   }
 
-  _getItems(state) {
-    const { products } = state.value || {};
-    return products;
-  }
-
   _render(element, states, controls) {
     super._render(element, states, controls);
     // sync again for incremental item rendering

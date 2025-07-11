@@ -37,6 +37,7 @@ export default function(config) {
   config.addGlobalData('layout', 'base.njk');
   config.addGlobalData('DEFAULT_ASK_API_KEY', process.env.DEFAULT_ASK_API_KEY);
   config.addGlobalData('DEFAULT_AFFILIATION_ASK_API_KEY', process.env.DEFAULT_AFFILIATION_ASK_API_KEY);
+  config.addGlobalData('DEFAULT_WHITEPAPER_ASK_API_KEY', process.env.DEFAULT_WHITEPAPER_ASK_API_KEY);
   config.addGlobalData('DEFAULT_PRODUCT_ID', process.env.DEFAULT_PRODUCT_ID);
 
   const data = new Data();

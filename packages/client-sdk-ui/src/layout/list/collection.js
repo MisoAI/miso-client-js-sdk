@@ -168,7 +168,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
   }
 
   _getItems(state) {
-    return state.value;
+    return state.value && (state.value.products || state.value);
   }
 
   _getListElement(element) {
