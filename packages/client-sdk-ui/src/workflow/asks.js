@@ -19,7 +19,7 @@ function autoNextOptionsAsPredicate(options = DEFAULT_AUTO_NEXT_OPTIONS) {
     case 'function':
       return options;
     default:
-      return false;
+      return () => false;
   }
 }
 
@@ -31,6 +31,7 @@ export default class Asks extends WorkflowContext {
     this._byPqid = new Map();
     this._root = new Ask(this); // initialize with default workflow
     this._events.on('*', event => this._createNextIfNecessary(event));
+    this._autoNextFn = undefined;
   }
 
   get root() {

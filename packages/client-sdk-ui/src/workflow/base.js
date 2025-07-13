@@ -308,7 +308,7 @@ export default class Workflow extends Component {
 
   // destroy //
   destroy(options) {
-    this._events.emit('destroy');
+    this._emit('destroy');
     this._destroy(options);
   }
 

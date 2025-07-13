@@ -91,6 +91,8 @@ export default class Ask extends AnswerBasedWorkflow {
 
   // lifecycle //
   restart() {
+    const { next } = this;
+    next && next.destroy();
     if (this._questionId) {
       this._context._byQid.delete(this._questionId);
     }
@@ -212,7 +214,10 @@ export default class Ask extends AnswerBasedWorkflow {
 
   // destroy //
   _destroy(options) {
-    const { parentQuestionId, questionId } = this;
+    const { next, parentQuestionId, questionId } = this;
+    if (next) {
+      next.destroy(options);
+    }
     if (parentQuestionId) {
       this._context._byPqid.delete(parentQuestionId);
     }

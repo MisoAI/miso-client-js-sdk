@@ -14,6 +14,7 @@ export default class MisoFollowUpsElement extends MisoContextElement {
 
   constructor() {
     super();
+    this._elementToWorkflow = new WeakMap();
     this._unsubscribes = [];
   }
 
@@ -41,21 +42,35 @@ export default class MisoFollowUpsElement extends MisoContextElement {
       return;
     }
 
-    // 1. when an answer is fully populated, insert a new section for the follow-up question
-    this._unsubscribes.push(context.on('done', (event) => {
-      const template = event.workflow._options.resolved.templates.followUp;
-      if (!template) {
+    // 1. call auto-next if unset
+    if (!context._autoNextFn) {
+      context.autoNext();
+    }
+
+    // 2. when a new workflow is created, insert a new section
+    this._unsubscribes.push(context.on('create', (workflow) => {
+      const { parentQuestionId } = workflow;
+      const template = workflow._options.resolved.templates.followUp;
+      if (!parentQuestionId || !template) {
         return;
       }
-      this.insertAdjacentHTML('beforeend', template({ parentQuestionId: event.workflow.questionId }));
+      const oldChildCount = this.children.length;
+      this.insertAdjacentHTML('beforeend', template({ parentQuestionId }));
+      const newChildCount = this.children.length;
+      // keep track of the elements
+      for (const element of Array.prototype.slice.call(this.children, oldChildCount, newChildCount)) {
+        this._elementToWorkflow.set(element, workflow);
+      }
     }));
 
-    // 2. if user starts over, clean up existing follow-up questions
-    this._unsubscribes.push(context.root.on('loading', () => {
-      // clean up the entire follow-ups section
-      this.innerHTML = '';
-      // destroy all follow-up workflows
-      context.reset({ root: false });
+    // 3. when a workflow is destroyed, remove the section
+    this._unsubscribes.push(context.on('destroy', ({ workflow }) => {
+      for (const element of this.children) {
+        if (this._elementToWorkflow.get(element) === workflow) {
+          this._elementToWorkflow.delete(element);
+          element.remove();
+        }
+      }
     }));
   }
 
