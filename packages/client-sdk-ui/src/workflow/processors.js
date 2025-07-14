@@ -186,11 +186,29 @@ export function retainFacetCountsInData(data, currentFacetCounts) {
   };
 }
 
+export function writeMisoIdAsRootMisoId(data) {
+  const { value } = data;
+  if (!value) {
+    return data;
+  }
+  const { miso_id } = value;
+  if (!miso_id) {
+    return data;
+  }
+  return {
+    ...data,
+    value: {
+      ...value,
+      root_miso_id: miso_id,
+    },
+  };
+}
+
 export function concatItemsFromMoreResponse(oldData, newData, { role = ROLE.PRODUCTS } = {}) {
   if (!newData.value) {
     return oldData;
   }
-  const { [role]: oldProducts = [], facet_counts, total } = oldData.value;
+  const { [role]: oldProducts = [], facet_counts, total, root_miso_id } = oldData.value;
   const { [role]: newProducts = [] } = newData.value;
   // keep old exhaustion flag, just in case
   // TODO
@@ -202,6 +220,7 @@ export function concatItemsFromMoreResponse(oldData, newData, { role = ROLE.PROD
       ...newData.value,
       facet_counts,
       total,
+      root_miso_id,
       [role]: [...oldProducts, ...newProducts],
     },
   }
@@ -304,7 +323,7 @@ export function mergeInteraction(base = {}, patch = {}) {
   return trimObj({
     ...base,
     ...patch,
-    context:trimObj({
+    context: trimObj({
       ...base.context,
       ...patch.context,
       custom_context: trimObj({

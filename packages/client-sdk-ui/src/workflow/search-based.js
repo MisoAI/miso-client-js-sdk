@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { STATUS, ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
-import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, concatItemsFromMoreResponse } from './processors.js';
+import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse, mergeInteraction } from './processors.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
@@ -245,7 +245,7 @@ export default class SearchBasedWorkflow extends Workflow {
     }
     const { _meta } = request.payload;
     if (!_meta || !_meta.page) {
-      return data; // not from "more" request
+      return writeMisoIdAsRootMisoId(data); // not from "more" request
     }
     // concat records if it's from "more" request
     const currentData = this._hub.states[fields.data()];
@@ -259,6 +259,28 @@ export default class SearchBasedWorkflow extends Workflow {
     }
     this._views.filters.update({ sort: value });
     this._views.filters.apply();
+  }
+
+  // interactions //
+  _defaultProcessInteraction(payload, args) {
+    payload = super._defaultProcessInteraction(payload, args);
+    payload = this._writeRootMisoIdToInteraction(payload);
+    return payload;
+  }
+
+  _writeRootMisoIdToInteraction(payload) {
+    const data = this._hub.states[fields.data()];
+    const { root_miso_id } = (data && data.value) || {};
+    if (!root_miso_id) {
+      return payload;
+    }
+    return mergeInteraction(payload, {
+      context: {
+        custom_context: {
+          root_miso_id,
+        }
+      }
+    });
   }
 
 }
