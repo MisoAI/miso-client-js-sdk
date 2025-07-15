@@ -123,7 +123,7 @@ export default class OptionListLayout extends TemplateBasedLayout {
     if (!value) {
       return;
     }
-    // TODO: q -> value
+    // TODO: ad-hoc, should be intepreted by workflow
     this._view.hub.update(fields.query(), { q: value });
   }
 

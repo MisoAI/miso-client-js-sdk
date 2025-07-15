@@ -151,8 +151,9 @@ export default class TypewriterLayout extends ProgressiveLayout {
   // event //
   _onClick(event) {
     const { target } = event;
-    const citationLinkElement = target.closest(`[data-role="citation-link"]`);
+
     // citation link click
+    const citationLinkElement = target.closest(`[data-role="citation-link"]`);
     if (citationLinkElement) {
       const index = parseInt(citationLinkElement.dataset.index);
       if (!Number.isNaN(index)) {
@@ -160,6 +161,18 @@ export default class TypewriterLayout extends ProgressiveLayout {
       }
       return;
     }
+
+    // follow-up link click
+    const followUpLinkElement = target.closest(`[data-role="follow-up-link"]`);
+    if (followUpLinkElement) {
+      let { q } = followUpLinkElement.dataset;
+      q = q ? q.trim() : undefined;
+      if (q) {
+        this._view._events.emit('follow-up-click', { event, q });
+      }
+      return;
+    }
+
     // generic link click
     const anchorElement = target.closest('a');
     if (anchorElement) {

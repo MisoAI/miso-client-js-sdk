@@ -79,6 +79,7 @@ export default class Ask extends AnswerBasedWorkflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
+      this._views.get(ROLE.ANSWER).on('follow-up-click', event => this._onFollowUpClick(event)),
     ];
   }
 
@@ -187,6 +188,18 @@ export default class Ask extends AnswerBasedWorkflow {
         },
       }
     });
+  }
+
+  // handlers //
+  _onFollowUpClick({ q, event } = {}) {
+    if (!q) {
+      return;
+    }
+    const next = this.getOrCreateNext();
+    next.query({ q }); // TODO: indicate it's a follow-up question
+
+    // tracking
+    // TODO
   }
 
   // helpers //

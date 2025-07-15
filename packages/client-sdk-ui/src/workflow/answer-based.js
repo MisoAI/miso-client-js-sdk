@@ -304,6 +304,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     if (!source || !source.product_id) {
       return;
     }
+    // TODO: only left click?
     // TODO: should we track impression as well?
     markAsTracked(event);
     // distinguish from regular sources element click
@@ -315,6 +316,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     if (isTracked(event)) {
       return;
     }
+    // TODO: only left click?
     markAsTracked(event);
     // put everything into args and let _defaultProcessInteraction() handles it
     // for it's hard to make it a standard item

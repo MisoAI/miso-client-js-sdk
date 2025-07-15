@@ -24,6 +24,7 @@ function visitor(node) {
     }
     node.properties['data-role'] = 'follow-up-link';
     node.properties['data-q'] = q;
+    (node.properties.className || (node.properties.className = [])).push('miso-follow-up-link');
     delete node.properties.href;
     delete node.properties.target;
     delete node.properties.rel;
