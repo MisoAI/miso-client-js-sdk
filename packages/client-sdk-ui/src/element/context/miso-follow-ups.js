@@ -63,7 +63,17 @@ export default class MisoFollowUpsElement extends MisoContextElement {
       }
     }));
 
-    // 3. when a workflow is destroyed, remove the section
+    // 3. when a workflow is loading, scroll into view
+    this._unsubscribes.push(context.on('loading', ({ workflow }) => {
+      for (const element of this.children) {
+        if (this._elementToWorkflow.get(element) === workflow) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          break;
+        }
+      }
+    }));
+
+    // 4. when a workflow is destroyed, remove the section
     this._unsubscribes.push(context.on('destroy', ({ workflow }) => {
       for (const element of this.children) {
         if (this._elementToWorkflow.get(element) === workflow) {
