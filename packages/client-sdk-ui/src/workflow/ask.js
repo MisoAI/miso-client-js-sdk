@@ -80,6 +80,7 @@ export default class Ask extends AnswerBasedWorkflow {
       ...this._unsubscribes,
       this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
       this._views.get(ROLE.ANSWER).on('follow-up-click', event => this._onFollowUpClick(event)),
+      this._views.get(ROLE.QUERY_SUGGESTIONS).on('select', event => this._onQuerySuggestionSelect(event)),
     ];
   }
 
@@ -200,6 +201,13 @@ export default class Ask extends AnswerBasedWorkflow {
 
     // tracking
     // TODO
+  }
+
+  _onQuerySuggestionSelect({ value: q }) {
+    if (!q) {
+      return;
+    }
+    this.query({ q });
   }
 
   // helpers //

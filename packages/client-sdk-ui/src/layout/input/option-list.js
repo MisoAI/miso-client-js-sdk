@@ -116,15 +116,14 @@ export default class OptionListLayout extends TemplateBasedLayout {
       return;
     }
     this._trackClick(event, binding);
-    this._submit(option.text);
+    this._select(option.text);
   }
 
-  async _submit(value) {
+  async _select(value) {
     if (!value) {
       return;
     }
-    // TODO: ad-hoc, should be intepreted by workflow
-    this._view.hub.update(fields.query(), { q: value });
+    this._view._events.emit('select', { value });
   }
 
   destroy() {
