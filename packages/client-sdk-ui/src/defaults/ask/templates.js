@@ -18,6 +18,7 @@ class Sections extends _Sections {
       this.answer(options),
       this.affiliation(options),
       this.sources(options),
+      this.followUpQuestions(options),
       container(options, { name: 'bottom-spacing', visibleWhen: 'ongoing' }),
     ];
   }
@@ -76,6 +77,16 @@ class Sections extends _Sections {
     ]);
   }
 
+  followUpQuestions(options) {
+    const { container, phrase } = this._helpers;
+    const name = 'follow-up-questions';
+    const extraNames = ['query-suggestions']; // backward compatibility (styling)
+    return container(options, { name, extraNames, visibleWhen: 'nonempty' }, [
+      phrase(options, { name, extraNames, tag: 'h3' }),
+      '<miso-follow-up-questions></miso-follow-up-questions>',
+    ]);
+  }
+
   followUps(options) {
     const { features = {} } = options;
     return features.followUpQuestions === false ? '' : `<miso-follow-ups id="miso-ask-combo__follow-ups" class="miso-ask-combo__follow-ups"></miso-follow-ups>`;
@@ -89,16 +100,6 @@ class Sections extends _Sections {
       '<miso-related-resources></miso-related-resources>',
     ]);
     return section(options, { name: 'related-resources' }, body);
-  }
-
-  querySuggestions(options) {
-    const { container, phrase } = this._helpers;
-    const { features = {} } = options;
-    return features.querySuggestions === false ? '' :
-      container(options, { name: 'query-suggestions', visibleWhen: 'initial+nonempty' }, [
-        phrase(options, { name: 'query-suggestions', tag: 'h3' }),
-        '<miso-query-suggestions></miso-query-suggestions>',
-      ]);
   }
 
 }
@@ -122,10 +123,9 @@ export function root(options = {}) {
 
 export function followUp(options = {}) {
   const { normalizeOptions, section, container } = helpers;
-  const { querySuggestions, answerGroup } = sections;
+  const { answerGroup } = sections;
   options = normalizeOptions(options);
   return section(options, { name: 'follow-up' }, [
-    querySuggestions(options),
     container(options, { name: 'query', visibleWhen: 'initial loading' }, '<miso-query></miso-query>'),
     ...answerGroup(options),
   ]);

@@ -94,17 +94,17 @@ export class Helpers {
 
   normalizePhraseOptionKey(key) {
     key = kebabOrSnakeToLowerCamel(key);
-    if (key === 'relatedQuestions') {
-      return 'querySuggestions'; // legacy key
+    if (key === 'relatedQuestions' || key === 'querySuggestions') {
+      return 'followUpQuestions'; // legacy key
     }
     return key;
   }
 
   // html //
-  phrase(options, { name, tag = 'div', inline = false }) {
+  phrase(options, { name, extraNames = [], tag = 'div', inline = false }) {
     const { classPrefix } = options;
     const mainClass = inline ? `${classPrefix}__phrase-inline` : `${classPrefix}__phrase`;
-    return `<${tag} class="${mainClass} ${classPrefix}__${name}-phrase">${this.phraseText(options, kebabToLowerCamel(name))}</${tag}>`;
+    return `<${tag} class="${mainClass} ${[name, ...extraNames].map(name => `${classPrefix}__${name}-phrase`).join(' ')}">${this.phraseText(options, kebabToLowerCamel(name))}</${tag}>`;
   }
 
   phraseText(options, key) {
@@ -126,8 +126,8 @@ export class Helpers {
     }, body);
   }
 
-  container({ classPrefix, circledCitationIndex, parentQuestionId }, { name, visibleWhen, trait, logo = false }, body) {
-    const classes = [`${classPrefix}__${name}-container`];
+  container({ classPrefix, circledCitationIndex, parentQuestionId }, { name, extraNames = [], visibleWhen, trait, logo = false }, body) {
+    const classes = [name, ...extraNames].map(name => `${classPrefix}__${name}-container`);
     circledCitationIndex && classes.push('miso-circled-citation-index');
     return this.element(this._context.CONAINER_TAG, { classes, visibleWhen, trait, logo, parentQuestionId }, body);
   }

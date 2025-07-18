@@ -1,5 +1,6 @@
 export { default as MisoComponentElement } from './miso-component.js';
 export { default as MisoQueryElement } from './miso-query.js';
+export { default as MisoFollowUpQuestionsElement } from './miso-follow-up-questions.js';
 export { default as MisoQuerySuggestionsElement } from './miso-query-suggestions.js';
 export { default as MisoFeedbackElement } from './miso-feedback.js';
 export { default as MisoResultsElement } from './miso-results.js';

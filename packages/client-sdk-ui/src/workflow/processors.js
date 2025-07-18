@@ -54,6 +54,13 @@ export function mappingSuggestionsData(_, { workflow } = {}) {
   return value && value.map(text => ({ text }));
 }
 
+export function mappingFollowUpQuestionsData(data) {
+  if (!data || !data.value) {
+    return undefined;
+  }
+  return (data.value.followup_questions || []).map(text => ({ text }));
+}
+
 // data //
 export function getRevision(data) {
   return data && data.value && data.value.revision;

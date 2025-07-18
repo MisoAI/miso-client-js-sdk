@@ -5,7 +5,7 @@ import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { mappingSuggestionsData } from './processors.js';
+import { mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
 import { followUp as followUpTemplate } from '../defaults/ask/templates.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -23,6 +23,7 @@ const DEFAULT_LAYOUTS = Object.freeze({
   [ROLE.REASONING]: TypewriterLayout.type,
   [ROLE.RELATED_RESOURCES]: [ListLayout.type, { incremental: true, itemType: 'article' }],
   [ROLE.QUERY_SUGGESTIONS]: OptionListLayout.type,
+  [ROLE.FOLLOW_UP_QUESTIONS]: OptionListLayout.type,
 });
 
 const DEFAULT_TRACKERS = Object.freeze({
@@ -53,6 +54,7 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   members: Object.keys(DEFAULT_LAYOUTS),
   mappings: {
     [ROLE.QUERY_SUGGESTIONS]: mappingSuggestionsData,
+    [ROLE.FOLLOW_UP_QUESTIONS]: mappingFollowUpQuestionsData,
   },
 });
 
@@ -80,6 +82,7 @@ export default class Ask extends AnswerBasedWorkflow {
       ...this._unsubscribes,
       this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
       this._views.get(ROLE.ANSWER).on('follow-up-click', event => this._onFollowUpClick(event)),
+      this._views.get(ROLE.FOLLOW_UP_QUESTIONS).on('select', event => this._onFollowUpQuestionSelect(event)),
       this._views.get(ROLE.QUERY_SUGGESTIONS).on('select', event => this._onQuerySuggestionSelect(event)),
     ];
   }
@@ -167,8 +170,11 @@ export default class Ask extends AnswerBasedWorkflow {
     let { property } = (payload.context && payload.context.custom_context) || {};
     let question_id, parent_question_id, question_source;
 
-    if (args.role === ROLE.QUERY_SUGGESTIONS) {
+    if (args.role === ROLE.FOLLOW_UP_QUESTIONS || args.role === ROLE.QUERY_SUGGESTIONS) {
       property = 'suggested_followup_questions';
+    }
+
+    if (args.role === ROLE.QUERY_SUGGESTIONS) {
       parent_question_id = this.previous && this.previous.parentQuestionId;
       question_id = this.parentQuestionId;
       question_source = this.previous && this.previous.session.meta.question_source;
@@ -193,21 +199,31 @@ export default class Ask extends AnswerBasedWorkflow {
 
   // handlers //
   _onFollowUpClick({ q, event } = {}) {
+    this._submitFollowUpQuestion({ q });
+
+    // tracking
+    // TODO
+  }
+
+  _onFollowUpQuestionSelect({ value: q }) {
+    this._submitFollowUpQuestion({ q });
+  }
+
+  _submitFollowUpQuestion({ q = '' } = {}) {
+    q = q.trim();
     if (!q) {
       return;
     }
     const next = this.getOrCreateNext();
     next.query({ q }); // TODO: indicate it's a follow-up question
-
-    // tracking
-    // TODO
   }
 
   _onQuerySuggestionSelect({ value: q }) {
     if (!q) {
       return;
     }
-    this.query({ q });
+    // backward compatible: query on current workflow
+    this.query({ q }); // TODO: indicate it's a follow-up question
   }
 
   // helpers //

@@ -9,13 +9,16 @@ export const question = 'You asked...';
 export const sources = 'This reply is based on the following articles';
 
 /**
- * The phrase displayed right before <miso-query-suggestions>
+ * The phrase displayed right before <miso-follow-up-questions>
  */
-export const querySuggestions = 'Related questions you can explore';
+export const followUpQuestions = 'Related questions you can explore';
 
 /**
  * The phrase displayed right before <miso-related-resources>
  */
 export const relatedResources = 'Go beyond, and learn more about this topic';
 
+/**
+ * The phrase displayed at the header of <miso-reasoning> box
+ */
 export const thoughts = 'Thoughts';
