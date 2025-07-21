@@ -1,7 +1,31 @@
+@use 'sass:list';
+
 @import url(https://fonts.googleapis.com/css?family=Noto+Sans+Symbols:wght@100;200;300&display=swap&text=%E2%9E%80%E2%9E%81%E2%9E%82%E2%9E%83%E2%9E%84%E2%9E%85%E2%9E%86%E2%9E%87%E2%9E%88%E2%9E%89%E2%91%AA%E2%91%AB%E2%91%AC%E2%91%AD%E2%91%AE%E2%91%AF%E2%91%B0%E2%91%B1%E2%91%B2%E2%91%B3%E2%9E%8A%E2%9E%8B%E2%9E%8C%E2%9E%8D%E2%9E%8E%E2%9E%8F%E2%9E%90%E2%9E%91%E2%9E%92%E2%9E%93%E2%93%AB%E2%93%AC%E2%93%AD%E2%93%AE%E2%93%AF%E2%93%B0%E2%93%B1%E2%93%B2%E2%93%B3%E2%93%B4);
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans&display=swap&text=0123456789);
+
+// Noto Sans w/ 800/900 not served by Google Fonts
+// https://github.com/google/fonts/issues/1717
 
 $dingbat-circled-numbers: ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯ ⑰ ⑱ ⑲ ⑳;
 $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ ⓬ ⓭ ⓮ ⓯ ⓰ ⓱ ⓲ ⓳ ⓴;
+
+// 21-99
+@mixin high-numbers {
+  &[data-index^="2"]:not([data-index="2"]):not([data-index="20"]),
+  &[data-index^="3"]:not([data-index="3"]),
+  &[data-index^="4"]:not([data-index="4"]),
+  &[data-index^="5"]:not([data-index="5"]),
+  &[data-index^="6"]:not([data-index="6"]),
+  &[data-index^="7"]:not([data-index="7"]),
+  &[data-index^="8"]:not([data-index="8"]),
+  &[data-index^="9"]:not([data-index="9"]) {
+    @content;
+  }
+}
+
+:root {
+  --miso-circled-citation-index-inverted-text-color: #fff;
+}
 
 .miso-citation-link {
   position: relative;
@@ -61,14 +85,62 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
 .miso-circled-citation-index-dark {
   .miso-citation-link,
   .miso-citation-index {
-    font-family: 'Noto Sans Symbols', sans-serif;
+    display: inline-block;
+    font-family: 'Noto Sans', sans-serif;
     font-weight: 200;
     text-rendering: optimizeLegibility;
 
-    @for $i from 1 through length($dingbat-circled-numbers) {
+    &::before {
+      content: attr(data-index);
+    }
+
+    @for $i from 1 through list.length($dingbat-circled-numbers) {
       &[data-index="#{$i}"] {
+        font-family: 'Noto Sans Symbols', sans-serif;
+
         &::before {
-          content: '#{nth($dingbat-circled-numbers, $i)}';
+          content: '#{list.nth($dingbat-circled-numbers, $i)}';
+        }
+      }
+    }
+
+    @include high-numbers {
+      padding: 0.1em;
+      box-sizing: border-box;
+      height: 1em;
+      width: 1em;
+
+      &::before {
+        display: inline-block;
+        height: 100%;
+        width: 100%;
+        font-size: 0.55em;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        vertical-align: middle;
+        margin-bottom: 0.1em;
+        text-align: center;
+      }
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        aspect-ratio: 1;
+        width: 83%;
+        left: 50%;
+        top: 61%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 0.08em solid currentColor;
+        z-index: -1;
+      }
+      &:hover {
+        &:before {
+          color: var(--miso-circled-citation-index-inverted-text-color);
+        }
+        &::after {
+          background-color: currentColor;
         }
       }
     }
@@ -80,10 +152,10 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
     text-rendering: optimizeLegibility;
     text-decoration: none;
 
-    @for $i from 1 through length($dingbat-circled-numbers) {
+    @for $i from 1 through list.length($dingbat-circled-numbers) {
       &[data-index="#{$i}"] {
         &:hover::before {
-          content: '#{nth($dingbat-negative-circled-numbers, $i)}';
+          content: '#{list.nth($dingbat-negative-circled-numbers, $i)}';
         }
       }
     }
@@ -105,11 +177,19 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
 .miso-circled-citation-index-dark {
   .miso-citation-link,
   .miso-citation-index {
-    @for $i from 1 through length($dingbat-circled-numbers) {
+    @for $i from 1 through list.length($dingbat-circled-numbers) {
       &[data-index="#{$i}"] {
         &::before {
-          content: '#{nth($dingbat-negative-circled-numbers, $i)}' !important;
+          content: '#{list.nth($dingbat-negative-circled-numbers, $i)}' !important;
         }
+      }
+    }
+    @include high-numbers {
+      &:before {
+        color: var(--miso-circled-citation-index-inverted-text-color) !important;
+      }
+      &::after {
+        background-color: currentColor !important;
       }
     }
   }

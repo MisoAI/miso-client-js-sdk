@@ -1,13 +1,28 @@
 ---
 ---
 
+{% raw %}
 <style>
+main {
+  padding: 2rem;
+}
+#default {
+  margin-top: 0;
+}
 .miso-list {
   --miso-list-item-height: 7rem;
   --miso-list-item-gap: 0.65rem;
   --miso-list-description-lines: 3;
 }
+.large p {
+  font-size: 5rem !important;
+  line-height: 1 !important;
+}
+.line {
+  overflow: hidden;
+}
 </style>
+{% endraw %}
 
 ## Default
 
@@ -16,7 +31,7 @@
     <p>
       A dummy dummy dummy dummy dummy line.<br>
       Some dummy text. 
-      {%- for i in range(1, 21) -%}
+      {%- for i in range(1, 31) -%}
         <a href="#" class="miso-citation-link" data-index="{{ i }}"></a>
       {%- endfor -%}
       Some dummy text.<br>
@@ -51,7 +66,7 @@
     <p>
       A dummy dummy dummy dummy dummy line.<br>
       Some dummy text. 
-      {%- for i in range(1, 21) -%}
+      {%- for i in range(1, 31) -%}
         <a href="#" class="miso-citation-link" data-index="{{ i }}"></a>
       {%- endfor -%}
       Some dummy text.<br>
@@ -76,5 +91,33 @@
         </a>
       </li>
     </ol>
+  </div>
+</div>
+
+----
+
+<div class="miso-circled-citation-index-dark">
+  <div class="miso-markdown">
+    <p>
+      A dummy dummy dummy dummy dummy line.<br>
+      Some dummy text. 
+      {%- for i in range(1, 31) -%}
+        <a href="#" class="miso-citation-link" data-index="{{ i }}"></a>
+      {%- endfor -%}
+      Some dummy text.<br>
+      A dummy dummy dummy dummy dummy line.
+    </p>
+  </div>
+</div>
+
+<div class="miso-circled-citation-index miso-markdown large">
+  <div>
+    {%- for i in range(0, 5) -%}
+      <p class="line">
+        {%- for j in range(1, 8) -%}
+          <a href="#" class="miso-citation-link" data-index="{{ i * 7 + j }}"></a>
+        {%- endfor -%}
+      </p>
+    {%- endfor -%}
   </div>
 </div>
