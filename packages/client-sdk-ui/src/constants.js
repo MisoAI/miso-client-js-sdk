@@ -1,7 +1,6 @@
 export const ATTR_DATA_MISO_UNIT_ID = `data-miso-unit-id`;
 export const ATTR_DATA_MISO_PRODUCT_ID = `data-miso-product-id`;
 export const DEFAULT_UNIT_ID = 'default';
-export const ORGANIC_QUESTION_SOURCE = '_organic';
 
 export const ROLE = Object.freeze({
   CONTAINER: 'container',
@@ -110,6 +109,12 @@ export const STATUS = Object.freeze({
   EMPTY: 'empty',
   NONEMPTY: 'nonempty',
   UNANSWERABLE: 'unanswerable',
+});
+
+export const QUESTION_SOURCE = Object.freeze({
+  ORGANIC: '_organic',
+  SUGGESTED_QUESTIONS: '_suggested_questions',
+  INLINE_QUESTION_LINK: '_inline_question_link',
 });
 
 export function validateEventType(value) {

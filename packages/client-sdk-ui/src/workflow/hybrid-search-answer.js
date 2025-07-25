@@ -1,5 +1,5 @@
 import AnswerBasedWorkflow from './answer-based.js';
-import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
+import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
 import { writeKeywordsToData, writeMisoIdToSession, writeMisoIdFromSession, writeUnanswerableToMeta } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
@@ -54,7 +54,7 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
       ...payload,
       _meta: {
         ...payload._meta,
-        question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
+        question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
       },
     };
   }

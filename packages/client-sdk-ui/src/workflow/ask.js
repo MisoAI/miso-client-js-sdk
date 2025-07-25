@@ -1,7 +1,7 @@
 import { defineValues, trimObj, API } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
-import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
+import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
 import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
@@ -133,7 +133,7 @@ export default class Ask extends AnswerBasedWorkflow {
       parent_question_id: parentQuestionId,
       _meta: {
         ...options._meta,
-        question_source: qs || ORGANIC_QUESTION_SOURCE, // might be null, not undefined
+        question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
       },
     });
     payload = this._writeWikiLinkTemplateToPayload(payload);
@@ -199,23 +199,24 @@ export default class Ask extends AnswerBasedWorkflow {
 
   // handlers //
   _onFollowUpClick({ q, event } = {}) {
-    this._submitFollowUpQuestion({ q });
-
-    // tracking
-    // TODO
+    if (event.button !== 0) {
+      return; // only left click
+    }
+    this._submitFollowUpQuestion({ q, qs: QUESTION_SOURCE.INLINE_QUESTION_LINK });
+    // TODO: track click?
   }
 
   _onFollowUpQuestionSelect({ value: q }) {
-    this._submitFollowUpQuestion({ q });
+    this._submitFollowUpQuestion({ q, qs: QUESTION_SOURCE.SUGGESTED_QUESTIONS });
   }
 
-  _submitFollowUpQuestion({ q = '' } = {}) {
+  _submitFollowUpQuestion({ q = '', qs } = {}) {
     q = q.trim();
     if (!q) {
       return;
     }
     const next = this.getOrCreateNext();
-    next.query({ q }); // TODO: indicate it's a follow-up question
+    next.query({ q, qs });
   }
 
   _onQuerySuggestionSelect({ value: q }) {
@@ -223,7 +224,7 @@ export default class Ask extends AnswerBasedWorkflow {
       return;
     }
     // backward compatible: query on current workflow
-    this.query({ q }); // TODO: indicate it's a follow-up question
+    this.query({ q, qs: QUESTION_SOURCE.SUGGESTED_QUESTIONS });
   }
 
   // helpers //

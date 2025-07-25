@@ -1,7 +1,7 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
-import { ROLE, STATUS, ORGANIC_QUESTION_SOURCE } from '../constants.js';
+import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
@@ -174,7 +174,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   _writeQuestionSourceToSession(args) {
-    this.session.meta.question_source = args.qs || ORGANIC_QUESTION_SOURCE; // might be null, not undefined
+    this.session.meta.question_source = args.qs || QUESTION_SOURCE.ORGANIC; // might be null, not undefined
   }
 
   _buildPayload() {
@@ -234,12 +234,12 @@ export default class AnswerBasedWorkflow extends Workflow {
 
     const url = new URL(window.location);
     const currentQuestion = url.searchParams.get(param);
-    const currentQuestionSource = url.searchParams.get(sourceParam) || ORGANIC_QUESTION_SOURCE;
+    const currentQuestionSource = url.searchParams.get(sourceParam) || QUESTION_SOURCE.ORGANIC;
     if (question === currentQuestion && questionSource === currentQuestionSource) {
       return;
     }
     url.searchParams.set(param, question);
-    if (questionSource === ORGANIC_QUESTION_SOURCE) {
+    if (questionSource === QUESTION_SOURCE.ORGANIC) {
       url.searchParams.delete(sourceParam);
     } else {
       url.searchParams.set(sourceParam, questionSource);
@@ -294,29 +294,32 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   // handlers //
   _onCitationClick({ index, event }) {
+    if (event.button !== 0) {
+      return; // only left click
+    }
     if (isTracked(event)) {
       return;
     }
-    const { value } = this.states[fields.data()] || {};
+    const { value } = this._hub.states[fields.data()] || {};
     const { sources } = value || {};
     // index is 1-based
     const source = sources && sources[index - 1];
     if (!source || !source.product_id) {
       return;
     }
-    // TODO: only left click?
     // TODO: should we track impression as well?
     markAsTracked(event);
     // distinguish from regular sources element click
-    // TODO
     this._views.trackers.sources.click([source.product_id], { event_target: 'citation-link' });
   }
 
   _onAnswerLinkClick({ event, ...item }) {
+    if (event.button !== 0) {
+      return; // only left click
+    }
     if (isTracked(event)) {
       return;
     }
-    // TODO: only left click?
     markAsTracked(event);
     // put everything into args and let _defaultProcessInteraction() handles it
     // for it's hard to make it a standard item
