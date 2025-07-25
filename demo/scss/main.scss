@@ -1,4 +1,4 @@
-@import './_variables.scss';
+@use './_variables.scss';
 
 /* layout */
 body.base .miso-body-container {
@@ -48,11 +48,11 @@ main {
 
 /* navbar */
 header {
+  background-color: var(--color-primary);
   padding: 1rem !important;
   @media (min-width: 768px) {
     padding: 0.5rem 1rem !important;
   }
-  background-color: var(--color-primary);
 
   > nav {
     padding: 0 !important;
