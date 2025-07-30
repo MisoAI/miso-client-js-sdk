@@ -121,8 +121,8 @@ export default class Explore extends UnitWorkflow {
     return this;
   }
 
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
+  _defaultProcessData(data, oldData) {
+    data = super._defaultProcessData(data, oldData);
     data = this._addUrlToRelatedQuestions(data);
     return data;
   }

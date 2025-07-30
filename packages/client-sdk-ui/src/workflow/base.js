@@ -4,7 +4,7 @@ import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getRevision, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
+import { getRevision, writeRequestFromPreviousData, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({});
 
@@ -75,6 +75,7 @@ export default class Workflow extends Component {
 
   _initSubscriptions({ roles }) {
     this._unsubscribes = [
+      this._hub.on(fields.session(), session => this._onSession(session)),
       this._hub.on(fields.response(), data => this.updateData(data)),
       this._hub.on(fields.tracker(), args => this._onTracker(args)),
     ];
@@ -154,6 +155,10 @@ export default class Workflow extends Component {
     }
   }
 
+  _onSession(session) {
+    this.updateData({ session });
+  }
+
   _onMainViewUpdate(state) {
     const { status } = state;
     const done = status === STATUS.READY;
@@ -186,8 +191,9 @@ export default class Workflow extends Component {
   // request //
   _request(options = {}) {
     const { session } = this;
-    const event = mergeApiOptions(this._options.resolved.api, { ...options, session });
-    this._hub.update(fields.request(), event);
+    const request = mergeApiOptions(this._options.resolved.api, options);
+    this.updateData({ session, request });
+    this._hub.update(fields.request(), { ...request, session });
   }
 
   // data //
@@ -221,15 +227,17 @@ export default class Workflow extends Component {
   }
 
   _updateData(data) {
-    data = this._defaultProcessData(data);
+    const oldData = this._hub.states[fields.data()];
+    data = this._defaultProcessData(data, oldData);
     for (const process of this._options.resolved.dataProcessor) {
-      data = process(data);
+      data = process(data, oldData);
     }
 
-    this._updateDataInHub(data);
+    this._updateDataInHub(data, oldData);
   }
 
-  _defaultProcessData(data) {
+  _defaultProcessData(data, oldData) {
+    data = writeRequestFromPreviousData(data, oldData);
     data = writeDataStatus(data);
     data = writeMisoIdToMeta(data);
     return data;

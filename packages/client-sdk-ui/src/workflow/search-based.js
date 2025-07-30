@@ -225,8 +225,8 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   // data //
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
+  _defaultProcessData(data, oldData) {
+    data = super._defaultProcessData(data, oldData);
     data = writeKeywordsToData(data);
     data = retainFacetCountsInData(data, this._currentFacetCounts);
     data = writeExhaustionToData(data, { role: this._roles.main });

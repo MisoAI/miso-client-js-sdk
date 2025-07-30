@@ -209,8 +209,8 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   _handleHeadResponse(data) {}
 
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
+  _defaultProcessData(data, oldData) {
+    data = super._defaultProcessData(data, oldData);
     data = processAffiliationData(data);
     data = writeAnswerStageToMeta(data);
     return data;

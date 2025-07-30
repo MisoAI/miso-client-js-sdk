@@ -66,6 +66,18 @@ export function getRevision(data) {
   return data && data.value && data.value.revision;
 }
 
+export function writeRequestFromPreviousData(data, oldData) {
+  // patch request in case user call updateData() without request object in custom data scenario
+  if (!data || !data.value || data.request || !oldData || !oldData.request) {
+    return data;
+  }
+  const { request } = oldData;
+  return {
+    ...data,
+    request,
+  };
+}
+
 export function writeDataStatus(data) {
   const status = getStatus(data);
   const ongoing = status === STATUS.READY ? data.ongoing : undefined;

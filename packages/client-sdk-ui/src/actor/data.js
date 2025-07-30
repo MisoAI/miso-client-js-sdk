@@ -38,10 +38,6 @@ export default class DataActor {
       this._ac = new AbortController();
     }
     this._session = session;
-
-    // TODO: move this to workflow
-    // reflect session update
-    this._emitResponse({ session });
   }
 
   async _handleRequest(event) {
@@ -49,16 +45,12 @@ export default class DataActor {
     if (!this.active) {
       return;
     }
-    const { session } = this._hub.states;
-    const { session: _, ...request } = event;
-
-    // emit response to update request
-    this._emitResponse({ session, request });
+    const { session, ...request } = event;
 
     try {
       const { signal } = this._ac || {};
       const options = { ...event.options, signal };
-      const response = await this._source({ session, ...event, options });
+      const response = await this._source({ session, ...request, options });
       // takes an iterable, either sync or async
       if (response && response[Symbol.asyncIterator]) {
         // also emit reponse of the head request, if available

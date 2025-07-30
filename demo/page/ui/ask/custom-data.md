@@ -16,7 +16,6 @@ misocmd.push(async () => {
   context.useApi(false);
   const api = window.doggoganger.buildApi();
   context.on('request', async ({ workflow, session, payload }) => {
-    workflow.updateData({ session });
     const headResponse = await api.ask.questions(payload);
     const { question_id } = headResponse;
     workflow.updateData({ session, value: headResponse });

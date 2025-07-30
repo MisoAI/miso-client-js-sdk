@@ -71,8 +71,8 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
   }
 
   // data //
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
+  _defaultProcessData(data, oldData) {
+    data = super._defaultProcessData(data, oldData);
     writeMisoIdToSession(data);
     return data;
   }

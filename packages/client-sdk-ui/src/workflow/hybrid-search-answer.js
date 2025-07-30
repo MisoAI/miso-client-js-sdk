@@ -60,8 +60,8 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   // data //
-  _defaultProcessData(data) {
-    data = super._defaultProcessData(data);
+  _defaultProcessData(data, oldData) {
+    data = super._defaultProcessData(data, oldData);
     data = writeKeywordsToData(data);
     data = writeMisoIdFromSession(data);
     data = writeUnanswerableToMeta(data);
