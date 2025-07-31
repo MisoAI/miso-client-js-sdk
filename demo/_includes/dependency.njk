@@ -14,9 +14,9 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script async src="http://localhost:10099/dist/umd/miso.js"></script>
     <script>
-      window.DEFAULT_ASK_API_KEY = '{{ DEFAULT_ASK_API_KEY }}';
-      window.DEFAULT_AFFILIATION_ASK_API_KEY = '{{ DEFAULT_AFFILIATION_ASK_API_KEY }}';
-      window.DEFAULT_WHITEPAPER_ASK_API_KEY = '{{ DEFAULT_WHITEPAPER_ASK_API_KEY }}';
+      {% for entry in API_KEYS %}
+        window.{{ entry[0] }} = '{{ entry[1] }}';
+      {% endfor %}
       window.DEFAULT_PRODUCT_ID = '{{ DEFAULT_PRODUCT_ID }}';
     </script>
     <script src="{{ '/js/ui.js' | url }}"></script>

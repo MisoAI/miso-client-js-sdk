@@ -6,7 +6,7 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   // setup client
   const MisoClient = window.MisoClient;
-  const client = new MisoClient(window.DEFAULT_ASK_API_KEY);
+  const client = new MisoClient(window.DEFAULT_HYBRID_SEARCH_API_KEY || window.DEFAULT_ASK_API_KEY);
   const workflow = client.ui.hybridSearch;
   workflow.useApi({
     facets: ['categories'],
