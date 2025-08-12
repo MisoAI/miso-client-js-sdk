@@ -1,3 +1,4 @@
+import { asArray } from '@miso.ai/commons';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
@@ -9,11 +10,11 @@ export default class Parser {
     const { remark = [], rehype = [] } = options;
     let processer = unified().use(remarkParse);
     for (const plugin of remark) {
-      processer = processer.use(plugin);
+      processer = processer.use(...asArray(plugin));
     }
     processer = processer.use(remarkRehype);
     for (const plugin of rehype) {
-      processer = processer.use(plugin);
+      processer = processer.use(...asArray(plugin));
     }
     this._processer = processer.use(rehypeHast);
   }
