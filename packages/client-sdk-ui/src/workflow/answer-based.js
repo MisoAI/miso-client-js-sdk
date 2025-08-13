@@ -151,7 +151,7 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   query(args) {
     // TODO: also accept "question", "questionSource"?
-    if (!args.q) {
+    if (!args.q && !args.questionId) {
       throw new Error(`q is required in query() call`);
     }
     this._hub.update(fields.query(), args);

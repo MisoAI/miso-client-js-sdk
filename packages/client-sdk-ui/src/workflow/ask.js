@@ -125,7 +125,14 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   // query //
-  _buildPayload({ q, qs, ...options } = {}) {
+  _buildPayload({ q, qs, questionId, ...options } = {}) {
+    if (questionId) {
+      return trimObj({
+        ...options,
+        question_id: questionId,
+        // TODO: specify this is a replayed session
+      });
+    }
     const { parentQuestionId } = this;
     let payload = trimObj({
       ...options,
