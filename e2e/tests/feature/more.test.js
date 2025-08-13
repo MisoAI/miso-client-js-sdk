@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createMisoProxy } from '../../util/index.js';
+import { createMisoProxy, createRouteHandler } from '../../util/index.js';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript({ path: './client/probe.js' });
@@ -7,11 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('[Hybrid Search] data layer', async ({ page }) => {
-  // TODO: extract as utils
-  await page.route('**/ask/search?*', async route => {
-    const request = route.request();
-    const payload = request.postDataJSON();
-
+  await page.route('**/ask/search?*', createRouteHandler(async payload => {
     const { rows = 10 } = payload;
     const { page = 0 } = payload._meta || {};
 
@@ -27,17 +23,13 @@ test('[Hybrid Search] data layer', async ({ page }) => {
         product_id: `p_${page * rows + i}`,
       });
     }
-    const json = {
-      data: {
-        products,
-        total,
-        facet_counts,
-      },
-      message: 'success',
+    return {
+      products,
+      total,
+      facet_counts,
     };
+  }));
 
-    await route.fulfill({ json });
-  });
   await page.goto('/ui/hybrid-search/blank');
 
   const [data0, data1] = await page.evaluate(async () => {
