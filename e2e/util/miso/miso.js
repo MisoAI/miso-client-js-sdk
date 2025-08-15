@@ -34,8 +34,14 @@ class Miso {
   }
 
   _handleUnknownEvent(name, event) {
-    console.log(`Unknown event "${name}" (miso)`, event);
+    this._debug(`Unknown event "${name}" (miso)`, event);
     return true;
+  }
+
+  _debug(message) {
+    if (this._options.verbose) {
+      console.log(message);
+    }
   }
 
 }

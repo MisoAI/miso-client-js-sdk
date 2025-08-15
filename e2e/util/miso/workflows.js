@@ -43,6 +43,10 @@ export default class Workflows {
     return false;
   }
 
+  _debug(...args) {
+    this._miso._debug(...args);
+  }
+
 }
 
 class Workflow {
@@ -52,16 +56,27 @@ class Workflow {
     this._workflows = workflows;
     Object.assign(this, data);
     this._sessions = new Sessions(this);
+    this._dataEvents = [];
+  }
+
+  get dataEvents() {
+    return [...this._dataEvents];
   }
 
   _handleEvent(name, event) {
+    if (name === 'data') {
+      this._dataEvents.push(event);
+    }
     return this._sessions._handleEvent(name, event) || this._handleUnknownEvent(name, event);
   }
 
   _handleUnknownEvent(name, event) {
-    // TODO: only when verbose
-    console.log(`Unknown event "${name}" (workflow)`, event);
+    this._debug(`Unknown event "${name}" (workflow)`, event);
     return true;
+  }
+
+  _debug(...args) {
+    this._miso._debug(...args);
   }
 
 }

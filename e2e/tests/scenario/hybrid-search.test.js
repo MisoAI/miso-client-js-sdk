@@ -18,4 +18,6 @@ test('Standard', async ({ page }) => {
 
   // wait for data
   await page.waitForTimeout(3000);
+
+  //console.log(page.miso.workflows.get('hybrid-search/results').dataEvents);
 });

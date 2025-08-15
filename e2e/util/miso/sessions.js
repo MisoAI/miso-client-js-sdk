@@ -12,7 +12,7 @@ export default class Sessions {
   }
 
   add(session) {
-    this._sessions.push(this._current = new Session(session));
+    this._sessions.push(this._current = new Session(this, session));
   }
 
   get(uuid) {
@@ -52,7 +52,9 @@ export default class Sessions {
 
 class Session {
 
-  constructor(data) {
+  constructor(sessions, data) {
+    this._sessions = sessions;
+    this._miso = sessions._miso;
     Object.assign(this, data);
     this._lifecycle = {};
   }
@@ -70,9 +72,12 @@ class Session {
   }
 
   _handleUnknownEvent(name, event) {
-    // TODO: only when verbose
-    console.log(`Unknown event "${name}" (session)`, event);
+    this._debug(`Unknown event "${name}" (session)`, event);
     return true;
+  }
+
+  _debug(...args) {
+    this._miso._debug(...args);
   }
 
 }
