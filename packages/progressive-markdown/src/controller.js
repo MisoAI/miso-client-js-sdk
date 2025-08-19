@@ -101,7 +101,7 @@ export default class Controller {
     }
 
     const { value, stage, finished } = this._response;
-    const previouslyDone = this._rendered && this._rendered.done;
+    const previouslyDone = this._rendered && this._rendered.doneAt !== undefined;
     const done = previouslyDone || finished;
     const doneAt = previouslyDone ? this._rendered.doneAt : finished ? timestamp : undefined;
 
