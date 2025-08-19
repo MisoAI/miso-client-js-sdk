@@ -5,14 +5,26 @@ import rehypeCitationLink from '../rehype-citation-link.js';
 import rehypeFollowUpLink from '../rehype-follow-up-link.js';
 import { mergeRendererOptions } from '../utils.js';
 import { applyOperationWithSlot } from './slot.js';
+import { defaultProcessMarkdown } from './helpers.js';
 
-export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cursorClass, getSource, variant, ...options } = {}) {
+export default function miso({
+  onCitationLink,
+  onRefChange,
+  onDone,
+  onDebug,
+  cursorClass,
+  getSource,
+  processMarkdown = defaultProcessMarkdown,
+  variant,
+  ...options
+} = {}) {
   validateType('onCitationLink', onCitationLink, 'function');
   validateType('onRefChange', onRefChange, 'function');
   validateType('onDone', onDone, 'function');
   validateType('onDebug', onDebug, 'function');
   validateType('cursorClass', cursorClass, 'string');
   validateType('getSource', getSource, 'function');
+  validateType('processMarkdown', processMarkdown, 'function');
 
   onRefChange = runSafely(onRefChange);
   onDone = runSafely(onDone);
@@ -63,6 +75,7 @@ export default function miso({ onCitationLink, onRefChange, onDone, onDebug, cur
     },
     onDebug,
     applyOperation,
+    processValue: processMarkdown,
   }, options);
 }
 

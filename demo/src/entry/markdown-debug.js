@@ -15,10 +15,6 @@ function formatTimeInMilliseconds(t) {
 }
 
 const TEXT = `
-Here's a focused comparison of matrix flattening techniques for numerical computing, optimized for performance and memory efficiency:
-
-### Matrix Flattening Methods Comparison
-
 | Method | Use Case | Performance | Memory | Libraries | Code Example |
 |--------|----------|-------------|--------|-----------|--------------|
 | **NumPy ravel()** | Views for read-only ops | O(1) | Minimal (view) | NumPy | \`matrix.ravel()\` [[1]](https://learning.oreilly.com/library/view/-/9781098104023/app01.html) |
@@ -74,9 +70,9 @@ const controller = new Controller(answerElement, {
   let intervalId;
   intervalId = setInterval(() => {
     const t = performance.now();
-    const len = t - start;
+    const len = Math.floor((t - start) / 100);
     const finished = len >= length;
     controller.update({ answer: TEXT.slice(0, len), answer_stage: 'answer', finished });
     finished && intervalId && clearInterval(intervalId);
-  }, 20);
+  }, 1000);
 })();

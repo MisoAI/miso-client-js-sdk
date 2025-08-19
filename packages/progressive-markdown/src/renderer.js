@@ -26,10 +26,11 @@ function summarize({ index, cursors = [0, 0], conflict, tree = { rightBound: 0 }
 
 export default class Renderer {
 
-  constructor({ parser, compiler, query, onRefChange, onDone, onDebug, applyOperation = defaultApplyOperation } = {}) {
+  constructor({ parser, compiler, query, onRefChange, onDone, onDebug, processValue, applyOperation = defaultApplyOperation } = {}) {
     this._onRefChange = onRefChange;
     this._onDone = onDone;
     this._onDebug = onDebug;
+    this._processValue = processValue || (v => v);
     this._applyOperation = wrapDebug(applyOperation, onDebug);
     this._query = new Query({ ...query, parser, compiler });
     this._index = 0;
@@ -45,6 +46,7 @@ export default class Renderer {
   }
 
   update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor: rawCursor, timestamp, done: dataDone }) {
+    value = this._processValue(value);
     prevCursor = Math.floor(prevCursor);
     let cursor = Math.floor(rawCursor);
 
