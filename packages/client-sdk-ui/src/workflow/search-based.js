@@ -1,7 +1,7 @@
 import { API, asArray, trimObj } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { STATUS, ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse, mergeInteraction } from './processors.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
@@ -99,9 +99,6 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   _query(args) {
-    // keep track of the query args for refine and more calls
-    this._queryArgs = args;
-
     // reset filters view
     this._views.filters.reset({ silent: true });
 
@@ -109,9 +106,10 @@ export default class SearchBasedWorkflow extends Workflow {
     this.restart();
 
     // payload
-    const payload = this._buildPayload(args);
+    const type = REQUEST_TYPE.QUERY;
+    const payload = this._buildPayload(args, type);
 
-    this._request({ payload });
+    this._request({ payload, type });
   }
 
   _refine() {
@@ -123,10 +121,11 @@ export default class SearchBasedWorkflow extends Workflow {
     this.restart();
 
     // payload
+    const type = REQUEST_TYPE.REFINE;
     const query = this._getQuery();
-    const payload = this._buildPayload(query);
+    const payload = this._buildPayload(query, type);
 
-    this._request({ payload });
+    this._request({ payload, type });
   }
 
   // TODO: expose API
@@ -144,25 +143,27 @@ export default class SearchBasedWorkflow extends Workflow {
     this._page++;
 
     // payload
+    const type = REQUEST_TYPE.MORE;
     const query = this._getQuery();
-    let payload = this._buildPayload(query);
-    payload = this._processPayloadForMoreRequest(payload);
+    const payload = this._buildPayload(query, type);
 
-    this._request({ payload });
+    this._request({ payload, type });
   }
 
   _getQuery() {
-    // TODO: just get from the hub
-    return this._queryArgs;
+    return this._hub.states[fields.query()];
   }
 
   _getPageSize() {
     return this._options.resolved.api.payload.rows;
   }
 
-  _buildPayload(payload) {
+  _buildPayload(payload, type) {
     payload = this._writeFiltersToPayload(payload);
     payload = this._writePageInfoToPayload(payload);
+    if (type === REQUEST_TYPE.MORE) {
+      payload = this._processPayloadForMoreRequest(payload);
+    }
     return payload;
   }
 

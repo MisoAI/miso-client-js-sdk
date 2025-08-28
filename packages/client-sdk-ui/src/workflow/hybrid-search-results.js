@@ -43,11 +43,10 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
     return this._superworkflow._answer._hub.states[fields.query()];
   }
 
-  _buildPayload(payload) {
+  _buildPayload(payload, type) {
+    payload = super._buildPayload(payload, type);
     // borrow the work from the sibling
     payload = this._superworkflow._answer._writeQuestionSourceToPayload(payload);
-    payload = this._writeFiltersToPayload(payload);
-    payload = this._writePageInfoToPayload(payload);
     payload = this._writeQuestionIdToPayload(payload);
     return { ...payload, answer: false };
   }
