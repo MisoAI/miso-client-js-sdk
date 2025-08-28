@@ -24,14 +24,34 @@ function summarize({ index, cursors = [0, 0], conflict, tree = { rightBound: 0 }
   return `[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`;
 }
 
+function normalizeOptions({
+  onRefChange = () => {},
+  onDebug,
+  onDone = () => {},
+  processValue = (v => v),
+  applyOperation = defaultApplyOperation,
+  mergeTextOnDone = true,
+  ...options
+} = {}) {
+  return {
+    onRefChange,
+    onDebug,
+    onDone,
+    processValue,
+    applyOperation: wrapDebug(applyOperation, onDebug),
+    mergeTextOnDone,
+    ...options,
+  };
+}
+
 export default class Renderer {
 
-  constructor({ parser, compiler, query, onRefChange, onDone, onDebug, processValue, applyOperation = defaultApplyOperation } = {}) {
-    this._onRefChange = onRefChange;
-    this._onDone = onDone;
-    this._onDebug = onDebug;
-    this._processValue = processValue || (v => v);
-    this._applyOperation = wrapDebug(applyOperation, onDebug);
+  constructor(options) {
+    options = normalizeOptions(options);
+    const { parser, compiler, query, processValue, applyOperation, ...rest } = options;
+    this._processValue = processValue;
+    this._applyOperation = applyOperation;
+    this._options = rest;
     this._query = new Query({ ...query, parser, compiler });
     this._index = 0;
   }
@@ -84,14 +104,17 @@ export default class Renderer {
       ref = this._applyOperation(operation, element, ref, debugContext);
     }
 
-    viewDone && this._onDone && this._onDone(element);
+    if (viewDone) {
+      this._options.mergeTextOnDone && element.normalize();
+      this._options.onDone(element);
+    }
     this._handleRefChange(prevRef, ref);
 
     return { cursor: rawCursor, done: viewDone, ref, index };
   }
 
   _handleRefChange(oldRef, newRef) {
-    oldRef !== newRef && this._onRefChange && this._onRefChange(oldRef, newRef);
+    oldRef !== newRef && this._options.onRefChange(oldRef, newRef);
   }
 
 }
