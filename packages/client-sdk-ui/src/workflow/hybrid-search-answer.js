@@ -1,7 +1,7 @@
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { writeKeywordsToData, writeMisoIdToSession, writeMisoIdFromSession, writeUnanswerableToMeta } from './processors.js';
+import { mergePayloads, writeKeywordsToData, writeMisoIdToSession, writeMisoIdFromSession, writeUnanswerableToMeta } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
@@ -50,13 +50,11 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   _writeQuestionSourceToPayload({ qs, ...payload } = {}) {
-    return {
-      ...payload,
+    return mergePayloads(payload, {
       _meta: {
-        ...payload._meta,
         question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
       },
-    };
+    });
   }
 
   // data //

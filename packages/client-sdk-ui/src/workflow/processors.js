@@ -1,5 +1,5 @@
 import { trimObj } from '@miso.ai/commons';
-import { STATUS, ROLE, EVENT_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
+import { STATUS, ROLE, EVENT_TYPE, REQUEST_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
 import { fields } from '../actor/index.js';
 
 // role mappings //
@@ -59,6 +59,31 @@ export function mappingFollowUpQuestionsData(data) {
     return undefined;
   }
   return (data.value.followup_questions || []).map(text => ({ text }));
+}
+
+// payload //
+export function mergePayloads(payload0, payload1) {
+  const metadata = (payload0.metadata || payload1.metadata) ? trimObj({
+    ...payload0.metadata,
+    ...payload1.metadata,
+  }) : undefined;
+  const _meta = (payload0._meta || payload1._meta) ? trimObj({
+    ...payload0._meta,
+    ...payload1._meta,
+  }) : undefined;
+  return trimObj({
+    ...payload0,
+    ...payload1,
+    metadata,
+    _meta,
+  });
+}
+
+export function disableAnswerForNonQueryRequest(payload, type) {
+  if (type === REQUEST_TYPE.QUERY) {
+    return payload;
+  }
+  return { ...payload, answer: false };
 }
 
 // data //

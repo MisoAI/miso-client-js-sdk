@@ -2,7 +2,7 @@ import { trimObj } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
-import { writeMisoIdToSession } from './processors.js';
+import { writeMisoIdToSession, mergePayloads, disableAnswerForNonQueryRequest } from './processors.js';
 
 // we want to override members, not adding to it
 const ROLES_OPTIONS = {
@@ -48,7 +48,8 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
     // borrow the work from the sibling
     payload = this._superworkflow._answer._writeQuestionSourceToPayload(payload);
     payload = this._writeQuestionIdToPayload(payload);
-    return { ...payload, answer: false };
+    payload = disableAnswerForNonQueryRequest(payload, type);
+    return payload;
   }
 
   _buildOrderBy(sort) {
@@ -60,13 +61,11 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
   }
 
   _writeQuestionIdToPayload(payload) {
-    return {
-      ...payload,
-      _meta: trimObj({
-        ...payload._meta,
+    return mergePayloads(payload, {
+      _meta: {
         question_id: this._superworkflow._answer.questionId,
-      }),
-    };
+      },
+    });
   }
 
   // data //
