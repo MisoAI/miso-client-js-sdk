@@ -29,7 +29,7 @@ export default class Tracker {
     validateEventType(type);
 
     const { options } = this;
-    if (!options) {
+    if (!options || options.active === false) {
       return;
     }
 

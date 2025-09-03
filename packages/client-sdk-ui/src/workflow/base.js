@@ -1,5 +1,5 @@
 import { Component, isNullLike } from '@miso.ai/commons';
-import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, fields } from '../actor/index.js';
+import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, fields } from '../actor/index.js';
 import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
@@ -70,6 +70,7 @@ export default class Workflow extends Component {
     this._sessions = new SessionMaker(hub);
     this._data = new DataActor(hub, { source: sources.api(client), options });
     this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: this });
+    //this._trackers = new TrackersActor(hub, { options });
     this._interactions = new InteractionsActor(hub, { client, options });
   }
 

@@ -1,4 +1,3 @@
-import { trimObj } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
