@@ -269,6 +269,26 @@ export default class SearchBasedWorkflow extends Workflow {
     return payload;
   }
 
+  _writeRequestInfoToInteraction(payload, args) {
+    const { data } = args;
+    if (!data) {
+      return payload;
+    }
+    const requestPayload = data.request && data.request.payload;
+    if (!requestPayload) {
+      return payload;
+    }
+    const { q, fq } = requestPayload;
+    return mergeInteraction(payload, {
+      context: {
+        custom_context: {
+          q,
+          fq,
+        },
+      },
+    });
+  }
+
   _writeRootMisoIdToInteraction(payload) {
     const data = this._hub.states[fields.data()];
     const { root_miso_id } = (data && data.value) || {};

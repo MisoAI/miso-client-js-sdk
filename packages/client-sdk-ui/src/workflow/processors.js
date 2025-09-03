@@ -333,6 +333,22 @@ function areProducts(role, items = []) {
   return isProductRole(role) || (items.length > 0 && typeof items[0] === 'object' && items[0].product_id);
 }
 
+export function writeRequestMetadataToInteraction(payload, args) {
+  const { data } = args;
+  if (!data) {
+    return payload;
+  }
+  const metadata = data.request && data.request.payload && data.request.payload.metadata;
+  if (!metadata) {
+    return payload;
+  }
+  return mergeInteraction(payload, {
+    context: {
+      custom_context: metadata,
+    },
+  });
+}
+
 export function writeAffiliationInfoToInteraction(payload, args) {
   if (args.role !== ROLE.AFFILIATION) {
     return payload;

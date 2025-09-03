@@ -4,7 +4,16 @@ import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
 import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getRevision, writeRequestFromPreviousData, writeDataStatus, writeMisoIdToMeta, buildBaseInteraction, writeAffiliationInfoToInteraction, mergeInteraction } from './processors.js';
+import {
+  getRevision,
+  writeRequestFromPreviousData,
+  writeDataStatus,
+  writeMisoIdToMeta,
+  buildBaseInteraction,
+  writeRequestMetadataToInteraction,
+  writeAffiliationInfoToInteraction,
+  mergeInteraction,
+} from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({});
 
@@ -266,7 +275,8 @@ export default class Workflow extends Component {
   }
 
   _onTracker(args) {
-    const payload = this._buildInteraction(args);
+    const data = this._hub.states[fields.data()];
+    const payload = this._buildInteraction({ ...args, data });
     this._sendInteraction(payload);
   }
 
@@ -281,7 +291,9 @@ export default class Workflow extends Component {
   }
 
   _defaultProcessInteraction(payload, args) {
+    payload = writeRequestMetadataToInteraction(payload, args);
     payload = this._writeApiInfoToInteraction(payload, args);
+    payload = this._writeRequestInfoToInteraction(payload, args);
     payload = this._writeMisoIdToInteraction(payload, args);
     payload = writeAffiliationInfoToInteraction(payload, args);
     return payload;
@@ -297,6 +309,10 @@ export default class Workflow extends Component {
         },
       },
     });
+  }
+
+  _writeRequestInfoToInteraction(payload, args) {
+    return payload;
   }
 
   _writeMisoIdToInteraction(payload, args) {

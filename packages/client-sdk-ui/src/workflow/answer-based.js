@@ -256,6 +256,26 @@ export default class AnswerBasedWorkflow extends Workflow {
     return payload;
   }
 
+  _writeRequestInfoToInteraction(payload, args) {
+    const { data } = args;
+    if (!data) {
+      return payload;
+    }
+    const requestPayload = data.request && data.request.payload;
+    if (!requestPayload) {
+      return payload;
+    }
+    const { question, fq } = requestPayload;
+    return mergeInteraction(payload, {
+      context: {
+        custom_context: {
+          question,
+          fq,
+        },
+      },
+    });
+  }
+
   _writeAskPropertiesToInteraction(payload = {}, args) {
     const question_source = this._getQuestionSourceFromViewState(args);
     const question_id = this.questionId;
