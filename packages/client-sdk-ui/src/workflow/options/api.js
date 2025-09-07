@@ -1,4 +1,4 @@
-import { trimObj } from '@miso.ai/commons';
+import { trimObj, mergeApiPayloads } from '@miso.ai/commons';
 import { mergeOptions } from './utils.js';
 
 export function normalizeApiOptions([name, payload] = []) {
@@ -28,19 +28,4 @@ export function mergeApiOptions(...optionsList) {
     ...options,
     payload: mergeApiPayloads(merged.payload, options.payload),
   }));
-}
-
-function mergeApiPayloads(base, overrides) {
-  return {
-    ...base,
-    ...overrides,
-    ...mergeObjectValueIfPresent('_meta', base, overrides),
-  };
-}
-
-function mergeObjectValueIfPresent(key, base, overrides) {
-  const baseValue = base && base[key];
-  const overridesValue = overrides && overrides[key];
-  const value = baseValue ? (overridesValue ? { ...baseValue, ...overridesValue } : baseValue) : overridesValue;
-  return value !== undefined ? { [key]: value } : {};
 }

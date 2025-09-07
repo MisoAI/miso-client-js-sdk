@@ -1,9 +1,9 @@
-import { API, asArray, trimObj } from '@miso.ai/commons';
+import { API, asArray, trimObj, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
-import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse, mergeInteraction } from './processors.js';
+import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse } from './processors.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
@@ -204,8 +204,8 @@ export default class SearchBasedWorkflow extends Workflow {
   _writePageInfoToPayload(payload) {
     return {
       ...payload,
-      _meta: {
-        ...payload._meta,
+      metadata: {
+        ...payload.metadata,
         page: this._page,
       },
     };
@@ -244,8 +244,8 @@ export default class SearchBasedWorkflow extends Workflow {
     if (!request) {
       return data; // the initial state
     }
-    const { _meta } = request.payload;
-    if (!_meta || !_meta.page) {
+    const { metadata } = request.payload;
+    if (!metadata || !metadata.page) {
       return writeMisoIdAsRootMisoId(data); // not from "more" request
     }
     // concat records if it's from "more" request
@@ -279,7 +279,7 @@ export default class SearchBasedWorkflow extends Workflow {
       return payload;
     }
     const { q, fq } = requestPayload;
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           q,
@@ -295,7 +295,7 @@ export default class SearchBasedWorkflow extends Workflow {
     if (!root_miso_id) {
       return payload;
     }
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           root_miso_id,

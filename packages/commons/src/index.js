@@ -18,6 +18,7 @@ export * from './styles.js';
 export * from './debounce.js';
 export * from './dump.js';
 export * from './classes.js';
+export * from './processors.js';
 
 export { signals, API };
 

@@ -1,4 +1,4 @@
-import { Component, isNullLike } from '@miso.ai/commons';
+import { Component, isNullLike, mergeInteractions } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, fields } from '../actor/index.js';
 import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
@@ -12,7 +12,6 @@ import {
   buildBaseInteraction,
   writeRequestMetadataToInteraction,
   writeAffiliationInfoToInteraction,
-  mergeInteraction,
 } from './processors.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({});
@@ -301,7 +300,7 @@ export default class Workflow extends Component {
 
   _writeApiInfoToInteraction(payload) {
     const { group, name } = this._options.resolved.api;
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           api_group: group,
@@ -319,7 +318,7 @@ export default class Workflow extends Component {
     // TODO: ad-hoc, try to pass info from tracker
     const state = this._hub.states[fields.view(args.role)] || {};
     const miso_id = (state.meta && state.meta.miso_id) || undefined;
-    return miso_id ? mergeInteraction(payload, { miso_id }) : payload;
+    return miso_id ? mergeInteractions(payload, { miso_id }) : payload;
   }
 
   _sendInteraction(payload) {

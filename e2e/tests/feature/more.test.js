@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('[Hybrid Search] data layer', async ({ page }) => {
   await page.route('**/ask/search?*', createRouteHandler(async payload => {
     const { rows = 10 } = payload;
-    const { page = 0 } = payload._meta || {};
+    const { page = 0 } = payload.metadata || {};
 
     const total = 100 + page;
     const facet_counts = {

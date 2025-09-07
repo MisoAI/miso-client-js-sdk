@@ -1,9 +1,8 @@
-import { defineValues, trimObj, API } from '@miso.ai/commons';
+import { defineValues, trimObj, API, mergeInteractions } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
-import { mergeInteraction } from './processors.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
 import { followUp as followUpTemplate } from '../defaults/ask/templates.js';
@@ -138,8 +137,8 @@ export default class Ask extends AnswerBasedWorkflow {
       ...options,
       question: q, // question, not q
       parent_question_id: parentQuestionId,
-      _meta: {
-        ...options._meta,
+      metadata: {
+        ...options.metadata,
         question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
       },
     });
@@ -191,7 +190,7 @@ export default class Ask extends AnswerBasedWorkflow {
       question_source = this._getQuestionSourceFromViewState(args);
     }
 
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           property,

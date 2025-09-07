@@ -1,7 +1,8 @@
+import { mergeApiPayloads } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
-import { writeMisoIdToSession, mergePayloads, disableAnswerForNonQueryRequest } from './processors.js';
+import { writeMisoIdToSession, disableAnswerForNonQueryRequest } from './processors.js';
 
 // we want to override members, not adding to it
 const ROLES_OPTIONS = {
@@ -60,8 +61,8 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
   }
 
   _writeQuestionIdToPayload(payload) {
-    return mergePayloads(payload, {
-      _meta: {
+    return mergeApiPayloads(payload, {
+      metadata: {
         question_id: this._superworkflow._answer.questionId,
       },
     });

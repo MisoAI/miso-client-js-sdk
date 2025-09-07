@@ -1,6 +1,5 @@
-import { defineValues } from '@miso.ai/commons';
+import { defineValues, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
-import { mergeInteraction } from './processors.js';
 
 export default class UnitWorkflow extends Workflow {
 
@@ -25,7 +24,7 @@ export default class UnitWorkflow extends Workflow {
   _writeUnitIdToInteraction(payload) {
     const unit_id = this.id;
     const unit_instance_uuid = this.uuid;
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           unit_id,

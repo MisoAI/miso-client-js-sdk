@@ -1,11 +1,11 @@
-import { API } from '@miso.ai/commons';
+import { API, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeEventTargetToInteraction, mergeInteraction } from './processors.js';
+import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeEventTargetToInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 
@@ -226,7 +226,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     }
     const { param, sourceParam } = this._autoQuery;
     const question = (value && value.question) || (request && request.payload && request.payload.question);
-    const questionSource = request && request.payload && request.payload._meta && request.payload._meta.question_source;
+    const questionSource = request && request.payload && request.payload.metadata && request.payload.metadata.question_source;
 
     if (!question) {
       return; // at initial phase
@@ -266,7 +266,7 @@ export default class AnswerBasedWorkflow extends Workflow {
       return payload;
     }
     const { question, fq } = requestPayload;
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           question,
@@ -279,7 +279,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   _writeAskPropertiesToInteraction(payload = {}, args) {
     const question_source = this._getQuestionSourceFromViewState(args);
     const question_id = this.questionId;
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           question_source,
@@ -294,7 +294,7 @@ export default class AnswerBasedWorkflow extends Workflow {
       return payload;
     }
     const { items = [] } = args;
-    return mergeInteraction(payload, {
+    return mergeInteractions(payload, {
       context: {
         custom_context: {
           urls: items.map(item => item.url),
@@ -309,7 +309,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   _getQuestionSourceFromViewState(args) {
     const { request } = this._hub.states[fields.view(args.role)] || {};
     const { payload } = request || {};
-    return (payload && payload._meta && payload._meta.question_source) || undefined;
+    return (payload && payload.metadata && payload.metadata.question_source) || undefined;
   }
 
   // handlers //

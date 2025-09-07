@@ -1,4 +1,4 @@
-import { trimObj } from '@miso.ai/commons';
+import { trimObj, mergeInteractions } from '@miso.ai/commons';
 import { STATUS, ROLE, EVENT_TYPE, REQUEST_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
 import { fields } from '../actor/index.js';
 
@@ -62,23 +62,6 @@ export function mappingFollowUpQuestionsData(data) {
 }
 
 // payload //
-export function mergePayloads(payload0, payload1) {
-  const metadata = (payload0.metadata || payload1.metadata) ? trimObj({
-    ...payload0.metadata,
-    ...payload1.metadata,
-  }) : undefined;
-  const _meta = (payload0._meta || payload1._meta) ? trimObj({
-    ...payload0._meta,
-    ...payload1._meta,
-  }) : undefined;
-  return trimObj({
-    ...payload0,
-    ...payload1,
-    metadata,
-    _meta,
-  });
-}
-
 export function disableAnswerForNonQueryRequest(payload, type) {
   if (type === REQUEST_TYPE.QUERY) {
     return payload;
@@ -342,7 +325,7 @@ export function writeRequestMetadataToInteraction(payload, args) {
   if (!metadata) {
     return payload;
   }
-  return mergeInteraction(payload, {
+  return mergeInteractions(payload, {
     context: {
       custom_context: metadata,
     },
@@ -356,7 +339,7 @@ export function writeAffiliationInfoToInteraction(payload, args) {
   const { items } = args;
   const channel = (items[0] && items[0].channel) || undefined;
   const positions = items.map(v => v.position);
-  return mergeInteraction(payload, {
+  return mergeInteractions(payload, {
     context: {
       custom_context: {
         channel,
@@ -370,27 +353,12 @@ export function writeEventTargetToInteraction(payload, { event_target } = {}) {
   if (!event_target) {
     return payload;
   }
-  return mergeInteraction(payload, {
+  return mergeInteractions(payload, {
     context: {
       custom_context: {
         event_target,
       },
     },
-  });
-}
-
-export function mergeInteraction(base = {}, patch = {}) {
-  return trimObj({
-    ...base,
-    ...patch,
-    context: trimObj({
-      ...base.context,
-      ...patch.context,
-      custom_context: trimObj({
-        ...(base.context && base.context.custom_context),
-        ...(patch.context && patch.context.custom_context),
-      }),
-    }),
   });
 }
 
