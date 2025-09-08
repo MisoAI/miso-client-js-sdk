@@ -11,6 +11,7 @@ misocmd.push(() => {
   client.context.user_id = 'user-123';
   client.context.user_type = 'registered';
   client.context.site = 'my-site';
+  client.context.auth = 'Bearer 012345';
   const workflow = client.ui.explore;
   workflow.useApi({
     product_id: window.DEFAULT_PRODUCT_ID || 'aaa',

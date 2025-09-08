@@ -17,12 +17,21 @@ export default class ContextPlugin extends Component {
   install(MisoClient, context) {
     context.addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
+    context.addHeadersPass(this._modifyHeaders.bind(this));
     context.addPayloadPass(this._modifyPayload.bind(this));
   }
 
   _injectClient(client) {
     const context = new ClientContext(this);
-    delegateProperties(client.context, context, ['anonymous_id', 'user_id', 'user_hash', 'user_type', 'site', 'authorization']);
+    delegateProperties(client.context, context, ['anonymous_id', 'user_id', 'user_hash', 'user_type', 'site', 'auth']);
+  }
+
+  _modifyHeaders({ client, headers }) {
+    const { auth } = client.context;
+    if (auth) {
+      headers = { ...headers, Authorization: auth };
+    }
+    return headers;
   }
 
   _modifyPayload({ client, apiGroup, apiName, payload }) {
@@ -119,13 +128,13 @@ class ClientContext {
     this._set('site', value);
   }
 
-  get authorization() {
-    return this._props.authorization;
+  get auth() {
+    return this._props.auth;
   }
 
-  set authorization(value) {
-    this._requireString('authorization', value);
-    this._set('authorization', value);
+  set auth(value) {
+    this._requireString('auth', value);
+    this._set('auth', value);
   }
 
   // helpers //

@@ -19,9 +19,11 @@ export default class ApiHelpers {
     timeout = timeout || request.timeout;
     sendApiKeyByHeader = sendApiKeyByHeader || request.sendApiKeyByHeader;
 
+    // TODO: make this a plugin
     if (sendApiKeyByHeader) {
       headers = { ...headers, 'X-API-KEY': apiKey };
     }
+
     // TODO: external abort signal
     // TODO: organize arguments
     const body = method !== 'GET' && payload != undefined ? JSON.stringify(payload) : undefined;
@@ -129,6 +131,18 @@ export default class ApiHelpers {
       }
     }
     return payload;
+  }
+
+  applyHeaderPasses(component, { apiGroup, apiName, payload, headers, options }) {
+    const client = this._client;
+    for (const pass of this._root._headersPasses) {
+      try {
+        headers = pass({ client, apiGroup, apiName, payload, headers, options }) || headers;
+      } catch(e) {
+        (component._error || console.error)(e);
+      }
+    }
+    return headers;
   }
 
 }

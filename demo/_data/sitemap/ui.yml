@@ -12,6 +12,8 @@ sections:
     path: /ask/affiliation
   - title: Images
     path: /ask/images
+  - title: Context
+    path: /ask/context
   - title: Lorem (client)
     path: /ask/lorem-client
   - title: Plaintext
@@ -47,6 +49,8 @@ sections:
     path: /explore/questions-only
   - title: Trending
     path: /explore/trending
+  - title: Context
+    path: /explore/context
   - title: Lorem (server)
     path: /explore/lorem-server
   - title: Lorem (client)
@@ -70,6 +74,8 @@ sections:
     path: /hybrid-search/use-link
   - title: Images
     path: /hybrid-search/images
+  - title: Context
+    path: /hybrid-search/context
   - title: Templates
     path: /hybrid-search/templates
 - title: Search

@@ -10,6 +10,7 @@ misocmd.push(async () => {
   client.context.user_id = 'user-123';
   client.context.user_type = 'registered';
   client.context.site = 'my-site';
+  client.context.auth = 'Bearer 012345';
   const workflow = client.ui.hybridSearch;
   workflow.useApi({
     facets: ['categories'],

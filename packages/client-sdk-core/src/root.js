@@ -13,6 +13,7 @@ class Root extends Component {
     this._pluginRoot = new PluginRoot(this);
     this._clients = [];
     this._payloadPasses = [];
+    this._headersPasses = [];
     this._urlPasses = [];
     this._customFetch = undefined;
     this._customSendBeacon = undefined;

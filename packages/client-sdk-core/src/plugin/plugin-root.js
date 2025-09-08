@@ -94,6 +94,13 @@ export default class PluginRoot extends Registry {
     this._root._payloadPasses.push(pass);
   }
 
+  addHeadersPass(pass) {
+    if (typeof pass !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${pass}`);
+    }
+    this._root._headersPasses.push(pass);
+  }
+
   addUrlPass(pass) {
     if (typeof pass !== 'function') {
       throw new Error(`Expect parameter to be a function: ${pass}`);
@@ -243,7 +250,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'onHubUpdate', 'onHubEmit', 'whenInstalled', 'whenRegistered']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addHeadersPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'onHubUpdate', 'onHubEmit', 'whenInstalled', 'whenRegistered']);
     defineValues(this, { classes });
   }
 
