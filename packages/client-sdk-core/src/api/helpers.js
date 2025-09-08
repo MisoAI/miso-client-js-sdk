@@ -13,16 +13,9 @@ export default class ApiHelpers {
     method = 'POST',
     headers,
     timeout,
-    sendApiKeyByHeader,
   } = {}) {
     const { apiKey, request = {} } = this._client.options;
     timeout = timeout || request.timeout;
-    sendApiKeyByHeader = sendApiKeyByHeader || request.sendApiKeyByHeader;
-
-    // TODO: make this a plugin
-    if (sendApiKeyByHeader) {
-      headers = { ...headers, 'X-API-KEY': apiKey };
-    }
 
     // TODO: external abort signal
     // TODO: organize arguments
@@ -93,12 +86,11 @@ export default class ApiHelpers {
     }
   }
 
-  url(paths, options = {}) {
-    const { apiKey, request = {} } = this._client.options;
-    const sendApiKeyByHeader = options.sendApiKeyByHeader || request.sendApiKeyByHeader;
+  url(paths) {
+    const { apiKey } = this._client.options;
     const apiName = paths.filter(s => s).join('/');
     const url = `${this.getApiEndpoint(apiName)}/${apiName}`;
-    return sendApiKeyByHeader ? url : `${url}?api_key=${window.encodeURIComponent(apiKey)}`;
+    return `${url}?api_key=${window.encodeURIComponent(apiKey)}`;
   }
 
   getApiEndpoint(apiName) {

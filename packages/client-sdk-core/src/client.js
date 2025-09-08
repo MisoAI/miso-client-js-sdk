@@ -54,6 +54,9 @@ class MisoClient extends Component {
     if (!options.apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
+    if (options.request && options.request.sendApiKeyByHeader) {
+      console.warn('`sendApiKeyByHeader` option is deprecated. Please call `MisoClient.plugins.use("std:header-api-key");` instead.');
+    }
 
     options.dataEndpoint = options.dataEndpoint || options.apiHost;
     options.eventEndpoint = options.eventEndpoint || options.apiHost;
