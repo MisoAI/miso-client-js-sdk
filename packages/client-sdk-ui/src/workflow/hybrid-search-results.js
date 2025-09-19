@@ -1,14 +1,17 @@
 import { mergeApiPayloads } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
-import { fields } from '../actor/index.js';
-import { ROLE } from '../constants.js';
-import { writeMisoIdToSession, disableAnswerForNonQueryRequest } from './processors.js';
+import { STATUS, REQUEST_TYPE } from '../constants.js';
+import { writeMisoIdToSession, writeQuestionSourceToPayload, disableAnswerForNonQueryRequest } from './processors.js';
+import { makeAutocompletable } from './autocompletable.js';
 
 // we want to override members, not adding to it
-const ROLES_OPTIONS = {
-  ...SearchBasedWorkflow.ROLES_OPTIONS,
-  members: [ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.SORT, ROLE.MORE, ROLE.ERROR],
-};
+const ROLES_OPTIONS = SearchBasedWorkflow.ROLES_OPTIONS;
+
+const EXTRA_OPTIONS = Object.freeze({
+  api: Object.freeze({
+    polling: false,
+  }),
+});
 
 export default class HybridSearchResults extends SearchBasedWorkflow {
 
@@ -19,6 +22,7 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
       client: superworkflow._client,
       options: superworkflow._options,
       defaults: superworkflow._defaults,
+      extraOptions: EXTRA_OPTIONS,
       roles: ROLES_OPTIONS,
       superworkflow,
     });
@@ -26,10 +30,18 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
 
   _initProperties(args) {
     super._initProperties(args);
+    this._initAutocomplete(args);
     this._superworkflow = args.superworkflow;
   }
 
   _initSession() {} // no reset here, will manually reset later
+
+  restart({ type } = {}) {
+    super.restart();
+    if (type === REQUEST_TYPE.QUERY) {
+      this._superworkflow._answer.restart();
+    }
+  }
 
   // lifecycle //
   _emitLifecycleEvent(name, event) {
@@ -38,17 +50,15 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
   }
 
   // query //
-  _getQuery() {
-    // get stored query from sibling
-    return this._superworkflow._answer._hub.states[fields.query()];
-  }
-
   _buildPayload(payload, type) {
     payload = super._buildPayload(payload, type);
     // borrow the work from the sibling
-    payload = this._superworkflow._answer._writeQuestionSourceToPayload(payload);
-    payload = this._writeQuestionIdToPayload(payload);
     payload = disableAnswerForNonQueryRequest(payload, type);
+    payload = writeQuestionSourceToPayload(payload);
+    payload = this._writeQuestionIdToPayload(payload, type);
+    if (payload.answer !== false) {
+      payload = this._superworkflow._answer._writeWikiLinkTemplateToPayload(payload);
+    }
     return payload;
   }
 
@@ -60,10 +70,17 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
     return sort.field;
   }
 
-  _writeQuestionIdToPayload(payload) {
+  _writeQuestionIdToPayload(payload, type) {
+    if (type === REQUEST_TYPE.QUERY) {
+      return payload;
+    }
+    const question_id = this._superworkflow._answer.questionId;
+    if (!question_id) {
+      return payload;
+    }
     return mergeApiPayloads(payload, {
       metadata: {
-        question_id: this._superworkflow._answer.questionId,
+        question_id,
       },
     });
   }
@@ -75,6 +92,32 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
     return data;
   }
 
+  _updateDataInHub(data) {
+    this._dispatchDataToAnswerWorkflow(data);
+    super._updateDataInHub(data);
+  }
+
+  _dispatchDataToAnswerWorkflow(data) {
+    const { request } = data;
+    if (!request) {
+      return;
+    }
+    const { type, payload } = request;
+    if (type !== REQUEST_TYPE.QUERY || !payload || payload.answer === false) {
+      return;
+    }
+    switch (data.status) {
+      case STATUS.LOADING:
+        // share the loading status with its sibling
+        this._superworkflow._answer._doLoading(data);
+        break;
+      case STATUS.READY:
+        // start a query with retrieved question ID, if any
+        this._superworkflow._answer._queryWithQuestionId(data);
+        break;
+    }
+  }
+
   // interactions //
   _defaultProcessInteraction(payload, args) {
     return this._superworkflow._defaultProcessInteraction(payload, args);
@@ -84,7 +127,15 @@ export default class HybridSearchResults extends SearchBasedWorkflow {
     return super._defaultProcessInteraction(payload, args);
   }
 
+  // destroy //
+  _destroy(options) {
+    this._destroyAutocomplete();
+    super._destroy(options);
+  }
+
 }
+
+makeAutocompletable(HybridSearchResults.prototype);
 
 Object.assign(HybridSearchResults, {
   ROLES_OPTIONS,

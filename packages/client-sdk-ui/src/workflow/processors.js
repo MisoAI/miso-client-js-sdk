@@ -1,5 +1,5 @@
-import { trimObj, mergeInteractions } from '@miso.ai/commons';
-import { STATUS, ROLE, EVENT_TYPE, REQUEST_TYPE, isPerformanceEventType, isProductRole } from '../constants.js';
+import { trimObj, mergeApiPayloads, mergeInteractions } from '@miso.ai/commons';
+import { STATUS, ROLE, EVENT_TYPE, REQUEST_TYPE, QUESTION_SOURCE, isPerformanceEventType, isProductRole } from '../constants.js';
 import { fields } from '../actor/index.js';
 
 // role mappings //
@@ -62,6 +62,14 @@ export function mappingFollowUpQuestionsData(data) {
 }
 
 // payload //
+export function writeQuestionSourceToPayload({ qs, ...payload } = {}) {
+  return mergeApiPayloads(payload, {
+    metadata: {
+      question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
+    },
+  });
+}
+
 export function disableAnswerForNonQueryRequest(payload, type) {
   if (type === REQUEST_TYPE.QUERY) {
     return payload;

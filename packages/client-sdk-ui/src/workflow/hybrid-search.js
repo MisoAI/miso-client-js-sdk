@@ -152,16 +152,16 @@ export default class HybridSearch extends Workflow {
   }
 
   get autocomplete() {
-    return this._answer.autocomplete;
+    return this._results.autocomplete;
   }
 
   // query //
   autoQuery(options) {
-    this._answer.autoQuery(options);
+    this._results.autoQuery(options);
   }
 
   query(args) {
-    this._answer.query(args);
+    this._results.query(args);
   }
 
   // interactions //

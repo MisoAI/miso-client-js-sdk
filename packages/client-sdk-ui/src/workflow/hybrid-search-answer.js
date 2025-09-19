@@ -1,15 +1,8 @@
-import { mergeApiPayloads } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
-import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
-import { mergeRolesOptions } from './options/index.js';
+import { fields } from '../actor/index.js';
 import { writeKeywordsToData, writeMisoIdToSession, writeMisoIdFromSession, writeUnanswerableToMeta } from './processors.js';
-import { makeAutocompletable } from './autocompletable.js';
 
-const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
-  mappings: {
-    [ROLE.QUESTION]: ROLE.KEYWORDS,
-  },
-});
+const ROLES_OPTIONS = AnswerBasedWorkflow.ROLES_OPTIONS;
 
 export default class HybridSearchAnswer extends AnswerBasedWorkflow {
 
@@ -27,35 +20,34 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
 
   _initProperties(args) {
     super._initProperties(args);
-    this._initAutocomplete(args);
     this._superworkflow = args.superworkflow;
   }
 
   _initSession() {} // no reset here, will manually reset later
 
-  restart() {
-    super.restart();
-    // cascade restart to the sibling
-    const results = this._superworkflow._results;
-    results._views.filters.reset({ silent: true });
-    results.restart();
-    this._resultsSession = results.session; // keep track of the session
+  _doLoading(data) {
+    const { session } = this;
+    this.updateData({ ...data, session });
   }
 
-  // query //
-  _buildPayload(payload) {
-    payload = this._writeQuestionSourceToPayload(payload);
-    payload = this._writeWikiLinkTemplateToPayload(payload);
-    payload = this._superworkflow._results._writeFiltersToPayload(payload);
-    return payload;
-  }
-
-  _writeQuestionSourceToPayload({ qs, ...payload } = {}) {
-    return mergeApiPayloads(payload, {
-      metadata: {
-        question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
-      },
-    });
+  _queryWithQuestionId(data) {
+    const { session } = this;
+    const { request, value } = data;
+    this.updateData({ ...data, session });
+    // start query with question_id
+    const { question_id } = value;
+    if (!question_id) {
+      return;
+    }
+    // forge the request
+    const payload = {
+      ...request.payload,
+      question_id,
+    };
+    if (payload.metadata.page !== undefined) {
+      delete payload.metadata.page;
+    }
+    this._hub.update(fields.request(), { ...request, payload, session });
   }
 
   // data //
@@ -67,27 +59,10 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
     return data;
   }
 
-  _updateDataInHub(data) {
-    switch (data.status) {
-      case STATUS.INITIAL:
-      case STATUS.LOADING:
-        // share the initial/loading status with its sibling
-        this._dispatchDataToSibling(data);
-        break;
-    }
-    super._updateDataInHub(data);
-  }
-
   _handleHeadResponse(data) {
     super._handleHeadResponse(data);
     // keep track of miso_id in session
     writeMisoIdToSession(data);
-    // share the search results with its sibling
-    this._dispatchDataToSibling(data);
-  }
-
-  _dispatchDataToSibling(data) {
-    this._resultsSession && this._superworkflow._results.updateData({ ...data, session: this._resultsSession });
   }
 
   // interactions //
@@ -99,12 +74,4 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
     return super._defaultProcessInteraction(payload, args);
   }
 
-  // destroy //
-  _destroy(options) {
-    this._destroyAutocomplete();
-    super._destroy(options);
-  }
-
 }
-
-makeAutocompletable(HybridSearchAnswer.prototype);

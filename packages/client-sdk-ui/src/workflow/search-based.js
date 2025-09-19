@@ -99,29 +99,31 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   _query(args) {
+    const type = REQUEST_TYPE.QUERY;
+
     // reset filters view
     this._views.filters.reset({ silent: true });
 
     // start a new session
-    this.restart();
+    this.restart({ type });
 
     // payload
-    const type = REQUEST_TYPE.QUERY;
     const payload = this._buildPayload(args, type);
 
     this._request({ payload, type });
   }
 
   _refine() {
+    const type = REQUEST_TYPE.REFINE;
+
     // remember current facet_counts
     const { facet_counts } = this._hub.states[fields.data()].value || {};
     this._currentFacetCounts = facet_counts;
 
     // start a new session
-    this.restart();
+    this.restart({ type });
 
     // payload
-    const type = REQUEST_TYPE.REFINE;
     const query = this._getQuery();
     const payload = this._buildPayload(query, type);
 

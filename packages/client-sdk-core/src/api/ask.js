@@ -38,6 +38,12 @@ export default class Ask extends ApiBase {
   }
 
   async search(payload, options = {}) {
+    if (isId(payload)) {
+      payload = { question_id: payload };
+    }
+    if (payload.question_id) {
+      return new SearchResult(this, payload, options);
+    }
     const response = await this._run(NAME.SEARCH, payload, options);
     return response.question_id ? new SearchResult(this, response, options) : response;
   }

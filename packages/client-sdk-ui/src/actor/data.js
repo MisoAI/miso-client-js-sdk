@@ -3,10 +3,11 @@ import { isCurrentSession } from './utils.js';
 
 export default class DataActor {
 
-  constructor(hub, { source, options }) {
+  constructor(hub, { source, options, polling = true }) {
     this._hub = hub;
     this._source = source;
     this._options = options;
+    this._polling = polling;
     this._unsubscribes = [
       hub.on(fields.session(), session => this._handleSession(session)),
       hub.on(fields.request(), event => this._handleRequest(event)),
@@ -57,13 +58,15 @@ export default class DataActor {
         if (response._response) {
           this._emitResponseWithSessionCheck({ session, request, value: response._response });
         }
-        let value;
-        for await (value of response) {
-          // A new session invalidates ongoing data fetch for the old session, terminating the loop
-          if (!isCurrentSession(this._hub, session)) {
-            break;
+        if (this._polling) {
+          let value;
+          for await (value of response) {
+            // A new session invalidates ongoing data fetch for the old session, terminating the loop
+            if (!isCurrentSession(this._hub, session)) {
+              break;
+            }
+            this._emitResponse({ session, request, value });
           }
-          this._emitResponse({ session, request, value });
         }
       } else {
         this._emitResponseWithSessionCheck({ session, request, value: response });

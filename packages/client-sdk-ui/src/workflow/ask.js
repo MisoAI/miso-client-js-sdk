@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from '../layout/index.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
+import { writeQuestionSourceToPayload, mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
 import { followUp as followUpTemplate } from '../defaults/ask/templates.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -137,11 +137,8 @@ export default class Ask extends AnswerBasedWorkflow {
       ...options,
       question: q, // question, not q
       parent_question_id: parentQuestionId,
-      metadata: {
-        ...options.metadata,
-        question_source: qs || QUESTION_SOURCE.ORGANIC, // might be null, not undefined
-      },
     });
+    payload = writeQuestionSourceToPayload({ ...payload, qs });
     payload = this._writeWikiLinkTemplateToPayload(payload);
     return payload;
   }
