@@ -1,14 +1,17 @@
 import { API } from '@miso.ai/commons';
-import Workflow from './base.js';
 import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, HorizontalLayout } from '../layout/index.js';
 import { compactArticle, compactArticleInfoBlock } from '../layout/templates.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
-import HybridSearchResults from './hybrid-search-results.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';
 import { makeConfigurable } from './options/index.js';
+
+import { mergeApiPayloads } from '@miso.ai/commons';
+import { STATUS, REQUEST_TYPE } from '../constants.js';
+import { writeMisoIdToSession, writeQuestionSourceToPayload, disableAnswerForNonQueryRequest } from './processors.js';
+import { makeAutocompletable } from './autocompletable.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   group: API.GROUP.ASK,
@@ -88,7 +91,13 @@ const ROLES_OPTIONS = Object.freeze({
   }),
 });
 
-export default class HybridSearch extends Workflow {
+const EXTRA_OPTIONS = Object.freeze({
+  api: Object.freeze({
+    polling: false,
+  }),
+});
+
+export default class HybridSearch extends SearchBasedWorkflow {
 
   constructor(plugin, client) {
     super({
@@ -97,41 +106,29 @@ export default class HybridSearch extends Workflow {
       client,
       roles: ROLES_OPTIONS,
       defaults: DEFAULT_OPTIONS,
+      extraOptions: EXTRA_OPTIONS,
     });
   }
 
   _initProperties(args) {
     super._initProperties(args);
-    this._subworkflows = [
-      this._answer = new HybridSearchAnswer(this),
-      this._results = new HybridSearchResults(this),
-    ];
+    this._initAutocomplete(args);
+    this._answer = new HybridSearchAnswer(this);
   }
 
-  _getSubworkflow(name) {
-    switch (name) {
-      case 'answer':
-        return this._answer;
-      case 'results':
-        return this._results;
-      default:
-        throw new Error(`Invalid subworkflow: ${name}`);
+  _initActors(args) {
+    super._initActors(args);
+    this._views = new HybridSearchViewsActor({
+      results: this._views,
+      answer: this._answer._views,
+    });
+  }
+
+  restart({ type } = {}) {
+    super.restart();
+    if (!type || type === REQUEST_TYPE.QUERY) {
+      this._answer.restart();
     }
-  }
-
-  _initActors() {
-    this._views = new HybridSearchViewsActor(this);
-  }
-
-  _initSession() {
-    this._results._sessions.restart();
-    this._answer._sessions.restart();
-  }
-
-  // configuration //
-  useLink(fn, options) {
-    this._answer.useLink(fn, options);
-    return this;
   }
 
   // properties //
@@ -139,46 +136,94 @@ export default class HybridSearch extends Workflow {
     return this._answer;
   }
 
-  get results() {
-    return this._results;
-  }
-
   get questionId() {
     return this._answer.questionId;
   }
 
-  get filters() {
-    return this._results._views.filters;
-  }
-
-  get autocomplete() {
-    return this._results.autocomplete;
-  }
-
   // query //
-  autoQuery(options) {
-    this._results.autoQuery(options);
+  _buildPayload(payload, type) {
+    payload = super._buildPayload(payload, type);
+    // borrow the work from the sibling
+    payload = disableAnswerForNonQueryRequest(payload, type);
+    payload = writeQuestionSourceToPayload(payload);
+    payload = this._writeQuestionIdToPayload(payload, type);
+    if (payload.answer !== false) {
+      // uses autoQuery params, so we want to apply to this workflow
+      payload = AnswerBasedWorkflow.prototype._writeWikiLinkTemplateToPayload.call(this, payload);
+    }
+    return payload;
   }
 
-  query(args) {
-    this._results.query(args);
+  _buildOrderBy(sort) {
+    if (!sort) {
+      return undefined;
+    }
+    // works differently than search
+    return sort.field;
+  }
+
+  _writeQuestionIdToPayload(payload, type) {
+    if (type === REQUEST_TYPE.QUERY) {
+      return payload;
+    }
+    const question_id = this._answer.questionId;
+    if (!question_id) {
+      return payload;
+    }
+    return mergeApiPayloads(payload, {
+      metadata: {
+        question_id,
+      },
+    });
+  }
+
+  // data //
+  _defaultProcessData(data, oldData) {
+    data = super._defaultProcessData(data, oldData);
+    writeMisoIdToSession(data);
+    return data;
+  }
+
+  _updateDataInHub(data) {
+    this._dispatchDataToAnswerWorkflow(data);
+    super._updateDataInHub(data);
+  }
+
+  _dispatchDataToAnswerWorkflow(data) {
+    const { request } = data;
+    if (!request) {
+      return;
+    }
+    const { type, payload } = request;
+    if (type !== REQUEST_TYPE.QUERY || !payload || payload.answer === false) {
+      return;
+    }
+    switch (data.status) {
+      case STATUS.LOADING:
+        // share the loading status with its sibling
+        this._answer._doLoading(data);
+        break;
+      case STATUS.READY:
+        // start a query with retrieved question ID, if any
+        this._answer._queryWithQuestionId(data);
+        break;
+    }
   }
 
   // interactions //
   _defaultProcessInteraction(payload, args) {
     payload = this._answer._defaultProcessInteraction0(payload, args);
-    payload = this._results._defaultProcessInteraction0(payload, args);
+    payload = super._defaultProcessInteraction(payload, args);
     return payload;
   }
 
   // destroy //
   _destroy() {
-    for (const subworkflow of this._subworkflows) {
-      subworkflow.destroy();
-    }
+    this._answer.destroy();
     super._destroy();
   }
 
 }
 
 makeConfigurable(HybridSearch.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION, WORKFLOW_CONFIGURABLE.FILTERS]);
+makeAutocompletable(HybridSearch.prototype);

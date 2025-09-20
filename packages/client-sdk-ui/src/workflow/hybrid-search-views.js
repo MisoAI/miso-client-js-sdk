@@ -1,15 +1,21 @@
-import HybridSearchResults from './hybrid-search-results.js';
+import SearchBasedWorkflow from './search-based.js';
+
+const RESULTS_ROLE_MEMBERS = SearchBasedWorkflow.ROLES_OPTIONS.members;
 
 function getSubworkflowByRole(role) {
   // TODO: ROLE.ERROR
-  return HybridSearchResults.ROLES_OPTIONS.members.includes(role) ? 'results' : 'answer';
+  return RESULTS_ROLE_MEMBERS.includes(role) ? 'results' : 'answer';
 }
 
 export default class HybridSearchViewsActor {
 
-  constructor(workflow) {
-    this._workflow = workflow;
+  constructor(subviews) {
+    this._subviews = subviews;
     this._containers = new Set();
+  }
+
+  get filters() {
+    return this._subviews.results.filters;
   }
 
   get(role) {
@@ -29,8 +35,8 @@ export default class HybridSearchViewsActor {
   }
 
   removeContainer(element) {
-    for (const subworkflow of this._workflow._subworkflows) {
-      subworkflow._views.removeContainer(element);
+    for (const subviews of this._getAllSubviews()) {
+      subviews.removeContainer(element);
     }
     this._containers.delete(element);
   }
@@ -55,16 +61,12 @@ export default class HybridSearchViewsActor {
   }
 
   // helpers //
-  _getSubworkflow(role) {
-    return this._workflow._getSubworkflow(getSubworkflowByRole(role));
-  }
-
   _getAllSubviews() {
-    return this._workflow._subworkflows.flatMap(subworkflow => subworkflow._views);
+    return Object.values(this._subviews);
   }
 
   _getSubviews(role) {
-    return this._getSubworkflow(role)._views;
+    return this._subviews[getSubworkflowByRole(role)];
   }
 
   _getViewByElement(element) {
