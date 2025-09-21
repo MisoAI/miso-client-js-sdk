@@ -10,6 +10,7 @@ import {
   writeDataStatus,
   writeMisoIdToMeta,
   buildBaseInteraction,
+  writeRequestInfoToInteraction,
   writeRequestMetadataToInteraction,
   writeAffiliationInfoToInteraction,
 } from './processors.js';
@@ -291,10 +292,10 @@ export default class Workflow extends Component {
   }
 
   _defaultProcessInteraction(payload, args) {
-    payload = writeRequestMetadataToInteraction(payload, args);
     payload = this._writeApiInfoToInteraction(payload, args);
-    payload = this._writeRequestInfoToInteraction(payload, args);
     payload = this._writeMisoIdToInteraction(payload, args);
+    payload = writeRequestInfoToInteraction(payload, args);
+    payload = writeRequestMetadataToInteraction(payload, args);
     payload = writeAffiliationInfoToInteraction(payload, args);
     return payload;
   }
@@ -309,10 +310,6 @@ export default class Workflow extends Component {
         },
       },
     });
-  }
-
-  _writeRequestInfoToInteraction(payload, args) {
-    return payload;
   }
 
   _writeMisoIdToInteraction(payload, args) {

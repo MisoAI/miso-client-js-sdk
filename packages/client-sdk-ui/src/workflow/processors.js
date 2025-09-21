@@ -340,6 +340,27 @@ export function writeRequestMetadataToInteraction(payload, args) {
   });
 }
 
+export function writeRequestInfoToInteraction(payload, args) {
+  const { data } = args;
+  if (!data) {
+    return payload;
+  }
+  const requestPayload = data.request && data.request.payload;
+  if (!requestPayload) {
+    return payload;
+  }
+  const { question, q, fq } = requestPayload;
+  return mergeInteractions(payload, {
+    context: {
+      custom_context: {
+        question,
+        q,
+        fq,
+      },
+    },
+  });
+}
+
 export function writeAffiliationInfoToInteraction(payload, args) {
   if (args.role !== ROLE.AFFILIATION) {
     return payload;
