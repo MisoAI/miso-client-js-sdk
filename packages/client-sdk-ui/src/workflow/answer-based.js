@@ -4,7 +4,7 @@ import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
-import { mergeRolesOptions, autoQuery as autoQueryFn, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeEventTargetToInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
@@ -204,7 +204,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     super._updateData(data);
 
     // update URL if autoQuery.updateUrl is not false
-    this._updateUrlIfNecessary(data);
+    updateQueryParametersInUrl.call(this, data);
   }
 
   _handleHeadResponse(data) {}
@@ -218,33 +218,6 @@ export default class AnswerBasedWorkflow extends Workflow {
 
   _writeQuestionIdFromData({ value }) {
     value && this._writeQuestionId(value.question_id);
-  }
-
-  _updateUrlIfNecessary({ value, request }) {
-    if (!this._autoQuery || !this._autoQuery.updateUrl) {
-      return;
-    }
-    const { param, sourceParam } = this._autoQuery;
-    const question = (value && value.question) || (request && request.payload && request.payload.question);
-    const questionSource = request && request.payload && request.payload.metadata && request.payload.metadata.question_source;
-
-    if (!question) {
-      return; // at initial phase
-    }
-
-    const url = new URL(window.location);
-    const currentQuestion = url.searchParams.get(param);
-    const currentQuestionSource = url.searchParams.get(sourceParam) || QUESTION_SOURCE.ORGANIC;
-    if (question === currentQuestion && questionSource === currentQuestionSource) {
-      return;
-    }
-    url.searchParams.set(param, question);
-    if (questionSource === QUESTION_SOURCE.ORGANIC) {
-      url.searchParams.delete(sourceParam);
-    } else {
-      url.searchParams.set(sourceParam, questionSource);
-    }
-    window.history.replaceState({}, '', url);
   }
 
   // interactions //

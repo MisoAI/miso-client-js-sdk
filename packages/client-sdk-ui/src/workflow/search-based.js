@@ -4,7 +4,7 @@ import { fields } from '../actor/index.js';
 import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE } from '../constants.js';
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse } from './processors.js';
-import { mergeRolesOptions, autoQuery as autoQueryFn, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
@@ -234,6 +234,11 @@ export default class SearchBasedWorkflow extends Workflow {
     data = retainFacetCountsInData(data, this._currentFacetCounts);
     data = writeExhaustionToData(data, { role: this._roles.main });
     return data;
+  }
+
+  _updateData(data) {
+    super._updateData(data);
+    updateQueryParametersInUrl.call(this, data);
   }
 
   _updateDataInHub(data) {
