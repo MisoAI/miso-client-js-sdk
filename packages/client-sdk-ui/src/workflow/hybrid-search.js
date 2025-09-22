@@ -10,7 +10,7 @@ import { makeConfigurable } from './options/index.js';
 
 import { mergeApiPayloads } from '@miso.ai/commons';
 import { STATUS, REQUEST_TYPE } from '../constants.js';
-import { writeMisoIdToSession, writeQuestionSourceToPayload, disableAnswerForNonQueryRequest } from './processors.js';
+import { writeMisoIdToSession, writeQuestionSourceToPayload, disableAnswerForNonQueryRequest, carryOverQuestionIdToData, writeAnswerInfoToInteraction } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -184,9 +184,10 @@ export default class HybridSearch extends SearchBasedWorkflow {
     return data;
   }
 
-  _updateDataInHub(data) {
+  _updateDataInHub(data, oldData) {
     this._dispatchDataToAnswerWorkflow(data);
-    super._updateDataInHub(data);
+    data = carryOverQuestionIdToData(data, oldData); // TODO: may as well move to process data
+    super._updateDataInHub(data, oldData);
   }
 
   _dispatchDataToAnswerWorkflow(data) {
@@ -212,8 +213,8 @@ export default class HybridSearch extends SearchBasedWorkflow {
 
   // interactions //
   _defaultProcessInteraction(payload, args) {
-    payload = this._answer._defaultProcessInteraction0(payload, args);
     payload = super._defaultProcessInteraction(payload, args);
+    payload = writeAnswerInfoToInteraction(payload, args);
     return payload;
   }
 

@@ -286,6 +286,20 @@ export function writeExhaustionToData(data, { role = ROLE.PRODUCTS } = {}) {
   };
 }
 
+export function carryOverQuestionIdToData(data, oldData) {
+  const { question_id } = (oldData && oldData.value) || {};
+  if (!question_id) {
+    return data;
+  }
+  return {
+    ...data,
+    value: {
+      ...data.value,
+      question_id,
+    },
+  };
+}
+
 // interactions //
 export function buildBaseInteraction(args) {
   const { role, type, items } = args;
@@ -361,23 +375,6 @@ export function writeRequestInfoToInteraction(payload, args) {
   });
 }
 
-export function writeAskPropertiesToInteraction(payload = {}, { data } = {}) {
-  if (!data) {
-    return payload;
-  }
-  const { request = {}, value = {} } = data;
-  const { question_source } = request.payload && request.payload.metadata || {};
-  const { question_id } = value;
-  return mergeInteractions(payload, {
-    context: {
-      custom_context: {
-        question_source,
-        question_id,
-      },
-    },
-  });
-}
-
 export function writeAffiliationInfoToInteraction(payload, args) {
   if (args.role !== ROLE.AFFILIATION) {
     return payload;
@@ -390,6 +387,30 @@ export function writeAffiliationInfoToInteraction(payload, args) {
       custom_context: {
         channel,
         positions,
+      },
+    },
+  });
+}
+
+export function writeAnswerInfoToInteraction(payload, args) {
+  payload = writeQuestionInfoToInteraction(payload, args);
+  payload = writeAnswerClickInfoToInteraction(payload, args);
+  payload = writeEventTargetToInteraction(payload, args);
+  return payload;
+}
+
+export function writeQuestionInfoToInteraction(payload = {}, { data } = {}) {
+  if (!data) {
+    return payload;
+  }
+  const { request = {}, value = {} } = data;
+  const { question_source } = request.payload && request.payload.metadata || {};
+  const { question_id } = value;
+  return mergeInteractions(payload, {
+    context: {
+      custom_context: {
+        question_source,
+        question_id,
       },
     },
   });

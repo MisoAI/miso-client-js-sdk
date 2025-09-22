@@ -66,12 +66,8 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   // interactions //
-  _defaultProcessInteraction(payload, args) {
-    return this._superworkflow._defaultProcessInteraction(payload, args);
-  }
-
-  _defaultProcessInteraction0(payload, args) {
-    return super._defaultProcessInteraction(payload, args);
+  _onTracker(args) {
+    this._superworkflow._onTracker(args);
   }
 
 }

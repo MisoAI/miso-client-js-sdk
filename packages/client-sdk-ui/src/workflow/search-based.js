@@ -241,9 +241,9 @@ export default class SearchBasedWorkflow extends Workflow {
     updateQueryParametersInUrl.call(this, data);
   }
 
-  _updateDataInHub(data) {
+  _updateDataInHub(data, oldData) {
     data = this._appendResultsFromMoreRequest(data);
-    super._updateDataInHub(data);
+    super._updateDataInHub(data, oldData);
   }
 
   _appendResultsFromMoreRequest(data) {

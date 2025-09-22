@@ -276,8 +276,9 @@ export default class Workflow extends Component {
   }
 
   _onTracker(args) {
+    const workflow = this;
     const data = this._hub.states[fields.data()];
-    const payload = this._buildInteraction({ ...args, data });
+    const payload = this._buildInteraction({ ...args, data, workflow });
     this._sendInteraction(payload);
   }
 
