@@ -168,7 +168,13 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   // interactions //
-  _writeAskPropertiesToInteraction(payload, args) {
+  _defaultProcessInteraction(payload, args) {
+    payload = super._defaultProcessInteraction(payload, args);
+    payload = this._writeAdditionalAskPropertiesToInteraction(payload, args);
+    return payload;
+  }
+
+  _writeAdditionalAskPropertiesToInteraction(payload, args) {
     const root_question_id = this.rootQuestionId;
     let { property } = (payload.context && payload.context.custom_context) || {};
     let question_id, parent_question_id, question_source;
@@ -183,19 +189,17 @@ export default class Ask extends AnswerBasedWorkflow {
       question_source = this.previous && this.previous.session.meta.question_source;
     } else {
       parent_question_id = this.parentQuestionId;
-      question_id = this.questionId;
-      question_source = this._getQuestionSourceFromViewState(args);
     }
 
     return mergeInteractions(payload, {
       context: {
-        custom_context: {
+        custom_context: trimObj({ // question_id, question_source can be undefined
           property,
           root_question_id,
           parent_question_id,
           question_id,
           question_source,
-        },
+        }),
       }
     });
   }

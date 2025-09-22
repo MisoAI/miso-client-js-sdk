@@ -5,7 +5,7 @@ import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
 import { processData as processAffiliationData } from '../affiliation/index.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
-import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeEventTargetToInteraction } from './processors.js';
+import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeAskPropertiesToInteraction, writeAnswerClickInfoToInteraction, writeEventTargetToInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 
@@ -223,40 +223,10 @@ export default class AnswerBasedWorkflow extends Workflow {
   // interactions //
   _defaultProcessInteraction(payload, args) {
     payload = super._defaultProcessInteraction(payload, args);
-    payload = this._writeAskPropertiesToInteraction(payload, args);
-    payload = this._writeAnswerClickInteraction(payload, args);
+    payload = writeAskPropertiesToInteraction(payload, args);
+    payload = writeAnswerClickInfoToInteraction(payload, args);
     payload = writeEventTargetToInteraction(payload, args);
     return payload;
-  }
-
-  _writeAskPropertiesToInteraction(payload = {}, args) {
-    const question_source = this._getQuestionSourceFromViewState(args);
-    const question_id = this.questionId;
-    return mergeInteractions(payload, {
-      context: {
-        custom_context: {
-          question_source,
-          question_id,
-        },
-      },
-    });
-  }
-
-  _writeAnswerClickInteraction(payload, args) {
-    if (args.role !== ROLE.ANSWER) {
-      return payload;
-    }
-    const { items = [] } = args;
-    return mergeInteractions(payload, {
-      context: {
-        custom_context: {
-          urls: items.map(item => item.url),
-          texts: items.map(item => item.text),
-          class_names: items.map(item => item.className),
-          attributes: items.map(item => item.attributes),
-        },
-      },
-    });
   }
 
   _getQuestionSourceFromViewState(args) {

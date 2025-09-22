@@ -361,6 +361,23 @@ export function writeRequestInfoToInteraction(payload, args) {
   });
 }
 
+export function writeAskPropertiesToInteraction(payload = {}, { data } = {}) {
+  if (!data) {
+    return payload;
+  }
+  const { request = {}, value = {} } = data;
+  const { question_source } = request.payload && request.payload.metadata || {};
+  const { question_id } = value;
+  return mergeInteractions(payload, {
+    context: {
+      custom_context: {
+        question_source,
+        question_id,
+      },
+    },
+  });
+}
+
 export function writeAffiliationInfoToInteraction(payload, args) {
   if (args.role !== ROLE.AFFILIATION) {
     return payload;
@@ -373,6 +390,23 @@ export function writeAffiliationInfoToInteraction(payload, args) {
       custom_context: {
         channel,
         positions,
+      },
+    },
+  });
+}
+
+export function writeAnswerClickInfoToInteraction(payload, args) {
+  if (args.role !== ROLE.ANSWER) {
+    return payload;
+  }
+  const { items = [] } = args;
+  return mergeInteractions(payload, {
+    context: {
+      custom_context: {
+        urls: items.map(item => item.url),
+        texts: items.map(item => item.text),
+        class_names: items.map(item => item.className),
+        attributes: items.map(item => item.attributes),
       },
     },
   });
