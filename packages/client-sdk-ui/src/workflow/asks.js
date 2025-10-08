@@ -1,4 +1,4 @@
-import { WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { WORKFLOW_CONFIGURABLE, STATUS } from '../constants.js';
 import WorkflowContext from './context.js';
 import Ask from './ask.js';
 import { makeConfigurable } from './options/index.js';
@@ -15,7 +15,7 @@ function autoNextOptionsAsPredicate(options = DEFAULT_AUTO_NEXT_OPTIONS) {
   switch (typeof options) {
     case 'object':
       // TODO: support more options
-      return event => options.event === event._event;
+      return event => event && options.event === event._event;
     case 'function':
       return options;
     default:
@@ -31,7 +31,11 @@ export default class Asks extends WorkflowContext {
     this._byPqid = new Map();
     this._root = new Ask(this); // initialize with default workflow
     this._events.on('*', event => this._createNextIfNecessary(event));
+    this._events.on('loading', event => this._setActive(event.workflow));
+    this._events.on('destroy', () => this._requestEmitAfterDestroy());
+    this._events.on('after-destroy', () => this._syncActiveOnAfterDestroy());
     this._autoNextFn = undefined;
+    this._active = this._root;
   }
 
   get root() {
@@ -40,6 +44,10 @@ export default class Asks extends WorkflowContext {
 
   get workflows() {
     return [this._root, ...this._byPqid.values()];
+  }
+
+  get active() {
+    return this._active;
   }
 
   getByQuestionId(questionId) {
@@ -93,6 +101,35 @@ export default class Asks extends WorkflowContext {
     }
     const { workflow } = event;
     workflow && workflow.getOrCreateNext();
+  }
+
+  _requestEmitAfterDestroy() {
+    if (this._emitAfterDestroyRequested) {
+      return;
+    }
+    this._emitAfterDestroyRequested = true;
+    setTimeout(() => {
+      this._emitAfterDestroyRequested = false;
+      this._events.emit('after-destroy', {});
+    }, 0);
+  }
+
+  _syncActiveOnAfterDestroy() {
+    if (!this._active.destroyed) {
+      return;
+    }
+    // find last non-initial workflow or root
+    let workflow = this._root;
+    for (; workflow.next && workflow.next.status !== STATUS.INITIAL; workflow = workflow.next) {}
+    this._setActive(workflow);
+  }
+
+  _setActive(workflow) {
+    if (workflow === this._active) {
+      return;
+    }
+    this._active = workflow;
+    this._events.emit('active', { workflow });
   }
 
 }

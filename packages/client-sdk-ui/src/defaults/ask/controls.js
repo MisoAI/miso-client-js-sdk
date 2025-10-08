@@ -41,10 +41,7 @@ export function wireRelatedResources(client, element) {
   if (!element) {
     return;
   }
-  client.ui.asks.on('loading', (event) => {
-    // When a new query starts, associate the last section container (for related resources) to that workflow
-    for (const container of element.querySelectorAll('miso-ask')) {
-      container.workflow = event.workflow;
-    }
-  });
+  for (const container of element.querySelectorAll('miso-ask')) {
+    container.setAttribute('workflow', 'active');
+  }
 }

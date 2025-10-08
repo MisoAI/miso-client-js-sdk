@@ -95,7 +95,7 @@ class Sections extends _Sections {
   relatedResourcesSection(options) {
     const { container, phrase, section } = this._helpers;
     const { features = {}, logo = true } = options;
-    const body = features.relatedResources === false ? '' : container(options, { name: 'related-resources', visibleWhen: 'nonempty', logo }, [
+    const body = features.relatedResources === false ? '' : container(options, { name: 'related-resources', visibleWhen: 'nonempty', workflow: 'active', logo }, [
       phrase(options, { name: 'related-resources', tag: 'h2' }),
       '<miso-related-resources></miso-related-resources>',
     ]);

@@ -82,6 +82,7 @@ export default class MisoContainerElement extends MisoStubElement {
     const client = this._client = await getClient(MisoContainerElement);
     if (document.body.contains(this)) { // in case already disconnected
       this._setWorkflow(this._getWorkflow(client));
+      this._onConnected(client);
     }
   }
 
@@ -89,6 +90,8 @@ export default class MisoContainerElement extends MisoStubElement {
     this._setWorkflow(undefined);
     super.disconnectedCallback();
   }
+
+  _onConnected(client) {}
 
   _getWorkflow(client) {
     throw new Error('Unimplemented');

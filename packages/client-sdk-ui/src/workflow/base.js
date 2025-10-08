@@ -335,6 +335,10 @@ export default class Workflow extends Component {
     this._destroy(options);
   }
 
+  get destroyed() {
+    return !!this._destroyed;
+  }
+
   _destroy({ dom } = {}) {
     for (const unsubscribe of this._unsubscribes || []) {
       unsubscribe();
@@ -343,6 +347,7 @@ export default class Workflow extends Component {
 
     this._views._destroy({ dom });
     this._data._destroy();
+    this._destroyed = true;
   }
 
   // helper //
