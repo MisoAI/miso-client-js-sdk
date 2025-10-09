@@ -24,11 +24,9 @@ misocmd.push(async () => {
     MisoClient.logs.showDownloadButton(),
     client.ui.ready,
   ]);
-  const { templates, wireFollowUps, wireRelatedResources } = MisoClient.ui.defaults.ask;
+  const { templates } = MisoClient.ui.defaults.ask;
   const rootElement = document.querySelector('#miso-ask-combo');
   rootElement.innerHTML = templates.root();
-  wireFollowUps(client, rootElement.querySelector(`.miso-ask-combo__follow-ups`));
-  wireRelatedResources(client, rootElement.querySelector(`.miso-ask-combo__related-resources`));
   workflow.autoQuery();
 });
 </script>
