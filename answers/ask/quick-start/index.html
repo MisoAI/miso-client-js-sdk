@@ -245,25 +245,22 @@ misocmd<span class="token punctuation">.</span><span class="token function">push
 
   <span class="token comment">// render DOM and get element references</span>
   <span class="token comment">// default templates are available since v1.9.1</span>
-  <span class="token comment">// wireFollowUps() and wireRelatedResources() are available since v1.9.9</span>
   <span class="token keyword">const</span> defaults <span class="token operator">=</span> MisoClient<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>ask<span class="token punctuation">;</span>
   <span class="token keyword">const</span> templates <span class="token operator">=</span> defaults<span class="token punctuation">.</span>templates<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> wireFollowUps <span class="token operator">=</span> defaults<span class="token punctuation">.</span>wireFollowUps<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> wireRelatedResources <span class="token operator">=</span> defaults<span class="token punctuation">.</span>wireRelatedResources<span class="token punctuation">;</span>
 
   <span class="token keyword">const</span> rootElement <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'#miso-ask-combo'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   rootElement<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> templates<span class="token punctuation">.</span><span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
   <span class="token comment">// setup workflows</span>
-  <span class="token function">wireFollowUps</span><span class="token punctuation">(</span>client<span class="token punctuation">,</span> rootElement<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">.miso-ask-combo__follow-ups</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">wireRelatedResources</span><span class="token punctuation">(</span>client<span class="token punctuation">,</span> rootElement<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">.miso-ask-combo__related-resources</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// uncomment the following lines if your SDK version is older than v1.12.5</span>
+  <span class="token comment">//defaults.wireFollowUps(client, rootElement.querySelector(`.miso-ask-combo__follow-ups`));</span>
+  <span class="token comment">//defaults.wireRelatedResources(client, rootElement.querySelector(`.miso-ask-combo__related-resources`));</span>
 
   <span class="token comment">// start query if specified in URL parameters</span>
   rootWorkflow<span class="token punctuation">.</span><span class="token function">autoQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <ul>
 <li>See <a href="/miso-client-js-sdk/answers/ask/templates/" target="_blank" rel="noopener">template helpers</a> for template customization.</li>
-<li>See the <a href="https://github.com/MisoAI/miso-client-js-sdk/blob/main/packages/client-sdk-ui/src/defaults/ask/controls.js" target="_blank" rel="noopener">implementation</a> of the logic helper functions <code>wireFollowUps</code> and <code>wireRelatedResources</code> for more details.</li>
 </ul>
 
         </div>
