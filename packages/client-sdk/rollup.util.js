@@ -38,6 +38,9 @@ function _config({ input, output: { filename: outputFilename, ...output } }, env
       ...plugins,
       serve({
         port: 10099,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
       }),
     ];
   }

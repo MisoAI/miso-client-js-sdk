@@ -1,10 +1,20 @@
 @use 'sass:list';
 
-@import url(https://fonts.googleapis.com/css?family=Noto+Sans+Symbols:wght@100;200;300&display=swap&text=%E2%9E%80%E2%9E%81%E2%9E%82%E2%9E%83%E2%9E%84%E2%9E%85%E2%9E%86%E2%9E%87%E2%9E%88%E2%9E%89%E2%91%AA%E2%91%AB%E2%91%AC%E2%91%AD%E2%91%AE%E2%91%AF%E2%91%B0%E2%91%B1%E2%91%B2%E2%91%B3%E2%9E%8A%E2%9E%8B%E2%9E%8C%E2%9E%8D%E2%9E%8E%E2%9E%8F%E2%9E%90%E2%9E%91%E2%9E%92%E2%9E%93%E2%93%AB%E2%93%AC%E2%93%AD%E2%93%AE%E2%93%AF%E2%93%B0%E2%93%B1%E2%93%B2%E2%93%B3%E2%93%B4);
-@import url(https://fonts.googleapis.com/css?family=Noto+Sans&display=swap&text=0123456789);
-
-// Noto Sans w/ 800/900 not served by Google Fonts
-// https://github.com/google/fonts/issues/1717
+@font-face {
+  font-family: 'Miso Hosted Noto Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(../font/noto-sans.woff2) format('woff');
+}
+@font-face {
+  font-family: 'Miso Hosted Noto Sans Symbols';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../font/noto-sans-symbols.woff2) format('woff2');
+}
 
 $dingbat-circled-numbers: ➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯ ⑰ ⑱ ⑲ ⑳;
 $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ ⓬ ⓭ ⓮ ⓯ ⓰ ⓱ ⓲ ⓳ ⓴;
@@ -86,7 +96,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
   .miso-citation-link,
   .miso-citation-index {
     display: inline-block;
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Miso Hosted Noto Sans', sans-serif;
     font-weight: 200;
     text-rendering: optimizeLegibility;
 
@@ -96,7 +106,8 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
 
     @for $i from 1 through list.length($dingbat-circled-numbers) {
       &[data-index="#{$i}"] {
-        font-family: 'Noto Sans Symbols', sans-serif;
+        font-family: 'Miso Hosted Noto Sans Symbols', sans-serif;
+        font-weight: 400;
 
         &::before {
           content: '#{list.nth($dingbat-circled-numbers, $i)}';
@@ -115,7 +126,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
         height: 100%;
         width: 100%;
         font-size: 0.55em;
-        font-weight: 700;
+        font-weight: 600;
         letter-spacing: -0.03em;
         line-height: 1.15;
         vertical-align: middle;
@@ -187,6 +198,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
     @include high-numbers {
       &:before {
         color: var(--miso-circled-citation-index-inverted-text-color) !important;
+        font-weight: 300 !important;
       }
       &::after {
         background-color: currentColor !important;
