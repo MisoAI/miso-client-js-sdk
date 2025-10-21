@@ -58,8 +58,10 @@ miso-ask-combo,
     .miso-ask-combo__answer-container > hr:first-child {
       margin: 0 calc(0px - var(--miso-ask-combo-content-padding)) var(--miso-ask-combo-content-spacing);
     }
-    .miso-ask-combo__query-container {
-      margin-bottom: calc(0px - var(--miso-search-box-padding) - var(--miso-search-box-font-size) * 0.5);
+    &:last-child {
+      .miso-ask-combo__query-container[status~="initial"] {
+        margin-bottom: calc(0px - var(--miso-search-box-padding) - var(--miso-search-box-line-height) * 0.5 - 1px);
+      }
     }
   }
   .miso-ask-combo__query-suggestions-container + .miso-ask-combo__query-container {
