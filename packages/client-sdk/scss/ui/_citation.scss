@@ -120,6 +120,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
       box-sizing: border-box;
       height: 1em;
       width: 1em;
+      position: relative;
 
       &::before {
         display: inline-block;
@@ -147,7 +148,7 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
         z-index: -1;
       }
       &:hover {
-        &:before {
+        &::before {
           color: var(--miso-circled-citation-index-inverted-text-color);
         }
         &::after {
@@ -182,6 +183,21 @@ $dingbat-negative-circled-numbers: ➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓ ⓫ �
   .miso-carousel {
     .miso-citation-index {
       font-size: 1.25rem;
+
+      @include high-numbers {
+        &::after {
+          z-index: 0;
+        }
+        // return to original setting to negate hover effect
+        &:hover {
+          &::before {
+            color: var(--miso-border-color-medium);
+          }
+          &::after {
+            background-color: transparent;
+          }
+        }
+      }
     }
   }
 }

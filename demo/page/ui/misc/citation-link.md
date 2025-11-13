@@ -40,6 +40,7 @@ main {
   </div>
   <div class="miso-list ready" data-item-type="article" data-role="sources">
     <ol class="miso-list__list">
+      {%- for i in [1,12,23] -%}
       <li class="miso-list__item">
         <a class="miso-list__item-body" data-role="item" href="#">
           <div class="miso-list__item-cover-image-container">
@@ -51,10 +52,11 @@ main {
             <div class="miso-list__item-snippet">Fusce consequat ornare porta aliquam aliquam ultrices.</div>
           </div>
           <div class="miso-list__item-index-container">
-            <span class="miso-list__item-index miso-citation-index" data-index="1"></span>
+            <span class="miso-list__item-index miso-citation-index" data-index="{{ i }}"></span>
           </div>
         </a>
       </li>
+      {%- endfor -%}
     </ol>
   </div>
 </div>
@@ -75,6 +77,7 @@ main {
   </div>
   <div class="miso-list ready" data-item-type="article" data-role="sources">
     <ol class="miso-list__list">
+      {%- for i in [1,12,23] -%}
       <li class="miso-list__item">
         <a class="miso-list__item-body" data-role="item" href="#">
           <div class="miso-list__item-cover-image-container">
@@ -86,10 +89,11 @@ main {
             <div class="miso-list__item-snippet">Fusce consequat ornare porta aliquam aliquam ultrices.</div>
           </div>
           <div class="miso-list__item-index-container">
-            <span class="miso-list__item-index miso-citation-index" data-index="1"></span>
+            <span class="miso-list__item-index miso-citation-index" data-index="{{ i }}"></span>
           </div>
         </a>
       </li>
+      {%- endfor -%}
     </ol>
   </div>
 </div>
