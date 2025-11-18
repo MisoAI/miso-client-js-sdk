@@ -5,6 +5,7 @@ import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE } from '../constants.
 import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse } from './processors.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { enableUseLink } from './use-link.js';
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
@@ -99,6 +100,10 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   _query(args) {
+    if (this._linkFn) {
+      this._submitToPage(args);
+      return;
+    }
     const type = REQUEST_TYPE.QUERY;
 
     // reset filters view
@@ -294,6 +299,8 @@ export default class SearchBasedWorkflow extends Workflow {
 }
 
 makeConfigurable(SearchBasedWorkflow.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION, WORKFLOW_CONFIGURABLE.FILTERS]);
+
+enableUseLink(SearchBasedWorkflow.prototype);
 
 Object.assign(SearchBasedWorkflow, {
   DEFAULT_API_OPTIONS,
