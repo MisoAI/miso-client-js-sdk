@@ -1,21 +1,24 @@
 import { ROLE } from '../constants.js';
 import Tracker from './tracker.js';
 
-export default class TrackersActor {
+export class TrackersActor {
 
-  constructor(hub, { options }) {
+  constructor(hub, { roles, options }) {
     this._hub = hub;
+    this._roles = roles;
     this._options = options;
     this._trackers = {};
   }
 
   get(role) {
+    if (!this._roles.members.includes(role)) {
+      throw new Error(`Role "${role}" is not a member of this workflow.`);
+    }
     if (!this._trackers[role]) {
-      const itemless = role === ROLE.CONTAINER;
       this._trackers[role] = new Tracker({
         hub: this._hub,
         role,
-        itemless,
+        itemless: role === ROLE.CONTAINER,
         options: () => this._getTrackerOptions(role),
       });
     }
@@ -27,4 +30,16 @@ export default class TrackersActor {
     return allTrackerOptions && allTrackerOptions[role] || { active: false };
   }
 
+}
+
+export function proxyTrackers(trackers) {
+  return new Proxy(trackers, {
+    get: (target, prop) => {
+      try {
+        return target.get(prop);
+      } catch (_) {
+      }
+      return undefined;
+    },
+  });
 }

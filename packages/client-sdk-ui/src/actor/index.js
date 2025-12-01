@@ -6,5 +6,5 @@ export { default as SessionMaker } from './sessions.js';
 export { default as DataActor } from './data.js';
 export { default as ViewsActor } from './views.js';
 export { default as FeedbackActor } from './feedback.js';
-export { default as TrackersActor } from './trackers.js';
 export { default as InteractionsActor } from './interactions.js';
+export * from './trackers.js';

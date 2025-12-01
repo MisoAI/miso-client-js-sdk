@@ -3,8 +3,6 @@ import { ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
 import Filters from './filters.js';
-import Tracker from './tracker.js';
-import { normalizeTrackerOptions } from '../util/trackers.js';
 
 export default class ViewsActor {
 
@@ -23,7 +21,6 @@ export default class ViewsActor {
     this._options = options;
     this._roles = roles;
     this._containers = new Map();
-    this._containerTracker = undefined;
     this._views = {};
     this._filters = new Filters(this);
 
@@ -36,7 +33,6 @@ export default class ViewsActor {
 
     defineValues(this, {
       interface: new Views(this),
-      trackers: new Trackers(this, roles.members),
     });
 
     const syncSize = () => this.syncSize();
@@ -53,6 +49,10 @@ export default class ViewsActor {
 
   get filters() {
     return this._filters;
+  }
+
+  get trackers() {
+    return this._workflow.trackers;
   }
 
   // elements //
@@ -201,21 +201,6 @@ export default class ViewsActor {
     return data || this._hub.states[fields.data()];
   }
 
-  _getTrackerOptions(role) {
-    const allTrackerOptions = this._options.resolved.trackers;
-    // TODO: don't need this anymore
-    return normalizeTrackerOptions((allTrackerOptions && allTrackerOptions[role]) || false);
-  }
-
-  _getContainerTracker() {
-    if (!this._containerTracker) {
-      const hub = this._hub;
-      const role = ROLE.CONTAINER;
-      this._containerTracker = new Tracker({ hub, role, itemless: true, options: () => this._getTrackerOptions(role) });
-    }
-    return this._containerTracker;
-  }
-
   _error(e) {
     // TODO: hub trigger error event
     console.error(e);
@@ -249,25 +234,6 @@ class Views {
 
   get all() {
     return this._actor.views.map(view => view.interface);
-  }
-
-}
-
-class Trackers {
-
-  constructor(views, roles) {
-    this._views = views;
-    for (const role of roles) {
-      if (role === ROLE.CONTAINER) {
-        continue;
-      }
-      Object.defineProperty(this, role, {
-        get: () => views.get(role).tracker,
-      });
-    }
-    Object.defineProperty(this, ROLE.CONTAINER, {
-      get: () => views._getContainerTracker(),
-    });
   }
 
 }

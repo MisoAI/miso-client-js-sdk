@@ -1,5 +1,5 @@
 import { Component, isNullLike, mergeInteractions } from '@miso.ai/commons';
-import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, fields } from '../actor/index.js';
+import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, proxyTrackers, fields } from '../actor/index.js';
 import * as sources from '../source.js';
 import { STATUS, ROLE } from '../constants.js';
 import { ContainerLayout, ErrorLayout } from '../layout/index.js';
@@ -78,9 +78,10 @@ export default class Workflow extends Component {
     const layouts = this._plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
+    this._trackers = new TrackersActor(hub, { roles, options });
+    this._proxyTrackers = proxyTrackers(this._trackers);
     this._data = new DataActor(hub, { source: sources.api(client), options, ...this._extraOptions.api });
     this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: this });
-    //this._trackers = new TrackersActor(hub, { options });
     this._interactions = new InteractionsActor(hub, { client, options });
   }
 
@@ -272,7 +273,7 @@ export default class Workflow extends Component {
 
   // trackers //
   get trackers() {
-    return this._views.trackers;
+    return this._proxyTrackers;
   }
 
   _onTracker(args) {
@@ -355,7 +356,7 @@ export default class Workflow extends Component {
     for (const callback of callbacks) {
       try {
         callback({ workflow: this, ...event });
-      } catch(e) {
+      } catch (e) {
         this._error(e);
       }
     }

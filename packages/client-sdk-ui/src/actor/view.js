@@ -2,7 +2,6 @@ import { trimObj, defineValues, delegateGetters, EventEmitter } from '@miso.ai/c
 import { STATUS, ROLE, isDataRole } from '../constants.js';
 import * as fields from './fields.js';
 import ProxyElement from '../util/proxy.js';
-import Tracker from './tracker.js';
 
 function statesEqual(a, b) {
   return a === b || (a && b &&
@@ -97,22 +96,13 @@ export default class ViewActor {
   }
 
   get tracker() {
-    const { role } = this;
-    if (role === ROLE.CONTAINER) {
-      return this._views._getContainerTracker();
-    }
-    // TODO: we should move this to workflow level, as there could be multiple view of the same role in the future
-    if (!this._tracker) {
-      const { hub } = this;
-      this._tracker = new Tracker({ hub, role, options: () => this.trackerOptions });
-    }
-    return this._tracker;
+    return this._views.trackers[this.role];
   }
 
   get workflow() {
     return this._views._workflow;
   }
-  
+
   get workflowOptions() {
     return this._views._options.resolved;
   }
@@ -155,7 +145,7 @@ export default class ViewActor {
     };
     try {
       await this._layout.render(element, data, { notifyUpdate });
-    } catch(error) {
+    } catch (error) {
       this._error(error);
       notifyUpdate({ error });
     }
@@ -219,7 +209,7 @@ export default class ViewActor {
     }
     try {
       this._layout[method](...args);
-    } catch(e) {
+    } catch (e) {
       this._error(e);
     }
   }
