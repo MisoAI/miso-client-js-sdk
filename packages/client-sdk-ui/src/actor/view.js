@@ -178,6 +178,7 @@ export default class ViewActor {
     return trimObj(sliced);
   }
 
+  // TODO: move this to workflow
   _isContainerEmpty(data) {
     const { element } = this;
     if (!element) {

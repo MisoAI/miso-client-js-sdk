@@ -2,6 +2,7 @@ import { ROLE, STATUS } from '../../constants.js';
 import RafLayout from '../raf.js';
 import MisoBannerElement from '../../element/util/miso-banner.js';
 import Viewables from '../../util/viewables.js';
+import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = 'container';
 
@@ -60,7 +61,9 @@ export default class ContainerLayout extends RafLayout {
     if (!element) {
       return;
     }
-    const { status, ongoing, meta: { miso_id, empty = false, unanswerable = false } = {} } = state;
+    // TODO: ad-hoc for non-general status/attributes
+    const { status, data, ongoing, meta: { miso_id, empty = false, unanswerable = false } = {} } = state;
+    const { blocked_reason, finish_reason } = data || {};
     const statuses = [status, empty ? STATUS.EMPTY : STATUS.NONEMPTY];
     if (status === STATUS.READY) {
       statuses.push(ongoing ? STATUS.ONGOING : STATUS.DONE);
@@ -69,11 +72,9 @@ export default class ContainerLayout extends RafLayout {
       statuses.push(STATUS.UNANSWERABLE);
     }
     element.setAttribute('status', statuses.join(' '));
-    if (miso_id) {
-      element.setAttribute('miso-id', miso_id);
-    } else {
-      element.removeAttribute('miso-id');
-    }
+    setOrRemoveAttribute(element, 'miso-id', miso_id);
+    setOrRemoveAttribute(element, 'blocked-reason', blocked_reason);
+    setOrRemoveAttribute(element, 'finish-reason', finish_reason);
   }
 
   _trackInteractions(element, state) {

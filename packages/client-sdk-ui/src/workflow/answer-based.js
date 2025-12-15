@@ -123,6 +123,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     const done = status === STATUS.READY && !state.ongoing;
     const erroneous = status === STATUS.ERRONEOUS;
     const eventName = done ? 'done' : erroneous ? 'error' : status;
+
     // answer-stage
     const context = this._getSessionContext(session);
     const oldAnswerStage = context.answerStage;
@@ -131,6 +132,17 @@ export default class AnswerBasedWorkflow extends Workflow {
       this._emitLifecycleEvent('answer-stage', Object.freeze({ ...state, answer_stage: newAnswerStage }));
       context.answerStage = newAnswerStage;
     }
+
+    // blocked reason
+    const data = this._hub.states[fields.data()] || {};
+    const { value } = data;
+    if (value) {
+      const { blocked_reason } = value;
+      if (blocked_reason) {
+        this._emitLifecycleEvent('blocked', { ...state, blockedReason: blocked_reason });
+      }
+    }
+
     // ready, done, or error
     this._emitLifecycleEvent(eventName, state);
     if (done || erroneous) {
