@@ -1,6 +1,7 @@
 import { STATUS } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
+import { helpers } from '../templates.js';
 
 const TYPE = 'more-button';
 const DEFAULT_CLASSNAME = 'miso-more-button';
@@ -11,7 +12,7 @@ function root(layout, state) {
   const disabledAttr = state.status !== STATUS.READY ? ' disabled' : '';
   return `
 <div class="${className}"${roleAttr}${disabledAttr}>
-  ${templates.text(layout)}
+  ${helpers.asFunction(templates.text)(layout)}
 </div>
 `;
 }
