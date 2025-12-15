@@ -127,8 +127,8 @@ export default class CollectionLayout extends TemplateBasedLayout {
   _shallRenderIncrementally(state, rendered) {
     // TODO: compare item ids as well
     return this.options.incremental &&
-    rendered && rendered.value && rendered.value.length > 0 &&
-    state.value && state.value.length >= rendered.value.length &&
+      rendered && rendered.value && rendered.value.length > 0 &&
+      state.value && state.value.length >= rendered.value.length &&
       state.session && rendered.session &&
       state.session.id === rendered.session.id;
   }
@@ -195,7 +195,7 @@ export default class CollectionLayout extends TemplateBasedLayout {
   _emitClickEvent(event, binding) {
     const { session } = this._view._state;
     const { value, element } = binding;
-    this._view._events.emit('click', { session, value, element, domEvent: event });
+    this._view._emit('click', { session, value, element, domEvent: event });
   }
 
   destroy() {

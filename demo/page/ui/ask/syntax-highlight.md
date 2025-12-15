@@ -16,7 +16,9 @@ misocmd.push(async () => {
   });
   const workflow = client.ui.ask;
   workflow.on('done', () => {
-    Prism.highlightAllUnder(workflow._views.get('answer').element);
+    for (const view of workflow._views.getAll('answer')) {
+      Prism.highlightAllUnder(view.element);
+    }
   });
   await client.ui.ready;
   const { templates } = MisoClient.ui.defaults.ask;

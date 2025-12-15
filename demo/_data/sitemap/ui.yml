@@ -36,6 +36,8 @@ sections:
     path: /ask/spa
   - title: Error
     path: /ask/error
+  - title: Multiple elements
+    path: /ask/multiple-elements
   - title: Templates
     path: /ask/templates
 - title: Explore
@@ -59,6 +61,8 @@ sections:
     path: /explore/linkless
   - title: Current page
     path: /explore/current-page
+  - title: Multiple elements
+    path: /explore/multiple-elements
 - title: Hybrid Search
   path: /hybrid-search
   pages:
@@ -76,6 +80,8 @@ sections:
     path: /hybrid-search/images
   - title: Context
     path: /hybrid-search/context
+  - title: Multiple elements
+    path: /hybrid-search/multiple-elements
   - title: Templates
     path: /hybrid-search/templates
 - title: Search

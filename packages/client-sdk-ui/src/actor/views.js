@@ -1,4 +1,4 @@
-import { defineValues, delegateGetters } from '@miso.ai/commons';
+import { defineValues, delegateGetters, EventEmitter } from '@miso.ai/commons';
 import { ROLE } from '../constants.js';
 import * as fields from './fields.js';
 import ViewActor from './view.js';
@@ -21,15 +21,9 @@ export default class ViewsActor {
     this._options = options;
     this._roles = roles;
     this._containers = new Map();
-    this._views = {};
+    this._components = new Map();
     this._filters = new Filters(this);
-
-    for (const role of roles.members) {
-      if (role === ROLE.CONTAINER) {
-        continue;
-      }
-      this._views[role] = new ViewActor(this, role);
-    }
+    this._events = new EventEmitter();
 
     defineValues(this, {
       interface: new Views(this),
@@ -55,14 +49,16 @@ export default class ViewsActor {
     return this._workflow.trackers;
   }
 
+  on(role, name, fn) {
+    return this._events.on(`${role}:${name}`, fn);
+  }
+
   // elements //
   addContainer(element) {
     if (this._containers.has(element)) {
       return;
     }
-    const view = new ViewActor(this, ROLE.CONTAINER);
-    view.layout = this._createLayout(ROLE.CONTAINER);
-    view.element = element;
+    const view = this._createView(element);
     this._containers.set(element, view);
 
     const { components } = element;
@@ -85,11 +81,20 @@ export default class ViewsActor {
   }
 
   addComponent(element) {
-    this._getViewByElement(element).element = element;
+    if (this._components.has(element)) {
+      return;
+    }
+    const view = this._createView(element);
+    this._components.set(element, view);
   }
 
   removeComponent(element) {
-    this._getViewByElement(element).element = undefined;
+    const view = this._components.get(element);
+    if (!view) {
+      return;
+    }
+    view._destroy();
+    this._components.delete(element);
   }
 
   updateComponentRole(element, oldRole, newRole) {
@@ -97,61 +102,31 @@ export default class ViewsActor {
   }
 
   containsElement(element) {
-    return this._containers.has(element) || this._views[element.role];
+    return this._containers.has(element) || this._components.has(element);
   }
 
   refreshElement(element) {
-    const view = element.isContainer ? this._containers.get(element) : this._getViewByElement(element);
+    const view = element.isContainer ? this._containers.get(element) : this._components.get(element);
     view && view.refresh({ force: true });
   }
 
-  _getViewByElement(element) {
-    let { role } = element;
-    if (!role) {
-      throw new Error('Component must have a role');
-    }
-    return this.get(role);
+  _createView(element) {
+    const view = new ViewActor(this, element.role);
+    view.layout = this._createLayout(element.role);
+    view.element = element;
+    return view;
   }
-
-  /*
-  _requestSyncLayouts() {
-    this._setLayoutRequested = true;
-    setTimeout(() => {
-      if (!this._setLayoutRequested) {
-        return;
-      }
-      this._setLayoutRequested = false;
-      this._syncLayouts();
-    });
-  }
-  */
 
   _syncLayouts() {
     // TODO: put a debug event here
     const { layouts } = this._options.resolved;
     if (layouts === false) {
-      // containers
-      for (const view of this._containers.values()) {
-        view.layout = undefined;
-      }
-      // components
-      for (const view of Object.values(this._views)) {
+      for (const view of [...this._containers.values(), ...this._components.values()]) {
         view.layout = undefined;
       }
     } else {
-      for (let [role, [name, options]] of Object.entries(layouts)) {
-        // TODO: try to omit if unchanged
-        const fn = () => this._layoutFactory.create(name, { ...options, role, workflow: this._workflowName });
-        if (role === ROLE.CONTAINER) {
-          for (const view of this._containers.values()) {
-            view.layout = fn();
-          }
-        } else {
-          const view = this.get(role);
-          if (view) {
-            view.layout = fn();
-          }
-        }
+      for (const view of [...this._containers.values(), ...this._components.values()]) {
+        view.layout = this._createLayout(view.role);
       }
     }
   }
@@ -166,7 +141,11 @@ export default class ViewsActor {
   }
 
   get(role) {
-    return this._views[role];
+    return this.getAll(role)[0];
+  }
+
+  getAll(role) {
+    return role === ROLE.CONTAINER ? this._containers.values() : this._components.values().filter(view => view.role === role);
   }
 
   get views() {
@@ -176,15 +155,16 @@ export default class ViewsActor {
   _getViews(containerFirst = true) {
     return containerFirst ? [
       ...this._containers.values(),
-      ...Object.values(this._views),
+      ...this._components.values(),
     ] : [
-      ...Object.values(this._views),
+      ...this._components.values(),
       ...this._containers.values(),
     ];
   }
 
   syncSize() {
-    for (const view of Object.values(this._views)) {
+    // TODO: containers?
+    for (const view of this._components.values()) {
       view._syncSize();
     }
   }

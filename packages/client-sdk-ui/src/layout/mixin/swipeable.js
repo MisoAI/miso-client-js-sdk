@@ -6,7 +6,7 @@ export function makeSwipeable(prototype) {
 }
 
 export class SwipeableMixin {
-  
+
   _initSwipeable() {
     this._swipeableContext = {
       itemCount: undefined,
@@ -138,7 +138,7 @@ export class SwipeableMixin {
       return;
     }
     context.displayEventIndex = index;
-    this._view._events.emit('display', { index });
+    this._view._emit('display', { index });
   }
 
   _onClickSwipeable(event) {

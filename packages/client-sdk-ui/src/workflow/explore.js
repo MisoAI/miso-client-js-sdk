@@ -66,7 +66,7 @@ export default class Explore extends UnitWorkflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._views.get(ROLE.RELATED_QUESTIONS).on('click', event => this._handleRelatedQuestionClick(event)),
+      this._views.on(ROLE.RELATED_QUESTIONS, 'click', event => this._handleRelatedQuestionClick(event)),
       this._hub.on(fields.query(), args => this._query(args)),
     ];
   }

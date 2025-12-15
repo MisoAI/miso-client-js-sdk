@@ -129,7 +129,7 @@ export default class SelectLayout extends TemplateBasedLayout {
       return;
     }
     // TODO: reflect selection right away
-    this._view._events.emit('select', { value });
+    this._view._emit('select', { value });
   }
 
   destroy() {

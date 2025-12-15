@@ -68,7 +68,7 @@ export default class SearchBasedWorkflow extends Workflow {
       this._hub.on(fields.query(), args => this._query(args)),
       this._hub.on(fields.filters(), () => this._refine()),
       this._hub.on(fields.more(), () => this._more()),
-      this._views.get(ROLE.SORT).on('select', event => this._handleSortSelect(event)),
+      this._views.on(ROLE.SORT, 'select', event => this._handleSortSelect(event)),
     ];
   }
 

@@ -18,8 +18,16 @@ export default class HybridSearchViewsActor {
     return this._subviews.results.filters;
   }
 
+  on(role, event, callback) {
+    return this._getSubviews(role).on(role, event, callback);
+  }
+
   get(role) {
     return this._getSubviews(role).get(role);
+  }
+
+  getAll(role) {
+    return this._getSubviews(role).getAll(role);
   }
 
   addContainer(element) {
@@ -42,12 +50,12 @@ export default class HybridSearchViewsActor {
   }
 
   addComponent(element) {
-    this._getViewByElement(element).element = element;
+    this._getSubviews(element.role).addComponent(element);
     this._addContainerToSubviews(element._container, element);
   }
 
   removeComponent(element) {
-    this._getViewByElement(element).element = undefined;
+    this._getSubviews(element.role).removeComponent(element);
     this._removeContainerFromSubviewsIfNecessary(element._container);
   }
 
@@ -56,8 +64,7 @@ export default class HybridSearchViewsActor {
   }
 
   refreshElement(element) {
-    const view = element.isContainer ? this._containers.get(element) : this._getViewByElement(element);
-    view && view.refresh({ force: true });
+    this._getSubviews(element.role).refreshElement(element);
   }
 
   // helpers //
@@ -67,14 +74,6 @@ export default class HybridSearchViewsActor {
 
   _getSubviews(role) {
     return this._subviews[getSubworkflowByRole(role)];
-  }
-
-  _getViewByElement(element) {
-    let { role } = element;
-    if (!role) {
-      throw new Error('Component must have a role');
-    }
-    return this.get(role);
   }
 
   _addContainerToSubviews(container, child) {

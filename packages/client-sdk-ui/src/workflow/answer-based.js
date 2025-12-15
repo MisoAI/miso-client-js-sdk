@@ -90,8 +90,8 @@ export default class AnswerBasedWorkflow extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._query(args)),
-      this._views.get(ROLE.ANSWER).on('citation-click', event => this._onCitationClick(event)),
-      this._views.get(ROLE.ANSWER).on('link-click', event => this._onAnswerLinkClick(event)),
+      this._views.on(ROLE.ANSWER, 'citation-click', event => this._onCitationClick(event)),
+      this._views.on(ROLE.ANSWER, 'link-click', event => this._onAnswerLinkClick(event)),
     ];
   }
 

@@ -214,6 +214,11 @@ export default class ViewActor {
     }
   }
 
+  _emit(name, data) {
+    this._events.emit(name, data);
+    this._views._events.emit(`${this.role}:${name}`, data);
+  }
+
   _error(e) {
     this._views._error(e);
   }

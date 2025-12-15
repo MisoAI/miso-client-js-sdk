@@ -80,9 +80,9 @@ export default class Ask extends AnswerBasedWorkflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.view(ROLE.REASONING), state => this._onReasoningViewUpdate(state)),
-      this._views.get(ROLE.ANSWER).on('follow-up-click', event => this._onFollowUpClick(event)),
-      this._views.get(ROLE.FOLLOW_UP_QUESTIONS).on('select', event => this._onFollowUpQuestionSelect(event)),
-      this._views.get(ROLE.QUERY_SUGGESTIONS).on('select', event => this._onQuerySuggestionSelect(event)),
+      this._views.on(ROLE.ANSWER, 'follow-up-click', event => this._onFollowUpClick(event)),
+      this._views.on(ROLE.FOLLOW_UP_QUESTIONS, 'select', event => this._onFollowUpQuestionSelect(event)),
+      this._views.on(ROLE.QUERY_SUGGESTIONS, 'select', event => this._onQuerySuggestionSelect(event)),
     ];
   }
 
@@ -154,8 +154,9 @@ export default class Ask extends AnswerBasedWorkflow {
     if (!next) {
       return;
     }
-    const view = next._views.get(ROLE.QUERY_SUGGESTIONS);
-    view && view.refresh();
+    for (const view of next._views.getAll(ROLE.QUERY_SUGGESTIONS)) {
+      view.refresh();
+    }
   }
 
   // view //
@@ -163,8 +164,10 @@ export default class Ask extends AnswerBasedWorkflow {
     if (status !== STATUS.READY || ongoing) {
       return;
     }
-    const element = this._getReasoningBoxElement();
-    element && element.classList.add('done');
+    for (const view of this._views.getAll(ROLE.REASONING)) {
+      const element = view.element && view.element.closest('[data-role="reasoning-box"]');
+      element && element.classList.add('done');
+    }
   }
 
   // interactions //
@@ -249,12 +252,6 @@ export default class Ask extends AnswerBasedWorkflow {
       this._context._byQid.delete(this._questionId);
       this._questionId = undefined;
     }
-  }
-
-  _getReasoningBoxElement() {
-    const view = this._views.get(ROLE.REASONING);
-    const element = view && view.element;
-    return element && element.closest('[data-role="reasoning-box"]');
   }
 
   // destroy //

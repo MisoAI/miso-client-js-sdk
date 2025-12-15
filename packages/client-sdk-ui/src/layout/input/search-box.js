@@ -313,7 +313,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
           if (inputElement) {
             inputElement.value = value;
           }
-          this._view._events.emit('select', Object.freeze({ value: item, index, domEvent: event }));
+          this._view._emit('select', Object.freeze({ value: item, index, domEvent: event }));
           if (!event.defaultPrevented) {
             this._submit(value);
           }
@@ -322,7 +322,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
         return;
       }
       if (element.matches('[data-role="product-item"]')) {
-        this._view._events.emit('select', Object.freeze({ value: item, index, domEvent: event }));
+        this._view._emit('select', Object.freeze({ value: item, index, domEvent: event }));
         return;
       }
     }

@@ -157,7 +157,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
     if (citationLinkElement) {
       const index = parseInt(citationLinkElement.dataset.index);
       if (!Number.isNaN(index)) {
-        this._view._events.emit('citation-click', { event, index });
+        this._view._emit('citation-click', { event, index });
       }
       return;
     }
@@ -168,7 +168,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
       let { q } = followUpLinkElement.dataset;
       q = q ? q.trim() : undefined;
       if (q) {
-        this._view._events.emit('follow-up-click', { event, q });
+        this._view._emit('follow-up-click', { event, q });
       }
       return;
     }
@@ -180,7 +180,7 @@ export default class TypewriterLayout extends ProgressiveLayout {
         // TODO: classList, attributes
         const { href, innerText, className } = anchorElement;
         if (href) {
-          this._view._events.emit('link-click', trimObj({
+          this._view._emit('link-click', trimObj({
             event,
             url: href,
             text: innerText ? innerText.trim() : '',

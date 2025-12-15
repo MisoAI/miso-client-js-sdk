@@ -21,8 +21,9 @@ export function autoQuery(options = {}) {
   const searchParams = new URLSearchParams(window.location.search);
   const q = searchParams.get(param);
   const qs = searchParams.get(sourceParam) || undefined;
-  const { layout } = this._views.get(ROLE.QUERY);
-  if (layout) {
+
+  for (const view of this._views.getAll(ROLE.QUERY)) {
+    const { layout } = view;
     if (q && setValue) {
       layout.value = q;
     }
@@ -30,6 +31,7 @@ export function autoQuery(options = {}) {
       layout.focus();
     }
   }
+
   if (q) {
     this.query(trimObj({ q, qs }));
   }

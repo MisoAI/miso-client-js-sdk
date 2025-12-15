@@ -1,3 +1,4 @@
+import { ROLE } from '../../constants.js';
 import MisoStubElement from '../util/miso-stub.js';
 import { getClient } from '../utils.js';
 
@@ -50,6 +51,10 @@ export default class MisoContainerElement extends MisoStubElement {
   // properties //
   get isContainer() {
     return true;
+  }
+
+  get role() {
+    return ROLE.CONTAINER;
   }
 
   get workflow() {

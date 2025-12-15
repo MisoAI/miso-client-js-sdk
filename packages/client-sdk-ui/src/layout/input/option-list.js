@@ -123,7 +123,7 @@ export default class OptionListLayout extends TemplateBasedLayout {
     if (!value) {
       return;
     }
-    this._view._events.emit('select', { value });
+    this._view._emit('select', { value });
   }
 
   destroy() {
