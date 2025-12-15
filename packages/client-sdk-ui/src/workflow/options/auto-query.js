@@ -22,15 +22,18 @@ export function autoQuery(options = {}) {
   const q = searchParams.get(param);
   const qs = searchParams.get(sourceParam) || undefined;
 
-  for (const view of this._views.getAll(ROLE.QUERY)) {
-    const { layout } = view;
-    if (q && setValue) {
-      layout.value = q;
+  // because it's probably not there yet, but this is an ad-hoc solution
+  setTimeout(() => {
+    for (const view of this._views.getAll(ROLE.QUERY)) {
+      const { layout } = view;
+      if (q && setValue) {
+        layout.value = q;
+      }
+      if (!q && focus) {
+        layout.focus();
+      }
     }
-    if (!q && focus) {
-      layout.focus();
-    }
-  }
+  });
 
   if (q) {
     this.query(trimObj({ q, qs }));
