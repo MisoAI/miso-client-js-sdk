@@ -33,5 +33,7 @@ export { default as ContinuityObserver } from './continuity.js';
 export { default as CarouselItemViewabilityObserver } from './carousel-viewable.js';
 export { default as ValueBuffer } from './value-buffer.js';
 export { default as StallTimeoutAbortController } from './stall-timeout.js';
+export { default as UserEngagementObserver } from './engagement.js';
+export { default as Stopwatch } from './stopwatch.js';
 
 export { default as version } from './version.js';

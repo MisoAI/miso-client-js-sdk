@@ -119,6 +119,8 @@ sections:
     path: /tracker/watch
   - title: Click
     path: /tracker/click
+  - title: Engagement
+    path: /tracker/engagement
 - title: Misc
   path: /misc
   pages:
