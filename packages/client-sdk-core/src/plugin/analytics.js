@@ -1,4 +1,4 @@
-import { Component, UserEngagementObserver, Stopwatch } from '@miso.ai/commons';
+import { Component, UserEngagementObserver, Stopwatch, trimObj, mergeInteractions } from '@miso.ai/commons';
 
 const PLUGIN_ID = 'std:analytics';
 
@@ -18,6 +18,7 @@ export default class AnalyticsPlugin extends Component {
     this._options = options;
     for (const member of this._members) {
       // notify update
+      // TODO: merge with global options
       //member.config(options);
     }
   }
@@ -30,12 +31,16 @@ export default class AnalyticsPlugin extends Component {
   }
 
   _injectClient(client) {
-    client.analytics = new Analytics(this, client);
+    client.on('workflow', this._injectWorkflow.bind(this));
+  }
+
+  _injectWorkflow(workflow) {
+    workflow.analytics = new Analytics(this, workflow);
   }
 
   _handleEngagement() {
     for (const member of this._members) {
-      member._syncTimerState();
+      member._syncEngagementState();
     }
   }
 
@@ -56,15 +61,78 @@ function mergeTwoOptions(base, overrides) {
 
 class Analytics {
 
-  constructor(plugin, client) {
+  constructor(plugin, workflow) {
     this._plugin = plugin;
     plugin._members.push(this);
-    this._client = client;
+    this._workflow = workflow;
     this._timer = new Stopwatch();
     this._options = normalizeOptions();
-    this._active = false;
-    this._startTime = undefined
+
+    this._injectWorkflow(workflow);
+
+    this._session = undefined;
+    this._startAt = undefined;
+    this._loadingAt = undefined;
+    this._readyAt = undefined;
+
     this.config();
+  }
+
+  _injectWorkflow(workflow) {
+    this._listenToLiftcycleEvents(workflow);
+    this._injectProcessInteraction(workflow);
+  }
+
+  _listenToLiftcycleEvents(workflow) {
+    workflow.on('session', this._handleSession.bind(this));
+    workflow.on('loading', this._handleLoading.bind(this));
+    workflow.on('ready', this._handleReady.bind(this));
+  }
+
+  _injectProcessInteraction(workflow) {
+    // TODO: ad-hoc, find a way to provide plugin API in plugin root
+    workflow._pluginContext.processInteractionPasses.push(this._writeStateToInteraction.bind(this));
+  }
+
+  _handleSession(session) {
+    if (this._session && session.index === this._session.index) {
+      return;
+    }
+
+    if (this._session) {
+      // send a last heartbeat event for the old session
+      // TODO
+    }
+
+    this._session = session;
+    this._timer.reset();
+    this._startAt = Date.now();
+    this._loadingAt = undefined;
+    this._readyAt = undefined;
+  }
+
+  _handleLoading({ session } = {}) {
+    this._loadingAt = Date.now();
+  }
+
+  _handleReady({ session } = {}) {
+    this._readyAt = Date.now();
+    // start timer if user is engaged
+    this._syncEngagementState();
+  }
+
+  _writeStateToInteraction(payload) {
+    const { state } = this;
+    return mergeInteractions(payload, {
+      context: {
+        custom_context: {
+          analytics_timestamp: state.timestamp,
+          user_engagement_time: state.userEngagementTime,
+          user_idle_time: state.userIdleTime,
+          user_waiting_time: state.userWaitingTime,
+        },
+      },
+    });
   }
 
   config(options = {}) {
@@ -77,44 +145,31 @@ class Analytics {
     };
   }
 
-  get active() {
-    return this._active;
-  }
-
-  start() {
-    if (this._active) {
-      return;
-    }
-    this._active = true;
-    this._startTime = Date.now();
-    this._syncTimerState();
-  }
-
-  stop() {
-    if (!this._active) {
-      return;
-    }
-    this._active = false;
-    this._syncTimerState();
-  }
-
   get state() {
     const currentTime = Date.now();
-    const startTime = this._startTime;
-    const elaspsedTime = currentTime - startTime;
-    const userEngagementTime = this._timer.getDuration(currentTime);
-    const userIdleTime = elaspsedTime - userEngagementTime;
-    return {
-      currentTime,
-      startTime,
-      elaspsedTime,
+    const loadingAt = this._loadingAt;
+    const readyAt = this._readyAt;
+    let userEngagementTime = 0, userIdleTime = 0, userWaitingTime = 0;
+
+    if (loadingAt !== undefined) {
+      userWaitingTime = currentTime - loadingAt;
+    }
+    if (readyAt !== undefined) {
+      userWaitingTime = readyAt - loadingAt;
+      userEngagementTime = this._timer.getDuration(currentTime);
+      userIdleTime = currentTime - readyAt - userEngagementTime;
+    }
+
+    return trimObj({
+      timestamp: currentTime,
+      userWaitingTime,
       userEngagementTime,
       userIdleTime,
-    };
+    });
   }
 
-  _syncTimerState() {
-    const shallStart = this._active && this._plugin._engagement.engaged;
+  _syncEngagementState() {
+    const shallStart = this._plugin._engagement.engaged;
     if (shallStart) {
       this._timer.start();
     } else {

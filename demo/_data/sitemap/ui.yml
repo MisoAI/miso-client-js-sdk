@@ -32,6 +32,8 @@ sections:
     path: /ask/i18n
   - title: Question ID
     path: /ask/question-id
+  - title: Analytics
+    path: /ask/analytics
   - title: SPA
     path: /ask/spa
   - title: Error
@@ -119,8 +121,6 @@ sections:
     path: /tracker/watch
   - title: Click
     path: /tracker/click
-  - title: Engagement
-    path: /tracker/engagement
 - title: Misc
   path: /misc
   pages:

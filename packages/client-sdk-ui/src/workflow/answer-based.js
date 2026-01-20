@@ -1,4 +1,4 @@
-import { API, mergeInteractions } from '@miso.ai/commons';
+import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';

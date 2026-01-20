@@ -1,7 +1,7 @@
 export default class Stopwatch {
 
   constructor() {
-    this.clear();
+    this.reset();
   }
 
   getDuration(now = Date.now()) {
@@ -23,7 +23,7 @@ export default class Stopwatch {
     this._start = undefined;
   }
 
-  clear() {
+  reset() {
     this._start = undefined;
     this._duration = 0;
   }

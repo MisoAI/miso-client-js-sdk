@@ -59,6 +59,9 @@ export default class Workflow extends Component {
       onEmit: event => this._onHubEmit(event),
     });
     this._sessionContext = new WeakMap();
+    this._pluginContext = {
+      processInteractionPasses: [],
+    };
 
     client._events.emit('workflow', this);
 
@@ -286,6 +289,9 @@ export default class Workflow extends Component {
   _buildInteraction(args) {
     let payload = buildBaseInteraction(args);
     payload = this._defaultProcessInteraction(payload, args);
+    for (const p of this._pluginContext.processInteractionPasses) {
+      payload = p(payload, args);
+    }
     const { preprocess = [] } = this._options.resolved.interactions;
     for (const p of preprocess) {
       payload = p(payload, args);
