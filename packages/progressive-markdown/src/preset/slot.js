@@ -1,3 +1,4 @@
+import { splitHtmlAtNthOfType } from '@miso.ai/commons';
 import Operation from '../model/operation.js';
 
 const DEFAULT_TEMPLATES = {
@@ -34,27 +35,6 @@ function normalizeTemplates(templates) {
   return Object.freeze(normalized);
 }
 
-function splitHtml(html, tag, index) {
-  // split at the nth close tag and also return the count of close tags
-  if (index <= 0) {
-    return ['', html, 0];
-  }
-  // TODO: only at the top level
-  const pattern = new RegExp(`</${tag}>`, 'g');
-  let match, count = 0;
-  for (let i = 0; i < index; i++) {
-    match = pattern.exec(html);
-    if (!match) {
-      break;
-    }
-    count++;
-  }
-  if (!match) {
-    return [html, '', count];
-  }
-  const splitIndex = match.index + match[0].length;
-  return [html.slice(0, splitIndex), html.slice(splitIndex), count];
-}
 
 function proxy(element, options) {
   return new ProxyRootElement(element, options);
@@ -89,7 +69,7 @@ class ProxyRootElement {
   }
 
   setHtml(html) {
-    const [upperHtml, lowerHtml, tags] = splitHtml(html, this._options.tag, this._options.index);
+    const [upperHtml, lowerHtml, tags] = splitHtmlAtNthOfType(html, this._options.tag, this._options.index);
     this.upper.innerHTML = upperHtml;
     this.lower.innerHTML = lowerHtml;
     this._setSlotVisibility(!!lowerHtml);
@@ -105,7 +85,7 @@ class ProxyRootElement {
       html && this.lower.insertAdjacentHTML('beforeend', html);
       return;
     }
-    const [upperHtml, lowerHtml, tags] = splitHtml(html, this._options.tag, this._options.index - this._element._tags);
+    const [upperHtml, lowerHtml, tags] = splitHtmlAtNthOfType(html, this._options.tag, this._options.index - this._element._tags);
     upperHtml && this.upper.insertAdjacentHTML('beforeend', upperHtml);
     this.lower.innerHTML = lowerHtml;
     this._setSlotVisibility(!!lowerHtml);

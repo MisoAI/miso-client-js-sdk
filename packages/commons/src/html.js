@@ -119,3 +119,71 @@ export function escapeHtml(text) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 }
+
+// HTML void elements (self-closing, no closing tag)
+const VOID_ELEMENTS = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'param', 'source', 'track', 'wbr',
+]);
+
+/**
+ * Split HTML at the nth top-level close tag (or open tag for void elements) of the specified type.
+ * Returns [beforeHtml, afterHtml, count] where count is the number of top-level tags found.
+ */
+export function splitHtmlAtNthOfType(html, tag, index) {
+  tag = tag.toLowerCase();
+  // split at the nth close tag (or open tag for void elements) at the top level
+  // also return the count of such tags
+  if (index <= 0) {
+    return ['', html, 0];
+  }
+  // match all open and close tags (for any tag type)
+  const tagPattern = /<(\/?)([\w-]+)(?:\s[^>]*)?>/gi;
+  const tokens = [];
+  let match;
+  while ((match = tagPattern.exec(html)) !== null) {
+    const isClose = match[1] === '/';
+    const tagName = match[2].toLowerCase();
+    const isVoid = VOID_ELEMENTS.has(tagName);
+    tokens.push({
+      type: isClose ? 'close' : 'open',
+      tagName,
+      isVoid,
+      index: match.index,
+      length: match[0].length,
+    });
+  }
+  // find nth top-level tag of the specified type
+  let depth = 0, count = 0, splitIndex = -1;
+  for (const token of tokens) {
+    if (token.type === 'open') {
+      // for void elements, check if it's the target at top level before moving on
+      if (token.isVoid) {
+        if (depth === 0 && token.tagName === tag) {
+          count++;
+          if (count === index) {
+            splitIndex = token.index + token.length;
+            break;
+          }
+        }
+        // void elements don't affect depth
+      } else {
+        depth++;
+      }
+    } else {
+      depth--;
+      if (depth === 0 && token.tagName === tag) {
+        // top-level close tag of the specified type
+        count++;
+        if (count === index) {
+          splitIndex = token.index + token.length;
+          break;
+        }
+      }
+    }
+  }
+  if (splitIndex < 0) {
+    return [html, '', count];
+  }
+  return [html.slice(0, splitIndex), html.slice(splitIndex), count];
+}
