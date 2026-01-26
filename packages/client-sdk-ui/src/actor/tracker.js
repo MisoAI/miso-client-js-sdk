@@ -63,6 +63,13 @@ export default class Tracker {
     });
   }
 
+  heartbeat() {
+    this._syncSession();
+    this._sendToHub({
+      type: EVENT_TYPE.HEARTBEAT,
+    });
+  }
+
   _sendToHub(args) {
     this._hub.trigger(fields.tracker(), Object.freeze(trimObj({ role: this._role, ...args })));
   }

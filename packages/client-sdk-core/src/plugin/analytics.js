@@ -101,7 +101,7 @@ class Analytics {
 
     if (this._session) {
       // send a last heartbeat event for the old session
-      // TODO
+      this._sendHeartbeat();
     }
 
     this._session = session;
@@ -119,6 +119,11 @@ class Analytics {
     this._readyAt = Date.now();
     // start timer if user is engaged
     this._syncEngagementState();
+  }
+
+  _sendHeartbeat() {
+    const tracker = this._workflow.trackers.container;
+    tracker && tracker.heartbeat();
   }
 
   _writeStateToInteraction(payload) {

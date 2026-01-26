@@ -329,6 +329,10 @@ export function buildBaseInteraction(args) {
       payload.context.custom_context.value = payload.value = args.value;
       payload.context.custom_context.result_type = payload.result_type = args.result_type;
       break;
+    case EVENT_TYPE.HEARTBEAT:
+      payload.type = 'custom';
+      payload.custom_action_name = 'heartbeat';
+      break;
   }
 
   return trimObj(payload);

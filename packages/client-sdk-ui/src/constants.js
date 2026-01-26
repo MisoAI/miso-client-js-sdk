@@ -71,6 +71,7 @@ export const EVENT_TYPE = Object.freeze({
   CLICK: 'click',
   SUBMIT: 'submit',
   FEEDBACK: 'feedback',
+  HEARTBEAT: 'heartbeat',
 });
 
 export const TRACKING_EVENT_TYPES = [
@@ -79,6 +80,7 @@ export const TRACKING_EVENT_TYPES = [
   EVENT_TYPE.CLICK,
   EVENT_TYPE.SUBMIT,
   EVENT_TYPE.FEEDBACK,
+  EVENT_TYPE.HEARTBEAT,
 ];
 
 export const PERFORMANCE_EVENT_TYPES = [
