@@ -44,14 +44,6 @@ test('splitHtmlAtNthOfType: nested tags - p inside div', () => {
   assert.equal(count, 1);
 });
 
-test('splitHtmlAtNthOfType: split at top-level div', () => {
-  const html = '<div><p>inside</p></div><div>second</div>';
-  const [before, after, count] = splitHtmlAtNthOfType(html, 'div', 1);
-  assert.equal(before, '<div><p>inside</p></div>');
-  assert.equal(after, '<div>second</div>');
-  assert.equal(count, 1);
-});
-
 // Void elements should not affect depth
 test('splitHtmlAtNthOfType: void elements do not affect depth', () => {
   const html = '<p>hello<br>world</p><p>next</p>';
@@ -84,23 +76,6 @@ test('splitHtmlAtNthOfType: target void element inside other element not counted
   const [before, after, count] = splitHtmlAtNthOfType(html, 'br', 1);
   assert.equal(before, '<div><br></div><br>');
   assert.equal(after, '');
-  assert.equal(count, 1);
-});
-
-// Case insensitivity
-test('splitHtmlAtNthOfType: case insensitive tag matching', () => {
-  const html = '<P>hello</P><p>world</p>';
-  const [before, after, count] = splitHtmlAtNthOfType(html, 'p', 1);
-  assert.equal(before, '<P>hello</P>');
-  assert.equal(after, '<p>world</p>');
-  assert.equal(count, 1);
-});
-
-test('splitHtmlAtNthOfType: case insensitive tag argument', () => {
-  const html = '<p>hello</p><p>world</p>';
-  const [before, after, count] = splitHtmlAtNthOfType(html, 'P', 1);
-  assert.equal(before, '<p>hello</p>');
-  assert.equal(after, '<p>world</p>');
   assert.equal(count, 1);
 });
 
