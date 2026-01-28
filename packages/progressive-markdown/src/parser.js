@@ -2,17 +2,21 @@ import { asArray } from '@miso.ai/commons';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
+import rehypeRaw from 'rehype-raw';
 import rehypeHast from './rehype-hast.js';
 
 export default class Parser {
 
   constructor(options = {}) {
-    const { remark = [], rehype = [] } = options;
+    const { remark = [], rehype = [], allowDangerousHtml = false } = options;
     let processer = unified().use(remarkParse);
     for (const plugin of remark) {
       processer = processer.use(...asArray(plugin));
     }
-    processer = processer.use(remarkRehype);
+    processer = processer.use(remarkRehype, { allowDangerousHtml });
+    if (allowDangerousHtml) {
+      processer = processer.use(rehypeRaw);
+    }
     for (const plugin of rehype) {
       processer = processer.use(...asArray(plugin));
     }

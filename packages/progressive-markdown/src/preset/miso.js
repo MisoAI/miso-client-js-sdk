@@ -60,6 +60,7 @@ export default function miso({
         () => rehypeCitationLink(onCitationLink),
         rehypeFollowUpLink,
       ],
+      allowDangerousHtml: true,
     },
     onCitationLink,
     onRefChange: (oldRef, newRef) => {

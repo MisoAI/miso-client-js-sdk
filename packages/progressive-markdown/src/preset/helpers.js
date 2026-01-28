@@ -7,6 +7,12 @@ export function removeMarkdownIncompleteTableRow(markdown) {
   return markdown;
 }
 
+export function escapeTildes(markdown) {
+  return markdown.replaceAll('~', '\\~');
+}
+
 export function defaultProcessMarkdown(markdown) {
-  return removeMarkdownIncompleteTableRow(markdown);
+  markdown = removeMarkdownIncompleteTableRow(markdown);
+  markdown = escapeTildes(markdown);
+  return markdown;
 }

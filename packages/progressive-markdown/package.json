@@ -34,6 +34,7 @@
     "hast-util-from-html": "^2.0.1",
     "hast-util-to-html": "^8.0.4",
     "rehype-minify-whitespace": "^5.0.1",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^3.0.1",
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
