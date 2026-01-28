@@ -61,6 +61,8 @@ sections:
     path: /explore/lorem-client
   - title: Linkless
     path: /explore/linkless
+  - title: Show URL
+    path: /explore/show-url
   - title: Current page
     path: /explore/current-page
   - title: Multiple elements

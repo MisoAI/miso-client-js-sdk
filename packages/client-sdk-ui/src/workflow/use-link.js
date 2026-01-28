@@ -18,7 +18,6 @@ export class UseLinkMixin {
     if (!this._linkFn) {
       return;
     }
-    // TODO: we want a submit event
     const url = this._getSubmitUrl(args);
     const [_, options = {}] = this._linkFn;
     if (options.open === false) {

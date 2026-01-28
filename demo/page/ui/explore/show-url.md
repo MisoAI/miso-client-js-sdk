@@ -15,14 +15,7 @@ misocmd.push(async () => {
   workflow.useApi({
     product_id: 'aaa',
   });
-  workflow.useLink(false);
-  workflow.on('select', ({ question }) => {
-    workflow.trackers.related_questions.click([question.text]);
-    alert(`You selected: ${question.text}`);
-  });
-  workflow.on('query', ({ q }) => {
-    alert(`Your input: ${q}`);
-  });
+  workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`, { showUrl: true });
   workflow.start();
 });
 </script>

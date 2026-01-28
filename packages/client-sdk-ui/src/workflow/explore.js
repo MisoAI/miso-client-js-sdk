@@ -132,8 +132,12 @@ export default class Explore extends UnitWorkflow {
     if (!value || !value.related_questions) {
       return data;
     }
-    const linkFn = this._linkFn && this._linkFn[0];
-    const related_questions = value.related_questions.map(linkFn ? (text => ({ text, url: this._getSubmitUrl({ q: text, generated: true }) })) : (text => ({ text })));
+    const [linkFn, linkOptions = {}] = this._linkFn || [];
+    const getDisplayedUrl = text => linkFn && linkOptions.showUrl ? this._getSubmitUrl({ q: text, generated: true }) : '#';
+    const related_questions = value.related_questions.map(text => ({
+      text,
+      url: getDisplayedUrl(text),
+    }));
     return {
       ...data,
       value: {
@@ -145,6 +149,13 @@ export default class Explore extends UnitWorkflow {
 
   _handleRelatedQuestionClick({ value: question, ...event }) {
     this._events.emit('select', Object.freeze({ ...event, question }));
+    const [linkFn, linkOptions = {}] = this._linkFn || [];
+    if (!linkFn || !linkOptions.showUrl) {
+      event.domEvent && event.domEvent.preventDefault();
+    }
+    if (linkFn && !linkOptions.showUrl) {
+      this._submitToPage({ q: question.text, generated: true });
+    }
   }
 
   query(args) {
