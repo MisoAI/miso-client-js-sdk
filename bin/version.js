@@ -64,3 +64,5 @@ for (const { projectPath, project } of projects) {
   writePackageFileSync(joinPath(rootDir, projectPath), project);
   writeVersionFile(projectPath, version);
 }
+
+writePackageFileSync(rootDir, { ...root, version });
