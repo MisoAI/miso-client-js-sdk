@@ -26,7 +26,8 @@ export default class AnalyticsPlugin extends Component {
   install(MisoClient, context) {
     context.addSubtree(this);
     this._engagement = new UserEngagementObserver(this._handleEngagement.bind(this));
-    // TODO: should we provide a way to stop the observer? 
+    // TODO: should we provide a way to stop the observer?
+    window.addEventListener('beforeunload', this._handlePageExit.bind(this));
     MisoClient.on('create', this._injectClient.bind(this));
   }
 
@@ -41,6 +42,12 @@ export default class AnalyticsPlugin extends Component {
   _handleEngagement() {
     for (const member of this._members) {
       member._syncEngagementState();
+    }
+  }
+
+  _handlePageExit() {
+    for (const member of this._members) {
+      member._sendHeartbeat();
     }
   }
 
