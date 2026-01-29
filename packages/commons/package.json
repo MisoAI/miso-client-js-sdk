@@ -19,7 +19,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git"
+    "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git",
+    "directory": "packages/commons"
   },
   "homepage": "https://misoai.github.io/miso-client-js-sdk/",
   "license": "MIT",

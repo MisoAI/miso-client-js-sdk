@@ -38,7 +38,11 @@
     "build": "npm run build:clean && npm run build:cjs && npm run build:umd && npm run build:font && npm run build:sass",
     "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"
   },
-  "repository": "MisoAI/miso-client-js-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git",
+    "directory": "packages/client-sdk"
+  },
   "homepage": "https://misoai.github.io/miso-client-js-sdk/sdk",
   "license": "MIT",
   "contributors": [

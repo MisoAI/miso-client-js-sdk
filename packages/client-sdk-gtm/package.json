@@ -16,7 +16,11 @@
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
     "build": "npm run build:clean && npm run build:cjs"
   },
-  "repository": "MisoAI/miso-client-js-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git",
+    "directory": "packages/client-sdk-gtm"
+  },
   "homepage": "https://misoai.github.io/miso-client-js-sdk/plugins/gtm",
   "license": "MIT",
   "contributors": [
