@@ -20,12 +20,22 @@ const DEFAULT_API_OPTIONS = Object.freeze({
   },
 });
 
+function totalContent(layout, { value }) {
+  if (value === undefined) {
+    return '';
+  }
+  const { formatNumber } = layout.templates.helpers;
+  const formatted = formatNumber(value);
+  const label = value === 1 ? 'result' : 'results';
+  return `${formatted} ${label}`;
+}
+
 const DEFAULT_LAYOUTS = Object.freeze({
   ...Workflow.DEFAULT_LAYOUTS,
   [ROLE.QUERY]: [SearchBoxLayout.type],
   [ROLE.PRODUCTS]: [ListLayout.type, { incremental: true, infiniteScroll: true }],
   [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
-  [ROLE.TOTAL]: [TextLayout.type, { raw: true, format: 'number' }],
+  [ROLE.TOTAL]: [TextLayout.type, { raw: true, templates: { content: totalContent } }],
   [ROLE.FACETS]: [FacetsLayout.type],
   [ROLE.SORT]: [SelectLayout.type],
   [ROLE.MORE]: [MoreButtonLayout.type],

@@ -4,11 +4,15 @@ import TemplateBasedLayout from '../template.js';
 const TYPE = 'text';
 const DEFAULT_CLASSNAME = 'miso-text';
 
-function root(layout, { value }) {
+function root(layout, state) {
   const { className, role, options: { raw = false, tag } } = layout;
   const roleAttr = role ? `data-role="${role}"` : '';
-  const content = value !== undefined ? escapeHtml(getFormatFunction(layout)(value)) : '';
-  return raw ? content : `<${tag} class="${className}" ${roleAttr}>${content}</${tag}>`;
+  const text = layout.templates.content(layout, state);
+  return raw ? text : `<${tag} class="${className}" ${roleAttr}>${text}</${tag}>`;
+}
+
+function content(layout, { value }) {
+  return value !== undefined ? escapeHtml(getFormatFunction(layout)(value)) : '';
 }
 
 function getFormatFunction(layout) {
@@ -37,6 +41,7 @@ function getFormatFunction(layout) {
 
 const DEFAULT_TEMPLATES = Object.freeze({
   root,
+  content,
 });
 
 export default class TextLayout extends TemplateBasedLayout {

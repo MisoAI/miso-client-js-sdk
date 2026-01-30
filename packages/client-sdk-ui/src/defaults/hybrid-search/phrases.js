@@ -16,7 +16,7 @@ export const keywords = 'You searched for “${value}”';
 /**
  * The phrase to display <miso-total>
  */
-export const total = '${value} Results';
+export const total = '${value}';
 
 export const showMore = 'Show more';
 export const showLess = 'Show less';
