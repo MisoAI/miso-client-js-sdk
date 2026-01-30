@@ -36,7 +36,14 @@ export default class AnalyticsPlugin extends Component {
   }
 
   _injectWorkflow(workflow) {
+    if (!this._shallInjectWorkflow(workflow)) {
+      return;
+    }
     workflow.analytics = new Analytics(this, workflow);
+  }
+
+  _shallInjectWorkflow(workflow) {
+    return (workflow._name === 'ask' && !workflow.previous) || workflow._name === 'hybrid-search';
   }
 
   _handleEngagement() {
