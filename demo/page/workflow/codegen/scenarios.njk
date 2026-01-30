@@ -3,7 +3,7 @@ pagination:
   data: scenarios
   size: 1
   alias: scenario
-permalink: "/ui/{{ scenario.path }}/"
+permalink: "/workflow/{{ scenario.path }}/"
 ---
 
 {{ helpers.codegen(scenario.config) | safe }}

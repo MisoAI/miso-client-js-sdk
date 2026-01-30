@@ -123,23 +123,3 @@ sections:
     path: /tracker/watch
   - title: Click
     path: /tracker/click
-- title: Misc
-  path: /misc
-  pages:
-  - title: Loading
-    path: /misc/loading
-  - title: Citation link
-    path: /misc/citation-link
-- title: Ask (Combo)
-  path: /ask-combo
-  pages:
-  - title: Default
-    path: /ask-combo/default
-  - title: No related resources
-    path: /ask-combo/no-related-resources
-  - title: Custom
-    path: /ask-combo/custom
-  - title: Production
-    path: /ask-combo/production
-  - title: Tooltip
-    path: /ask-combo/tooltip

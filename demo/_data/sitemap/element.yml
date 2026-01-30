@@ -1,0 +1,13 @@
+sections:
+- title: Elements
+  pages:
+  - title: Citation link
+    path: /citation-link
+  - title: List mark spacing
+    path: /list-mark-spacing
+  - title: Loading
+    path: /loading
+  - title: <miso-total>
+    path: /miso-total
+  - title: Search box (textarea)
+    path: /search-box-textarea
