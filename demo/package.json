@@ -37,9 +37,10 @@
     "@miso.ai/client-sdk-codegen": "file:packages/client-sdk-codegen",
     "@miso.ai/client-sdk-dev-tool": "file:packages/client-sdk-dev-tool",
     "@miso.ai/doc-utils": "^1.0.0",
+    "@miso.ai/doggoganger-api": "^0.10.0-beta.0",
     "@miso.ai/progressive-markdown": "file:packages/progressive-markdown",
     "@rollup/plugin-yaml": "^4.0.1",
     "htmlfy": "^0.5.0",
-    "instantsearch.js": "^4.40.4"
+    "instantsearch.js": "^4.87.0"
   }
 }
