@@ -34,6 +34,8 @@ sections:
     path: /helpers/debug
   - title: Lorem
     path: /helpers/lorem
+  - title: Markdown (Test)
+    path: /helpers/markdown-test
   - title: Markdown (NPM)
     path: /helpers/markdown-npm
   - title: Markdown (UMD)

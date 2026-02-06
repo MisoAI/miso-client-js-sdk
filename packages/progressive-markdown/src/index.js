@@ -16,3 +16,4 @@ export * from './model/index.js';
 export * from './preset/index.js';
 export * from './utils.js';
 export * from './styles.js';
+export * from './test-tools.js';

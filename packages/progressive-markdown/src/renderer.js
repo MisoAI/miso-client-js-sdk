@@ -105,6 +105,7 @@ export default class Renderer {
     }
 
     if (viewDone) {
+      // TODO: ad-hoc! shall go throught _applyOperation() (SOLIDIFY)
       this._options.mergeTextOnDone && element.normalize();
       this._options.onDone(element);
     }
