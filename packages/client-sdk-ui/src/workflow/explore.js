@@ -170,6 +170,7 @@ export default class Explore extends UnitWorkflow {
   }
 
   _getSubmitUrl(args) {
+    // TODO: if trending_questions -> qs = '_trending'
     let url = UseLinkMixin.prototype._getSubmitUrl.call(this, args);
     if (!args.generated || !this._productId) {
       return url;

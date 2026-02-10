@@ -1,24 +1,45 @@
-import { FreeController, presetMiso, generateTestSteps, loadStyles } from '@miso.ai/progressive-markdown';
+import { FreeController, presetMiso, generateTestSteps } from '@miso.ai/progressive-markdown';
 import { lorem as _lorem } from '@miso.ai/lorem';
 
 //loadStyles();
 
-const element = document.getElementById('answer');
-const controller = new FreeController(element, {
+const seed = new URLSearchParams(window.location.search).get('seed') || undefined;
+
+const actualElement = document.getElementById('answer-element-actual');
+const expectedElement = document.getElementById('answer-element-expected');
+const actualController = new FreeController(actualElement, {
   presets: [presetMiso],
 });
+const expectedController = new FreeController(expectedElement, {
+  presets: [presetMiso],
+  forceOverwrite: true,
+});
 
-for (const step of generateTestSteps()) {
+const controllers = [actualController, expectedController];
+
+for (const step of generateTestSteps({ seed })) {
   switch (step.type) {
     case 'response':
-      controller.response = step.response;
+      for (const controller of controllers) {
+        controller.response = step.response;
+      }
       break;
     case 'cursor':
-      controller.cursor += step.increment;
+      for (const controller of controllers) {
+        controller.cursor += step.increment;
+      }
       break;
   }
-  console.log(step, controller.rendered);
-  if (controller.done) {
+  console.log(step, actualController.rendered, expectedController.rendered);
+  if (actualController.html !== expectedController.html) {
+    console.error('html mismatch', actualController.html, expectedController.html);
+    break;
+  }
+  if (actualController.done !== expectedController.done) {
+    console.error('done mismatch', actualController.done, expectedController.done);
+    break;
+  }
+  if (actualController.done && expectedController.done) {
     break;
   }
 }

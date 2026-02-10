@@ -95,7 +95,7 @@ export default class Renderer {
     // TODO
 
     // we have to overwrite the whole thing if we had rendered pass the conflict point
-    const overwrite = conflict !== undefined && prevCursor >= conflict.index;
+    const overwrite = this._options.forceOverwrite || (conflict !== undefined && prevCursor >= conflict.index);
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
 
     const debugContext = { index, timestamp, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } };

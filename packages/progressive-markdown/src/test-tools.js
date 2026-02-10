@@ -5,9 +5,9 @@ import { resolvePresets } from './preset/index.js';
 
 export class FreeController {
 
-  constructor(element, options = {}) {
+  constructor(element, { forceOverwrite = false, ...options } = {}) {
     this._element = element;
-    this._renderer = new Renderer(resolvePresets(options));
+    this._renderer = new Renderer({ ...resolvePresets(options), forceOverwrite });
 
     this._response = undefined;
     this._cursor = undefined;
@@ -51,6 +51,10 @@ export class FreeController {
   get done() {
     const { rendered } = this;
     return rendered && rendered.done;
+  }
+
+  get html() {
+    return this._element.innerHTML;
   }
 
 }

@@ -1,5 +1,5 @@
 ---
-dependency: 'markdown-test'
+dependency: 'markdown-npm'
 ---
 
 {% raw %}
@@ -7,7 +7,7 @@ dependency: 'markdown-test'
 #main {
   padding: 1rem;
 }
-#answer {
+.groups {
   margin-top: 1rem;
 }
 .miso-citation-tooltip .title {
@@ -26,7 +26,12 @@ dependency: 'markdown-test'
 }
 </style>
 <div id="main">
-  <div id="answer"></div>
+  <div class="groups">
+    <div id="answer-element-actual" class="miso-markdown"></div>
+    <div id="answer-element-expected" class="miso-markdown"></div>
+    <div id="answer-html-actual"></div>
+    <div id="answer-html-expected"></div>
+  </div>
 </div>
 {% endraw %}
 
