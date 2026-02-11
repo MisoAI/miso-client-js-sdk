@@ -70,9 +70,10 @@ export function * generateTestSteps({
   ...options
 } = {}) {
   lorem = lorem || _lorem({ seed });
+  const randomFn = lorem.prng.random.bind(lorem.prng);
 
   const timePerFrame = 1 / fps;
-  const cursorFn = pacer({ speed, acceleration });
+  const cursorFn = pacer({ speed, acceleration, randomFn });
 
   let responseIndex = 0;
   let elapsed = 0;

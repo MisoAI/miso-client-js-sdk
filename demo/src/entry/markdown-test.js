@@ -3,16 +3,23 @@ import { lorem as _lorem } from '@miso.ai/lorem';
 
 const urlParams = new URLSearchParams(window.location.search);
 const seedInUrl = urlParams.has('seed');
-const lorem = _lorem({ seed: urlParams.get('seed') || undefined });
+const lorem = _lorem({ seed: parseInt(urlParams.get('seed')) || undefined });
 const { seed } = lorem;
 
-document.getElementById('seed').textContent = seed;
+const seedElement = document.getElementById('seed');
+const stepElement = document.getElementById('step');
+const resultElement = document.getElementById('result');
+const copySeedButton = document.getElementById('copy-seed');
+const seedToUrlButton = document.getElementById('seed-to-url');
 
-const seedToUrlIcon = document.getElementById('seed-to-url');
+seedElement.textContent = seed;
+
+copySeedButton.addEventListener('click', () => navigator.clipboard.writeText(`${seed}`));
+
 if (seedInUrl) {
-  seedToUrlIcon.style.display = 'none';
+  seedToUrlButton.style.display = 'none';
 } else {
-  seedToUrlIcon.addEventListener('click', () => {
+  seedToUrlButton.addEventListener('click', () => {
     urlParams.set('seed', seed);
     window.location.search = urlParams.toString();
   });
@@ -30,6 +37,7 @@ const expectedController = new FreeController(expectedElement, {
 
 const controllers = [actualController, expectedController];
 
+let stepIndex = 1;
 for (const step of generateTestSteps({ lorem })) {
   switch (step.type) {
     case 'response':
@@ -43,18 +51,26 @@ for (const step of generateTestSteps({ lorem })) {
       }
       break;
   }
-  console.log(step, actualController.rendered, expectedController.rendered);
+  stepElement.textContent = `${stepIndex}`;
+  console.log(stepIndex, step, actualController.rendered, expectedController.rendered);
   if (actualController.html !== expectedController.html) {
     console.error('html mismatch');
     console.log(actualController.html);
     console.log(expectedController.html);
+    resultElement.style.color = 'red';
+    resultElement.textContent = 'Failed';
     break;
   }
   if (actualController.done !== expectedController.done) {
     console.error('done mismatch', actualController.done, expectedController.done);
+    resultElement.style.color = 'red';
+    resultElement.textContent = 'Failed';
     break;
   }
   if (actualController.done && expectedController.done) {
+    resultElement.style.color = 'green';
+    resultElement.textContent = 'Passed';
     break;
   }
+  stepIndex++;
 }

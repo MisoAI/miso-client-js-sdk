@@ -9,7 +9,7 @@ export default function pacer(options) {
   };
 }
 
-function normalizeSpeedFunction({ speed = DEFAULT_SPEED, acceleration = DEFAULT_ACCELERATION } = {}) {
+function normalizeSpeedFunction({ speed = DEFAULT_SPEED, acceleration = DEFAULT_ACCELERATION, randomFn = Math.random } = {}) {
   if (typeof speed === 'function') {
     return speed;
   }
@@ -20,7 +20,7 @@ function normalizeSpeedFunction({ speed = DEFAULT_SPEED, acceleration = DEFAULT_
     throw new Error(`Invalid acceleration: ${acceleration}`);
   }
   return (timestamp, doneAt) => {
-    let value = speed * (Math.random() + 0.5);
+    let value = speed * (randomFn() + 0.5);
     if (acceleration > 0 && doneAt !== undefined && timestamp > doneAt) {
       // speed up gradually when input is done
       value *= 1 + ((timestamp - doneAt) * acceleration / 1000);

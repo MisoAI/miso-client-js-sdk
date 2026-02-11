@@ -33,6 +33,11 @@ export default function(config) {
 
   config.addNunjucksFilter('markdown', value => markdown.renderInline(value));
 
+  config.addShortcode('icon', (name, { size = 16, ...attrs } = {}) => {
+    const attrStr = Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(' ');
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" fill="currentColor" class="bi bi-${name}" viewBox="0 0 16 16"${attrStr ? ' ' + attrStr : ''}><use xlink:href="/img/bootstrap-icons.svg#${name}"/></svg>`;
+  });
+
   config.addNunjucksGlobal('helpers', new Helpers());
   config.addGlobalData('layout', 'base.njk');
 
