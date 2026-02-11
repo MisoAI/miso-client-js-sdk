@@ -1,9 +1,22 @@
 import { FreeController, presetMiso, generateTestSteps } from '@miso.ai/progressive-markdown';
 import { lorem as _lorem } from '@miso.ai/lorem';
 
-//loadStyles();
+const urlParams = new URLSearchParams(window.location.search);
+const seedInUrl = urlParams.has('seed');
+const lorem = _lorem({ seed: urlParams.get('seed') || undefined });
+const { seed } = lorem;
 
-const seed = new URLSearchParams(window.location.search).get('seed') || undefined;
+document.getElementById('seed').textContent = seed;
+
+const seedToUrlIcon = document.getElementById('seed-to-url');
+if (seedInUrl) {
+  seedToUrlIcon.style.display = 'none';
+} else {
+  seedToUrlIcon.addEventListener('click', () => {
+    urlParams.set('seed', seed);
+    window.location.search = urlParams.toString();
+  });
+}
 
 const actualElement = document.getElementById('answer-element-actual');
 const expectedElement = document.getElementById('answer-element-expected');
@@ -17,7 +30,7 @@ const expectedController = new FreeController(expectedElement, {
 
 const controllers = [actualController, expectedController];
 
-for (const step of generateTestSteps({ seed })) {
+for (const step of generateTestSteps({ lorem })) {
   switch (step.type) {
     case 'response':
       for (const controller of controllers) {
@@ -32,7 +45,9 @@ for (const step of generateTestSteps({ seed })) {
   }
   console.log(step, actualController.rendered, expectedController.rendered);
   if (actualController.html !== expectedController.html) {
-    console.error('html mismatch', actualController.html, expectedController.html);
+    console.error('html mismatch');
+    console.log(actualController.html);
+    console.log(expectedController.html);
     break;
   }
   if (actualController.done !== expectedController.done) {

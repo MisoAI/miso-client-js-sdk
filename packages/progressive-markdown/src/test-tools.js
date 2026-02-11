@@ -60,6 +60,7 @@ export class FreeController {
 }
 
 export function * generateTestSteps({
+  lorem,
   seed,
   stages = 2,
   rps = 1,
@@ -68,7 +69,7 @@ export function * generateTestSteps({
   acceleration = 4,
   ...options
 } = {}) {
-  const lorem = _lorem({ seed });
+  lorem = lorem || _lorem({ seed });
 
   const timePerFrame = 1 / fps;
   const cursorFn = pacer({ speed, acceleration });
