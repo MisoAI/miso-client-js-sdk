@@ -83,11 +83,11 @@ export default class Query {
     const toPivotPos = toPos.pivot(1);
 
     // top level nodes
-    const toPivotNodeChildIndex = (toPivotPos.pivotal ? toPivotPos.node : toPivotPos.left).childIndex;
+    const toPivotNodeChildIndex = !toPivotPos.intermediate ? toPivotPos.node.childIndex : toPivotPos.right ? toPivotPos.right.childIndex : undefined;
     const nodes = this._tree.children.slice(0, toPivotNodeChildIndex);
 
     // add the left slice of the remaining pivot node
-    if (toPivotPos.pivotal || toPivotPos.interior) {
+    if (!toPivotPos.intermediate) {
       nodes.push(toPivotPos.leftSlice);
     }
 
