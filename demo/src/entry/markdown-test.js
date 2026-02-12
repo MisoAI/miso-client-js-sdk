@@ -12,10 +12,12 @@ const stepElement = document.getElementById('step');
 const resultElement = document.getElementById('result');
 const copySeedButton = document.getElementById('copy-seed');
 const lockSeedButton = document.getElementById('lock-seed');
-const actualElement = document.getElementById('answer-element-actual');
-const expectedElement = document.getElementById('answer-element-expected');
-const actualCodeElement = document.querySelector('#answer-code-actual code');
-const expectedCodeElement = document.querySelector('#answer-code-expected code');
+const actualDomElement = document.getElementById('answer-dom-actual');
+const expectedDomElement = document.getElementById('answer-dom-expected');
+const actualHtmlElement = document.querySelector('#answer-html-actual code');
+const expectedHtmlElement = document.querySelector('#answer-html-expected code');
+const actualMdElement = document.querySelector('#answer-md-actual code');
+const expectedMdElement = document.querySelector('#answer-md-expected code');
 
 seedElement.textContent = seed;
 
@@ -32,6 +34,42 @@ if (seedInUrl) {
 
 const groupsElement = document.querySelector('.groups');
 const modeButtons = document.querySelectorAll('.mode-toggle [data-mode]');
+
+const actualController = new FreeController(actualDomElement, {
+  presets: [presetMiso],
+});
+const expectedController = new FreeController(expectedDomElement, {
+  presets: [presetMiso],
+  forceOverwrite: true,
+});
+
+let htmlStale = true;
+let mdStale = true;
+
+function renderHtml() {
+  if (!htmlStale) {
+    return;
+  }
+  actualHtmlElement.textContent = prettify(actualController.html);
+  expectedHtmlElement.textContent = prettify(expectedController.html);
+  Prism.highlightElement(actualHtmlElement);
+  Prism.highlightElement(expectedHtmlElement);
+  htmlStale = false;
+}
+
+function renderMd() {
+  if (!mdStale) {
+    return;
+  }
+  const actualResponse = actualController.response;
+  const expectedResponse = expectedController.response;
+  actualMdElement.textContent = actualResponse ? actualResponse.value : '';
+  expectedMdElement.textContent = expectedResponse ? expectedResponse.value : '';
+  Prism.highlightElement(actualMdElement);
+  Prism.highlightElement(expectedMdElement);
+  mdStale = false;
+}
+
 for (const button of modeButtons) {
   if (button.dataset.mode === groupsElement.dataset.mode) {
     button.classList.add('selected');
@@ -41,16 +79,13 @@ for (const button of modeButtons) {
     for (const b of modeButtons) {
       b.classList.toggle('selected', b === button);
     }
+    if (button.dataset.mode === 'html') {
+      renderHtml();
+    } else if (button.dataset.mode === 'md') {
+      renderMd();
+    }
   });
 }
-
-const actualController = new FreeController(actualElement, {
-  presets: [presetMiso],
-});
-const expectedController = new FreeController(expectedElement, {
-  presets: [presetMiso],
-  forceOverwrite: true,
-});
 
 const controllers = [actualController, expectedController];
 
@@ -71,10 +106,13 @@ for (const step of generateTestSteps({ lorem })) {
   stepElement.textContent = `${stepIndex}`;
   console.log(stepIndex, step, actualController.rendered, expectedController.rendered);
 
-  actualCodeElement.textContent = prettify(actualController.html);
-  expectedCodeElement.textContent = prettify(expectedController.html);
-  Prism.highlightElement(actualCodeElement);
-  Prism.highlightElement(expectedCodeElement);
+  htmlStale = true;
+  mdStale = true;
+  if (groupsElement.dataset.mode === 'html') {
+    renderHtml();
+  } else if (groupsElement.dataset.mode === 'md') {
+    renderMd();
+  }
 
   if (actualController.html !== expectedController.html) {
     console.error('html mismatch');

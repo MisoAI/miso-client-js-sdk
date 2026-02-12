@@ -2,7 +2,8 @@ import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import { lorem as _lorem } from '@miso.ai/lorem';
 
-import { MockElement, FreeController, generateTestSteps, presetMiso } from '../src/index.js';
+import { FreeController, generateTestSteps, presetMiso } from '../src/index.js';
+import MockElement from './mock-element.js';
 
 test('render: multiple seeds', () => {
   const seedLorem = _lorem({ seed: 1 });

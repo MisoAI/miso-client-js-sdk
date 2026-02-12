@@ -36,12 +36,22 @@ dependency: 'markdown-npm'
 .mode-toggle [data-mode].selected {
   background-color: var(--color-primary-l7);
 }
-.groups[data-mode="code"] #answer-element-actual,
-.groups[data-mode="code"] #answer-element-expected {
+.groups[data-mode="dom"] #answer-html-actual,
+.groups[data-mode="dom"] #answer-html-expected,
+.groups[data-mode="dom"] #answer-md-actual,
+.groups[data-mode="dom"] #answer-md-expected {
   display: none;
 }
-.groups[data-mode="element"] #answer-code-actual,
-.groups[data-mode="element"] #answer-code-expected {
+.groups[data-mode="html"] #answer-dom-actual,
+.groups[data-mode="html"] #answer-dom-expected,
+.groups[data-mode="html"] #answer-md-actual,
+.groups[data-mode="html"] #answer-md-expected {
+  display: none;
+}
+.groups[data-mode="md"] #answer-dom-actual,
+.groups[data-mode="md"] #answer-dom-expected,
+.groups[data-mode="md"] #answer-html-actual,
+.groups[data-mode="md"] #answer-html-expected {
   display: none;
 }
 .groups .code {
@@ -70,22 +80,25 @@ dependency: 'markdown-npm'
       <span class="input-group-text" id="result">...</span>
     </div>
     <div class="input-group mode-toggle">
-      <span class="input-group-text button" data-mode="element">Element</span>
-      <span class="input-group-text button" data-mode="code">Code</span>
+      <span class="input-group-text button" data-mode="dom">DOM</span>
+      <span class="input-group-text button" data-mode="html">HTML</span>
+      <span class="input-group-text button" data-mode="md">Markdown</span>
     </div>
   </div>
-  <div class="groups" data-mode="element">
-    <div class="group-element-actual">
+  <div class="groups" data-mode="dom">
+    <div class="group-actual">
       <h6>Actual</h6>
       <hr>
-      <div id="answer-element-actual" class="miso-markdown"></div>
-      <pre id="answer-code-actual" class="language-html code"><code class="language-html"></code></pre>
+      <div id="answer-dom-actual" class="miso-markdown"></div>
+      <pre id="answer-html-actual" class="language-html code"><code class="language-html"></code></pre>
+      <pre id="answer-md-actual" class="language-markdown code"><code class="language-markdown"></code></pre>
     </div>
-    <div class="group-element-expected">
+    <div class="group-expected">
       <h6>Expected</h6>
       <hr>
-      <div id="answer-element-expected" class="miso-markdown"></div>
-      <pre id="answer-code-expected" class="language-html code"><code class="language-html"></code></pre>
+      <div id="answer-dom-expected" class="miso-markdown"></div>
+      <pre id="answer-html-expected" class="language-html code"><code class="language-html"></code></pre>
+      <pre id="answer-md-expected" class="language-markdown code"><code class="language-markdown"></code></pre>
     </div>
   </div>
 </div>
