@@ -1,3 +1,4 @@
+import { prettify } from 'htmlfy';
 import { FreeController, presetMiso, generateTestSteps } from '@miso.ai/progressive-markdown';
 import { lorem as _lorem } from '@miso.ai/lorem';
 
@@ -10,23 +11,39 @@ const seedElement = document.getElementById('seed');
 const stepElement = document.getElementById('step');
 const resultElement = document.getElementById('result');
 const copySeedButton = document.getElementById('copy-seed');
-const seedToUrlButton = document.getElementById('seed-to-url');
+const lockSeedButton = document.getElementById('lock-seed');
+const actualElement = document.getElementById('answer-element-actual');
+const expectedElement = document.getElementById('answer-element-expected');
+const actualCodeElement = document.querySelector('#answer-code-actual code');
+const expectedCodeElement = document.querySelector('#answer-code-expected code');
 
 seedElement.textContent = seed;
 
 copySeedButton.addEventListener('click', () => navigator.clipboard.writeText(`${seed}`));
 
 if (seedInUrl) {
-  seedToUrlButton.style.display = 'none';
+  lockSeedButton.style.display = 'none';
 } else {
-  seedToUrlButton.addEventListener('click', () => {
+  lockSeedButton.addEventListener('click', () => {
     urlParams.set('seed', seed);
     window.location.search = urlParams.toString();
   });
 }
 
-const actualElement = document.getElementById('answer-element-actual');
-const expectedElement = document.getElementById('answer-element-expected');
+const groupsElement = document.querySelector('.groups');
+const modeButtons = document.querySelectorAll('.mode-toggle [data-mode]');
+for (const button of modeButtons) {
+  if (button.dataset.mode === groupsElement.dataset.mode) {
+    button.classList.add('selected');
+  }
+  button.addEventListener('click', () => {
+    groupsElement.dataset.mode = button.dataset.mode;
+    for (const b of modeButtons) {
+      b.classList.toggle('selected', b === button);
+    }
+  });
+}
+
 const actualController = new FreeController(actualElement, {
   presets: [presetMiso],
 });
@@ -53,6 +70,12 @@ for (const step of generateTestSteps({ lorem })) {
   }
   stepElement.textContent = `${stepIndex}`;
   console.log(stepIndex, step, actualController.rendered, expectedController.rendered);
+
+  actualCodeElement.textContent = prettify(actualController.html);
+  expectedCodeElement.textContent = prettify(expectedController.html);
+  Prism.highlightElement(actualCodeElement);
+  Prism.highlightElement(expectedCodeElement);
+
   if (actualController.html !== expectedController.html) {
     console.error('html mismatch');
     console.log(actualController.html);
