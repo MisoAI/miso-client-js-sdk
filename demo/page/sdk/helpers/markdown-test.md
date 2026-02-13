@@ -57,9 +57,6 @@ dependency: 'markdown-npm'
 .groups .code {
   font-size: 0.75rem;
 }
-#seed {
-  font-family: monospace;
-}
 #result {
   font-weight: bold;
 }
@@ -69,15 +66,15 @@ dependency: 'markdown-npm'
 <div id="main">
   <div class="controls">
     <div class="input-group seed-info">
-      <span class="input-group-text">Seed</span>
-      <span class="input-group-text" id="seed">...</span>
+      <span class="input-group-text">Seed =&nbsp;<span id="seed">...</span></span>
       <span class="input-group-text button" id="copy-seed">{% icon "copy" %}</span>
       <span class="input-group-text button" id="lock-seed">{% icon "lock" %}</span>
     </div>
-    <div class="input-group step-info">
-      <span class="input-group-text">Step</span>
-      <span class="input-group-text" id="step">0</span>
+    <div class="input-group">
       <span class="input-group-text" id="result">...</span>
+      <span class="input-group-text">Step =&nbsp;<span id="step">0</span></span>
+      <span class="input-group-text">Res. =&nbsp;<span id="responses">0</span></span>
+      <span class="input-group-text">Con. =&nbsp;<span id="conflicts">0</span></span>
     </div>
     <div class="input-group mode-toggle">
       <span class="input-group-text button" data-mode="dom">DOM</span>

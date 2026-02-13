@@ -1,7 +1,72 @@
-import { pacer } from '@miso.ai/commons';
+import { EventEmitter, pacer, trimObj } from '@miso.ai/commons';
 import { lorem as _lorem } from '@miso.ai/lorem';
 import Renderer from './renderer.js';
 import { resolvePresets } from './preset/index.js';
+
+export class TestRunner {
+
+  constructor(elements, { lorem, seed, ...options } = {}) {
+    if (!Array.isArray(elements) || elements.length !== 2) {
+      throw new Error('elements must be an array of 2 elements');
+    }
+    this._elements = elements;
+    this._lorem = lorem || _lorem({ seed });
+    this._options = options;
+    this._controllers = [
+      new FreeController(elements[0], options.renderer),
+      new FreeController(elements[1], { ...options.renderer, forceOverwrite: true }),
+    ];
+    this._events = new EventEmitter({ target: this });
+  }
+
+  get seed() {
+    return this._lorem.seed;
+  }
+
+  get controllers() {
+    return this._controllers;
+  }
+
+  run() {
+    const [actualController, expectedController] = this._controllers;
+    const options = { ...this._options.steps, lorem: this._lorem };
+
+    for (const step of generateTestSteps(options)) {
+      // apply step
+      switch (step.type) {
+        case 'response':
+          for (const controller of this._controllers) {
+            controller.response = step.response;
+          }
+          break;
+        case 'cursor':
+          for (const controller of this._controllers) {
+            controller.cursor += step.increment;
+          }
+          break;
+      }
+
+      // emit state
+      this._events.emit('state', {
+        step,
+        controllers: this._controllers.map(c => c.state),
+      });
+
+      // verify
+      if (actualController.html !== expectedController.html) {
+        throw new Error('HTML mismatch');
+      }
+      if (actualController.done !== expectedController.done) {
+        throw new Error('Done mismatch');
+      }
+      if (actualController.done && expectedController.done) {
+        return;
+      }
+    }
+    throw new Error('Test steps exhausted without completion');
+  }
+
+}
 
 export class FreeController {
 
@@ -50,11 +115,16 @@ export class FreeController {
 
   get done() {
     const { rendered } = this;
-    return rendered && rendered.done;
+    return !!(rendered && rendered.done);
   }
 
   get html() {
     return this._element.innerHTML;
+  }
+
+  get state() {
+    const { rendered, response, done, html } = this;
+    return trimObj({ rendered, response, done, html });
   }
 
 }
@@ -76,23 +146,22 @@ export function * generateTestSteps({
   const cursorFn = pacer({ speed, acceleration, randomFn });
 
   let responseIndex = 0;
+  let stepIndex = 0;
   let elapsed = 0;
   let doneAt = undefined;
-  let cursor = 0;
 
   function nextCursor() {
     const increment = cursorFn(0, doneAt ? doneAt * 1000 : undefined, elapsed * 1000, (elapsed + timePerFrame) * 1000);
     elapsed += timePerFrame;
-    return { type: 'cursor', increment };
+    return { index: stepIndex++, type: 'cursor', increment };
   }
 
   for (let stageIndex = 0; stageIndex < stages; stageIndex++) {
-    // clear cursor at the beginning of each stage
-    cursor = 0;
     for (const response of generateTestResponsesPerStage(lorem, stageIndex, stageIndex === stages - 1, options)) {
       const currentResponseTime = elapsed;
       // yield response update
       yield {
+        index: stepIndex++,
         type: 'response',
         response,
       };

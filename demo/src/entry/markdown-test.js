@@ -1,74 +1,50 @@
 import { prettify } from 'htmlfy';
-import { FreeController, presetMiso, generateTestSteps } from '@miso.ai/progressive-markdown';
-import { lorem as _lorem } from '@miso.ai/lorem';
+import { TestRunner, presetMiso } from '@miso.ai/progressive-markdown';
 
 const urlParams = new URLSearchParams(window.location.search);
 const seedInUrl = urlParams.has('seed');
-const lorem = _lorem({ seed: parseInt(urlParams.get('seed')) || undefined });
-const { seed } = lorem;
+const seed = parseInt(urlParams.get('seed')) || undefined;
 
 const seedElement = document.getElementById('seed');
 const stepElement = document.getElementById('step');
 const resultElement = document.getElementById('result');
+const responsesElement = document.getElementById('responses');
+const conflictsElement = document.getElementById('conflicts');
+
 const copySeedButton = document.getElementById('copy-seed');
 const lockSeedButton = document.getElementById('lock-seed');
+const modeButtons = document.querySelectorAll('.mode-toggle [data-mode]');
+
 const actualDomElement = document.getElementById('answer-dom-actual');
 const expectedDomElement = document.getElementById('answer-dom-expected');
 const actualHtmlElement = document.querySelector('#answer-html-actual code');
 const expectedHtmlElement = document.querySelector('#answer-html-expected code');
 const actualMdElement = document.querySelector('#answer-md-actual code');
 const expectedMdElement = document.querySelector('#answer-md-expected code');
+const groupsElement = document.querySelector('.groups');
 
-seedElement.textContent = seed;
+const runner = new TestRunner([actualDomElement, expectedDomElement], {
+  seed,
+  renderer: { presets: [presetMiso] },
+});
 
-copySeedButton.addEventListener('click', () => navigator.clipboard.writeText(`${seed}`));
+seedElement.textContent = runner.seed;
+
+copySeedButton.addEventListener('click', () => navigator.clipboard.writeText(`${runner.seed}`));
 
 if (seedInUrl) {
   lockSeedButton.style.display = 'none';
 } else {
   lockSeedButton.addEventListener('click', () => {
-    urlParams.set('seed', seed);
+    urlParams.set('seed', runner.seed);
     window.location.search = urlParams.toString();
   });
 }
 
-const groupsElement = document.querySelector('.groups');
-const modeButtons = document.querySelectorAll('.mode-toggle [data-mode]');
-
-const actualController = new FreeController(actualDomElement, {
-  presets: [presetMiso],
-});
-const expectedController = new FreeController(expectedDomElement, {
-  presets: [presetMiso],
-  forceOverwrite: true,
-});
-
 let htmlStale = true;
 let mdStale = true;
-
-function renderHtml() {
-  if (!htmlStale) {
-    return;
-  }
-  actualHtmlElement.textContent = prettify(actualController.html);
-  expectedHtmlElement.textContent = prettify(expectedController.html);
-  Prism.highlightElement(actualHtmlElement);
-  Prism.highlightElement(expectedHtmlElement);
-  htmlStale = false;
-}
-
-function renderMd() {
-  if (!mdStale) {
-    return;
-  }
-  const actualResponse = actualController.response;
-  const expectedResponse = expectedController.response;
-  actualMdElement.textContent = actualResponse ? actualResponse.value : '';
-  expectedMdElement.textContent = expectedResponse ? expectedResponse.value : '';
-  Prism.highlightElement(actualMdElement);
-  Prism.highlightElement(expectedMdElement);
-  mdStale = false;
-}
+let responses = 0;
+let conflicts = 0;
 
 for (const button of modeButtons) {
   if (button.dataset.mode === groupsElement.dataset.mode) {
@@ -87,24 +63,20 @@ for (const button of modeButtons) {
   });
 }
 
-const controllers = [actualController, expectedController];
+runner.on('state', state => {
+  logState(state);
 
-let stepIndex = 1;
-for (const step of generateTestSteps({ lorem })) {
-  switch (step.type) {
-    case 'response':
-      for (const controller of controllers) {
-        controller.response = step.response;
-      }
-      break;
-    case 'cursor':
-      for (const controller of controllers) {
-        controller.cursor += step.increment;
-      }
-      break;
+  const { step, controllers: [{ rendered }] } = state;
+  if (step.type === 'response') {
+    responses++;
   }
-  stepElement.textContent = `${stepIndex}`;
-  console.log(stepIndex, step, actualController.rendered, expectedController.rendered);
+  if (rendered && rendered.conflict) {
+    conflicts++;
+  }
+
+  stepElement.textContent = `${step.index}`;
+  responsesElement.textContent = `${responses}`;
+  conflictsElement.textContent = `${conflicts}`;
 
   htmlStale = true;
   mdStale = true;
@@ -113,25 +85,55 @@ for (const step of generateTestSteps({ lorem })) {
   } else if (groupsElement.dataset.mode === 'md') {
     renderMd();
   }
+});
 
-  if (actualController.html !== expectedController.html) {
-    console.error('html mismatch');
-    console.log(actualController.html);
-    console.log(expectedController.html);
-    resultElement.style.color = 'red';
-    resultElement.textContent = 'Failed';
-    break;
+try {
+  runner.run();
+  resultElement.style.color = 'green';
+  resultElement.textContent = 'Passed';
+} catch (error) {
+  console.error(error);
+  resultElement.style.color = 'red';
+  resultElement.textContent = 'Failed';
+}
+
+// helpers //
+function renderHtml() {
+  if (!htmlStale) {
+    return;
   }
-  if (actualController.done !== expectedController.done) {
-    console.error('done mismatch', actualController.done, expectedController.done);
-    resultElement.style.color = 'red';
-    resultElement.textContent = 'Failed';
-    break;
+  htmlStale = false;
+
+  actualHtmlElement.textContent = prettify(runner.controllers[0].html);
+  expectedHtmlElement.textContent = prettify(runner.controllers[1].html);
+  Prism.highlightElement(actualHtmlElement);
+  Prism.highlightElement(expectedHtmlElement);
+}
+
+function renderMd() {
+  if (!mdStale) {
+    return;
   }
-  if (actualController.done && expectedController.done) {
-    resultElement.style.color = 'green';
-    resultElement.textContent = 'Passed';
-    break;
+  mdStale = false;
+
+  const actualResponse = runner.controllers[0].response;
+  const expectedResponse = runner.controllers[1].response;
+  actualMdElement.textContent = actualResponse ? actualResponse.value : '';
+  expectedMdElement.textContent = expectedResponse ? expectedResponse.value : '';
+  Prism.highlightElement(actualMdElement);
+  Prism.highlightElement(expectedMdElement);
+}
+
+function logState({ step, controllers } = {}) {
+  const { index, type, increment, ...rest } = step;
+  const indexTag = `[#${index}]`;
+  switch (type) {
+    case 'response':
+      console.log(`${indexTag} ${type}`, rest);
+      break;
+    case 'cursor':
+      console.log(`${indexTag} ${type} +${increment}`);
+      break;
   }
-  stepIndex++;
+  console.log(indexTag, ...controllers);
 }
