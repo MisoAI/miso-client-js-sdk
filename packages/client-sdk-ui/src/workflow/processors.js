@@ -302,7 +302,7 @@ export function carryOverQuestionIdToData(data, oldData) {
 
 // interactions //
 export function buildBaseInteraction(args) {
-  const { role, type, items } = args;
+  const { role, type, items, ...rest } = args;
   const payload = {
     type: type === 'viewable' ? 'viewable_impression' : type,
     context: {
@@ -332,6 +332,11 @@ export function buildBaseInteraction(args) {
     case EVENT_TYPE.HEARTBEAT:
       payload.type = 'custom';
       payload.custom_action_name = 'heartbeat';
+      break;
+    case EVENT_TYPE.GENERIC_CLICK:
+      payload.type = 'custom';
+      payload.custom_action_name = 'generic_click';
+      payload.context.custom_context.href = args.href;
       break;
   }
 

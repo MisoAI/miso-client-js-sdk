@@ -28,6 +28,7 @@ export default class AnalyticsPlugin extends Component {
     this._engagement = new UserEngagementObserver(this._handleEngagement.bind(this));
     // TODO: should we provide a way to stop the observer?
     window.addEventListener('beforeunload', this._handlePageExit.bind(this));
+    window.addEventListener('click', this._handleClick.bind(this, MisoClient));
     MisoClient.on('create', this._injectClient.bind(this));
   }
 
@@ -36,14 +37,10 @@ export default class AnalyticsPlugin extends Component {
   }
 
   _injectWorkflow(workflow) {
-    if (!this._shallInjectWorkflow(workflow)) {
+    if (!shallApplyAnalytics(workflow)) {
       return;
     }
     workflow.analytics = new Analytics(this, workflow);
-  }
-
-  _shallInjectWorkflow(workflow) {
-    return (workflow._name === 'ask' && !workflow.previous) || workflow._name === 'hybrid-search';
   }
 
   _handleEngagement() {
@@ -58,6 +55,61 @@ export default class AnalyticsPlugin extends Component {
     }
   }
 
+  _handleClick(MisoClient, event) {
+    // get the first client instance
+    const client = MisoClient.instances[0];
+    if (!client) {
+      return;
+    }
+    const workflow = getGenericClickWorkflow(this, event);
+    if (!workflow || !isDataReady(workflow)) {
+      return;
+    }
+    const href = getGenericClickHref(event);
+    if (!href) {
+      return;
+    }
+    workflow.trackers.container.genericClick({ href });
+  }
+
+}
+
+function shallApplyAnalytics(workflow) {
+  return (workflow._name === 'ask' && !workflow.previous) || workflow._name === 'hybrid-search';
+}
+
+function getGenericClickWorkflow(plugin, event) {
+  // find the closet container
+  for (let element = event.target; element; element = element.parentElement) {
+    const { role, workflow } = element;
+    if (role && !workflow) {
+      return undefined; // inside component, not a generic click
+    }
+    // if inside a container, we should use the container's workflow
+    if (workflow) {
+      return shallApplyAnalytics(workflow) ? workflow : undefined;
+    }
+  }
+
+  // fallback to default workflow
+  for (const member of plugin._members) {
+    const workflow = member._workflow;
+    if (shallApplyAnalytics(workflow)) {
+      return workflow;
+    }
+  }
+
+  return undefined;
+}
+
+function getGenericClickHref(event) {
+  const element = event.target.closest('[href]');
+  return element ? element.getAttribute('href') : undefined;
+}
+
+function isDataReady(workflow) {
+  const { data = {} } = workflow.states;
+  return data.status === 'ready';
 }
 
 function normalizeOptions({ ...options } = {}) {

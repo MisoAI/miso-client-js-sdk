@@ -28,6 +28,9 @@
   text-align: right;
 }
 </style>
+<div>
+  <a href="https://miso.ai">Miso.ai</a>
+</div>
 <h1 class="hero-title">Miso Answers</h1>
 <div id="miso-ask-combo" class="miso-ask-combo"></div>
 <div id="miso-analytics">

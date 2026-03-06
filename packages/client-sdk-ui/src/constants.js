@@ -72,6 +72,7 @@ export const EVENT_TYPE = Object.freeze({
   SUBMIT: 'submit',
   FEEDBACK: 'feedback',
   HEARTBEAT: 'heartbeat',
+  GENERIC_CLICK: 'generic_click',
 });
 
 export const TRACKING_EVENT_TYPES = [
@@ -87,6 +88,12 @@ export const PERFORMANCE_EVENT_TYPES = [
   EVENT_TYPE.IMPRESSION,
   EVENT_TYPE.VIEWABLE,
   EVENT_TYPE.CLICK,
+];
+
+export const DIRECT_TRACKING_EVENT_TYPES = [
+  EVENT_TYPE.SUBMIT,
+  EVENT_TYPE.HEARTBEAT,
+  EVENT_TYPE.GENERIC_CLICK,
 ];
 
 const PERFORMANCE_EVENT_TYPE_SET = new Set(PERFORMANCE_EVENT_TYPES);

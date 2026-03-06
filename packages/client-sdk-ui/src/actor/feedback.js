@@ -9,7 +9,7 @@ export default class FeedbackActor {
       hub.on(fields.feedback(), state => this._trigger(state)),
     ];
   }
-  
+
   _trigger(state) {
     this._hub.trigger(fields.tracker(), {
       type: EVENT_TYPE.FEEDBACK,

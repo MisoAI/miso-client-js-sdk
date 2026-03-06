@@ -1,5 +1,5 @@
-import { asArray, trimObj } from '@miso.ai/commons';
-import { PERFORMANCE_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType } from '../constants.js';
+import { asArray, trimObj, snakeToLowerCamel } from '@miso.ai/commons';
+import { PERFORMANCE_EVENT_TYPES, DIRECT_TRACKING_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType } from '../constants.js';
 import * as fields from './fields.js';
 import States from '../util/states.js';
 
@@ -55,21 +55,6 @@ export default class Tracker {
     });
   }
 
-  submit({ value }) {
-    this._syncSession();
-    this._sendToHub({
-      type: EVENT_TYPE.SUBMIT,
-      value,
-    });
-  }
-
-  heartbeat() {
-    this._syncSession();
-    this._sendToHub({
-      type: EVENT_TYPE.HEARTBEAT,
-    });
-  }
-
   _sendToHub(args) {
     this._hub.trigger(fields.tracker(), Object.freeze(trimObj({ role: this._role, ...args })));
   }
@@ -106,7 +91,14 @@ export default class Tracker {
 }
 
 for (const type of PERFORMANCE_EVENT_TYPES) {
-  Tracker.prototype[type] = function(items, meta) {
+  Tracker.prototype[snakeToLowerCamel(type)] = function(items, meta) {
     this._trigger(type, items, meta);
+  };
+}
+
+for (const type of DIRECT_TRACKING_EVENT_TYPES) {
+  Tracker.prototype[snakeToLowerCamel(type)] = function(args) {
+    this._syncSession();
+    this._sendToHub({ ...args, type });
   };
 }
