@@ -44,7 +44,6 @@
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
-  MisoClient.plugins.use('std:analytics');
   const client = new MisoClient(window.DEFAULT_ASK_API_KEY);
   await client.ui.ready;
   const { templates } = MisoClient.ui.defaults.ask;
