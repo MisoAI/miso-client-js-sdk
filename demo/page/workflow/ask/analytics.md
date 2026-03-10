@@ -40,6 +40,10 @@
   <div id="user-engagement-time" class="miso-analytics-value"></div>
   <div class="miso-analytics-label">Idle:</div>
   <div id="user-idle-time" class="miso-analytics-value"></div>
+  <div class="miso-analytics-label">Heartbeats:</div>
+  <div id="heartbeat-count" class="miso-analytics-value"></div>
+  <div class="miso-analytics-label">Generic Clicks:</div>
+  <div id="generic-click-count" class="miso-analytics-value"></div>
 </div>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
@@ -53,12 +57,31 @@ misocmd.push(async () => {
   const waitingTimeEl = document.querySelector('#user-waiting-time');
   const engagementTimeEl = document.querySelector('#user-engagement-time');
   const idleTimeEl = document.querySelector('#user-idle-time');
+  const heartbeatCountEl = document.querySelector('#heartbeat-count');
+  const genericClickCountEl = document.querySelector('#generic-click-count');
   function formatTime(ms) {
     const totalSeconds = ms / 1000;
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toFixed(3).padStart(6, '0')}`;
   }
+  let heartbeatCount = 0;
+  let genericClickCount = 0;
+  client.ui.ask.on('interaction', (interaction) => {
+    if (interaction.type !== 'custom') {
+      return;
+    }
+    switch (interaction.custom_action_name) {
+      case 'heartbeat':
+        heartbeatCount++;
+        heartbeatCountEl.textContent = heartbeatCount;
+        break;
+      case 'generic_click':
+        genericClickCount++;
+        genericClickCountEl.textContent = genericClickCount;
+        break;
+    }
+  });
   setInterval(() => {
     const { analytics } = client.ui.ask;
     const { state } = analytics;

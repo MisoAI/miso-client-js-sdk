@@ -1,4 +1,4 @@
-import { Component, UserEngagementObserver, Stopwatch, trimObj, mergeInteractions } from '@miso.ai/commons';
+import { Component, UserEngagementObserver, UserActivityObserver, Stopwatch, trimObj, mergeInteractions } from '@miso.ai/commons';
 
 const PLUGIN_ID = 'std:analytics';
 
@@ -12,6 +12,7 @@ export default class AnalyticsPlugin extends Component {
     super('analytics');
     this._members = [];
     this._engagement = undefined;
+    this._activity = undefined;
   }
 
   config(options = {}) {
@@ -26,6 +27,7 @@ export default class AnalyticsPlugin extends Component {
   install(MisoClient, context) {
     context.addSubtree(this);
     this._engagement = new UserEngagementObserver(this._handleEngagement.bind(this));
+    this._activity = new UserActivityObserver(this._handleActivity.bind(this));
     // TODO: should we provide a way to stop the observer?
     window.addEventListener('beforeunload', this._handlePageExit.bind(this));
     window.addEventListener('click', this._handleClick.bind(this, MisoClient));
@@ -46,6 +48,12 @@ export default class AnalyticsPlugin extends Component {
   _handleEngagement() {
     for (const member of this._members) {
       member._syncEngagementState();
+    }
+  }
+
+  _handleActivity(event) {
+    for (const member of this._members) {
+      member._sendHeartbeat();
     }
   }
 
@@ -246,6 +254,8 @@ class Analytics {
     } else {
       this._timer.stop();
     }
+
+    this._sendHeartbeat();
   }
 
 }
