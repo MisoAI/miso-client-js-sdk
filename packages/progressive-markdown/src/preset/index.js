@@ -1,7 +1,7 @@
 import { mergeRendererOptions } from '../utils.js';
 
 export * from './helpers.js';
-export { default as presetMiso } from './miso.js';
+export * from './miso.js';
 
 export function resolvePresets({ presets = [], ...options } = {}) {
   return presets.reduce(resolvePreset, options);

@@ -1,5 +1,6 @@
 import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeLinkAttrs from '../rehype-link-attrs.js';
 import rehypeCitationLink from '../rehype-citation-link.js';
 import rehypeFollowUpLink from '../rehype-follow-up-link.js';
@@ -7,7 +8,19 @@ import { mergeRendererOptions } from '../utils.js';
 import { applyOperationWithSlot } from './slot.js';
 import { defaultProcessMarkdown } from './helpers.js';
 
-export default function miso({
+// https://github.com/syntax-tree/hast-util-sanitize#schema
+export const presetMisoSanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [
+      ...(defaultSchema.attributes?.a || []),
+      'data*',
+    ],
+  },
+};
+
+export function presetMiso({
   onCitationLink,
   onRefChange,
   onDone,
@@ -15,6 +28,7 @@ export default function miso({
   cursorClass,
   getSource,
   processMarkdown = defaultProcessMarkdown,
+  sanitizeSchema = presetMisoSanitizeSchema,
   variant,
   ...options
 } = {}) {
@@ -59,8 +73,9 @@ export default function miso({
         rehypeLinkAttrs,
         () => rehypeCitationLink(onCitationLink),
         rehypeFollowUpLink,
+        //() => rehypeSanitize(sanitizeSchema),
       ],
-      allowDangerousHtml: true,
+      allowDangerousHtml: true, // TODO: shall we merge from input options?
     },
     onCitationLink,
     onRefChange: (oldRef, newRef) => {

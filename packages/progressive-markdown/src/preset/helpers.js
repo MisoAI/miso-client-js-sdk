@@ -11,6 +11,7 @@ export function escapeTildes(markdown) {
   return markdown.replaceAll('~', '\\~');
 }
 
+// TODO: rename -> presetMisoProcessMarkdown & move to miso.js
 export function defaultProcessMarkdown(markdown) {
   markdown = removeMarkdownIncompleteTableRow(markdown);
   markdown = escapeTildes(markdown);

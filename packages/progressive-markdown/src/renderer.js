@@ -24,6 +24,7 @@ function summarize({ index, cursors = [0, 0], conflict, tree = { rightBound: 0 }
   return `[${index}] ${cursors[0]} -> ${cursors[1]}${ conflict !== undefined ? ` !${conflict.index}` : '' } / ${tree.rightBound}`;
 }
 
+// TODO: we need to align to processMarkdown and keep backward compatible
 function normalizeOptions({
   onRefChange = () => {},
   onDebug,
