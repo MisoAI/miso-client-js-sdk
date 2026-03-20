@@ -29,7 +29,7 @@ function normalizeOptions({
   onRefChange = () => {},
   onDebug,
   onDone = () => {},
-  processValue = (v => v),
+  processMarkdown = v => v,
   applyOperation = defaultApplyOperation,
   mergeTextOnDone = true,
   ...options
@@ -38,7 +38,7 @@ function normalizeOptions({
     onRefChange,
     onDebug,
     onDone,
-    processValue,
+    processMarkdown,
     applyOperation: wrapDebug(applyOperation, onDebug),
     mergeTextOnDone,
     ...options,
@@ -49,8 +49,8 @@ export default class Renderer {
 
   constructor(options) {
     options = normalizeOptions(options);
-    const { parser, compiler, query, processValue, applyOperation, ...rest } = options;
-    this._processValue = processValue;
+    const { parser, compiler, query, processMarkdown, applyOperation, ...rest } = options;
+    this._processMarkdown = processMarkdown;
     this._applyOperation = applyOperation;
     this._options = rest;
     this._query = new Query({ ...query, parser, compiler });
@@ -67,7 +67,7 @@ export default class Renderer {
   }
 
   update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor: rawCursor, timestamp, done: dataDone }) {
-    value = this._processValue(value);
+    value = this._processMarkdown(value, { done: dataDone });
     prevCursor = Math.floor(prevCursor);
     let cursor = Math.floor(rawCursor);
 

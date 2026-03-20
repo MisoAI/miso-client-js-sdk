@@ -1,4 +1,7 @@
-export function removeMarkdownIncompleteTableRow(markdown) {
+export function removeMarkdownIncompleteTableRow(markdown, { done } = {}) {
+  if (done) {
+    return markdown;
+  }
   const lastLineIndex = markdown.lastIndexOf('\n');
   const lastLine = markdown.slice(lastLineIndex + 1).trim();
   if (lastLine.startsWith('|')) {
@@ -9,11 +12,4 @@ export function removeMarkdownIncompleteTableRow(markdown) {
 
 export function escapeTildes(markdown) {
   return markdown.replaceAll('~', '\\~');
-}
-
-// TODO: rename -> presetMisoProcessMarkdown & move to miso.js
-export function defaultProcessMarkdown(markdown) {
-  markdown = removeMarkdownIncompleteTableRow(markdown);
-  markdown = escapeTildes(markdown);
-  return markdown;
 }

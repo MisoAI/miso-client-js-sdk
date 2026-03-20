@@ -6,7 +6,7 @@ import rehypeCitationLink from '../rehype-citation-link.js';
 import rehypeFollowUpLink from '../rehype-follow-up-link.js';
 import { mergeRendererOptions } from '../utils.js';
 import { applyOperationWithSlot } from './slot.js';
-import { defaultProcessMarkdown } from './helpers.js';
+import { removeMarkdownIncompleteTableRow, escapeTildes } from './helpers.js';
 
 // https://github.com/syntax-tree/hast-util-sanitize#schema
 export const presetMisoSanitizeSchema = {
@@ -20,6 +20,12 @@ export const presetMisoSanitizeSchema = {
   },
 };
 
+export function presetMisoProcessMarkdown(markdown, options) {
+  markdown = removeMarkdownIncompleteTableRow(markdown, options);
+  markdown = escapeTildes(markdown);
+  return markdown;
+}
+
 export function presetMiso({
   onCitationLink,
   onRefChange,
@@ -27,7 +33,7 @@ export function presetMiso({
   onDebug,
   cursorClass,
   getSource,
-  processMarkdown = defaultProcessMarkdown,
+  processMarkdown = presetMisoProcessMarkdown,
   sanitizeSchema = presetMisoSanitizeSchema,
   variant,
   ...options
@@ -91,7 +97,7 @@ export function presetMiso({
     },
     onDebug,
     applyOperation,
-    processValue: processMarkdown,
+    processMarkdown,
   }, options);
 }
 

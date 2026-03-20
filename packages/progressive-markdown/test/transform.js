@@ -1,8 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import remarkGfm from 'remark-gfm';
-import { Parser, Compiler, trees } from '../src/index.js';
-import { defaultProcessMarkdown } from '../src/preset/helpers.js';
+import { transformSync, presetMiso } from '../src/index.js';
 
 function unescapeHtml(html) {
   return html
@@ -13,41 +12,40 @@ function unescapeHtml(html) {
     .replace(/&amp;/g, '&');
 }
 
-function transform(markdown, { processMarkdown, allowDangerousHtml = false } = {}) {
-  const parser = new Parser({ remark: [remarkGfm], allowDangerousHtml });
-  const compiler = new Compiler();
-  if (processMarkdown) {
-    markdown = processMarkdown(markdown);
-  }
-  const tree = trees.clean(trees.shim(parser.parseSync(markdown)));
-  return compiler.stringify(tree);
-}
+const DEFAULT_MISO_OPTIONS = { presets: [presetMiso] };
 
-// Without processMarkdown, tildes become strikethrough
-test('transform: tildes become strikethrough without escaping', () => {
-  const html = transform('Hello ~~world~~');
+// Without miso preset, tildes become strikethrough via GFM
+test('transformSync: tildes become strikethrough without miso preset', () => {
+  const html = transformSync('Hello ~~world~~', { parser: { remark: [remarkGfm] } });
   assert.ok(html.includes('<del>'), 'expected <del> tag for strikethrough');
 });
 
-// With processMarkdown, tildes are escaped and won't become strikethrough
-test('transform: tildes are escaped with processMarkdown', () => {
-  const html = transform('Hello ~~world~~', { processMarkdown: defaultProcessMarkdown });
+// With miso preset, tildes are escaped and won't become strikethrough
+test('transformSync: miso preset escapes tildes', () => {
+  const html = transformSync('Hello ~~world~~', DEFAULT_MISO_OPTIONS);
   assert.not.ok(html.includes('<del>'), 'expected no <del> tag when tildes are escaped');
   assert.ok(html.includes('~'), 'expected literal tilde in output');
 });
 
-// HTML <del> tags still work for strikethrough
-test('transform: HTML del tag produces strikethrough', () => {
-  const html = transform('Hello <del>world</del>', { processMarkdown: defaultProcessMarkdown, allowDangerousHtml: true });
+// HTML <del> tags still work with miso preset (allowDangerousHtml: true)
+test('transformSync: miso preset allows HTML del tag', () => {
+  const html = transformSync('Hello <del>world</del>', DEFAULT_MISO_OPTIONS);
   assert.ok(html.includes('<del>'), 'expected <del> tag from raw HTML');
 });
 
 // HTML tags inside code blocks should not be processed
-test('transform: HTML tag in code block remains literal', () => {
-  const html = transform('Use `<del>` for strikethrough', { allowDangerousHtml: true });
+test('transformSync: HTML tag in code block remains literal', () => {
+  const html = transformSync('Use `<del>` for strikethrough', DEFAULT_MISO_OPTIONS);
   assert.not.ok(html.includes('<del>'), 'expected no <del> tag inside code block');
   const codeContent = html.match(/<code>(.+?)<\/code>/)?.[1];
   assert.equal(unescapeHtml(codeContent), '<del>', 'expected literal <del> in code block');
+});
+
+// trailing table row is kept when done
+test('transformSync: miso preset renders all table rows when done', () => {
+  const markdown = '| Col1 | Col2 |\n| --- | --- |\n| A | B |\n| C | D |';
+  const html = transformSync(markdown, DEFAULT_MISO_OPTIONS);
+  assert.ok(html.includes('<td>C</td>'), 'expected last table row to be present when done');
 });
 
 test.run();

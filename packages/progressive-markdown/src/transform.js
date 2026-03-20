@@ -14,8 +14,8 @@ export function transformSync(markdown, sources = [], options = {}) {
   if (processMarkdown) {
     markdown = processMarkdown(markdown, { done: true });
   }
-  const parser = new Parser(options);
-  const compiler = new Compiler(options);
+  const parser = new Parser(options.parser || {});
+  const compiler = new Compiler(options.compiler || {});
   const tree = shim(parser.parseSync(markdown));
   return compiler.stringify(tree.children);
 }

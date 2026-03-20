@@ -1,6 +1,6 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
-import { removeMarkdownIncompleteTableRow, defaultProcessMarkdown } from '../src/preset/helpers.js';
+import { removeMarkdownIncompleteTableRow } from '../src/preset/helpers.js';
 
 // removeMarkdownIncompleteTableRow
 
@@ -17,12 +17,12 @@ test('removeMarkdownIncompleteTableRow: incomplete row', () => {
   assert.equal(removeMarkdownIncompleteTableRow('| A | B |\n| C'), '| A | B |\n');
 });
 
-// defaultProcessMarkdown
+test('removeMarkdownIncompleteTableRow: done=true keeps trailing table row', () => {
+  assert.equal(removeMarkdownIncompleteTableRow('| A | B |\n| C | D |', { done: true }), '| A | B |\n| C | D |');
+});
 
-test('defaultProcessMarkdown: combines helpers', () => {
-  const input = '| A |\n| B~C';
-  const output = defaultProcessMarkdown(input);
-  assert.equal(output, '| A |\n');
+test('removeMarkdownIncompleteTableRow: done=true keeps incomplete row', () => {
+  assert.equal(removeMarkdownIncompleteTableRow('| A | B |\n| C', { done: true }), '| A | B |\n| C');
 });
 
 test.run();
