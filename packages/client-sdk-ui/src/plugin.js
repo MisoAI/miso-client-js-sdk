@@ -176,7 +176,11 @@ class Ui {
   }
 
   get search() {
-    return this._search || (this._search = new Search(this._plugin, this._client));
+    if (!this._search) {
+      this._search = new Search(this._plugin, this._client);
+      this._client._events.emit('postworkflow', this._search);
+    }
+    return this._search;
   }
 
   get asks() {
@@ -188,7 +192,11 @@ class Ui {
   }
 
   get hybridSearch() {
-    return this._hybridSearch || (this._hybridSearch = new HybridSearch(this._plugin, this._client));
+    if (!this._hybridSearch) {
+      this._hybridSearch = new HybridSearch(this._plugin, this._client);
+      this._client._events.emit('postworkflow', this._hybridSearch);
+    }
+    return this._hybridSearch;
   }
 
   get explores() {

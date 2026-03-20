@@ -30,6 +30,8 @@ export default class Asks extends WorkflowContext {
     this._byQid = new Map();
     this._byPqid = new Map();
     this._root = new Ask(this); // initialize with default workflow
+    client._events.emit('postworkflow', this._root);
+
     this._events.on('*', event => this._createNextIfNecessary(event));
     this._events.on('loading', event => this._setActive(event.workflow));
     this._events.on('destroy', () => this._requestEmitAfterDestroy());
@@ -67,6 +69,7 @@ export default class Asks extends WorkflowContext {
     let workflow = this._byPqid.get(parentQuestionId);
     if (!workflow && autoCreate) {
       workflow = new Ask(this, parentQuestionId);
+      this._client._events.emit('postworkflow', workflow);
     }
     return workflow;
   }

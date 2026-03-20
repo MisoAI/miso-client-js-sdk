@@ -16,7 +16,7 @@ export default class UnitWorkflowContext extends WorkflowContext {
     if (this._members.has(unitId)) {
       throw new Error(`Unit already exists: ${unitId}`);
     }
-    return this._create(unitId);
+    return this._createAndEmit(unitId);
   }
 
   has(unitId = DEFAULT_UNIT_ID) {
@@ -27,7 +27,13 @@ export default class UnitWorkflowContext extends WorkflowContext {
     if (typeof unitId !== 'string') {
       throw new Error(`Required unit ID to be a string: ${unitId}`);
     }
-    return this._members.get(unitId) || this._create(unitId);
+    return this._members.get(unitId) || this._createAndEmit(unitId);
+  }
+
+  _createAndEmit(unitId) {
+    const workflow = this._create(unitId);
+    this._client._events.emit('postworkflow', workflow);
+    return workflow;
   }
 
   _create(unitId) {

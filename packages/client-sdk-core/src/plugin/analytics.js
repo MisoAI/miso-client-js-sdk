@@ -35,7 +35,7 @@ export default class AnalyticsPlugin extends Component {
   }
 
   _injectClient(client) {
-    client.on('workflow', this._injectWorkflow.bind(this));
+    client.on('postworkflow', this._injectWorkflow.bind(this));
   }
 
   _injectWorkflow(workflow) {
