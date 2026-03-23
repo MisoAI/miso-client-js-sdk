@@ -15,7 +15,7 @@ misocmd.push(async () => {
   workflow.useApi({
     product_id: 'aaa',
   });
-  workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`, { showUrl: true });
+  workflow.useLink(question => `http://localhost:10100/workflow/ask/production/?q=${encodeURIComponent(question)}`, { showUrl: true });
   workflow.start();
 });
 </script>

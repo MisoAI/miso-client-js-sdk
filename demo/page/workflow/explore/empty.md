@@ -43,7 +43,7 @@ misocmd.push(() => {
   workflow.useApi({
     product_id: window.DEFAULT_PRODUCT_ID || 'aaa',
   });
-  workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`);
+  workflow.useLink(question => `http://localhost:10100/workflow/ask/production/?q=${encodeURIComponent(question)}`);
   makeEmpty && workflow.useDataProcessor(data => !data.value ? data : { ...data, value: { ...data.value, related_questions: [] } });
   workflow.start();
 });

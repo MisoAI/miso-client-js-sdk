@@ -19,7 +19,7 @@ misocmd.push(() => {
       test: 'x',
     },
   });
-  workflow.useLink(question => `http://localhost:10100/ui/ask-combo/default/?q=${encodeURIComponent(question)}`);
+  workflow.useLink(question => `http://localhost:10100/workflow/ask/production/?q=${encodeURIComponent(question)}`);
   workflow.start();
 });
 </script>
