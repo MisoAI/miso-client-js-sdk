@@ -17,7 +17,7 @@ function root(layout, state) {
 function facets(layout, state) {
   const { templates } = layout;
   const { facet_fields = {} } = state.value || {};
-  return Object.keys(facet_fields).map(field => templates.facet(layout, { field, entries: facet_fields[field] }, state));
+  return Object.keys(facet_fields).map(field => templates.facet(layout, { field, entries: facet_fields[field] }, state)).join('');
 }
 
 function facet(layout, facet, state) {
