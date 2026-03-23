@@ -14,7 +14,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   ...UnitWorkflow.DEFAULT_LAYOUTS,
-  [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question', link: { rel: 'noopener nofollow' } }],
+  [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question', link: { rel: 'noopener nofollow' } }], // TODO: should define by useLink()
   [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
 });
 

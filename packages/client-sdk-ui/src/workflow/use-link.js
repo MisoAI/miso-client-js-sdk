@@ -24,7 +24,7 @@ export class UseLinkMixin {
       window.location.href = url;
     } else {
       const target = options.target || '_blank';
-      const windowFeatures = options.windowFeatures || '';
+      const windowFeatures = options.windowFeatures || 'noopener';
       window.open(url, target, windowFeatures);
     }
   }
