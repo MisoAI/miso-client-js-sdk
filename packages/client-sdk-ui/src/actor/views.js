@@ -29,11 +29,8 @@ export default class ViewsActor {
       interface: new Views(this),
     });
 
-    const syncSize = () => this.syncSize();
-    window.addEventListener('resize', syncSize);
-
     this._unsubscribes = [
-      () => window.removeEventListener('resize', syncSize),
+      onResize(this.syncSize.bind(this)),
       hub.on(fields.data(), data => this.refresh({ data })),
       options.on('layouts', () => this._syncLayouts()),
     ];
@@ -216,4 +213,12 @@ class Views {
     return this._actor.views.map(view => view.interface);
   }
 
+}
+
+function onResize(callback) {
+  if (typeof window === 'undefined') {
+    return () => {};
+  }
+  window.addEventListener('resize', callback);
+  return () => window.removeEventListener('resize', callback);
 }
