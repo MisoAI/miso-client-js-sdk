@@ -1,5 +1,7 @@
 import { mixin } from '@miso.ai/commons';
 
+// TODO: eliminate browser dependency
+
 export function enableUseLink(prototype) {
   mixin(prototype, UseLinkMixin.prototype);
 }

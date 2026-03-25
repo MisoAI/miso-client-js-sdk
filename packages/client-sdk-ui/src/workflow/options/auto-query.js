@@ -1,6 +1,8 @@
 import { trimObj } from '@miso.ai/commons';
 import { ROLE, QUESTION_SOURCE } from '../../constants.js';
 
+// TODO: eliminate browser dependency?
+
 export const DEFAULT_AUTO_QUERY_PARAM = 'q';
 export const DEFAULT_AUTO_QUERY_SOURCE_PARAM = 'qs';
 
