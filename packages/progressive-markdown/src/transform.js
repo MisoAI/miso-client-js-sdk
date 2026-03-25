@@ -4,6 +4,20 @@ import Compiler from './compiler.js';
 import { shim } from './trees.js';
 
 export function transformSync(markdown, sources = [], options = {}) {
+  [markdown, sources, options] = preprocess(markdown, sources, options);
+  const parser = new Parser(options.parser || {});
+  const tree = shim(parser.parseSync(markdown));
+  return stringify(tree, options);
+}
+
+export async function transform(markdown, sources = [], options = {}) {
+  [markdown, sources, options] = preprocess(markdown, sources, options);
+  const parser = new Parser(options.parser || {});
+  const tree = shim(await parser.parse(markdown));
+  return stringify(tree, options);
+}
+
+function preprocess(markdown, sources = [], options = {}) {
   if (!Array.isArray(sources) && typeof sources === 'object' && sources !== null) {
     options = sources;
     sources = [];
@@ -14,8 +28,10 @@ export function transformSync(markdown, sources = [], options = {}) {
   if (processMarkdown) {
     markdown = processMarkdown(markdown, { done: true });
   }
-  const parser = new Parser(options.parser || {});
+  return [markdown, sources, options];
+}
+
+function stringify(tree, options = {}) {
   const compiler = new Compiler(options.compiler || {});
-  const tree = shim(parser.parseSync(markdown));
   return compiler.stringify(tree.children);
 }

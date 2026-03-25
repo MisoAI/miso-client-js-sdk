@@ -1,6 +1,7 @@
 import { EventEmitter, pacer, trimObj } from '@miso.ai/commons';
 import { lorem as _lorem } from '@miso.ai/lorem';
 import Renderer from './renderer.js';
+import { transformSync } from './transform.js';
 import { resolvePresets } from './preset/index.js';
 
 export class TestRunner {
@@ -60,6 +61,17 @@ export class TestRunner {
         throw new Error('Done mismatch');
       }
       if (actualController.done && expectedController.done) {
+        // verify that the final element innerHTML matches the expected outcome directly from transformSync()
+        let expectedHtml = transformSync(expectedController.response.value, expectedController.options);
+
+        // burrow the expected controller element to align the HTML formatting
+        const expectedElement = this._elements[1];
+        expectedElement.innerHTML = expectedHtml;
+        expectedHtml = expectedElement.innerHTML;
+
+        if (actualController.html !== expectedHtml) {
+          throw new Error('Final HTML mismatch against transformSync() result');
+        }
         return;
       }
     }
@@ -72,11 +84,16 @@ export class FreeController {
 
   constructor(element, { forceOverwrite = false, ...options } = {}) {
     this._element = element;
-    this._renderer = new Renderer({ ...resolvePresets(options), forceOverwrite });
+    this._options = { ...resolvePresets(options), forceOverwrite };
+    this._renderer = new Renderer(this._options);
 
     this._response = undefined;
     this._cursor = undefined;
     this._rendered = undefined;
+  }
+
+  get options() {
+    return this._options;
   }
 
   set response(response) {
