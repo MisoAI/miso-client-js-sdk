@@ -1,3 +1,5 @@
+// browser only
+
 function execute(fn, {
   onError = e => console.error(e),
   transform = fn => fn,

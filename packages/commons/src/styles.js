@@ -1,3 +1,5 @@
+// browser only
+
 import version from './version.js';
 
 let currentScript;

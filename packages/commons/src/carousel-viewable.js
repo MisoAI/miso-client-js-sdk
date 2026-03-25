@@ -1,3 +1,5 @@
+// browser only
+
 import ContinuityObserver from './continuity.js';
 
 export default class CarouselItemViewabilityObserver {

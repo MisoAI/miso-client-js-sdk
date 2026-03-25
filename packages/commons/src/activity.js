@@ -1,3 +1,5 @@
+// browser only
+
 /**
  * Observer for user activity detection.
  *

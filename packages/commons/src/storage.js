@@ -1,3 +1,5 @@
+// browser only
+
 export function getOrComputeFromStorage(name, compute) {
   const localStorageValue = catchSecurityError(() => window.localStorage.getItem(name));
   const cookieValue = catchSecurityError(() => getCookie(name));

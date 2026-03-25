@@ -1,3 +1,5 @@
+// browser only
+
 import Resolution from './resolution.js';
 
 const symbol = Symbol.for('miso:resources');

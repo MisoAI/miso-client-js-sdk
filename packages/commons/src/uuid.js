@@ -1,3 +1,4 @@
+// browser only
 // TODO: there is no way to make this nodeJS compatible, we want to think about how to manage the package
 
 export function uuidv4() {
