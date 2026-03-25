@@ -3,6 +3,8 @@ import { STATUS, ROLE, isDataRole } from '../constants.js';
 import * as fields from './fields.js';
 import ProxyElement from '../util/proxy.js';
 
+// TODO: browser dependency on syncSize
+
 function statesEqual(a, b) {
   return a === b || (a && b &&
     a.status === b.status &&

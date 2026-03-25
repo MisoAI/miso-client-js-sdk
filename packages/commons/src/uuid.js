@@ -1,16 +1,13 @@
-// browser only
-// TODO: there is no way to make this nodeJS compatible, we want to think about how to manage the package
-
 export function uuidv4() {
   return uuidv4ByCyrptoRandomUUID() || uuidv4ByBlobUrl() || uuidv4ByMathRandom();
 }
 
 function uuidv4ByCyrptoRandomUUID() {
-  return crypto && crypto.randomUUID ? crypto.randomUUID() : undefined;
+  return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined;
 }
 
 function uuidv4ByBlobUrl() {
-  if (!URL || !URL.createObjectURL || URL.revokeObjectURL || !Blob) {
+  if (typeof URL === 'undefined' || !URL.createObjectURL || !URL.revokeObjectURL || typeof Blob === 'undefined') {
     return undefined;
   }
   const url = URL.createObjectURL(new Blob());
