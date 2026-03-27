@@ -1,4 +1,4 @@
-import { API, defineValues } from '@miso.ai/commons';
+import { API, defineValues, trimObj } from '@miso.ai/commons';
 import ApiBase from './base.js';
 import { IdBasedIterableApiStub } from './iterable.js';
 
@@ -65,7 +65,7 @@ export default class Ask extends ApiBase {
 class Answer extends IdBasedIterableApiStub {
 
   constructor(api, response, options = {}) {
-    super(api, '_questionGet', response.question_id, options);
+    super(api, '_questionGet', response.question_id, mergeCustomApiIterator(api, options));
     this._response = response;
   }
 
@@ -78,7 +78,7 @@ class Answer extends IdBasedIterableApiStub {
 class SearchResult extends IdBasedIterableApiStub {
 
   constructor(api, response, options = {}) {
-    super(api, '_searchGet', response.question_id, options);
+    super(api, '_searchGet', response.question_id, mergeCustomApiIterator(api, options));
     defineValues(this, response);
     this._response = response;
   }
@@ -92,4 +92,12 @@ class SearchResult extends IdBasedIterableApiStub {
 // helpers //
 function isId(value) {
   return typeof value === 'string' && value.charAt(0) !== '{';
+}
+
+function mergeCustomApiIterator(api, options) {
+  const customIterator = api.helpers._root._customApiIterator;
+  return trimObj({
+    customIterator,
+    ...options,
+  });
 }

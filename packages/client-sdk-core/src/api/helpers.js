@@ -90,7 +90,7 @@ export default class ApiHelpers {
     const { apiKey } = this._client.options;
     const apiName = paths.filter(s => s).join('/');
     const url = `${this.getApiEndpoint(apiName)}/${apiName}`;
-    return `${url}?api_key=${window.encodeURIComponent(apiKey)}`;
+    return `${url}?api_key=${encodeURIComponent(apiKey)}`;
   }
 
   getApiEndpoint(apiName) {

@@ -122,6 +122,13 @@ export default class PluginRoot extends Registry {
     this._root._customSendBeacon = sendBeacon;
   }
 
+  setCustomApiIterator(customApiIterator) {
+    if (typeof customApiIterator !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${customApiIterator}`);
+    }
+    this._root._customApiIterator = customApiIterator;
+  }
+
   onHubUpdate(callback) {
     if (typeof callback !== 'function') {
       throw new Error(`Expect parameter to be a function: ${callback}`);
@@ -250,7 +257,7 @@ export default class PluginRoot extends Registry {
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addHeadersPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'onHubUpdate', 'onHubEmit', 'whenInstalled', 'whenRegistered']);
+    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addHeadersPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'setCustomApiIterator', 'onHubUpdate', 'onHubEmit', 'whenInstalled', 'whenRegistered']);
     defineValues(this, { classes });
   }
 

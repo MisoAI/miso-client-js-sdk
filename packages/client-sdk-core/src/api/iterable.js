@@ -23,8 +23,13 @@ export class IterableApiStub {
     const fetch = async ({ signal } = {}) => {
       // TODO: pass signal
       const response = await this.get();
-      return [response, this._isFinished(response), this._revisionOf(response)];
+      return [response, isFinished(response), revisionOf(response)];
     };
+
+    if (typeof this._options.customIterator === 'function') {
+      return this._options.customIterator.call(this, fetch);
+    }
+
     let { pollingInterval: interval, signal, stallTimeout = 120000, ...options } = this._options;
     const stac = new StallTimeoutAbortController(stallTimeout);
     signal = signals.any(this._ac.signal, stac.signal, signal);
@@ -33,27 +38,12 @@ export class IterableApiStub {
     const onResponse = (response, finished) => {
       if (finished) {
         stac.clear();
-      } else if (this._isUpdated(prevResponse, response)) {
+      } else if (isUpdated(prevResponse, response)) {
         stac.touch();
       }
       prevResponse = response;
     };
     return polling(fetch, { interval, signal, onResponse, ...options })[Symbol.asyncIterator]();
-  }
-
-  _isFinished(response) {
-    return !!(response && response.finished);
-  }
-
-  _isUpdated(previousResponse, newResponse) {
-    return !previousResponse ||
-      previousResponse.answer_stage !== newResponse.answer_stage ||
-      lengthOf(previousResponse.answer) !== lengthOf(newResponse.answer) ||
-      lengthOf(previousResponse.reasoning) !== lengthOf(newResponse.reasoning);
-  }
-
-  _revisionOf(response) {
-    return response && response.revision;
   }
 
 }
@@ -71,6 +61,21 @@ export class IdBasedIterableApiStub extends IterableApiStub {
     return this._api[this._method](this._id, options);
   }
 
+}
+
+function isFinished(response) {
+  return !!(response && response.finished);
+}
+
+function isUpdated(previousResponse, newResponse) {
+  return !previousResponse ||
+    previousResponse.answer_stage !== newResponse.answer_stage ||
+    lengthOf(previousResponse.answer) !== lengthOf(newResponse.answer) ||
+    lengthOf(previousResponse.reasoning) !== lengthOf(newResponse.reasoning);
+}
+
+function revisionOf(response) {
+  return response && response.revision;
 }
 
 function lengthOf(value = '') {
