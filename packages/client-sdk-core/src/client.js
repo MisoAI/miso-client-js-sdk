@@ -9,6 +9,10 @@ const { currentScript } = document;
 class MisoClient extends Component {
 
   static attach() {
+    if (typeof window === 'undefined') {
+      console.warn(`MisoClient cannot be attached in non-browser environment.`);
+      return;
+    }
     (window.MisoClients || (window.MisoClients = [])).push(MisoClient);
     if (window.MisoClient) {
       if (window.MisoClient !== MisoClient) {
