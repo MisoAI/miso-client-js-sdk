@@ -1,4 +1,4 @@
-import { delegateGetters, defineValues, Registry, Resolution, Resources } from '@miso.ai/commons';
+import { isInBrowser, delegateGetters, defineValues, Registry, Resolution, Resources } from '@miso.ai/commons';
 import classes from '../classes.js';
 import AnonymousPlugin from './anonymous.js';
 import { getPluginScriptUrl } from './urls.js';
@@ -11,7 +11,6 @@ export default class PluginRoot extends Registry {
       keyName: 'id',
     });
     this._root = root;
-    this._currentScript = document.currentScript;
     this._events._replays.add('install').add('subtree');
     this._installed = {};
     this._installedResolutions = {};
@@ -217,7 +216,7 @@ export default class PluginRoot extends Registry {
   }
 
   async _tryRegisterRemotely(id) {
-    if (id.startsWith('std:')) {
+    if (id.startsWith('std:') && isInBrowser) {
       try {
         await this._registerStdRemotely(id);
         return;
@@ -229,6 +228,10 @@ export default class PluginRoot extends Registry {
     throw new Error(`Cannot register plugin remotely: ${id}`);
   }
 
+  /**
+   * [browser only]
+   * @param {string} id
+   */
   async _registerStdRemotely(id) {
     const { version } = this._root;
     const request = version === 'dev' ? `plugin:${id}@dev:${this.MisoClient.uuid}` : `plugin:${id}@${version}`;
@@ -238,7 +241,7 @@ export default class PluginRoot extends Registry {
       // skip if already exists
       const script = document.createElement('script');
       script.async = true;
-      script.src = getPluginScriptUrl(id, version, this._currentScript);
+      script.src = getPluginScriptUrl(id, version);
       script.setAttribute('data-request', request);
       document.head.appendChild(script);
       // TODO: hook up error event

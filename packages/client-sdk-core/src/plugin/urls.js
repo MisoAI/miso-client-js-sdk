@@ -1,8 +1,15 @@
-export function getPluginScriptUrl(id, version, currentScript) {
+import { isInBrowser } from '@miso.ai/commons';
+
+const currentScript = isInBrowser ? document.currentScript : undefined;
+
+export function getPluginScriptUrl(id, version) {
   // TODO: look up by manifest
   const pkgName = id.slice(4);
   
   if (version === 'dev') {
+    if (!currentScript) {
+      throw new Error(`Cannot get plugin script URL for ${id}: no currentScript.`);
+    }
     const src = currentScript.src;
     const searchIndex = src.indexOf('?');
     const k = searchIndex < 0 ? src.length : searchIndex;

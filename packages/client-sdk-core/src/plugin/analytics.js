@@ -1,3 +1,5 @@
+// [browser only]
+
 import { Component, UserEngagementObserver, UserActivityObserver, Stopwatch, trimObj, mergeInteractions } from '@miso.ai/commons';
 
 const PLUGIN_ID = 'std:analytics';

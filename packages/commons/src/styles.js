@@ -1,4 +1,4 @@
-// browser only
+// [browser only]
 
 import version from './version.js';
 

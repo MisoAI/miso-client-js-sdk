@@ -1,4 +1,4 @@
-// browser only
+// [browser only]
 
 import Resolution from './resolution.js';
 

@@ -1,3 +1,5 @@
+// [browser only]
+
 import { trimObj } from '@miso.ai/commons';
 
 const ID = 'std:page-info';

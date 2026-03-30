@@ -1,3 +1,5 @@
+// [browser only]
+
 const PLUGIN_ID = 'std:native-fetch';
 
 function isNativeFunction(fn) {

@@ -1,4 +1,4 @@
-// browser only
+// [browser only]
 
 export function getOrComputeFromStorage(name, compute) {
   const localStorageValue = catchSecurityError(() => window.localStorage.getItem(name));

@@ -1,4 +1,4 @@
-// browser only
+// [browser only]
 
 import ContinuityObserver from './continuity.js';
 

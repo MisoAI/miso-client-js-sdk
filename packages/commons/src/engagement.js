@@ -1,4 +1,4 @@
-// browser only
+// [browser only]
 
 /**
  * Observer for GA4-style user engagement detection.

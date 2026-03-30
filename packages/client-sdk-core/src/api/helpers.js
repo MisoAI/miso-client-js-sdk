@@ -23,7 +23,7 @@ export default class ApiHelpers {
 
     const signal = timeout ? AbortSignal.timeout(timeout) : undefined;
 
-    const res = await (this._root._customFetch || window.fetch)(url, trimObj({
+    const res = await (this._root._customFetch || fetch)(url, trimObj({
       method,
       headers,
       body,
@@ -78,9 +78,12 @@ export default class ApiHelpers {
     if (method && method !== 'POST') {
       throw new Error(`Non-POST API is not supported in useBeacon mode: ${url}`);
     }
+    if (!this._root._customSendBeacon && !navigator.sendBeacon) {
+      throw new Error(`Send beacon is not supported in this environment.`);
+    }
     const successful = this._root._customSendBeacon ?
       this._root._customSendBeacon(url, JSON.stringify(payload)) :
-      window.navigator.sendBeacon(url, JSON.stringify(payload));
+      navigator.sendBeacon(url, JSON.stringify(payload));
     if (!successful) {
       throw new Error(`Send beacon unsuccessful: ${url}`);
     }

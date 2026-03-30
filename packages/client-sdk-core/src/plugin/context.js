@@ -1,4 +1,4 @@
-import { API, uuidv4, Component, delegateProperties, getOrComputeFromStorage, mergeInteractions, mergeApiPayloads } from '@miso.ai/commons';
+import { API, uuidv4, Component, delegateProperties, getOrComputeFromStorage, mergeInteractions, mergeApiPayloads, isInBrowser } from '@miso.ai/commons';
 
 const { GROUP, NAME } = API;
 
@@ -73,7 +73,7 @@ function getAutoAnonymousId() {
   // 1. Cache the value for the page
   // 2. Get and set the value from cookies/localStorage is possible
   // 3. In case cookies/localStorage are disabled, generate a new value for each page
-  return _pageBasedAutoAnonymousId || (_pageBasedAutoAnonymousId = getOrComputeFromStorage('miso_anonymous_id', uuidv4));
+  return _pageBasedAutoAnonymousId || (_pageBasedAutoAnonymousId = isInBrowser ? getOrComputeFromStorage('miso_anonymous_id', uuidv4) : uuidv4());
 }
 
 class ClientContext {
