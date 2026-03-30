@@ -1,10 +1,10 @@
-import { trimObj, Component, uuidv4, defineValues } from '@miso.ai/commons';
+import { trimObj, Component, uuidv4, defineValues, isInBrowser } from '@miso.ai/commons';
 import { root, register, init } from './root.js';
 import { Api } from './api/index.js';
 import Context from './context.js';
 import * as helpers from './utils.js';
 
-const { currentScript } = document;
+const currentScript = isInBrowser ? document.currentScript : undefined;
 
 class MisoClient extends Component {
 
@@ -69,6 +69,9 @@ class MisoClient extends Component {
     return trimObj(options);
   }
 
+  /**
+   * Used by shopify plugin.
+   */
   _readConfigFromScriptUrl() {
     const url = currentScript.src || currentScript.href; // might be <link> as well
     const params = new URL(new Request(url).url).searchParams;

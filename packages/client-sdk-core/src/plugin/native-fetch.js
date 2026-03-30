@@ -1,4 +1,4 @@
-// [browser only]
+import { isInBrowser } from '@miso.ai/commons';
 
 const PLUGIN_ID = 'std:native-fetch';
 
@@ -10,6 +10,9 @@ let _fetchSource;
 let _fetchError;
 
 const fetchFn = (() => {
+  if (!isInBrowser) {
+    return undefined;
+  }
   if (isNativeFunction(window.fetch)) {
     _fetchSource = 'original';
     return window.fetch;
@@ -34,6 +37,10 @@ export default class NativeFetchPlugin {
   }
 
   install(MisoClient, context) {
+    if (!isInBrowser) {
+      MisoClient.debug(`<plugin:${PLUGIN_ID}>`, '[info]', `Not in browser, skipped`);
+      return;
+    }
     if (!fetchFn) {
       MisoClient.debug(`<plugin:${PLUGIN_ID}>`, '[error]', `Failed to obtain native fetch: ${_fetchError.message}`);
       return;

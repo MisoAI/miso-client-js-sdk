@@ -20,12 +20,17 @@
     "./detached/lite.js": {
       "import": "./src/detached/lite.js",
       "require": "./dist/cjs/detached/lite.js"
+    },
+    "./detached/node.js": {
+      "import": "./src/detached/node.js",
+      "require": "./dist/cjs/detached/node.js"
     }
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
+    "test": "npx uvu test",
     "start:umd": "rollup -w -c rollup.config.dev.js",
     "start:sass": "npx sass --watch scss:dist/css",
     "start:font": "npx copyfiles ./font/* ./dist",

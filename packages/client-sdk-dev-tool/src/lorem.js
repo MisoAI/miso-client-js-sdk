@@ -1,3 +1,4 @@
+import { isInBrowser } from '@miso.ai/commons';
 import buildApi from '@miso.ai/doggoganger/src/api.js';
 import fetch from '@miso.ai/doggoganger/src/fetch.js';
 
@@ -26,7 +27,9 @@ export default class LoremPlugin {
     MisoClient.lorem = new Lorem(this);
     setCustomFetch(this._fetch.bind(this));
     setCustomSendBeacon(this._sendBeacon.bind(this));
-    interceptDummyLinkClick();
+    if (isInBrowser) {
+      interceptDummyLinkClick();
+    }
   }
 
   _bypassApiKeyCheck(MisoClient) {
@@ -61,6 +64,9 @@ class Lorem {
 
 }
 
+/**
+ * [browser only]
+ */
 function interceptDummyLinkClick() {
   document.addEventListener('click', (e) => {
     if (e.isDefaultPrevented) {
