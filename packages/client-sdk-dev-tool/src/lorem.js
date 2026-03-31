@@ -1,4 +1,5 @@
 import { isInBrowser } from '@miso.ai/commons';
+import { lorem } from '@miso.ai/lorem';
 import buildApi from '@miso.ai/doggoganger/src/api.js';
 import fetch from '@miso.ai/doggoganger/src/fetch.js';
 
@@ -11,10 +12,12 @@ export default class LoremPlugin {
   }
 
   constructor() {
+    this._lorem = lorem();
     this._api = buildApi();
   }
 
-  config(options = {}) {
+  config({ seed, ...options } = {}) {
+    this._lorem = lorem({ seed });
     this._api = buildApi(options);
   }
 
@@ -43,7 +46,8 @@ export default class LoremPlugin {
   }
 
   _fetch(url, options) {
-    return fetch(this._api, url, options);
+    const seed = this._lorem.prng.seed();
+    return fetch(this._api, url, { seed, ...options });
   }
 
   _sendBeacon(/*url, data*/) {

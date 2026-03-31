@@ -13,23 +13,25 @@ export default class ApiHelpers {
     method = 'POST',
     headers,
     timeout,
+    ...options
   } = {}) {
     const { apiKey, request = {} } = this._client.options;
     timeout = timeout || request.timeout;
 
-    // TODO: external abort signal
     // TODO: organize arguments
     const body = method !== 'GET' && payload != undefined ? JSON.stringify(payload) : undefined;
 
+    // TODO: merge signal from options if any
     const signal = timeout ? AbortSignal.timeout(timeout) : undefined;
 
     const res = await (this._root._customFetch || fetch)(url, trimObj({
       method,
       headers,
-      body,
       cache: 'no-cache',
       mode: 'cors',
+      ...options,
       signal,
+      body,
     }));
 
     const resBody = await res.json();
