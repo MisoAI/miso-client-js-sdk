@@ -152,6 +152,13 @@ class Analytics {
     this._readyAt = undefined;
 
     this.config();
+
+    this._engagedSeconds = 0;
+    this._engagementInterval = setInterval(() => {
+      if (this._plugin._engagement.engaged && this._readyAt) {
+        this._engagedSeconds += 1;
+      }
+    }, 1000);
   }
 
   _injectWorkflow(workflow) {
@@ -185,6 +192,8 @@ class Analytics {
     this._startAt = Date.now();
     this._loadingAt = undefined;
     this._readyAt = undefined;
+
+    this._engagedSeconds = 0;
   }
 
   _handleLoading({ session } = {}) {
@@ -211,6 +220,7 @@ class Analytics {
           user_engagement_time: state.userEngagementTime,
           user_idle_time: state.userIdleTime,
           user_waiting_time: state.userWaitingTime,
+          user_engagement_time_v2: state.userEngagementTimeV2,
         },
       },
     });
@@ -231,6 +241,7 @@ class Analytics {
     const loadingAt = this._loadingAt;
     const readyAt = this._readyAt;
     let userEngagementTime = 0, userIdleTime = 0, userWaitingTime = 0;
+    let userEngagementTimeV2 = this._engagedSeconds * 1000;
 
     if (loadingAt !== undefined) {
       userWaitingTime = currentTime - loadingAt;
@@ -246,6 +257,7 @@ class Analytics {
       userWaitingTime,
       userEngagementTime,
       userIdleTime,
+      userEngagementTimeV2,
     });
   }
 
