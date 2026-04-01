@@ -86,6 +86,10 @@ export default class PluginRoot extends Registry {
     this._events.emit('subtree', component);
   }
 
+  addExtensionPoints(obj) {
+    defineValues(this.context, obj);
+  }
+
   addPayloadPass(pass) {
     if (typeof pass !== 'function') {
       throw new Error(`Expect parameter to be a function: ${pass}`);
@@ -254,13 +258,30 @@ export default class PluginRoot extends Registry {
 
 }
 
+const PLUGIN_QUERY_METHODS = [
+  'installed', 'registered', 'isInstalled', 'isRegistered', 'whenInstalled', 'whenRegistered'
+];
+
 /**
  * The interface of extended features only for plugin developers.
  */
 class PluginContext {
 
   constructor(root, classes) {
-    delegateGetters(this, root, ['getPluginClass', 'addSubtree', 'addPayloadPass', 'addHeadersPass', 'addUrlPass', 'setCustomFetch', 'setCustomSendBeacon', 'setCustomApiIterator', 'onHubUpdate', 'onHubEmit', 'whenInstalled', 'whenRegistered']);
+    delegateGetters(this, root, [
+      ...PLUGIN_QUERY_METHODS,
+      'getPluginClass',
+      'addSubtree',
+      'addExtensionPoints',
+      'addPayloadPass',
+      'addHeadersPass',
+      'addUrlPass',
+      'setCustomFetch',
+      'setCustomSendBeacon',
+      'setCustomApiIterator',
+      'onHubUpdate',
+      'onHubEmit',
+    ]);
     defineValues(this, { classes });
   }
 
@@ -272,7 +293,13 @@ class PluginContext {
  class Plugins {
 
   constructor(root) {
-    delegateGetters(this, root, ['installed', 'registered', 'isInstalled', 'isRegistered', 'whenInstalled', 'whenRegistered', 'get', 'register', 'use', 'install']);
+    delegateGetters(this, root, [
+      ...PLUGIN_QUERY_METHODS,
+      'get',
+      'register',
+      'use',
+      'install',
+    ]);
   }
 
 }

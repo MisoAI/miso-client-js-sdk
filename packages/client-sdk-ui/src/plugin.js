@@ -28,12 +28,19 @@ export default class UiPlugin extends Component {
     this._explores = new WeakMap();
     this._asks = new WeakMap();
     this._extensions = new WeakMap();
+    this._stylesReady = new Resolution();
     this._ready = new Resolution();
   }
 
-  async install(MisoClient, context) {
-    context.addSubtree(this);
+  async install(MisoClient, { addSubtree, addExtensionPoints }) {
+    addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
+
+    const uiContext = createUiPluginContext(this, MisoClient);
+    const { addElementClass, addLayoutClass } = uiContext;
+    addExtensionPoints({
+      ui: uiContext,
+    });
 
     const ui = { defaults, traits };
     delegateGetters(ui, this, ['layouts', 'combo', 'ready']);
@@ -46,13 +53,14 @@ export default class UiPlugin extends Component {
     // layouts
     const LayoutClasses = Object.values(layouts).filter(LayoutClass => LayoutClass.type);
     for (const LayoutClass of LayoutClasses) {
-      LayoutClass.MisoClient = MisoClient; // TODO: find better way
-    }
-    for (const LayoutClass of LayoutClasses) {
-      this.layouts.register(LayoutClass);
+      addLayoutClass(LayoutClass);
     }
 
     // custom elements
+    const ElementSuperClasses = [MisoContainerElement, MisoContextElement, MisoComboElement];
+    for (const ElementClass of ElementSuperClasses) {
+      ElementClass.MisoClient = MisoClient; // TODO: find better way
+    }
     const { containers, roles, combos, contexts, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
     const ElementClasses = [
@@ -62,18 +70,13 @@ export default class UiPlugin extends Component {
       ...Object.values(roles),
       ...Object.values(others),
     ];
-    const ElementSuperClasses = [MisoContainerElement, MisoContextElement, MisoComboElement];
-    for (const ElementClass of [...ElementSuperClasses, ...ElementClasses]) {
-      ElementClass.MisoClient = MisoClient; // TODO: find better way
+    for (const ElementClass of ElementClasses) {
+      addElementClass(ElementClass);
     }
 
     // load styles
     await loadStylesIfNecessary();
-
-    // define custom elements
-    for (const ElementClass of ElementClasses) {
-      defineAndUpgrade(ElementClass);
-    }
+    this._stylesReady.resolve();
 
     this._ready.resolve();
   }
@@ -150,6 +153,33 @@ class Extensions {
     const plugin = await this._plugin.requireExtension(name);
     const context = this._contexts[name] = plugin.getContext(this._client);
     return context;
+  }
+
+}
+
+function createUiPluginContext(plugin, MisoClient) {
+  const uiContext = new UiPluginContext(plugin, MisoClient);
+  const obj = {};
+  delegateGetters(obj, uiContext, ['addElementClass', 'addLayoutClass']);
+  return obj;
+}
+
+class UiPluginContext {
+
+  constructor(plugin, MisoClient) {
+    this._plugin = plugin;
+    this._MisoClient = MisoClient;
+  }
+
+  async addElementClass(ElementClass) {
+    ElementClass.MisoClient = this._MisoClient;
+    await this._plugin._stylesReady.promise;
+    defineAndUpgrade(ElementClass);
+  }
+
+  addLayoutClass(LayoutClass) {
+    LayoutClass.MisoClient = this._MisoClient;
+    this._plugin.layouts.register(LayoutClass);
   }
 
 }

@@ -26,8 +26,8 @@ export default class AnalyticsPlugin extends Component {
     }
   }
 
-  install(MisoClient, context) {
-    context.addSubtree(this);
+  install(MisoClient, { addSubtree }) {
+    addSubtree(this);
     this._engagement = new UserEngagementObserver(this._handleEngagement.bind(this));
     this._activity = new UserActivityObserver(this._handleActivity.bind(this));
     // TODO: should we provide a way to stop the observer?
