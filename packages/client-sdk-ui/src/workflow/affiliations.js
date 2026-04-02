@@ -1,6 +1,6 @@
 import { trimObj } from '@miso.ai/commons';
 
-export function processData(data) {
+export function processAffiliationData(data) {
   if (!data || !data.value) {
     return data;
   }

@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
-import { processData as processAffiliationData } from '../affiliation/index.js';
+import { processAffiliationData } from './affiliations.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeAnswerInfoToInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';

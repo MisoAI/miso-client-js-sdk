@@ -1,7 +1,7 @@
 import { asArray, trimObj, snakeToLowerCamel } from '@miso.ai/commons';
-import { PERFORMANCE_EVENT_TYPES, DIRECT_TRACKING_EVENT_TYPES, TRACKING_STATUS, EVENT_TYPE, validateEventType } from '../constants.js';
+import { PERFORMANCE_EVENT_TYPES, DIRECT_TRACKING_EVENT_TYPES, TRACKING_STATUS, validateEventType } from '../constants.js';
 import * as fields from './fields.js';
-import States from '../util/states.js';
+import States from './tracker-states.js';
 
 // a dummy item array for manipulating deduplication
 const ITEMLESS_DUMMY_ITEMS = [Symbol('itemless')];
