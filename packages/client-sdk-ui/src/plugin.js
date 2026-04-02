@@ -28,7 +28,7 @@ export default class UiPlugin extends Component {
     this._explores = new WeakMap();
     this._asks = new WeakMap();
     this._extensions = new WeakMap();
-    this._stylesReady = new Resolution();
+
     this._ready = new Resolution();
   }
 
@@ -36,48 +36,45 @@ export default class UiPlugin extends Component {
     addSubtree(this);
     MisoClient.on('create', this._injectClient.bind(this));
 
-    const uiContext = createUiPluginContext(this, MisoClient);
-    const { addElementClass, addLayoutClass } = uiContext;
+    // the UI interface for MisoClient
+    const ui = { defaults, traits };
+    delegateGetters(ui, this, ['layouts', 'ready']);
+    defineValues(this, { MisoClient });
+    defineValues(MisoClient, { ui });
+
+    // the plugin context extension
+    const uiContext = createUiPluginContext(this, ui, MisoClient);
+    const { addElementClasses, addLayoutClasses, addInterface } = uiContext;
     addExtensionPoints({
       ui: uiContext,
     });
 
-    const ui = { defaults, traits };
-    delegateGetters(ui, this, ['layouts', 'combo', 'ready']);
-    defineValues(this, { MisoClient });
-    defineValues(MisoClient, { ui });
-
-    // combo
-    this.combo = new Combo(this, MisoClient);
-
     // layouts
     const LayoutClasses = Object.values(layouts).filter(LayoutClass => LayoutClass.type);
-    for (const LayoutClass of LayoutClasses) {
-      addLayoutClass(LayoutClass);
-    }
+    addLayoutClasses(...LayoutClasses);
 
-    // custom elements
-    const ElementSuperClasses = [MisoContainerElement, MisoContextElement, MisoComboElement];
+    // elements
+    const ElementSuperClasses = [MisoContainerElement, MisoContextElement];
     for (const ElementClass of ElementSuperClasses) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }
-    const { containers, roles, combos, contexts, ...others } = elements;
+    const { containers, roles, contexts, combos:_, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
     const ElementClasses = [
-      ...Object.values(combos),
       ...Object.values(contexts),
       ...Object.values(containers),
       ...Object.values(roles),
       ...Object.values(others),
     ];
-    for (const ElementClass of ElementClasses) {
-      addElementClass(ElementClass);
-    }
+    addElementClasses(...ElementClasses);
+
+    // combo
+    MisoComboElement.MisoClient = MisoClient;
+    addElementClasses(...Object.values(elements.combos));
+    addInterface({ combo: new Combo(this, MisoClient) });
 
     // load styles
     await loadStylesIfNecessary();
-    this._stylesReady.resolve();
-
     this._ready.resolve();
   }
 
@@ -91,10 +88,7 @@ export default class UiPlugin extends Component {
   }
 
   get ready() {
-    return Promise.all([
-      this._ready.promise,
-      MisoClient.any(), // TODO: we need to wait for element connection
-    ]).then(() => {});
+    return this._ready.promise;
   }
 
   _injectClient(client) {
@@ -138,6 +132,7 @@ export default class UiPlugin extends Component {
 
 }
 
+// TODO: are we able to eliminate the concept of extension, just use plugins?
 class Extensions {
 
   constructor(plugin, client) {
@@ -157,33 +152,31 @@ class Extensions {
 
 }
 
-function createUiPluginContext(plugin, MisoClient) {
-  const uiContext = new UiPluginContext(plugin, MisoClient);
-  const obj = {};
-  delegateGetters(obj, uiContext, ['addElementClass', 'addLayoutClass']);
-  return obj;
+function createUiPluginContext(plugin, ui, MisoClient) {
+  async function addElementClasses(...ElementClasses) {
+    for (const ElementClass of ElementClasses) {
+      ElementClass.MisoClient = MisoClient;
+    }
+    await plugin.ready;
+    for (const ElementClass of ElementClasses) {
+      defineAndUpgrade(ElementClass);
+    }
+  }
+  function addLayoutClasses(...LayoutClasses) {
+    for (const LayoutClass of LayoutClasses) {
+      LayoutClass.MisoClient = MisoClient;
+      plugin.layouts.register(LayoutClass);
+    }
+  }
+  function addInterface(obj) {
+    defineValues(ui, obj);
+  }
+  return { plugin, addElementClasses, addLayoutClasses, addInterface };
 }
 
-class UiPluginContext {
-
-  constructor(plugin, MisoClient) {
-    this._plugin = plugin;
-    this._MisoClient = MisoClient;
-  }
-
-  async addElementClass(ElementClass) {
-    ElementClass.MisoClient = this._MisoClient;
-    await this._plugin._stylesReady.promise;
-    defineAndUpgrade(ElementClass);
-  }
-
-  addLayoutClass(LayoutClass) {
-    LayoutClass.MisoClient = this._MisoClient;
-    this._plugin.layouts.register(LayoutClass);
-  }
-
-}
-
+/**
+ * The UI interface for the client.
+ */
 class Ui {
 
   constructor(plugin, client) {
@@ -238,7 +231,7 @@ class Ui {
   }
 
   get ready() {
-    return this._plugin._ready.promise;
+    return this._plugin.ready;
   }
 
 }
