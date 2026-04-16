@@ -6,6 +6,7 @@ import { OptionListLayout, ListLayout, SearchBoxLayout, TypewriterLayout } from 
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { writeQuestionSourceToPayload, mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
 import { followUp as followUpTemplate } from '../defaults/ask/templates.js';
+import { makeAutocompletable } from './autocompletable.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
@@ -41,12 +42,20 @@ const DEFAULT_TEMPLATES = Object.freeze({
   followUp: followUpTemplate,
 });
 
+const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
+  api: {
+    group: API.GROUP.ASK,
+    name: API.NAME.AUTOCOMPLETE,
+  },
+});
+
 const DEFAULT_OPTIONS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
   templates: DEFAULT_TEMPLATES,
+  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
 });
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
@@ -71,6 +80,7 @@ export default class Ask extends AnswerBasedWorkflow {
 
   _initProperties(args) {
     super._initProperties(args);
+    this._initAutocomplete(args);
     const { parentQuestionId } = args;
     defineValues(this, { parentQuestionId });
   }
@@ -270,3 +280,5 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
 }
+
+makeAutocompletable(Ask.prototype);

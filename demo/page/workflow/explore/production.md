@@ -8,6 +8,7 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(() => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient(window.DEFAULT_ASK_API_KEY);
+  client.ui.explores.autocomplete.enable();
   const workflow = client.ui.explore;
   workflow.useApi({
     product_id: window.DEFAULT_PRODUCT_ID || 'aaa',

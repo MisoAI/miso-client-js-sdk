@@ -2,6 +2,7 @@ import { WORKFLOW_CONFIGURABLE, STATUS } from '../constants.js';
 import WorkflowContext from './context.js';
 import Ask from './ask.js';
 import { makeConfigurable } from './options/index.js';
+import { makeAutocompletableContext } from './autocompletable.js';
 
 const DEFAULT_AUTO_NEXT_OPTIONS = { event: 'done' };
 
@@ -27,6 +28,7 @@ export default class Asks extends WorkflowContext {
 
   constructor(plugin, client) {
     super('asks', plugin, client);
+    this._initAutocompleteContext(); // must be earlier than root workflow
     this._byQid = new Map();
     this._byPqid = new Map();
     this._root = new Ask(this); // initialize with default workflow
@@ -138,3 +140,4 @@ export default class Asks extends WorkflowContext {
 }
 
 makeConfigurable(Asks.prototype, [WORKFLOW_CONFIGURABLE.TEMPLATES]);
+makeAutocompletableContext(Asks.prototype);

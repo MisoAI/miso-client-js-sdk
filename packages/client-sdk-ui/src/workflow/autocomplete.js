@@ -8,7 +8,6 @@ const ROLES_OPTIONS = Object.freeze({
 
 function shimDefaults({ layouts, trackers, ...options } = {}) {
   return {
-    active: false,
     ...options,
     layouts: {},
     trackers: {},
@@ -35,6 +34,7 @@ export default class Autocomplete extends Workflow {
       superworkflow,
       ...args,
     });
+    this._autocompleteContext = superworkflow && superworkflow._context && superworkflow._context.autocomplete;
   }
 
   _initProperties(args) {
@@ -54,7 +54,7 @@ export default class Autocomplete extends Workflow {
 
   // API //
   get enabled() {
-    return this._active;
+    return !!(this._active !== undefined ? this._active : this._autocompleteContext && this._autocompleteContext.enabled);
   }
 
   enable() {
@@ -67,7 +67,7 @@ export default class Autocomplete extends Workflow {
 
   // query //
   _query(args) {
-    if (!this._active || sameInputValue(args, this._args)) {
+    if (!this.enabled || sameInputValue(args, this._args)) {
       return;
     }
     this._args = args;

@@ -5,6 +5,7 @@ import { ROLE, EVENT_TYPE } from '../constants.js';
 import { ListLayout, SearchBoxLayout } from '../layout/index.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { enableUseLink, UseLinkMixin } from './use-link.js';
+import { makeAutocompletable } from './autocompletable.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
   ...UnitWorkflow.DEFAULT_API_OPTIONS,
@@ -32,11 +33,19 @@ const DEFAULT_TRACKERS = Object.freeze({
   },
 });
 
+const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
+  api: {
+    group: API.GROUP.ASK,
+    name: API.NAME.QUERY_SUGGESTION,
+  },
+});
+
 const DEFAULT_OPTIONS = Object.freeze({
   ...UnitWorkflow.DEFAULT_OPTIONS,
   api: DEFAULT_API_OPTIONS,
   layouts: DEFAULT_LAYOUTS,
   trackers: DEFAULT_TRACKERS,
+  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
 });
 
 const ROLES_OPTIONS = mergeRolesOptions(UnitWorkflow.ROLES_OPTIONS, {
@@ -58,6 +67,7 @@ export default class Explore extends UnitWorkflow {
 
   _initProperties(args) {
     super._initProperties(args);
+    this._initAutocomplete(args);
     this._productId = undefined;
     this._linkFn = undefined;
   }
@@ -181,3 +191,4 @@ export default class Explore extends UnitWorkflow {
 }
 
 enableUseLink(Explore.prototype);
+makeAutocompletable(Explore.prototype);

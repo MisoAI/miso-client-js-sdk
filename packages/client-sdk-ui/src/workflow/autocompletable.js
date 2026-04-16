@@ -6,6 +6,10 @@ export function makeAutocompletable(prototype) {
   mixin(prototype, AutocompletableMixin.prototype);
 }
 
+export function makeAutocompletableContext(prototype) {
+  mixin(prototype, AutocompletableContextMixin.prototype);
+}
+
 export class AutocompletableMixin {
 
   _initAutocomplete(args) {
@@ -24,6 +28,40 @@ export class AutocompletableMixin {
   _destroyAutocomplete() {
     this._autocomplete && this._autocomplete._destroy();
     this._autocomplete = undefined;
+  }
+
+}
+
+export class AutocompletableContextMixin {
+
+  _initAutocompleteContext() {
+    this._autocomplete = new AutocompleteContext(this);
+  }
+
+  get autocomplete() {
+    return this._autocomplete;
+  }
+
+}
+
+class AutocompleteContext {
+
+  constructor(context) {
+    this._context = context;
+    this._active = false;
+  }
+
+  // API //
+  get enabled() {
+    return this._active;
+  }
+
+  enable() {
+    this._active = true;
+  }
+
+  disable() {
+    this._active = false;
   }
 
 }

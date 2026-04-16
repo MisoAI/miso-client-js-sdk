@@ -376,17 +376,20 @@ class Context {
     let index = 0;
     const data = this._data = new Map();
     const items = [];
-    for (const field in completions) {
-      for (const item of completions[field]) {
-        if (item.product && !item.product.url) {
-          continue; // product without URL is not clickable
-        }
-        item._index = index;
-        item._field = field;
-        data.set(index, item);
-        items.push(item);
-        index++;
+    for (let [field, item] of iterateCompletionItems(completions)) {
+      if (typeof item === 'string') {
+        item = { text: item };
       }
+      if (item.product && !item.product.url) {
+        continue; // product without URL is not clickable
+      }
+      item._index = index;
+      if (field) {
+        item._field = field;
+      }
+      data.set(index, item);
+      items.push(item);
+      index++;
     }
     return items;
   }
@@ -411,4 +414,18 @@ class Context {
     return !this._element ? undefined : this._cache[role] || (this._cache[role] = this._element.querySelector(`[data-role="${role}"]`));
   }
 
+}
+
+function * iterateCompletionItems(completions) {
+  if (Array.isArray(completions)) {
+    for (const item of completions) {
+      yield [undefined, item];
+    }
+  } else {
+    for (const field in completions) {
+      for (const item of completions[field]) {
+        yield [field, item];
+      }
+    }
+  }
 }

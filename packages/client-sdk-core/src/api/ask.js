@@ -60,6 +60,10 @@ export default class Ask extends ApiBase {
     return this._run(NAME.SEARCH_AUTOCOMPLETE, payload, options);
   }
 
+  async querySuggestion(payload, options) {
+    return this._run(NAME.QUERY_SUGGESTION, payload, options);
+  }
+
 }
 
 class Answer extends IdBasedIterableApiStub {
