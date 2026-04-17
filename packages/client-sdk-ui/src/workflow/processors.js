@@ -364,6 +364,20 @@ function areProducts(role, items = []) {
   return isProductRole(role) || (items.length > 0 && typeof items[0] === 'object' && items[0].product_id);
 }
 
+export function writeSessionInfoToInteraction(payload, args) {
+  const { session } = args && args.data || {};
+  if (!session) {
+    return payload;
+  }
+  return mergeInteractions(payload, {
+    context: {
+      custom_context: {
+        session_id: session.uuid,
+      },
+    },
+  });
+}
+
 export function writeRequestMetadataToInteraction(payload, args) {
   const { data } = args;
   if (!data) {

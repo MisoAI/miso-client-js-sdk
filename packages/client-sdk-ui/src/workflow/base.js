@@ -10,6 +10,7 @@ import {
   writeDataStatus,
   writeMisoIdToMeta,
   buildBaseInteraction,
+  writeSessionInfoToInteraction,
   writeRequestInfoToInteraction,
   writeRequestMetadataToInteraction,
   writeAffiliationInfoToInteraction,
@@ -302,6 +303,7 @@ export default class Workflow extends Component {
   _defaultProcessInteraction(payload, args) {
     payload = this._writeApiInfoToInteraction(payload, args);
     payload = this._writeMisoIdToInteraction(payload, args);
+    payload = writeSessionInfoToInteraction(payload, args);
     payload = writeRequestInfoToInteraction(payload, args);
     payload = writeRequestMetadataToInteraction(payload, args);
     payload = writeAffiliationInfoToInteraction(payload, args);
