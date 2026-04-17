@@ -300,6 +300,23 @@ export function carryOverQuestionIdToData(data, oldData) {
   };
 }
 
+export function writeUnanswerableToMeta(data) {
+  const { value } = data;
+  if (!value) {
+    return data;
+  }
+  if (!value.finished || value.finish_reason !== 'success' || (value.sources && value.sources.length > 0)) {
+    return data;
+  }
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      unanswerable: true,
+    },
+  };
+}
+
 // interactions //
 export function buildBaseInteraction(args) {
   const { role, type, items, ...rest } = args;
@@ -453,21 +470,4 @@ export function writeEventTargetToInteraction(payload, { event_target } = {}) {
       },
     },
   });
-}
-
-export function writeUnanswerableToMeta(data) {
-  const { value } = data;
-  if (!value) {
-    return data;
-  }
-  if (!value.finished || value.finish_reason !== 'success' || (value.sources && value.sources.length > 0)) {
-    return data;
-  }
-  return {
-    ...data,
-    meta: {
-      ...data.meta,
-      unanswerable: true,
-    },
-  };
 }
