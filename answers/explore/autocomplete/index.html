@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - Multiple units</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/explore/multiple/" />
+<title>Miso SDK for JavaScript - Answers - Autocomplete</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/explore/autocomplete/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - Multiple units" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Autocomplete" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/multiple/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/autocomplete/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Multiple units">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Autocomplete">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/multiple/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/autocomplete/">
 
 
 
@@ -138,13 +138,13 @@
             <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
-          </li><li class="page active ">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/multiple/">Multiple units</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/search-box-only/">Search box only</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/explore/autocomplete/">Autocomplete</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/configuration/">Configuration</a>
@@ -189,21 +189,24 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Explore module - multiple units</h1>
+          <h1 class="intro-title">Explore module - autocomplete</h1>
           
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>Sometimes you may want to display multiple explore blocks in a single page, or have different explore blocks across your site. You can achieve this by creating multiple explore workflows with different unit IDs.</p>
-<p>For example, specify a unit ID in the <code>&lt;miso-explore&gt;</code> element:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-explore</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sidebar-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-  <span class="token comment">&lt;!-- ... --></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-explore</span><span class="token punctuation">></span></span></code></pre>
-<p>Then, you can access the workflow by the unit ID:</p>
-<pre class="language-js"><code class="language-js"><span class="token comment">// note the plural form of `explores`</span>
-<span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explores<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+          <h3 id="enable-autocomplete" tabindex="-1">Enable autocomplete</h3>
+<p><div class="since">Since 1.13.1</div></p>
+<p>You can turn on autocomplete for all explore units:</p>
+<pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explores<span class="token punctuation">.</span>autocomplete<span class="token punctuation">.</span><span class="token function">enable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>When enabled, the search box in each explore unit will display query suggestions as the user types, powered by the <a href="/miso-client-js-sdk/answers/api/query_suggestion/" target="_blank" rel="noopener">query suggestion API</a>.</p>
+<p>Alternatively, you can enable autocomplete for a specific explore unit:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> workflow1 <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explore<span class="token punctuation">;</span> <span class="token comment">// the unit with unit-id = "default"</span>
+workflow1<span class="token punctuation">.</span>autocomplete<span class="token punctuation">.</span><span class="token function">enable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> workflow2 <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explores<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+workflow2<span class="token punctuation">.</span>autocomplete<span class="token punctuation">.</span><span class="token function">enable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
         </div>
       </main>

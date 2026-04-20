@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Miso SDK for JavaScript - Answers - Multiple units</title>
-<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/explore/multiple/" />
+<title>Miso SDK for JavaScript - Answers - Query suggestion</title>
+<link rel="canonical" href="https://misoai.github.io/miso-client-js-sdk/answers/api/query_suggestion/" />
 <meta name="description" content="" />
 
-<meta property="og:title" content="Miso SDK for JavaScript - Answers - Multiple units" />
+<meta property="og:title" content="Miso SDK for JavaScript - Answers - Query suggestion" />
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/multiple/" />
+<meta property="og:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/query_suggestion/" />
 <meta property="og:type" content="documentation" />
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@askmiso">
 <meta name="twitter:creator" content="@askmiso">
-<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Multiple units">
+<meta name="twitter:title" content="Miso SDK for JavaScript - Answers - Query suggestion">
 <meta name="twitter:description" content="">
-<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/explore/multiple/">
+<meta name="twitter:url" content="https://misoai.github.io/miso-client-js-sdk/answers/api/query_suggestion/">
 
 
 
@@ -138,7 +138,7 @@
             <a href="/miso-client-js-sdk/answers/explore/elements/">Elements</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/workflow/">Workflow</a>
-          </li><li class="page active ">
+          </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/multiple/">Multiple units</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/explore/trending/">Trending questions</a>
@@ -172,7 +172,7 @@
             <a href="/miso-client-js-sdk/answers/api/questions/">Questions</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/related_questions/">Related questions</a>
-          </li><li class="page  ">
+          </li><li class="page active ">
             <a href="/miso-client-js-sdk/answers/api/query_suggestion/">Query suggestion</a>
           </li><li class="page  ">
             <a href="/miso-client-js-sdk/answers/api/interactions-ask/">Interactions (ask)</a>
@@ -189,21 +189,58 @@
       </aside>
       <main class="order-1">
         <div class="intro ps-lg-4">
-          <h1 class="intro-title">Explore module - multiple units</h1>
-          
+          <h1 class="intro-title">Ask API - query suggestion</h1>
+          <p class="intro-desc">Generate query suggestions based on a partial query string.</p>
           <hr>
         </div>
         
         
         <div class="content ps-lg-4">
-          <p>Sometimes you may want to display multiple explore blocks in a single page, or have different explore blocks across your site. You can achieve this by creating multiple explore workflows with different unit IDs.</p>
-<p>For example, specify a unit ID in the <code>&lt;miso-explore&gt;</code> element:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>miso-explore</span> <span class="token attr-name">unit-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sidebar-1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-  <span class="token comment">&lt;!-- ... --></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>miso-explore</span><span class="token punctuation">></span></span></code></pre>
-<p>Then, you can access the workflow by the unit ID:</p>
-<pre class="language-js"><code class="language-js"><span class="token comment">// note the plural form of `explores`</span>
-<span class="token keyword">const</span> workflow <span class="token operator">=</span> client<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>explores<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>unitId<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+          <p><div class="since">Since 1.13.1</div></p>
+<h4 id="syntax" tabindex="-1">Syntax</h4>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">querySuggestion</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="payload" tabindex="-1">Payload</h4>
+<p>The <code>payload</code> parameter is an object with the following properties:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><code>q</code></td>
+      <td>string</td>
+      <td><strong>Required.</strong> The search query the user has entered. Must be non-empty.
+</td>
+    </tr></tbody>
+</table>
+<h4 id="return-value" tabindex="-1">Return value</h4>
+<p>A <code>Promise</code> of response object with the following properties:</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody><tr>
+      <td><code>completions</code></td>
+      <td>array of strings</td>
+      <td>An array of suggested query completions.
+</td>
+    </tr></tbody>
+</table>
+<h4 id="examples" tabindex="-1">Examples</h4>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">q</span><span class="token operator">:</span> <span class="token string">'...'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> completions <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>ask<span class="token punctuation">.</span><span class="token function">querySuggestion</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> text <span class="token keyword">of</span> completions<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span></code></pre>
 
         </div>
       </main>
