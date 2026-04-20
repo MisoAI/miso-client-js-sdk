@@ -369,10 +369,13 @@ export function writeSessionInfoToInteraction(payload, args) {
   if (!session) {
     return payload;
   }
+  const now = args.now || Date.now();
   return mergeInteractions(payload, {
     context: {
       custom_context: {
         session_id: session.uuid,
+        session_elapsed: now - session.startAt,
+        session_request_elapsed: session.meta.requestAt ? now - session.meta.requestAt : undefined,
       },
     },
   });

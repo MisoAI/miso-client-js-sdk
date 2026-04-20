@@ -206,10 +206,16 @@ export default class Workflow extends Component {
 
   // request //
   _request(options = {}) {
+    this._writeRequestTimeToSession(Date.now(), options);
     const { session } = this;
     const request = mergeApiOptions(this._options.resolved.api, options);
     this.updateData({ session, request });
     this._hub.update(fields.request(), { ...request, session });
+  }
+
+  _writeRequestTimeToSession(timestamp, options) {
+    const { session } = this;
+    session.meta.requestAt = timestamp;
   }
 
   // data //

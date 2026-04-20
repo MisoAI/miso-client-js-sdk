@@ -12,6 +12,7 @@ export default class SessionMaker {
     const session = Object.freeze({
       uuid: uuidv4(),
       index: this._sessionIndex++,
+      startAt: Date.now(),
       meta: {},
     });
     this._hub.update(fields.session(), session);

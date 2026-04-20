@@ -242,6 +242,13 @@ export default class SearchBasedWorkflow extends Workflow {
     };
   }
 
+  _writeRequestTimeToSession(timestamp, options = {}) {
+    if (options.type !== REQUEST_TYPE.QUERY) {
+      return;
+    }
+    super._writeRequestTimeToSession(timestamp, options);
+  }
+
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
