@@ -11,6 +11,7 @@ misocmd.push(() => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
+  client.ui.explores.autocomplete.enable();
   const workflow = client.ui.explore;
   workflow.useApi({
     product_id: 'aaa',
