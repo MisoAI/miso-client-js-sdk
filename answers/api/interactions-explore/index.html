@@ -198,32 +198,92 @@
         
         
         <div class="content ps-lg-4">
-          <h2 id="performance-events" tabindex="-1">Performance events</h2>
-<p>To generate performance measurement data for analytics, you can send the following events to Miso API:</p>
-<ul>
-<li>Impression</li>
-<li>Viewable impression</li>
-<li>Click</li>
-</ul>
-<p>See <a href="/miso-client-js-sdk/advanced/performance/" target="_blank" rel="noopener">Performance measurement</a> for detailed definitions.</p>
+          <p>The UI plugin of SDK sends user interactions to Miso API for analytics automatically. You can send interactions manually if needed.</p>
 <h4 id="syntax" tabindex="-1">Syntax</h4>
-<p>To send an event using SDK that works with analytics, specifying <code>api_group</code>, <code>api_name</code>, and <code>property</code> in <code>custom_context</code> is required.</p>
 <pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'impression'</span><span class="token punctuation">,</span> <span class="token comment">// or 'viewable_impression', 'click'</span>
-  <span class="token literal-property property">product_ids</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// if subjects are catalog items</span>
+  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'impression'</span><span class="token punctuation">,</span> <span class="token comment">// or 'viewable_impression', 'click', 'submit'</span>
+  <span class="token literal-property property">miso_id</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span> <span class="token comment">// miso_id from API response</span>
   <span class="token literal-property property">context</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token literal-property property">custom_context</span><span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token literal-property property">api_group</span><span class="token operator">:</span> <span class="token string">'ask'</span><span class="token punctuation">,</span>
-      <span class="token literal-property property">api_name</span><span class="token operator">:</span> <span class="token string">'related_questions'</span><span class="token punctuation">,</span> 
+      <span class="token literal-property property">api_name</span><span class="token operator">:</span> <span class="token string">'related_questions'</span><span class="token punctuation">,</span> <span class="token comment">// or 'trending_questions'</span>
       <span class="token literal-property property">property</span><span class="token operator">:</span> <span class="token string">'...'</span><span class="token punctuation">,</span>
       <span class="token literal-property property">items</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// if subjects are not catalog items</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="api-names" tabindex="-1">API names</h4>
+<ul>
+<li><code>related_questions</code></li>
+<li><code>trending_questions</code></li>
+</ul>
+<h4 id="properties" tabindex="-1">Properties</h4>
+<p>The property field in the interaction payload refers to the subject of the interaction. It usually corresponds to a field in the API response with a few exceptions.</p>
 <table class="table"><thead>
 <tr>
-<th>Parameter</th>
+<th>Property</th>
+<th>Associated required field</th>
+<th>Interactions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>related_questions</code></td>
+<td><code>context.custom_context.items</code></td>
+<td><code>impression</code>, <code>viewable_impression</code>, <code>click</code></td>
+</tr>
+<tr>
+<td><code>query</code></td>
+<td>--</td>
+<td><code>submit</code></td>
+</tr>
+<tr>
+<td><code>container</code></td>
+<td>--</td>
+<td><code>impression</code>, <code>viewable_impression</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The property <code>container</code> refers to the entire explore unit section. The purpose of tracking <code>container</code> is to keep track of the data when the API response is empty or in a scenario where the user does not send an API request (e.g. search bar only).</li>
+<li>In the analytics, the CTR of submit is defined as <code>query</code>'s <code>submit</code> divided by <code>container</code>'s <code>impression</code>. Vice versa for vCTR, it is <code>query</code>'s <code>submit</code> divided by <code>container</code>'s <code>viewable_impression</code>.</li>
+</ul>
+<h4 id="interaction-types" tabindex="-1">Interaction types</h4>
+<table class="table"><thead>
+<tr>
 <th>Type</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>impression</code></td>
+<td>The content of a subject is rendered in DOM tree, regardless of being seen or not.</td>
+</tr>
+<tr>
+<td><code>viewable_impression</code></td>
+<td>At least 50% of the content of a subject shows up in viewport for a consecutive 1 second.</td>
+</tr>
+<tr>
+<td><code>click</code></td>
+<td>The user clicks on the link of a subject, which may lead to an article/product page or answers page.</td>
+</tr>
+<tr>
+<td><code>submit</code></td>
+<td>The user submits a query through the search box.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>See <a href="/miso-client-js-sdk/advanced/performance/" target="_blank" rel="noopener">performance measurement</a> for the detailed definitions and metrics of CTR, vCTR, and view rate.</li>
+</ul>
+<h4 id="interaction-payload-fields" tabindex="-1">Interaction payload fields</h4>
+<p>Top-level fields:</p>
+<table class="table"><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -231,48 +291,62 @@
 <tr>
 <td><code>type</code></td>
 <td>string</td>
-<td>Event type: <code>impression</code>, <code>viewable_impression</code>, or <code>click</code>.</td>
+<td>✓</td>
+<td>Interaction type.</td>
 </tr>
 <tr>
-<td><code>product_ids</code></td>
-<td>array of strings</td>
-<td>Product ids of the event subjects</td>
-</tr>
-<tr>
-<td><code>items</code></td>
-<td>array of strings</td>
-<td>Event subjects (when they are not catalog items)</td>
-</tr>
-<tr>
-<td><code>api_group</code></td>
+<td><code>miso_id</code></td>
 <td>string</td>
-<td>The first segment of API path, in snake case</td>
-</tr>
-<tr>
-<td><code>api_name</code></td>
-<td>string</td>
-<td>The second segment of API path, in snake case</td>
-</tr>
-<tr>
-<td><code>property</code></td>
-<td>string</td>
-<td>The property name of the event subjects, which corresponds to the API response</td>
+<td>✓</td>
+<td>Miso-generated unique ID in each API response.</td>
 </tr>
 </tbody>
 </table>
-<h4 id="api-and-key-properties" tabindex="-1">API and key properties</h4>
+<p>Fields under <code>context.custom_context</code>:</p>
 <table class="table"><thead>
 <tr>
-<th>API</th>
-<th>Property</th>
-<th>Is catalog item?</th>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>related_questions</code></td>
-<td><code>related_questions</code></td>
-<td>✗</td>
+<td><code>api_group</code></td>
+<td>string</td>
+<td>✓</td>
+<td>The first segment of API path, in snake case.</td>
+</tr>
+<tr>
+<td><code>api_name</code></td>
+<td>string</td>
+<td>✓</td>
+<td>The second segment of API path, in snake case.</td>
+</tr>
+<tr>
+<td><code>property</code></td>
+<td>string</td>
+<td>✓</td>
+<td>The subject name of the interaction, which usually correspond to a field in the API response.</td>
+</tr>
+<tr>
+<td><code>site</code></td>
+<td>string</td>
+<td></td>
+<td>The site name. Only required when you serve multiple sites from a single Miso app.</td>
+</tr>
+<tr>
+<td><code>unit_id</code></td>
+<td>string</td>
+<td></td>
+<td>The unit id of the workflow unit. Only required when you have multiple units in your site. When omitted, the unit name shows <code>Home</code> for URL path <code>/</code> and otherwise <code>Article</code> in analytics.</td>
+</tr>
+<tr>
+<td><code>items</code></td>
+<td>array of strings</td>
+<td></td>
+<td>Subject items (when they are non-catalog items, such as <code>related_questions</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -287,11 +361,12 @@
     <span class="token string">'question_2'</span><span class="token punctuation">,</span>
     <span class="token string">'question_3'</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token operator">...</span>
+  <span class="token literal-property property">miso_id</span><span class="token operator">:</span> <span class="token string">'12345678-1234-4444-1234-123456789012'</span>
 <span class="token punctuation">}</span></code></pre>
-<p>And we want to track click events on the first two items from the <code>related_questions</code> property, then we send the following interaction:</p>
+<p>And we want to track click interactions on the first two items from the <code>related_questions</code> property, then we send the following interaction:</p>
 <pre class="language-js"><code class="language-js">client<span class="token punctuation">.</span>api<span class="token punctuation">.</span>interactions<span class="token punctuation">.</span><span class="token function">upload</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
   <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'click'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">miso_id</span><span class="token operator">:</span> <span class="token string">'12345678-1234-4444-1234-123456789012'</span><span class="token punctuation">,</span>
   <span class="token literal-property property">context</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token literal-property property">custom_context</span><span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token literal-property property">api_group</span><span class="token operator">:</span> <span class="token string">'ask'</span><span class="token punctuation">,</span>
