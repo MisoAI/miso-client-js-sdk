@@ -3,7 +3,6 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import terser from '@rollup/plugin-terser';
-import filesize from 'rollup-plugin-filesize';
 import serve from 'rollup-plugin-serve';
 import manifest from './manifest.js';
 
@@ -27,10 +26,6 @@ function _config({ input, output: { filename: outputFilename, ...output } }, env
           unsafe_comps: true,
           warnings: false
         },
-      }),
-      filesize({
-        showMinifiedSize: false,
-        showGzippedSize: true,
       }),
     ];
   } else {
