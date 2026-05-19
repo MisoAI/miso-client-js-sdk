@@ -151,6 +151,7 @@ class Analytics {
     this._loadingAt = undefined;
     this._readyAt = undefined;
     this._heartbeatTimer = undefined;
+    this._heartbeatTrailingTimer = undefined;
 
     this.config();
 
@@ -208,10 +209,24 @@ class Analytics {
   }
 
   _sendHeartbeat() {
-    const debounce = this._plugin._options?.heartbeatDebounce;
-    if (debounce) {
-      clearTimeout(this._heartbeatTimer);
-      this._heartbeatTimer = setTimeout(() => this._doSendHeartbeat(), debounce);
+    const throttle = this._plugin._options?.heartbeatThrottle;
+    if (throttle) {
+      if (!this._heartbeatTimer) {
+        // Leading edge: fire immediately, cancel any stale trailing timer, start cooldown
+        clearTimeout(this._heartbeatTrailingTimer);
+        this._heartbeatTrailingTimer = undefined;
+        this._doSendHeartbeat();
+        this._heartbeatTimer = setTimeout(() => {
+          this._heartbeatTimer = undefined;
+        }, throttle);
+      } else {
+        // During cooldown: debounce a trailing fire so the last call always goes out
+        clearTimeout(this._heartbeatTrailingTimer);
+        this._heartbeatTrailingTimer = setTimeout(() => {
+          this._heartbeatTrailingTimer = undefined;
+          this._doSendHeartbeat();
+        }, throttle);
+      }
     } else {
       this._doSendHeartbeat();
     }
