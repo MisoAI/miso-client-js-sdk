@@ -150,6 +150,7 @@ class Analytics {
     this._startAt = undefined;
     this._loadingAt = undefined;
     this._readyAt = undefined;
+    this._heartbeatTimer = undefined;
 
     this.config();
 
@@ -207,6 +208,16 @@ class Analytics {
   }
 
   _sendHeartbeat() {
+    const debounce = this._plugin._options?.heartbeatDebounce;
+    if (debounce) {
+      clearTimeout(this._heartbeatTimer);
+      this._heartbeatTimer = setTimeout(() => this._doSendHeartbeat(), debounce);
+    } else {
+      this._doSendHeartbeat();
+    }
+  }
+
+  _doSendHeartbeat() {
     const tracker = this._workflow.trackers.container;
     tracker && tracker.heartbeat();
   }
