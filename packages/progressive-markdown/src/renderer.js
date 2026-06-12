@@ -67,7 +67,7 @@ export default class Renderer {
   }
 
   update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor: rawCursor, timestamp, done: dataDone }) {
-    value = this._processMarkdown(value, { done: dataDone });
+    value = this._processMarkdown(value || '', { done: dataDone });
     prevCursor = Math.floor(prevCursor);
     let cursor = Math.floor(rawCursor);
 

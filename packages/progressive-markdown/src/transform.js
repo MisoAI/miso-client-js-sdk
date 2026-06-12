@@ -18,6 +18,7 @@ export async function transform(markdown, sources = [], options = {}) {
 }
 
 function preprocess(markdown, sources = [], options = {}) {
+  markdown = markdown || '';
   if (!Array.isArray(sources) && typeof sources === 'object' && sources !== null) {
     options = sources;
     sources = [];
