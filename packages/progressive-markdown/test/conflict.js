@@ -63,6 +63,58 @@ test('conflict: intermediate', () => {
   assert.equal(c1, query.positionOf('Hello World'.length));
 });
 
+test('conflict: text extension at tail', () => {
+  const query = new Query(QUERY_OPTIONS);
+
+  const { conflict: c0 } = query.update('# Hello');
+  const { conflict: c1 } = query.update('# Hello World');
+
+  // divergence is after "Hello"; a cursor held at safeRightBound (4) stays below it
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'interior');
+  assert.is(c1.index, 5);
+});
+
+test('conflict: single-character text extension', () => {
+  const query = new Query(QUERY_OPTIONS);
+
+  const { conflict: c0 } = query.update('# A');
+  const { conflict: c1 } = query.update('# AB');
+
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'interior');
+  assert.is(c1.index, 1);
+});
+
+test('conflict: text extension before other content', () => {
+  const query = new Query(QUERY_OPTIONS);
+
+  const { conflict: c0 } = query.update('# Hello\n\n## Sub');
+  const { conflict: c1 } = query.update('# Hello World\n\n## Sub');
+
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'interior');
+  assert.is(c1.index, 5);
+});
+
+test('conflict: text shrink on re-tokenization', () => {
+  const query = new Query(QUERY_OPTIONS);
+
+  // "abc*de" is a single literal text; the closing "*" re-tokenizes it into text + <em>
+  const { conflict: c0 } = query.update('abc*de');
+  const { conflict: c1 } = query.update('abc*de*');
+
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'intermediate');
+  assert.is(c1.index, 3);
+  assert.is(c1.left.type, 'text');
+  assert.is(c1.right.tagName, 'em');
+});
+
 test('conflict: empty -> empty', () => {
   const query = new Query(QUERY_OPTIONS);
 
