@@ -10,6 +10,8 @@ const stepElement = document.getElementById('step');
 const resultElement = document.getElementById('result');
 const responsesElement = document.getElementById('responses');
 const conflictsElement = document.getElementById('conflicts');
+const overwritesElement = document.getElementById('overwrites');
+const overwriteRateElement = document.getElementById('overwrite-rate');
 
 const copySeedButton = document.getElementById('copy-seed');
 const lockSeedButton = document.getElementById('lock-seed');
@@ -77,6 +79,10 @@ runner.on('state', state => {
   stepElement.textContent = `${step.index}`;
   responsesElement.textContent = `${responses}`;
   conflictsElement.textContent = `${conflicts}`;
+
+  const { overwrites, updates } = runner.stats;
+  overwritesElement.textContent = `${overwrites}`;
+  overwriteRateElement.textContent = updates ? `${(100 * overwrites / updates).toFixed(1)}%` : '0%';
 
   htmlStale = true;
   mdStale = true;

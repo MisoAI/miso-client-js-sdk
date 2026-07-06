@@ -115,6 +115,20 @@ test('conflict: text shrink on re-tokenization', () => {
   assert.is(c1.right.tagName, 'em');
 });
 
+test('conflict: growing autolink href', () => {
+  const query = new Query(QUERY_OPTIONS);
+
+  // the <a> href grows with the streaming URL; text-only progress would leave it stale
+  const { conflict: c0 } = query.update('See https://mi');
+  const { conflict: c1 } = query.update('See https://miso.ai');
+
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'intermediate');
+  assert.is(c1.index, 4);
+  assert.is(c1.right.tagName, 'a');
+});
+
 test('conflict: empty -> empty', () => {
   const query = new Query(QUERY_OPTIONS);
 

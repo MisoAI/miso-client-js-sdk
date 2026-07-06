@@ -22,6 +22,7 @@
     "start:client-sdk": "npm run start --workspace=packages/client-sdk",
     "start:demo": "npm run start --workspace=demo",
     "test": "npm run test --workspaces --if-present",
+    "test:pm": "npm run test --workspace=packages/progressive-markdown",
     "e2e": "npm run start --workspace=e2e",
     "e2e:ui": "npm run start:ui --workspace=e2e",
     "version": "node ./bin/version.js",

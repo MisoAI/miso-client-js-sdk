@@ -28,6 +28,15 @@ export class TestRunner {
     return this._controllers;
   }
 
+  get stats() {
+    const [actual, expected] = this._controllers;
+    // the forceOverwrite reference overwrites on every update, so it doubles as the update count
+    return {
+      overwrites: actual.overwrites,
+      updates: expected.overwrites,
+    };
+  }
+
   run() {
     const [actualController, expectedController] = this._controllers;
     const options = { ...this._options.steps, lorem: this._lorem };
@@ -90,6 +99,7 @@ export class FreeController {
     this._response = undefined;
     this._cursor = undefined;
     this._rendered = undefined;
+    this._overwrites = 0;
   }
 
   get options() {
@@ -114,11 +124,18 @@ export class FreeController {
       this._renderer.clear(this._element, this._rendered) :
       this._renderer.update(this._element, this._rendered, { value, cursor, done: dataDone });
 
+    if (result.overwrite) {
+      this._overwrites++;
+    }
     this._rendered = Object.freeze({ ...this._rendered, stage, ...result, dataDone });
   }
 
   get rendered() {
     return this._rendered;
+  }
+
+  get overwrites() {
+    return this._overwrites;
   }
 
   get response() {

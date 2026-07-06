@@ -63,7 +63,7 @@ export default class Renderer {
     const prevRef = prevState ? prevState.ref : element;
     const ref = this._applyOperation(Operation.clear(), element, prevRef, { index, timestamp });
     this._handleRefChange(prevRef, ref);
-    return { cursor: 0, done: false, ref, index, conflict: false };
+    return { cursor: 0, done: false, ref, index, conflict: false, overwrite: false };
   }
 
   update(element, { cursor: prevCursor, ref: prevRef }, { value, cursor: rawCursor, timestamp, done: dataDone }) {
@@ -112,7 +112,7 @@ export default class Renderer {
     }
     this._handleRefChange(prevRef, ref);
 
-    return { cursor: rawCursor, done: viewDone, ref, index, conflict: !!conflict };
+    return { cursor: rawCursor, done: viewDone, ref, index, conflict: !!conflict, overwrite };
   }
 
   _handleRefChange(oldRef, newRef) {

@@ -207,7 +207,8 @@ export function safeRightBoundOf(tree) {
   // TODO: confirm this
 
   // aggressive
-  return tree.bounds.right - 1;
+  // clamp: the tree may have children yet zero content size, e.g. '```\n' -> pre > code > text('')
+  return Math.max(0, tree.bounds.right - 1);
 }
 
 export function findConflict(prev, next) {
@@ -255,9 +256,12 @@ function findConflictInNode(prevNode, nextNode) {
       return undefined;
     }
     const prefixLen = getCommonPrefixLength(prevValue, nextValue);
+    // at nextNode's bounds, the position is intermediate rather than interior
     return prefixLen === 0 ?
       Position.intermediate(leftBound, nextNode.previousSibling, nextNode) :
-      Position.interior(leftBound + prefixLen, nextNode);
+      prefixLen === nextValue.length ?
+        Position.intermediate(leftBound + prefixLen, nextNode, nextNode.nextSibling) :
+        Position.interior(leftBound + prefixLen, nextNode);
   } else if (!prevNode._atomic) {
     // dive into children
     return findConflictInNodes(prevNode.children, nextNode.children);
@@ -273,7 +277,7 @@ function isSameNode(prevNode, nextNode) {
   }
   // must be element
   return prevNode.tagName === nextNode.tagName &&
-    propsEquals(prevNode.tagName, prevNode.properties, nextNode.properties);
+    propsEquals(prevNode.tagName, prevNode.properties || {}, nextNode.properties || {});
 }
 
 const SKIP_PROP_COMPARISON = new Set([
@@ -301,6 +305,9 @@ const SKIP_PROP_COMPARISON = new Set([
   'ul',
 ]);
 
+// className is compared separately; tooltip content may depend on data outside the source
+const IGNORED_PROPS = new Set(['className', 'data-tooltip', 'dataTooltip']);
+
 function propsEquals(tagName, prevProps, nextProps) {
   const prevKeysCount = Object.keys(prevProps).length;
   const nextKeysCount = Object.keys(nextProps).length;
@@ -313,7 +320,19 @@ function propsEquals(tagName, prevProps, nextProps) {
   if (SKIP_PROP_COMPARISON.has(tagName)) {
     return true;
   }
-  // TODO: compare props seriously but ignore data-tooltip
+  for (const key of Object.keys(nextProps)) {
+    if (IGNORED_PROPS.has(key)) {
+      continue;
+    }
+    const prevValue = prevProps[key];
+    const nextValue = nextProps[key];
+    const equal = Array.isArray(prevValue) || Array.isArray(nextValue) ?
+      arrayEquals(prevValue, nextValue) :
+      prevValue === nextValue;
+    if (!equal) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -337,10 +356,7 @@ function arrayEquals(prevArr, nextArr) {
 }
 
 function getCommonPrefixLength(prevText, nextText) {
-  // stop at n - 1 due to position type difference
-  // say prevNode = '<p>abc</p>', nextText = '<p>abcde</p>', then the common prefix is 'abc'
-  // but they end up with positions of difference type: prev = intermediate, next = interior
-  const limit = Math.max(0, Math.min(prevText.length, nextText.length) - 1);
+  const limit = Math.min(prevText.length, nextText.length);
   for (let i = 0; i < limit; i++) {
     if (prevText[i] !== nextText[i]) {
       return i;

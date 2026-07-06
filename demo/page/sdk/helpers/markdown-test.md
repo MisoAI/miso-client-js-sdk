@@ -75,6 +75,7 @@ dependency: 'markdown-npm'
       <span class="input-group-text">Step =&nbsp;<span id="step">0</span></span>
       <span class="input-group-text">Res. =&nbsp;<span id="responses">0</span></span>
       <span class="input-group-text">Con. =&nbsp;<span id="conflicts">0</span></span>
+      <span class="input-group-text">Ovr. =&nbsp;<span id="overwrites">0</span>&nbsp;(<span id="overwrite-rate">0%</span>)</span>
     </div>
     <div class="input-group mode-toggle">
       <span class="input-group-text button" data-mode="dom">DOM</span>

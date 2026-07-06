@@ -23,4 +23,14 @@ test('query: simple', () => {
   assert.equal(`${query.positionOf(1)}`, 'I1:0/0+1');
 });
 
+test('query: safe right bound of zero-size tree', () => {
+  const query = new Query();
+
+  // a just-opened code fence parses to pre > code > text(''): children present, zero content size
+  query.update('```\n');
+
+  assert.equal(query.tree.bounds, { left: 0, right: 0 });
+  assert.is(query.safeRightBound, 0);
+});
+
 test.run();

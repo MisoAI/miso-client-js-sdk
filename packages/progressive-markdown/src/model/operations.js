@@ -35,6 +35,9 @@ function mergeOperations(operations) {
         case Operation.TYPE.DESCEND:
           lastOperation.level += level;
           break;
+        case Operation.TYPE.LEVEL:
+          lastOperation.level = level; // absolute: last wins
+          break;
       }
     } else {
       output.push(operation);

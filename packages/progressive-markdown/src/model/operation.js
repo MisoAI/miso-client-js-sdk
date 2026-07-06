@@ -4,6 +4,7 @@ const TYPE = Object.freeze({
   SET: 'set',
   ASCEND: 'ascend',
   DESCEND: 'descend',
+  LEVEL: 'level',
   SOLIDIFY: 'solidify',
 });
 
@@ -31,6 +32,10 @@ export default class Operation {
 
   static descend(level = 1) {
     return new Operation({ type: TYPE.DESCEND, level });
+  }
+
+  static level(level) {
+    return new Operation({ type: TYPE.LEVEL, level });
   }
 
   static solidify(html) {
@@ -65,6 +70,14 @@ export default class Operation {
           ref = ref.lastElementChild;
         }
         break;
+      case TYPE.LEVEL:
+        // absolute: the render cursor always lives on the right spine, so element
+        // depth from the container is a complete coordinate
+        ref = element;
+        for (let i = 0; i < level; i++) {
+          ref = ref.lastElementChild;
+        }
+        break;
       case TYPE.SOLIDIFY:
         ref.innerHTML = html;
         break;
@@ -84,6 +97,8 @@ export default class Operation {
         return `ASC(${this.level})`;
       case TYPE.DESCEND:
         return `DES(${this.level})`;
+      case TYPE.LEVEL:
+        return `LVL(${this.level})`;
       case TYPE.SOLIDIFY:
         return `SLD(${summarize(this.html)})`;
     }

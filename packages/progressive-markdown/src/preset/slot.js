@@ -137,6 +137,16 @@ export function applyOperationWithSlot(options = {}) {
         }
         ref = operation.applyTo(element, ref);
         break;
+      case Operation.TYPE.LEVEL:
+        // content lives one level deeper, inside the upper/lower wrapper
+        ref = element;
+        if (operation.level > 0) {
+          ref = proxy(element, options).descend();
+          for (let i = 0; i < operation.level; i++) {
+            ref = ref.lastElementChild;
+          }
+        }
+        break;
       case Operation.TYPE.SOLIDIFY:
         if (ref !== element) {
           ref = operation.applyTo(element, ref);

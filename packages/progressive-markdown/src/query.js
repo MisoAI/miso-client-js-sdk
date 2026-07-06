@@ -140,6 +140,11 @@ export default class Query {
 
     const operations = [];
 
+    // seek to the element level this batch assumes: the same index may resolve to a
+    // different depth than where the previous batch left the ref, when new content
+    // reopens a node that had closed exactly at the from-boundary
+    operations.push(Operation.level(fromPos.depth - 1));
+
     // finish up from-node if necessary
     if (fromPos.interior) {
       const sameNode = toPos.interior && fromPos.node === toPos.node;
