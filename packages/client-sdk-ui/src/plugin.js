@@ -27,7 +27,6 @@ export default class UiPlugin extends Component {
     this._recommendations = new WeakMap();
     this._explores = new WeakMap();
     this._asks = new WeakMap();
-    this._extensions = new WeakMap();
 
     this._ready = new Resolution();
   }
@@ -78,15 +77,6 @@ export default class UiPlugin extends Component {
     this._ready.resolve();
   }
 
-  async requireExtension(name) {
-    switch (name) {
-      case 'markdown':
-        return await this.MisoClient.plugins.install('std:ui-markdown');
-      default:
-        throw new Error(`Unknown extension: ${name}`);
-    }
-  }
-
   get ready() {
     return this._ready.promise;
   }
@@ -95,15 +85,6 @@ export default class UiPlugin extends Component {
     defineValues(client, {
       ui: new Ui(this, client),
     });
-  }
-
-  _getExtensions(client) {
-    if (this._extensions.has(client)) {
-      return this._extensions.get(client);
-    }
-    const extensions = new Extensions(this, client);
-    this._extensions.set(client, extensions);
-    return extensions;
   }
 
   _getRecommendations(client) {
@@ -128,26 +109,6 @@ export default class UiPlugin extends Component {
       this._asks.set(client, asks = new Asks(this, client));
     }
     return asks;
-  }
-
-}
-
-// TODO: are we able to eliminate the concept of extension, just use plugins?
-class Extensions {
-
-  constructor(plugin, client) {
-    this._plugin = plugin;
-    this._client = client;
-    this._contexts = {};
-  }
-
-  async require(name) {
-    if (this._contexts[name]) {
-      return this._contexts[name];
-    }
-    const plugin = await this._plugin.requireExtension(name);
-    const context = this._contexts[name] = plugin.getContext(this._client);
-    return context;
   }
 
 }

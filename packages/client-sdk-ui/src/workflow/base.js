@@ -50,7 +50,6 @@ export default class Workflow extends Component {
     this._name = args.name;
     this._roles = args.roles;
 
-    this._extensions = plugin._getExtensions(client);
     this._defaults = defaults;
     this._options = options || new WorkflowOptions(context && context._options, defaults);
     this._extraOptions = extraOptions || {};
@@ -77,14 +76,13 @@ export default class Workflow extends Component {
     const hub = this._hub;
     const client = this._client;
     const options = this._options;
-    const extensions = this._extensions;
     const layouts = this._plugin.layouts;
 
     this._sessions = new SessionMaker(hub);
     this._trackers = new TrackersActor(hub, { roles, options });
     this._proxyTrackers = proxyTrackers(this._trackers);
     this._data = new DataActor(hub, { source: sources.api(client), options, ...this._extraOptions.api });
-    this._views = new ViewsActor(hub, { extensions, layouts, roles, options, workflow: this });
+    this._views = new ViewsActor(hub, { layouts, roles, options, workflow: this });
     this._interactions = new InteractionsActor(hub, { client, options });
   }
 

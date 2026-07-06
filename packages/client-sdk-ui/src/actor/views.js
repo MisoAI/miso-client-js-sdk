@@ -8,7 +8,6 @@ export default class ViewsActor {
 
   constructor(hub, {
     workflow,
-    extensions,
     layouts,
     roles,
     options,
@@ -16,7 +15,6 @@ export default class ViewsActor {
     this._hub = hub;
     this._workflow = workflow;
     this._workflowName = workflow._name;
-    this._extensions = extensions;
     this._layoutFactory = layouts;
     this._options = options;
     this._roles = roles;

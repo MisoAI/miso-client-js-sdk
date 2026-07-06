@@ -67,10 +67,12 @@ export default class TypewriterLayout extends ProgressiveLayout {
   }
 
   async _setupForMarkdown() {
-    const context = await this._view._views._extensions.require('markdown');
+    const client = this._view.workflow._client;
+    const plugin = await TypewriterLayout.MisoClient.plugins.install('std:ui-markdown');
     if (!this._view) {
       return; // destroyed
     }
+    const context = plugin.getContext(client);
     const cursorClass = cursorClassName(this.className);
     const { onDebug, onCitationLink, variant } = this.options;
     // TODO: options
