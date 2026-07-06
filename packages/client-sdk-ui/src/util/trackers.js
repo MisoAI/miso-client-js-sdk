@@ -10,6 +10,12 @@ export function markAsTracked(event) {
   event[TRACKED] = true;
 }
 
+// default item identity across item types (product, question option, article, ...)
+// overridable per role via tracker options: { itemKey: item => ... }
+export function defaultItemKey(item) {
+  return item.product_id || item.text || item.id || item;
+}
+
 const DEFAULT_TRACKER_OPTIONS = Object.freeze({
   impression: Object.freeze({
   }),

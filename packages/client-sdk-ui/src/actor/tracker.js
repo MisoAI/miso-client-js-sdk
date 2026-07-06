@@ -1,5 +1,6 @@
 import { asArray, trimObj, snakeToLowerCamel } from '@miso.ai/commons';
 import { PERFORMANCE_EVENT_TYPES, DIRECT_TRACKING_EVENT_TYPES, TRACKING_STATUS, validateEventType } from '../constants.js';
+import { defaultItemKey } from '../util/trackers.js';
 import * as fields from './fields.js';
 import States from './tracker-states.js';
 
@@ -12,13 +13,17 @@ export default class Tracker {
     this._hub = hub;
     this._role = role;
     this._options = options;
-    // TODO: know item type
 
-    this._states = new States(this._getSessionId());
+    this._states = new States(this._getSessionId(), item => this.getItemKey(item));
   }
 
   get options() {
     return typeof this._options === 'function' ? this._options() : this._options;
+  }
+
+  getItemKey(item) {
+    const { itemKey } = this.options || {};
+    return (typeof itemKey === 'function' ? itemKey : defaultItemKey)(item);
   }
 
   getState(item) {
@@ -65,7 +70,7 @@ export default class Tracker {
       return;
     }
     if (!this._states || sessionId !== this._states.sessionId) {
-      this._states = new States(sessionId);
+      this._states = new States(sessionId, item => this.getItemKey(item));
     }
   }
 

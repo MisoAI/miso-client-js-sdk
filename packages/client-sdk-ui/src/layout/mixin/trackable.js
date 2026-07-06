@@ -29,8 +29,7 @@ export class TrackableMixin {
   }
 
   _getItemKey(value) {
-    // TODO: ad-hoc!
-    return value.product_id || value.text || value.id || value;
+    return this._view.tracker.getItemKey(value);
   }
 
   _getItems(state) {

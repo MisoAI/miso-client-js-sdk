@@ -2,8 +2,6 @@ import { Component } from '@miso.ai/commons';
 
 export default class ApiBase extends Component {
 
-  // TODO: use private fields (may encounter issues with rollup)
-
   constructor(api, apiPath) {
     super(apiPath, api);
     this._apiPath = apiPath;

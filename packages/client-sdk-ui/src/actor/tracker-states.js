@@ -16,8 +16,9 @@ const UNTRACKED_STATES = Object.freeze({
  */
 export default class States {
 
-  constructor(sessionId) {
+  constructor(sessionId, getKey) {
     this.sessionId = sessionId;
+    this._getKey = getKey;
     this._states = new Map(); // item key -> {impression, viewable, click}
   }
 
@@ -43,11 +44,6 @@ export default class States {
 
   untriggered(items, type) {
     return items.filter(item => this.get(item, type) !== TRIGGERED);
-  }
-
-  _getKey(item) {
-    // TODO: ad-hoc! should move away to higher level
-    return item.product_id || item.text || item.id || item;
   }
 
   _setOne(item, type, status) {

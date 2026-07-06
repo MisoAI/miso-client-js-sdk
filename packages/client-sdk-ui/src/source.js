@@ -1,7 +1,6 @@
 import { API } from '@miso.ai/commons';
 
 export function api(client) {
-  // TODO: send uuid & unit id
   return async ({ group, name, payload, options }) => {
     if (group === API.GROUP.ASK) {
       switch (name) {
