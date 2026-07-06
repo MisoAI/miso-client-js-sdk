@@ -1,3 +1,4 @@
+import { isInBrowser } from '@miso.ai/commons';
 import version from '../version.js';
 
 function trianglePath(r) {
@@ -47,7 +48,7 @@ function loadSvgSprites() {
   document.head.insertAdjacentHTML('beforeend', SPRITES_SVG);
 }
 
-loadSvgSprites();
+isInBrowser && loadSvgSprites();
 
 function _icon(name) {
   return `<svg class="miso-ui-icon miso-ui-icon-${name}"><use href="#${PREFIX}-${name}"></use></svg>`;
