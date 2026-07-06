@@ -1,7 +1,8 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import { escapeHtml } from '@miso.ai/commons';
 import TemplateBasedLayout from '../template.js';
 
-const TYPE = 'text';
+const TYPE = LAYOUT_TYPE.TEXT;
 const DEFAULT_CLASSNAME = 'miso-text';
 
 function root(layout, state) {

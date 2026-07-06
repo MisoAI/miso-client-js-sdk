@@ -1,8 +1,7 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
-import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
-import { SearchBoxLayout, TextLayout, ListLayout, GalleryLayout, TypewriterLayout, FeedbackLayout, AffiliationLayout } from '../layout/index.js';
+import { ROLE, STATUS, QUESTION_SOURCE, LAYOUT_TYPE } from '../constants.js';
 import { processAffiliationData } from './affiliations.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeAnswerInfoToInteraction } from './processors.js';
@@ -31,13 +30,13 @@ const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   ...Workflow.DEFAULT_LAYOUTS,
-  [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
-  [ROLE.QUESTION]: [TextLayout.type, { tag: 'h2' }],
-  [ROLE.ANSWER]: TypewriterLayout.type,
-  [ROLE.FEEDBACK]: FeedbackLayout.type,
-  [ROLE.IMAGES]: [GalleryLayout.type, { incremental: true, itemType: 'image' }],
-  [ROLE.SOURCES]: [ListLayout.type, { incremental: true, itemType: 'article', templates: { ordered: true } }],
-  [ROLE.AFFILIATION]: [AffiliationLayout.type, { incremental: true, itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
+  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question' }],
+  [ROLE.QUESTION]: [LAYOUT_TYPE.TEXT, { tag: 'h2' }],
+  [ROLE.ANSWER]: LAYOUT_TYPE.TYPEWRITER,
+  [ROLE.FEEDBACK]: LAYOUT_TYPE.FEEDBACK,
+  [ROLE.IMAGES]: [LAYOUT_TYPE.GALLERY, { incremental: true, itemType: 'image' }],
+  [ROLE.SOURCES]: [LAYOUT_TYPE.LIST, { incremental: true, itemType: 'article', templates: { ordered: true } }],
+  [ROLE.AFFILIATION]: [LAYOUT_TYPE.AFFILIATION, { incremental: true, itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({

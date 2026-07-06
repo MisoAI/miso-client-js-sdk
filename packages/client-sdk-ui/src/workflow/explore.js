@@ -1,8 +1,7 @@
 import { API } from '@miso.ai/commons';
 import UnitWorkflow from './unit.js';
 import { fields } from '../actor/index.js';
-import { ROLE, EVENT_TYPE } from '../constants.js';
-import { ListLayout, SearchBoxLayout } from '../layout/index.js';
+import { ROLE, EVENT_TYPE, LAYOUT_TYPE } from '../constants.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { enableUseLink, UseLinkMixin } from './use-link.js';
 import { makeAutocompletable } from './autocompletable.js';
@@ -15,8 +14,8 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   ...UnitWorkflow.DEFAULT_LAYOUTS,
-  [ROLE.RELATED_QUESTIONS]: [ListLayout.type, { itemType: 'question', link: { rel: 'noopener nofollow' } }], // TODO: should define by useLink()
-  [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: 'Ask a question' }],
+  [ROLE.RELATED_QUESTIONS]: [LAYOUT_TYPE.LIST, { itemType: 'question', link: { rel: 'noopener nofollow' } }], // TODO: should define by useLink()
+  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question' }],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({

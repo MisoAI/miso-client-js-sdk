@@ -65,6 +65,26 @@ export function isProductRole(role) {
   return PRODUCT_ROLE_SET.has(role);
 }
 
+export const LAYOUT_TYPE = Object.freeze({
+  CONTAINER: 'container',
+  ERROR: 'error',
+  BANNER: 'banner',
+  AFFILIATION: 'affiliation',
+  LIST: 'list',
+  HORIZONTAL: 'horizontal',
+  CARDS: 'cards',
+  CAROUSEL: 'carousel',
+  GALLERY: 'gallery',
+  SEARCH_BOX: 'search-box',
+  OPTION_LIST: 'option-list',
+  FACETS: 'facets',
+  SELECT: 'select',
+  MORE_BUTTON: 'more-button',
+  FEEDBACK: 'feedback',
+  TEXT: 'text',
+  TYPEWRITER: 'typewriter',
+});
+
 export const EVENT_TYPE = Object.freeze({
   IMPRESSION: 'impression',
   VIEWABLE: 'viewable',

@@ -1,9 +1,10 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import { escapeHtml } from '@miso.ai/commons';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import Bindings from '../../util/bindings.js';
 
-const TYPE = 'facets';
+const TYPE = LAYOUT_TYPE.FACETS;
 const DEFAULT_CLASSNAME = 'miso-facets';
 const DEDAULT_FACET_CLASSNAME = 'miso-facet';
 const CUSTOM_ATTRIBUTES_PREFIX = 'custom_attributes.';

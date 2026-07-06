@@ -1,12 +1,12 @@
 import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
-import { STATUS, EVENT_TYPE } from '../../constants.js';
+import { STATUS, EVENT_TYPE, LAYOUT_TYPE } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { imageBlock, productInfoBlock } from '../templates.js';
 import { getIcon } from '../../asset/svgs.js';
 import { addOrRemoveClass } from '../../util/dom.js';
 
-const TYPE = 'search-box';
+const TYPE = LAYOUT_TYPE.SEARCH_BOX;
 const DEFAULT_CLASSNAME = 'miso-search-box';
 const DEFAULT_AUTOCOMPLETE_CLASSNAME = 'miso-autocomplete';
 

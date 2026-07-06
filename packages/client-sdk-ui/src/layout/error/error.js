@@ -1,6 +1,7 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 
-const TYPE = 'error';
+const TYPE = LAYOUT_TYPE.ERROR;
 const DEFAULT_CLASSNAME = 'miso-error';
 
 function root(layout, state) {

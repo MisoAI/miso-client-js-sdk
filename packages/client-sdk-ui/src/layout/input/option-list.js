@@ -1,10 +1,11 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import { escapeHtml } from '@miso.ai/commons';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../mixin/trackable.js';
 import { addOrRemoveClass } from '../../util/dom.js';
 
-const TYPE = 'option-list';
+const TYPE = LAYOUT_TYPE.OPTION_LIST;
 const DEFAULT_CLASSNAME = 'miso-option-list';
 
 function root(layout, state) {

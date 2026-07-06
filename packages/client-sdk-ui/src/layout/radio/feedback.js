@@ -1,8 +1,9 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import RadioLayout from './radio.js';
 import { THUMB } from '../svgs.js';
 
-const TYPE = 'feedback';
+const TYPE = LAYOUT_TYPE.FEEDBACK;
 const DEFAULT_CLASSNAME = 'miso-feedback';
 
 const OPTIONS = [ 'helpful', 'unhelpful' ];

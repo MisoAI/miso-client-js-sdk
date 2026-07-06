@@ -1,9 +1,9 @@
-import { STATUS } from '../../constants.js';
+import { STATUS, LAYOUT_TYPE } from '../../constants.js';
 import { fields } from '../../actor/index.js';
 import TemplateBasedLayout from '../template.js';
 import { helpers } from '../templates.js';
 
-const TYPE = 'more-button';
+const TYPE = LAYOUT_TYPE.MORE_BUTTON;
 const DEFAULT_CLASSNAME = 'miso-more-button';
 
 function root(layout, state) {

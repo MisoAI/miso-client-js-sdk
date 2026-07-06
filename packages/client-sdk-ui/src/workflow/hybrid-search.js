@@ -1,8 +1,7 @@
 import { API } from '@miso.ai/commons';
 import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
-import { ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
-import { SearchBoxLayout, TextLayout, HorizontalLayout } from '../layout/index.js';
+import { ROLE, WORKFLOW_CONFIGURABLE, LAYOUT_TYPE } from '../constants.js';
 import { compactArticle, compactArticleInfoBlock } from '../layout/templates.js';
 import HybridSearchAnswer from './hybrid-search-answer.js';
 import HybridSearchViewsActor from './hybrid-search-views.js';
@@ -26,10 +25,10 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 const DEFAULT_LAYOUTS = Object.freeze({
   ...AnswerBasedWorkflow.DEFAULT_LAYOUTS,
   ...SearchBasedWorkflow.DEFAULT_LAYOUTS,
-  [ROLE.QUERY]: [SearchBoxLayout.type, { placeholder: '' }],
-  [ROLE.QUESTION]: [TextLayout.type, { raw: true }],
+  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: '' }],
+  [ROLE.QUESTION]: [LAYOUT_TYPE.TEXT, { raw: true }],
   [ROLE.SOURCES]: [
-    HorizontalLayout.type,
+    LAYOUT_TYPE.HORIZONTAL,
     {
       incremental: true,
       itemType: 'article',

@@ -1,8 +1,9 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import { escapeHtml, kebabOrSnakeToHuman } from '@miso.ai/commons';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../mixin/trackable.js';
 
-const TYPE = 'select';
+const TYPE = LAYOUT_TYPE.SELECT;
 const DEFAULT_CLASSNAME = 'miso-select';
 
 function root(layout, state) {

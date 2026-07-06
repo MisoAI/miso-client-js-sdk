@@ -1,8 +1,7 @@
 import { API, asArray, trimObj, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE } from '../constants.js';
-import { SearchBoxLayout, ListLayout, TextLayout, FacetsLayout, SelectLayout, MoreButtonLayout } from '../layout/index.js';
+import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE, LAYOUT_TYPE } from '../constants.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse } from './processors.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 import { enableUseLink } from './use-link.js';
@@ -32,13 +31,13 @@ function totalContent(layout, { value }) {
 
 const DEFAULT_LAYOUTS = Object.freeze({
   ...Workflow.DEFAULT_LAYOUTS,
-  [ROLE.QUERY]: [SearchBoxLayout.type],
-  [ROLE.PRODUCTS]: [ListLayout.type, { incremental: true, infiniteScroll: true }],
-  [ROLE.KEYWORDS]: [TextLayout.type, { raw: true }],
-  [ROLE.TOTAL]: [TextLayout.type, { raw: true, templates: { content: totalContent } }],
-  [ROLE.FACETS]: [FacetsLayout.type],
-  [ROLE.SORT]: [SelectLayout.type],
-  [ROLE.MORE]: [MoreButtonLayout.type],
+  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX],
+  [ROLE.PRODUCTS]: [LAYOUT_TYPE.LIST, { incremental: true, infiniteScroll: true }],
+  [ROLE.KEYWORDS]: [LAYOUT_TYPE.TEXT, { raw: true }],
+  [ROLE.TOTAL]: [LAYOUT_TYPE.TEXT, { raw: true, templates: { content: totalContent } }],
+  [ROLE.FACETS]: [LAYOUT_TYPE.FACETS],
+  [ROLE.SORT]: [LAYOUT_TYPE.SELECT],
+  [ROLE.MORE]: [LAYOUT_TYPE.MORE_BUTTON],
 });
 
 const DEFAULT_TRACKERS = Object.freeze({

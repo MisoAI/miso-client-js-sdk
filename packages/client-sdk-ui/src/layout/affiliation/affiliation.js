@@ -1,11 +1,11 @@
 import { CarouselItemViewabilityObserver, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { STATUS } from '../../constants.js';
+import { STATUS, LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from '../list/collection.js';
 import { affiliation, helpers } from '../templates.js';
 import { TRIANGLE } from '../../asset/svgs.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 
-const TYPE = 'affiliation';
+const TYPE = LAYOUT_TYPE.AFFILIATION;
 const DEFAULT_CLASSNAME = 'miso-affiliation';
 
 function root(layout, state) {

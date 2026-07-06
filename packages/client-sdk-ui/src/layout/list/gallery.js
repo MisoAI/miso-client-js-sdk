@@ -1,3 +1,4 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import { trimObj } from '@miso.ai/commons';
 import CollectionLayout from './collection.js';
 import { addOrRemoveClass, resolveCssLength, cssAspectRatio } from '../../util/dom.js';
@@ -34,7 +35,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
   item,
 });
 
-const TYPE = 'gallery';
+const TYPE = LAYOUT_TYPE.GALLERY;
 const DEFAULT_CLASSNAME = 'miso-gallery';
 
 export default class GalleryLayout extends CollectionLayout {

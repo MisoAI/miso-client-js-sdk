@@ -1,7 +1,8 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { LOGO } from '../svgs.js';
 
-const TYPE = 'banner';
+const TYPE = LAYOUT_TYPE.BANNER;
 const DEFAULT_CLASSNAME = 'miso-banner';
 
 function root(layout) {

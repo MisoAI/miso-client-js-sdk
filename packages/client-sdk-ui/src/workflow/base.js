@@ -1,8 +1,7 @@
 import { Component, isNullLike, mergeInteractions } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, proxyTrackers, fields } from '../actor/index.js';
 import * as sources from '../source.js';
-import { STATUS, ROLE } from '../constants.js';
-import { ContainerLayout, ErrorLayout } from '../layout/index.js';
+import { STATUS, ROLE, LAYOUT_TYPE } from '../constants.js';
 import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
 import {
   getRevision,
@@ -19,8 +18,8 @@ import {
 const DEFAULT_API_OPTIONS = Object.freeze({});
 
 const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.CONTAINER]: ContainerLayout.type,
-  [ROLE.ERROR]: ErrorLayout.type,
+  [ROLE.CONTAINER]: LAYOUT_TYPE.CONTAINER,
+  [ROLE.ERROR]: LAYOUT_TYPE.ERROR,
 });
 
 const DEFAULT_TRACKERS = Object.freeze({});

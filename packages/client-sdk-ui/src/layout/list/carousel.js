@@ -1,8 +1,9 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { makeSwipeable } from '../mixin/swipeable.js';
 import { CHEVRON, CHEVRON_NEGATIVE } from '../../asset/svgs.js';
 
-const TYPE = 'carousel';
+const TYPE = LAYOUT_TYPE.CAROUSEL;
 const DEFAULT_CLASSNAME = 'miso-carousel';
 
 const DEFAULT_TEMPLATES = Object.freeze({

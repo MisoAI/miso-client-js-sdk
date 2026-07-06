@@ -1,6 +1,7 @@
+import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 
-const TYPE = 'list';
+const TYPE = LAYOUT_TYPE.LIST;
 const DEFAULT_CLASSNAME = 'miso-list';
 
 export default class ListLayout extends CollectionLayout {

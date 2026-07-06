@@ -1,7 +1,6 @@
 import { API } from '@miso.ai/commons';
 import UnitWorkflow from './unit.js';
-import { ListLayout } from '../layout/index.js';
-import { ROLE } from '../constants.js';
+import { ROLE, LAYOUT_TYPE } from '../constants.js';
 import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
 
 const DEFAULT_API_OPTIONS = Object.freeze({
@@ -16,7 +15,7 @@ const DEFAULT_API_OPTIONS = Object.freeze({
 
 const DEFAULT_LAYOUTS = Object.freeze({
   ...UnitWorkflow.DEFAULT_LAYOUTS,
-  [ROLE.PRODUCTS]: ListLayout.type,
+  [ROLE.PRODUCTS]: LAYOUT_TYPE.LIST,
 });
 
 const DEFAULT_TRACKERS = Object.freeze({

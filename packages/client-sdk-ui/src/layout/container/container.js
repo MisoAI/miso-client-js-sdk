@@ -1,10 +1,10 @@
-import { ROLE, STATUS } from '../../constants.js';
+import { ROLE, STATUS, LAYOUT_TYPE } from '../../constants.js';
 import RafLayout from '../raf.js';
 import MisoBannerElement from '../../element/util/miso-banner.js';
 import Viewables from '../../util/viewables.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 
-const TYPE = 'container';
+const TYPE = LAYOUT_TYPE.CONTAINER;
 
 export default class ContainerLayout extends RafLayout {
 
