@@ -15,6 +15,7 @@ export default class Query {
   clear() {
     this._source = undefined;
     this._done = false;
+    this._finalized = false;
     this._tree = undefined;
     this._cache = undefined;
   }
@@ -66,20 +67,30 @@ export default class Query {
   }
 
   overwrite(to) {
+    const operations = this._overwrite(to);
+    if (this._done) {
+      this._finalized = true;
+    }
+    return operations;
+  }
+
+  _overwrite(to) {
     this._assertTreeReady();
     if (to !== undefined && to > this.safeRightBound) {
       throw new Error(`Unsafe right bound: ${to} > ${this.safeRightBound}`);
     }
-    if (to === 0) {
-      return '';
-    }
-    if (to === undefined || to === this.rightBound) {
+    // full render first: at done, to === rightBound must win even when both are 0,
+    // so a document reduced to zero-width content still renders completely
+    if (to === undefined || (to === this.rightBound && (to !== 0 || this._done))) {
       return optimize([
         Operation.set(this._compiler.stringify(this._tree.children)),
       ]);
     }
+    if (to === 0) {
+      return '';
+    }
 
-    const toPos = this._search(to, { memoize: true });
+    const toPos = this._search(to, { memoize: true, closure: this._toClosure() });
     const toPivotPos = toPos.pivot(1);
 
     // top level nodes
@@ -114,6 +125,14 @@ export default class Query {
   */
 
   progress(from, to) {
+    const operations = this._progress(from, to);
+    if (this._done) {
+      this._finalized = true;
+    }
+    return operations;
+  }
+
+  _progress(from, to) {
     this._assertTreeReady();
     if (to === undefined) {
       to = this.rightBound;
@@ -124,15 +143,17 @@ export default class Query {
     if (to > this.safeRightBound) {
       throw new Error(`Unsafe right bound: ${to} > ${this.safeRightBound}`);
     }
-    if (from === to) {
+    // at the (not yet finalized) done frame, from === to may still have an
+    // uncommitted zero-width tail to render; the position comparison decides
+    if (from === to && (!this._done || this._finalized)) {
       return [];
     }
     if (from === 0) {
-      return this.overwrite(to);
+      return this._overwrite(to);
     }
 
-    const fromPos = this._search(from);
-    const toPos = this._search(to, { memoize: true }); // memoize to-position
+    const fromPos = this._search(from, { closure: this._fromClosure() });
+    const toPos = this._search(to, { memoize: true, closure: this._toClosure() }); // memoize to-position
 
     if (fromPos.equals(toPos)) {
       return [];
@@ -202,17 +223,28 @@ export default class Query {
   }
 
   // helpers //
-  _search(cursor, { memoize = false } = {}) {
+  // closure semantics: a boundary shared by a zero-width run attaches left while
+  // streaming (the run is uncommitted) and right once done (the run is complete);
+  // the from-side follows what previous frames actually rendered
+  _toClosure() {
+    return this._done ? 'right' : 'left';
+  }
+
+  _fromClosure() {
+    return this._finalized ? 'right' : 'left';
+  }
+
+  _search(cursor, { memoize = false, closure = 'left' } = {}) {
     this._assertTreeReady();
-    if (this._cache && cursor === this._cache.cursor) {
+    if (this._cache && cursor === this._cache.cursor && closure === this._cache.closure) {
       return this._cache.position;
     }
     // optimize:
     //   use memoized position as the starting point to steal from locality
     // TODO
-    const position = search(this._tree, cursor, {});
+    const position = search(this._tree, cursor, { closure });
     if (memoize) {
-      this._cache = { cursor, position };
+      this._cache = { cursor, closure, position };
     }
     return position;
   }

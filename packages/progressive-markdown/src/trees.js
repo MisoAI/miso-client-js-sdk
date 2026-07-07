@@ -106,7 +106,7 @@ function cleanNodes(nodes) {
   return nodes.map(cleanNode);
 }
 
-export function search(tree, index) {
+export function search(tree, index, options = {}) {
   const isArray = Array.isArray(tree);
 
   const leftBound = (isArray ? tree[0] : tree).bounds.left;
@@ -115,29 +115,28 @@ export function search(tree, index) {
     throw new Error(`Index ${index} is out of bounds [${leftBound}, ${rightBound}]`);
   }
 
-  return (isArray ? searchNodes : searchNode)(tree, index);
+  return (isArray ? searchNodes : searchNode)(tree, index, options);
 }
 
-function searchNode(node, index) {
+function searchNode(node, index, options) {
   if (!node) {
     return undefined;
   }
   const { children } = node;
-  return children && children.length > 0 && !node._atomic ? searchNodes(children, index) :
+  return children && children.length > 0 && !node._atomic ? searchNodes(children, index, options) :
     node.type === 'text' ? Position.interior(index, node) :
     node.type === 'root' ? Position.empty(node) :
     Position.intermediate(index, node.previousSibling, node);
 }
 
-function searchNodes(nodes, index) {
+function searchNodes(nodes, index, options = {}) {
   const len = nodes.length;
   let left = 0, right = len - 1;
   while (left < right) {
     const mid = (left + right) >> 1;
-    const n = nodes[mid];
-    const diff = index - n.bounds.right;
+    const diff = index - nodes[mid].bounds.right;
     if (diff === 0) {
-      return Position.intermediate(index, n, n.nextSibling);
+      left = right = mid;
     } else if (diff < 0) {
       right = mid;
     } else {
@@ -145,13 +144,34 @@ function searchNodes(nodes, index) {
     }
   }
   const node = nodes[left];
-  if (left === 0 && index === node.bounds.left) {
-    return Position.intermediate(index, undefined, node);
+  if (index === node.bounds.right || index === node.bounds.left) {
+    return boundaryPosition(node, index, options);
   }
-  if (left === len - 1 && index === node.bounds.right) {
-    return Position.intermediate(index, node, undefined);
+  return searchNode(node, index, options);
+}
+
+// resolves a position at a node boundary; a zero-width run makes multiple nodes
+// share the bound, and the closure decides which side of the run the position
+// attaches to: 'left' (default) keeps the run ahead of the position (uncommitted),
+// 'right' puts it behind (rendered with the content preceding it)
+function boundaryPosition(node, index, { closure = 'left' } = {}) {
+  if (closure === 'right') {
+    if (index !== node.bounds.right && node.previousSibling) {
+      node = node.previousSibling; // step from the follower into the run
+    }
+    while (node.nextSibling && node.nextSibling.bounds.right === index) {
+      node = node.nextSibling;
+    }
+    return index === node.bounds.right ?
+      Position.intermediate(index, node, node.nextSibling) :
+      Position.intermediate(index, undefined, node);
   }
-  return searchNode(node, index);
+  while (node.bounds.left === index && node.previousSibling) {
+    node = node.previousSibling;
+  }
+  return node.bounds.left === index ?
+    Position.intermediate(index, undefined, node) :
+    Position.intermediate(index, node, node.nextSibling);
 }
 
 export function commonAncestor(a, b) {
