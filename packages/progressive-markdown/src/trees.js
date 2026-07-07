@@ -270,6 +270,7 @@ function findConflictInNode(prevNode, nextNode) {
   } else if (prevNode._atomic) {
     // interior already compared as part of isSameNode; children carry no bounds,
     // so do not dive
+    return undefined;
   } else if (hasChildren(prevNode) !== hasChildren(nextNode)) {
     // a childless element occupies one intrinsic unit that aliases with its future
     // children's first unit; gaining or losing children reinterprets that region
