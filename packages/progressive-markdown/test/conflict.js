@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
 
-import { Query } from '../src/index.js';
+import { Query, rehypeAtomic } from '../src/index.js';
 
 const QUERY_OPTIONS = Object.freeze({
   parser: Object.freeze({
@@ -137,19 +137,6 @@ const RAW_QUERY_OPTIONS = Object.freeze({
   }),
 });
 
-function markAtomic(tagName) {
-  return () => tree => {
-    (function walk(node) {
-      if (node.tagName === tagName) {
-        node._atomic = true;
-      }
-      for (const child of node.children || []) {
-        walk(child);
-      }
-    })(tree);
-  };
-}
-
 test('conflict: childless element gains children', () => {
   const query = new Query(RAW_QUERY_OPTIONS);
 
@@ -168,7 +155,7 @@ test('conflict: atomic node internal mutation', () => {
   const query = new Query({
     parser: {
       ...RAW_QUERY_OPTIONS.parser,
-      rehype: [...RAW_QUERY_OPTIONS.parser.rehype, markAtomic('svg')],
+      rehype: [...RAW_QUERY_OPTIONS.parser.rehype, () => rehypeAtomic(['svg'])],
     },
   });
 

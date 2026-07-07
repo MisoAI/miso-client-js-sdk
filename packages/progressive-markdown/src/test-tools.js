@@ -106,6 +106,10 @@ export class FreeController {
     return this._options;
   }
 
+  get query() {
+    return this._renderer.query;
+  }
+
   set response(response) {
     this._response = response;
   }

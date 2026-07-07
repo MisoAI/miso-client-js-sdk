@@ -1,13 +1,15 @@
 import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+//import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeLinkAttrs from '../rehype-link-attrs.js';
 import rehypeCitationLink from '../rehype-citation-link.js';
 import rehypeFollowUpLink from '../rehype-follow-up-link.js';
+import rehypeAtomic from '../rehype-atomic.js';
 import { mergeRendererOptions } from '../utils.js';
 import { applyOperationWithSlot } from './slot.js';
 import { removeMarkdownIncompleteTableRow, escapeTildes } from './helpers.js';
 
+/*
 // https://github.com/syntax-tree/hast-util-sanitize#schema
 export const presetMisoSanitizeSchema = {
   ...defaultSchema,
@@ -19,6 +21,7 @@ export const presetMisoSanitizeSchema = {
     ],
   },
 };
+*/
 
 export function presetMisoProcessMarkdown(markdown, options) {
   markdown = removeMarkdownIncompleteTableRow(markdown, options);
@@ -34,7 +37,8 @@ export function presetMiso({
   cursorClass,
   getSource,
   processMarkdown = presetMisoProcessMarkdown,
-  sanitizeSchema = presetMisoSanitizeSchema,
+  //sanitizeSchema = presetMisoSanitizeSchema,
+  atomicTags,
   variant,
   ...options
 } = {}) {
@@ -79,7 +83,7 @@ export function presetMiso({
         rehypeLinkAttrs,
         () => rehypeCitationLink(onCitationLink),
         rehypeFollowUpLink,
-        //() => rehypeSanitize(sanitizeSchema),
+        () => rehypeAtomic(atomicTags),
       ],
       allowDangerousHtml: true, // TODO: shall we merge from input options?
     },

@@ -23,6 +23,8 @@ const actualHtmlElement = document.querySelector('#answer-html-actual code');
 const expectedHtmlElement = document.querySelector('#answer-html-expected code');
 const actualMdElement = document.querySelector('#answer-md-actual code');
 const expectedMdElement = document.querySelector('#answer-md-expected code');
+const actualTreeElement = document.getElementById('answer-tree-actual');
+const expectedTreeElement = document.getElementById('answer-tree-expected');
 const groupsElement = document.querySelector('.groups');
 
 const runner = new TestRunner([actualDomElement, expectedDomElement], {
@@ -45,6 +47,7 @@ if (seedInUrl) {
 
 let htmlStale = true;
 let mdStale = true;
+let treeStale = true;
 let responses = 0;
 let conflicts = 0;
 
@@ -61,6 +64,8 @@ for (const button of modeButtons) {
       renderHtml();
     } else if (button.dataset.mode === 'md') {
       renderMd();
+    } else if (button.dataset.mode === 'tree') {
+      renderTree();
     }
   });
 }
@@ -86,10 +91,13 @@ runner.on('state', state => {
 
   htmlStale = true;
   mdStale = true;
+  treeStale = true;
   if (groupsElement.dataset.mode === 'html') {
     renderHtml();
   } else if (groupsElement.dataset.mode === 'md') {
     renderMd();
+  } else if (groupsElement.dataset.mode === 'tree') {
+    renderTree();
   }
 });
 
@@ -128,6 +136,46 @@ function renderMd() {
   expectedMdElement.textContent = expectedResponse ? expectedResponse.value : '';
   Prism.highlightElement(actualMdElement);
   Prism.highlightElement(expectedMdElement);
+}
+
+function renderTree() {
+  if (!treeStale) {
+    return;
+  }
+  treeStale = false;
+
+  actualTreeElement.innerHTML = treeToHtml(runner.controllers[0].query.tree);
+  expectedTreeElement.innerHTML = treeToHtml(runner.controllers[1].query.tree);
+}
+
+function treeToHtml(tree) {
+  return tree ? nodeToHtml(tree) : '(no tree)';
+}
+
+function nodeToHtml(node) {
+  const bounds = node.bounds ? `<span class="bounds">[${node.bounds.left}, ${node.bounds.right}]</span>` : '';
+  const atomic = node._atomic ? `<span class="atomic">atomic</span>` : '';
+  let label;
+  switch (node.type) {
+    case 'text':
+      label = `<span class="value">${escapeHtml(JSON.stringify(truncateValue(node.value)))}</span>`;
+      break;
+    case 'element':
+      label = `<span class="tag">&lt;${escapeHtml(node.tagName)}&gt;</span>`;
+      break;
+    default:
+      label = `<span class="type">${escapeHtml(node.type)}</span>`;
+  }
+  const children = (node.children || []).map(nodeToHtml).join('');
+  return `<div class="node"><div class="label">${label}${atomic}${bounds}</div>${children ? `<div class="children">${children}</div>` : ''}</div>`;
+}
+
+function truncateValue(value = '') {
+  return value.length > 40 ? `${value.slice(0, 20)}…${value.slice(-19)}` : value;
+}
+
+function escapeHtml(value = '') {
+  return `${value}`.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function logState({ step, controllers } = {}) {

@@ -106,10 +106,6 @@ function cleanNodes(nodes) {
   return nodes.map(cleanNode);
 }
 
-export function isAtomic(node) {
-  return node.type !== 'text';
-}
-
 export function search(tree, index) {
   const isArray = Array.isArray(tree);
 
@@ -128,7 +124,7 @@ function searchNode(node, index) {
   }
   const { children } = node;
   return children && children.length > 0 && !node._atomic ? searchNodes(children, index) :
-    !isAtomic(node) ? Position.interior(index, node) :
+    node.type === 'text' ? Position.interior(index, node) :
     node.type === 'root' ? Position.empty(node) :
     Position.intermediate(index, node.previousSibling, node);
 }

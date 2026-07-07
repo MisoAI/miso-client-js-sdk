@@ -57,6 +57,10 @@ export default class Renderer {
     this._index = 0;
   }
 
+  get query() {
+    return this._query;
+  }
+
   clear(element, prevState, { timestamp = performance.now() } = {}) {
     const index = this._index++;
     this._query.clear();
@@ -96,7 +100,7 @@ export default class Renderer {
     // TODO
 
     // we have to overwrite the whole thing if we had rendered pass the conflict point
-    const overwrite = this._options.forceOverwrite || (conflict !== undefined && prevCursor >= conflict.index);
+    const overwrite = this._options.forceOverwrite || (conflict !== undefined && prevCursor > conflict.index);
     const operations = overwrite ? query.overwrite(cursor) : query.progress(prevCursor, cursor);
 
     const debugContext = { index, timestamp, cursors: [prevCursor, cursor], conflict, tree: { rightBound: query.rightBound } };
