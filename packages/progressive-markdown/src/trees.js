@@ -237,7 +237,16 @@ function findConflictInNodes(prevNodes, nextNodes) {
       return position;
     }
   }
-  if (prevNodes.length <= nextNodes.length) {
+  if (prevNodes.length < nextNodes.length) {
+    // appended siblings are only conflict-free when they extend the index space;
+    // zero total width means a DOM change at an already-passable boundary
+    const firstExtra = nextNodes[prevNodes.length];
+    if (firstExtra.bounds.left === nextNodes[nextNodes.length - 1].bounds.right) {
+      return Position.intermediate(firstExtra.bounds.left, firstExtra.previousSibling, firstExtra);
+    }
+    return undefined;
+  }
+  if (prevNodes.length === nextNodes.length) {
     return undefined;
   }
   return Position.intermediate(nextNodes[nextNodes.length - 1].bounds.right, nextNodes[nextNodes.length - 1], undefined);
@@ -262,12 +271,41 @@ function findConflictInNode(prevNode, nextNode) {
       prefixLen === nextValue.length ?
         Position.intermediate(leftBound + prefixLen, nextNode, nextNode.nextSibling) :
         Position.interior(leftBound + prefixLen, nextNode);
-  } else if (!prevNode._atomic) {
+  } else if (prevNode._atomic) {
+    // interior already compared as part of isSameNode; children carry no bounds,
+    // so do not dive
+  } else if (hasChildren(prevNode) !== hasChildren(nextNode)) {
+    // a childless element occupies one intrinsic unit that aliases with its future
+    // children's first unit; gaining or losing children reinterprets that region
+    return Position.intermediate(leftBound, nextNode.previousSibling, nextNode);
+  } else {
     // dive into children
     return findConflictInNodes(prevNode.children, nextNode.children);
   }
 }
 
+function hasChildren(node) {
+  return !!node.children && node.children.length > 0;
+}
+
+// mechanical subtree comparison; unlike isSameNode, carries no identity concept
+function subtreeEquals(prevNode, nextNode) {
+  if (prevNode.type !== nextNode.type) {
+    return false;
+  }
+  if (prevNode.value !== undefined || nextNode.value !== undefined) {
+    return prevNode.value === nextNode.value; // text, raw, comment
+  }
+  if (prevNode.tagName !== nextNode.tagName ||
+    !propsEquals(prevNode.tagName, prevNode.properties || {}, nextNode.properties || {})) {
+    return false;
+  }
+  return childrenEquals(prevNode, nextNode);
+}
+
+// compares exactly the aspects of a node that conflict search cannot localize any
+// deeper: type, tag and props for every node — plus the entire interior for an
+// atomic node, whose interior is not addressable by the index space
 function isSameNode(prevNode, nextNode) {
   if (prevNode.type !== nextNode.type || prevNode._atomic !== nextNode._atomic) {
     return false;
@@ -276,8 +314,25 @@ function isSameNode(prevNode, nextNode) {
     return true;
   }
   // must be element
-  return prevNode.tagName === nextNode.tagName &&
-    propsEquals(prevNode.tagName, prevNode.properties || {}, nextNode.properties || {});
+  if (prevNode.tagName !== nextNode.tagName ||
+    !propsEquals(prevNode.tagName, prevNode.properties || {}, nextNode.properties || {})) {
+    return false;
+  }
+  return !prevNode._atomic || childrenEquals(prevNode, nextNode);
+}
+
+function childrenEquals(prevNode, nextNode) {
+  const prevChildren = prevNode.children || [];
+  const nextChildren = nextNode.children || [];
+  if (prevChildren.length !== nextChildren.length) {
+    return false;
+  }
+  for (let i = 0; i < prevChildren.length; i++) {
+    if (!subtreeEquals(prevChildren[i], nextChildren[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 const SKIP_PROP_COMPARISON = new Set([
@@ -308,7 +363,7 @@ const SKIP_PROP_COMPARISON = new Set([
 // className is compared separately; tooltip content may depend on data outside the source
 const IGNORED_PROPS = new Set(['className', 'data-tooltip', 'dataTooltip']);
 
-function propsEquals(tagName, prevProps, nextProps) {
+function propsEquals(tagName, prevProps = {}, nextProps = {}) {
   const prevKeysCount = Object.keys(prevProps).length;
   const nextKeysCount = Object.keys(nextProps).length;
   if (prevKeysCount !== nextKeysCount) {

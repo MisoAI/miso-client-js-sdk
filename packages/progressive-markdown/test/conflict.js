@@ -129,6 +129,60 @@ test('conflict: growing autolink href', () => {
   assert.is(c1.right.tagName, 'a');
 });
 
+const RAW_QUERY_OPTIONS = Object.freeze({
+  parser: Object.freeze({
+    remark: [remarkGfm],
+    rehype: [rehypeMinifyWhitespace],
+    allowDangerousHtml: true,
+  }),
+});
+
+function markAtomic(tagName) {
+  return () => tree => {
+    (function walk(node) {
+      if (node.tagName === tagName) {
+        node._atomic = true;
+      }
+      for (const child of node.children || []) {
+        walk(child);
+      }
+    })(tree);
+  };
+}
+
+test('conflict: childless element gains children', () => {
+  const query = new Query(RAW_QUERY_OPTIONS);
+
+  // a childless element's intrinsic unit aliases with its first child's unit
+  const { conflict: c0 } = query.update('<svg viewBox="0 0 1 1"></svg>\n');
+  const { conflict: c1 } = query.update('<svg viewBox="0 0 1 1"><path d="M0 0"/></svg>\n');
+
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'intermediate');
+  assert.is(c1.index, 0);
+  assert.is(c1.right.tagName, 'svg');
+});
+
+test('conflict: atomic node internal mutation', () => {
+  const query = new Query({
+    parser: {
+      ...RAW_QUERY_OPTIONS.parser,
+      rehype: [...RAW_QUERY_OPTIONS.parser.rehype, markAtomic('svg')],
+    },
+  });
+
+  const { conflict: c0 } = query.update('<svg><path d="M0 0"/></svg>\n');
+  const { conflict: c1 } = query.update('<svg><path d="M0 0 L1 1"/></svg>\n');
+  const { conflict: c2 } = query.update('<svg><path d="M0 0 L1 1"/></svg>\n', { done: true });
+
+  assert.is(c0, undefined);
+  assert.ok(c1);
+  assert.is(c1.type, 'intermediate');
+  assert.is(c1.index, 0);
+  assert.is(c2, undefined); // unchanged atomic subtree: no false positive
+});
+
 test('conflict: empty -> empty', () => {
   const query = new Query(QUERY_OPTIONS);
 
