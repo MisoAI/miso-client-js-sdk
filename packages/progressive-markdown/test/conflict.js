@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert';
 import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
 
-import { Query, rehypeAtomic } from '../src/index.js';
+import { Query, rehypeAtomic, trees } from '../src/index.js';
 
 const QUERY_OPTIONS = Object.freeze({
   parser: Object.freeze({
@@ -168,6 +168,25 @@ test('conflict: atomic node internal mutation', () => {
   assert.is(c1.type, 'intermediate');
   assert.is(c1.index, 0);
   assert.is(c2, undefined); // unchanged atomic subtree: no false positive
+});
+
+test('conflict: appended sibling overlapping a re-parented region', () => {
+  const { shim, findConflict } = trees;
+  const text = value => ({ type: 'text', value });
+  const el = (tagName, ...children) => ({ type: 'element', tagName, properties: {}, children });
+  const root = (...children) => ({ type: 'root', children });
+
+  // prev: the tail parses as a childless <em> under <ul>, owning [4, 5]
+  const prev = shim(root(el('ul', el('li', el('p', text('abcd'))), el('em'))));
+  // next: re-tokenized -- the <em> vanished, <li> grew, and "." claims [4, 5]
+  const next = shim(root(el('ul', el('li', el('p', text('abcd'), text('.')), el('pre', el('code', text('x')))))));
+
+  const conflict = findConflict({ source: 'a', tree: prev }, { source: 'b', tree: next });
+
+  // divergence must anchor where the vanished branch lived, not at the survivor's right bound
+  assert.ok(conflict);
+  assert.is(conflict.type, 'intermediate');
+  assert.is(conflict.index, 4);
 });
 
 test('conflict: empty -> empty', () => {

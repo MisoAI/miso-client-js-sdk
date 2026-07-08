@@ -219,12 +219,11 @@ export function safeRightBoundOf(tree) {
   //   so last child <p> is considered safe except for last char when content length > 50
   // TODO
 
-  // fallback to ultimately safe option
-  // TODO: confirm this
-
-  // aggressive
-  // clamp: the tree may have children yet zero content size, e.g. '```\n' -> pre > code > text('')
-  return Math.max(0, tree.bounds.right - 1);
+  // hold released: correctness no longer depends on withholding the last unit
+  // (conflict detection, atomic embeds and leftmost boundary closure cover it);
+  // the cost is a slightly higher overwrite rate on volatile tails
+  //return Math.max(0, tree.bounds.right - 1);
+  return tree.bounds.right;
 }
 
 export function findConflict(prev, next) {
@@ -242,22 +241,25 @@ export function findConflict(prev, next) {
   if (nextChildren.length === 0) {
     return Position.empty(next.tree);
   }
-  return findConflictInNodes(prevChildren, nextChildren);
+  return findConflictInNodes(prevChildren, nextChildren, prev.tree.bounds.right);
 }
 
-function findConflictInNodes(prevNodes, nextNodes) {
+function findConflictInNodes(prevNodes, nextNodes, prevRight) {
   const len = Math.min(prevNodes.length, nextNodes.length);
   for (let i = 0, position; i < len; i++) {
-    position = findConflictInNode(prevNodes[i], nextNodes[i]);
+    position = findConflictInNode(prevNodes[i], nextNodes[i], prevRight);
     if (position !== undefined) {
       return position;
     }
   }
   if (prevNodes.length < nextNodes.length) {
-    // appended siblings are only conflict-free when they extend the index space;
-    // zero total width means a DOM change at an already-passable boundary
+    // appended siblings are only conflict-free when they extend into index space
+    // beyond everything the previous tree occupied: re-parenting can hand them
+    // indices another branch owned, and zero total width means a DOM change at
+    // an already-passable boundary
     const firstExtra = nextNodes[prevNodes.length];
-    if (firstExtra.bounds.left === nextNodes[nextNodes.length - 1].bounds.right) {
+    if (firstExtra.bounds.left < prevRight ||
+      firstExtra.bounds.left === nextNodes[nextNodes.length - 1].bounds.right) {
       return Position.intermediate(firstExtra.bounds.left, firstExtra.previousSibling, firstExtra);
     }
     return undefined;
@@ -265,10 +267,12 @@ function findConflictInNodes(prevNodes, nextNodes) {
   if (prevNodes.length === nextNodes.length) {
     return undefined;
   }
-  return Position.intermediate(nextNodes[nextNodes.length - 1].bounds.right, nextNodes[nextNodes.length - 1], undefined);
+  // anchor at the first removed node's own left bound: when its region was
+  // re-parented into a grown sibling, the survivor's right bound overshoots
+  return Position.intermediate(prevNodes[nextNodes.length].bounds.left, nextNodes[nextNodes.length - 1], undefined);
 }
 
-function findConflictInNode(prevNode, nextNode) {
+function findConflictInNode(prevNode, nextNode, prevRight) {
   const leftBound = nextNode.bounds.left;
   if (!isSameNode(prevNode, nextNode)) {
     return Position.intermediate(leftBound, nextNode.previousSibling, nextNode);
@@ -297,7 +301,7 @@ function findConflictInNode(prevNode, nextNode) {
     return Position.intermediate(leftBound, nextNode.previousSibling, nextNode);
   } else {
     // dive into children
-    return findConflictInNodes(prevNode.children, nextNode.children);
+    return findConflictInNodes(prevNode.children, nextNode.children, prevRight);
   }
 }
 

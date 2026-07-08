@@ -6,12 +6,14 @@ import { resolvePresets } from './preset/index.js';
 
 export class TestRunner {
 
-  constructor(elements, { lorem, seed, ...options } = {}) {
+  constructor(elements, { lorem, seed, replay, record = false, ...options } = {}) {
     if (!Array.isArray(elements) || elements.length !== 2) {
       throw new Error('elements must be an array of 2 elements');
     }
     this._elements = elements;
-    this._lorem = lorem || _lorem({ seed });
+    this._replay = replay;
+    this._recording = record ? [] : undefined;
+    this._lorem = lorem || (replay ? undefined : _lorem({ seed }));
     this._options = options;
     this._controllers = [
       new FreeController(elements[0], options.renderer),
@@ -21,7 +23,13 @@ export class TestRunner {
   }
 
   get seed() {
-    return this._lorem.seed;
+    return this._lorem && this._lorem.seed;
+  }
+
+  // the consumed step stream of a recorded run: content-based, replayable via the
+  // `replay` option regardless of future lorem implementation changes
+  get recording() {
+    return this._recording;
   }
 
   get controllers() {
@@ -32,6 +40,7 @@ export class TestRunner {
     const [actual, expected] = this._controllers;
     // the forceOverwrite reference overwrites on every update, so it doubles as the update count
     return {
+      conflicts: actual.conflicts,
       overwrites: actual.overwrites,
       updates: expected.overwrites,
     };
@@ -39,9 +48,12 @@ export class TestRunner {
 
   run() {
     const [actualController, expectedController] = this._controllers;
-    const options = { ...this._options.steps, lorem: this._lorem };
+    const steps = this._replay || generateTestSteps({ ...this._options.steps, lorem: this._lorem });
 
-    for (const step of generateTestSteps(options)) {
+    for (const step of steps) {
+      if (this._recording) {
+        this._recording.push(step);
+      }
       // apply step
       switch (step.type) {
         case 'response':
@@ -99,6 +111,7 @@ export class FreeController {
     this._response = undefined;
     this._cursor = undefined;
     this._rendered = undefined;
+    this._conflicts = 0;
     this._overwrites = 0;
   }
 
@@ -128,6 +141,9 @@ export class FreeController {
       this._renderer.clear(this._element, this._rendered) :
       this._renderer.update(this._element, this._rendered, { value, cursor, done: dataDone });
 
+    if (result.conflict) {
+      this._conflicts++;
+    }
     if (result.overwrite) {
       this._overwrites++;
     }
@@ -136,6 +152,10 @@ export class FreeController {
 
   get rendered() {
     return this._rendered;
+  }
+
+  get conflicts() {
+    return this._conflicts;
   }
 
   get overwrites() {

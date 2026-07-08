@@ -12,7 +12,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "npx uvu test -i 'ignored'",
+    "test": "npx uvu test -i 'ignored' -i bin -i fixtures",
     "build:clean": "npx rimraf dist",
     "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
     "build": "npm run build:clean && npm run build:cjs"

@@ -79,15 +79,16 @@ export default class Query {
     if (to !== undefined && to > this.safeRightBound) {
       throw new Error(`Unsafe right bound: ${to} > ${this.safeRightBound}`);
     }
-    // full render first: at done, to === rightBound must win even when both are 0,
-    // so a document reduced to zero-width content still renders completely
-    if (to === undefined || (to === this.rightBound && (to !== 0 || this._done))) {
+    // the full render shortcut is right-closed (it includes a trailing zero-width
+    // run), so it may only serve the done state; mid-stream, to === rightBound
+    // goes through the left-closed position path like any other boundary
+    if (to === undefined || (to === this.rightBound && this._done)) {
       return optimize([
         Operation.set(this._compiler.stringify(this._tree.children)),
       ]);
     }
     if (to === 0) {
-      return '';
+      return [];
     }
 
     const toPos = this._search(to, { memoize: true, closure: this._toClosure() });
