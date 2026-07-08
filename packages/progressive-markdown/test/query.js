@@ -83,6 +83,26 @@ test('query: whole document zero-width at done', () => {
   assert.ok(operations.some(op => op.includes('<pre><code></code></pre>')));
 });
 
+test('search: safe right bound holds off a trailing atomic node', () => {
+  const text = value => ({ type: 'text', value });
+  const el = (tagName, ...children) => ({ type: 'element', tagName, properties: {}, children });
+  const atomic = (tagName, ...children) => ({ type: 'element', tagName, properties: {}, children, _atomic: true });
+  const root = (...children) => ({ type: 'root', children });
+
+  // trailing atomic at top level: hold at its left bound
+  const t1 = trees.shim(root(el('p', text('abcd')), atomic('svg')));
+  assert.is(t1.bounds.right, 5);
+  assert.is(trees.safeRightBoundOf(t1), 4);
+
+  // trailing atomic nested on the right spine
+  const t2 = trees.shim(root(el('p', text('ab'), atomic('svg'))));
+  assert.is(trees.safeRightBoundOf(t2), 2);
+
+  // content after the atomic commits it: no hold
+  const t3 = trees.shim(root(el('p', text('abcd')), atomic('svg'), el('p', text('x'))));
+  assert.is(trees.safeRightBoundOf(t3), t3.bounds.right);
+});
+
 test('query: safe right bound of zero-size tree', () => {
   const query = new Query();
 

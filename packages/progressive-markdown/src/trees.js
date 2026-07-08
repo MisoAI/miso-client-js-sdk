@@ -220,9 +220,17 @@ export function safeRightBoundOf(tree) {
   // TODO
 
   // hold released: correctness no longer depends on withholding the last unit
-  // (conflict detection, atomic embeds and leftmost boundary closure cover it);
-  // the cost is a slightly higher overwrite rate on volatile tails
+  // (conflict detection, atomic embeds and leftmost boundary closure cover it)
   //return Math.max(0, tree.bounds.right - 1);
+
+  // hold off a trailing atomic node: its interior is opaque to the index space, so
+  // rendering it while it may still grow guarantees repair by overwrite; held, it
+  // pops in whole once any content follows it, or at done
+  for (let node = tree.lastChild; node; node = node.lastChild) {
+    if (node._atomic) {
+      return node.bounds.left;
+    }
+  }
   return tree.bounds.right;
 }
 
