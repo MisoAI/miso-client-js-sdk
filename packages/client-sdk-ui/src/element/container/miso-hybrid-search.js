@@ -13,7 +13,7 @@ export default class MisoHybridSearchElement extends MisoContainerElement {
   }
 
   _getWorkflow(client) {
-    return client.ui.hybridSearch;
+    return client.workflows.hybridSearch;
   }
 
 }

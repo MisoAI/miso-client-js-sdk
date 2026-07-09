@@ -1,69 +1,15 @@
-import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
-import { ROLE, STATUS, QUESTION_SOURCE, LAYOUT_TYPE } from '../constants.js';
+import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { processAffiliationData } from './affiliations.js';
-import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM } from './options/index.js';
 import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeAnswerInfoToInteraction } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 
-const DEFAULT_API_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_API_OPTIONS,
-  group: API.GROUP.ASK,
-  payload: {
-    ...Workflow.DEFAULT_API_OPTIONS.payload,
-    source_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
-    cite_link: 1,
-    cite_start: '[',
-    cite_end: ']',
-  },
-});
-
-const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
-  actor: false,
-  api: {
-    group: API.GROUP.ASK,
-    name: API.NAME.AUTOCOMPLETE,
-  },
-});
-
-const DEFAULT_LAYOUTS = Object.freeze({
-  ...Workflow.DEFAULT_LAYOUTS,
-  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question' }],
-  [ROLE.QUESTION]: [LAYOUT_TYPE.TEXT, { tag: 'h2' }],
-  [ROLE.ANSWER]: LAYOUT_TYPE.TYPEWRITER,
-  [ROLE.FEEDBACK]: LAYOUT_TYPE.FEEDBACK,
-  [ROLE.IMAGES]: [LAYOUT_TYPE.GALLERY, { incremental: true, itemType: 'image' }],
-  [ROLE.SOURCES]: [LAYOUT_TYPE.LIST, { incremental: true, itemType: 'article', templates: { ordered: true } }],
-  [ROLE.AFFILIATION]: [LAYOUT_TYPE.AFFILIATION, { incremental: true, itemType: 'affiliation', link: { rel: 'noopener nofollow' } }],
-});
-
-const DEFAULT_TRACKERS = Object.freeze({
-  ...Workflow.DEFAULT_TRACKERS,
-  [ROLE.ANSWER]: {
-    active: true,
-    itemless: true,
-    deduplicated: false,
-    click: DEFAULT_TRACKER_OPTIONS.click, // click only
-  },
-  [ROLE.IMAGES]: DEFAULT_TRACKER_OPTIONS,
-  [ROLE.SOURCES]: DEFAULT_TRACKER_OPTIONS,
-  [ROLE.AFFILIATION]: DEFAULT_TRACKER_OPTIONS,
-  [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
-});
-
-const DEFAULT_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_OPTIONS,
-  api: DEFAULT_API_OPTIONS,
-  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
-  layouts: DEFAULT_LAYOUTS,
-  trackers: DEFAULT_TRACKERS,
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.ANSWER,
-  members: Object.keys(DEFAULT_LAYOUTS),
+  members: [ROLE.QUERY, ROLE.QUESTION, ROLE.ANSWER, ROLE.FEEDBACK, ROLE.IMAGES, ROLE.SOURCES, ROLE.AFFILIATION],
   mappings: {
     [ROLE.ANSWER]: mappingAnswerData,
     [ROLE.REASONING]: mappingReasoningData,
@@ -302,10 +248,5 @@ export default class AnswerBasedWorkflow extends Workflow {
 enableUseLink(AnswerBasedWorkflow.prototype);
 
 Object.assign(AnswerBasedWorkflow, {
-  DEFAULT_API_OPTIONS,
-  DEFAULT_AUTOCOMPLETE_OPTIONS,
-  DEFAULT_LAYOUTS,
-  DEFAULT_TRACKERS,
-  DEFAULT_OPTIONS,
   ROLES_OPTIONS,
 });

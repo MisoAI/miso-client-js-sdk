@@ -102,8 +102,8 @@ export default class AskCombo extends Combo {
     const { wireFollowUps, wireRelatedResources } = MisoClient.ui.defaults.ask;
     const { templates = {}, features = {}, api } = options;
 
-    const context = client.ui.asks;
-    const rootWorkflow = client.ui.ask;
+    const context = client.workflows.asks;
+    const rootWorkflow = client.workflows.ask;
 
     if (api) {
       context.useApi(api);

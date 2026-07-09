@@ -1,6 +1,6 @@
 import { CLASS_PREFIX } from './constants.js';
 import { STATUS } from '../../constants.js';
-import { fields } from '../../actor/index.js';
+import { fields } from '@miso.ai/client-sdk-workflow';
 import { showMore as DEFAULT_PHRASE_SHOW_MORE, showLess as DEFAULT_PHRASE_SHOW_LESS } from './phrases.js';
 
 const CLASS_OPEN = 'answer-box-open';
@@ -11,7 +11,7 @@ export default class AnswerBox {
 
   constructor(client, element, { classPrefix = CLASS_PREFIX, phrases = {}, hideWhenUnanswerable = true } = {}) {
     this._client = client;
-    this._workflow = client.ui.hybridSearch;
+    this._workflow = client.workflows.hybridSearch;
     this._element = element;
     this._classPrefix = classPrefix;
     this._phrases = phrases;

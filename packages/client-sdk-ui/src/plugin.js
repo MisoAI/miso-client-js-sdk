@@ -1,11 +1,12 @@
 import { Component, Resolution, defineAndUpgrade, delegateGetters, defineValues } from '@miso.ai/commons';
-import { Asks, HybridSearch, Explores, Search, Recommendations } from './workflow/index.js';
+import { WorkflowPlugin } from '@miso.ai/client-sdk-workflow';
+import { defaultLayouts } from './defaults.js';
 import { AskCombo } from './combo/index.js';
 import Layouts from './layouts.js';
 import * as elements from './element/index.js';
 import * as layouts from './layout/index.js';
-import * as sources from './source.js';
 import * as defaults from './defaults/index.js';
+import { followUp as followUpTemplate } from './defaults/ask/templates.js';
 import * as traits from './trait/index.js';
 import { loadStylesIfNecessary } from './styles.js';
 
@@ -24,15 +25,20 @@ export default class UiPlugin extends Component {
   constructor() {
     super('ui');
     this.layouts = new Layouts(this);
-    this._recommendations = new WeakMap();
-    this._explores = new WeakMap();
-    this._asks = new WeakMap();
-
     this._ready = new Resolution();
   }
 
-  async install(MisoClient, { addSubtree, addExtensionPoints }) {
+  async install(MisoClient, context) {
+    const { addSubtree, addExtensionPoints } = context;
+    this._pluginContext = context;
     addSubtree(this);
+
+    // make sure the workflow plugin is installed, then provide the layout
+    // registry and seed the default layout options
+    MisoClient.plugins.use(WorkflowPlugin);
+    context.workflows.plugin.setLayouts(this.layouts);
+    this._seedWorkflowDefaults(context.workflows.defaults);
+
     MisoClient.on('create', this._injectClient.bind(this));
 
     // the UI interface for MisoClient
@@ -81,34 +87,21 @@ export default class UiPlugin extends Component {
     return this._ready.promise;
   }
 
+  /**
+   * Seed the workflow plugin's defaults store with the presentational default
+   * options: layouts of each workflow, plus UI templates.
+   */
+  _seedWorkflowDefaults(workflowDefaults) {
+    for (const [name, layouts] of Object.entries(defaultLayouts)) {
+      workflowDefaults.set(name, { layouts });
+    }
+    workflowDefaults.set('ask', { templates: { followUp: followUpTemplate } });
+  }
+
   _injectClient(client) {
     defineValues(client, {
       ui: new Ui(this, client),
     });
-  }
-
-  _getRecommendations(client) {
-    let recommendations = this._recommendations.get(client);
-    if (!recommendations) {
-      this._recommendations.set(client, recommendations = new Recommendations(this, client));
-    }
-    return recommendations;
-  }
-
-  _getExplores(client) {
-    let explores = this._explores.get(client);
-    if (!explores) {
-      this._explores.set(client, explores = new Explores(this, client));
-    }
-    return explores;
-  }
-
-  _getAsks(client) {
-    let asks = this._asks.get(client);
-    if (!asks) {
-      this._asks.set(client, asks = new Asks(this, client));
-    }
-    return asks;
   }
 
 }
@@ -135,6 +128,9 @@ function createUiPluginContext(plugin, ui, MisoClient) {
   return { plugin, addElementClasses, addLayoutClasses, addInterface };
 }
 
+// workflow accessors delegated to client.workflows for backward compatibility
+const WORKFLOW_ACCESSORS = ['search', 'hybridSearch', 'asks', 'ask', 'explores', 'explore', 'recommendations', 'recommendation', 'sources'];
+
 /**
  * The UI interface for the client.
  */
@@ -143,52 +139,7 @@ class Ui {
   constructor(plugin, client) {
     this._plugin = plugin;
     this._client = client;
-
-    defineValues(this, {
-      sources: {
-        api: sources.api(client),
-      },
-    });
-  }
-
-  get recommendations() {
-    return this._recommendations || (this._recommendations = this._plugin._getRecommendations(this._client));
-  }
-
-  get recommendation() {
-    return this.recommendations.get(); // get default recommendation unit
-  }
-
-  get search() {
-    if (!this._search) {
-      this._search = new Search(this._plugin, this._client);
-      this._client._events.emit('postworkflow', this._search);
-    }
-    return this._search;
-  }
-
-  get asks() {
-    return this._asks || (this._asks = this._plugin._getAsks(this._client));
-  }
-
-  get ask() {
-    return this.asks.root;
-  }
-
-  get hybridSearch() {
-    if (!this._hybridSearch) {
-      this._hybridSearch = new HybridSearch(this._plugin, this._client);
-      this._client._events.emit('postworkflow', this._hybridSearch);
-    }
-    return this._hybridSearch;
-  }
-
-  get explores() {
-    return this._explores || (this._explores = this._plugin._getExplores(this._client));
-  }
-
-  get explore() {
-    return this.explores.get(); // get default explore unit
+    delegateGetters(this, client.workflows, WORKFLOW_ACCESSORS);
   }
 
   get ready() {

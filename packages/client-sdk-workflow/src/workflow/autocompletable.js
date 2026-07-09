@@ -12,8 +12,8 @@ export function makeAutocompletableContext(prototype) {
 
 export class AutocompletableMixin {
 
-  _initAutocomplete(args) {
-    this._autocomplete = new Autocomplete(this, { defaults: args.defaults.autocomplete });
+  _initAutocomplete() {
+    this._autocomplete = new Autocomplete(this, { defaults: this._defaults.autocomplete });
   }
 
   get autocomplete() {

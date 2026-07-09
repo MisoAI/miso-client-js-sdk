@@ -19,7 +19,7 @@ export default class MisoFollowUpsElement extends MisoContextElement {
   }
 
   _getContext(client) {
-    return client.ui.asks;
+    return client.workflows.asks;
   }
 
   _onContext(context, oldContext) {

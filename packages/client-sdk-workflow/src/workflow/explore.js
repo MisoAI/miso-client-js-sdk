@@ -1,55 +1,13 @@
-import { API } from '@miso.ai/commons';
 import UnitWorkflow from './unit.js';
 import { fields } from '../actor/index.js';
-import { ROLE, EVENT_TYPE, LAYOUT_TYPE } from '../constants.js';
-import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { ROLE } from '../constants.js';
+import { mergeRolesOptions } from './options/index.js';
 import { enableUseLink, UseLinkMixin } from './use-link.js';
 import { makeAutocompletable } from './autocompletable.js';
 
-const DEFAULT_API_OPTIONS = Object.freeze({
-  ...UnitWorkflow.DEFAULT_API_OPTIONS,
-  group: API.GROUP.ASK,
-  name: API.NAME.RELATED_QUESTIONS,
-});
-
-const DEFAULT_LAYOUTS = Object.freeze({
-  ...UnitWorkflow.DEFAULT_LAYOUTS,
-  [ROLE.RELATED_QUESTIONS]: [LAYOUT_TYPE.LIST, { itemType: 'question', link: { rel: 'noopener nofollow' } }], // TODO: should define by useLink()
-  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question' }],
-});
-
-const DEFAULT_TRACKERS = Object.freeze({
-  ...UnitWorkflow.DEFAULT_TRACKERS,
-  [ROLE.RELATED_QUESTIONS]: DEFAULT_TRACKER_OPTIONS,
-  [ROLE.CONTAINER]: {
-    ...DEFAULT_TRACKER_OPTIONS,
-    itemless: true,
-  },
-  [ROLE.QUERY]: {
-    [EVENT_TYPE.SUBMIT]: {
-      active: true,
-    },
-  },
-});
-
-const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
-  api: {
-    group: API.GROUP.ASK,
-    name: API.NAME.QUERY_SUGGESTION,
-  },
-});
-
-const DEFAULT_OPTIONS = Object.freeze({
-  ...UnitWorkflow.DEFAULT_OPTIONS,
-  api: DEFAULT_API_OPTIONS,
-  layouts: DEFAULT_LAYOUTS,
-  trackers: DEFAULT_TRACKERS,
-  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(UnitWorkflow.ROLES_OPTIONS, {
   main: ROLE.RELATED_QUESTIONS,
-  members: Object.keys(DEFAULT_LAYOUTS),
+  members: [ROLE.RELATED_QUESTIONS, ROLE.QUERY],
 });
 
 export default class Explore extends UnitWorkflow {
@@ -59,7 +17,6 @@ export default class Explore extends UnitWorkflow {
       name: 'explore',
       context,
       roles: ROLES_OPTIONS,
-      defaults: DEFAULT_OPTIONS,
       id,
     });
   }

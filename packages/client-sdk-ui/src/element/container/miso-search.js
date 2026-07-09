@@ -13,7 +13,7 @@ export default class MisoSearchElement extends MisoContainerElement {
   }
 
   _getWorkflow(client) {
-    return client.ui.search;
+    return client.workflows.search;
   }
 
 }

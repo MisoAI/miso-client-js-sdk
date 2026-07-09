@@ -1,7 +1,7 @@
 import { mixin } from '@miso.ai/commons';
 import Bindings from '../../util/bindings.js';
 import Viewables from '../../util/viewables.js';
-import { validateClick, markAsTracked } from '../../util/trackers.js';
+import { validateClick, markAsTracked } from '@miso.ai/client-sdk-workflow';
 
 export function makeTrackable(prototype) {
   mixin(prototype, TrackableMixin.prototype);

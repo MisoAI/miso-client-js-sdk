@@ -13,7 +13,7 @@ export default class MisoExploreElement extends MisoUnitElement {
   }
 
   _getWorkflowByUnitId(client, unitId) {
-    return client.ui.explores.get(unitId);
+    return client.workflows.explores.get(unitId);
   }
 
 }

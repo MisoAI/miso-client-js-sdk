@@ -1,7 +1,7 @@
 import { Component, isNullLike, mergeInteractions } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, proxyTrackers, fields } from '../actor/index.js';
 import * as sources from '../source.js';
-import { STATUS, ROLE, LAYOUT_TYPE } from '../constants.js';
+import { STATUS, ROLE } from '../constants.js';
 import { WorkflowOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
 import {
   getRevision,
@@ -15,22 +15,8 @@ import {
   writeAffiliationInfoToInteraction,
 } from './processors.js';
 
-const DEFAULT_API_OPTIONS = Object.freeze({});
-
-const DEFAULT_LAYOUTS = Object.freeze({
-  [ROLE.CONTAINER]: LAYOUT_TYPE.CONTAINER,
-  [ROLE.ERROR]: LAYOUT_TYPE.ERROR,
-});
-
-const DEFAULT_TRACKERS = Object.freeze({});
-
-const DEFAULT_OPTIONS = Object.freeze({
-  api: DEFAULT_API_OPTIONS,
-  layouts: DEFAULT_LAYOUTS,
-  trackers: DEFAULT_TRACKERS,
-});
-
 const ROLES_OPTIONS = Object.freeze({
+  members: [ROLE.CONTAINER, ROLE.ERROR],
   mappings: {
     [ROLE.ERROR]: data => data.error,
   },
@@ -50,7 +36,8 @@ export default class Workflow extends Component {
     this._name = args.name;
     this._roles = args.roles;
 
-    this._defaults = defaults;
+    // read defaults from the workflow plugin, unless given explicitly (autocomplete, hybrid-search/answer)
+    this._defaults = defaults = defaults !== undefined ? defaults : getDefaultsFromPlugin(plugin, this._name);
     this._options = options || new WorkflowOptions(context && context._options, defaults);
     this._extraOptions = extraOptions || {};
     this._hub = new Hub({
@@ -382,12 +369,16 @@ export default class Workflow extends Component {
 
 }
 
+function getDefaultsFromPlugin(plugin, name) {
+  if (!plugin || !plugin.defaults) {
+    console.warn(`The plugin offers no workflow defaults. Workflow "${name}" gets no default options.`);
+    return {};
+  }
+  return plugin.defaults.get(name) || {};
+}
+
 makeConfigurable(Workflow.prototype);
 
 Object.assign(Workflow, {
-  DEFAULT_API_OPTIONS,
-  DEFAULT_LAYOUTS,
-  DEFAULT_TRACKERS,
-  DEFAULT_OPTIONS,
   ROLES_OPTIONS,
 });

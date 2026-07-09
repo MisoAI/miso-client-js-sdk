@@ -1,6 +1,6 @@
 import { mixin, viewable as whenViewable } from '@miso.ai/commons';
 import { STATUS } from '../../constants.js';
-import { fields } from '../../actor/index.js';
+import { fields } from '@miso.ai/client-sdk-workflow';
 
 export function makeTriggerable(prototype) {
   mixin(prototype, TriggerableMixin.prototype);

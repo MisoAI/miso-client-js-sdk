@@ -6,6 +6,7 @@
     "packages/commons",
     "packages/progressive-markdown",
     "packages/client-sdk-core",
+    "packages/client-sdk-workflow",
     "packages/client-sdk-dev-tool",
     "packages/client-sdk-ui",
     "packages/client-sdk-ui-markdown",

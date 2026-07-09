@@ -1,5 +1,5 @@
 import { STATUS, LAYOUT_TYPE } from '../../constants.js';
-import { fields } from '../../actor/index.js';
+import { fields } from '@miso.ai/client-sdk-workflow';
 import TemplateBasedLayout from '../template.js';
 import { helpers } from '../templates.js';
 

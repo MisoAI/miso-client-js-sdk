@@ -1,6 +1,6 @@
 import { defineValues, escapeHtml, findInAncestors, debounce } from '@miso.ai/commons';
 import { STATUS, EVENT_TYPE, LAYOUT_TYPE } from '../../constants.js';
-import { fields } from '../../actor/index.js';
+import { fields } from '@miso.ai/client-sdk-workflow';
 import TemplateBasedLayout from '../template.js';
 import { imageBlock, productInfoBlock } from '../templates.js';
 import { getIcon } from '../../asset/svgs.js';

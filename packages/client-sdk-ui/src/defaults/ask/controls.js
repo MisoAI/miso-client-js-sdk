@@ -17,7 +17,7 @@ function setFollowUpTemplate(client, { template = followUpTemplate, ...options }
   if (template === followUpTemplate && !hasExtraOptions) {
     return; // same as default
   }
-  client.ui.asks.useTemplates({
+  client.workflows.asks.useTemplates({
     followUp: hasExtraOptions ? (args) => template({ ...options, ...args }) : template,
   });
 }

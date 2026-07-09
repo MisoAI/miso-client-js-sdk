@@ -1,64 +1,13 @@
-import { defineValues, trimObj, API, mergeInteractions } from '@miso.ai/commons';
+import { defineValues, trimObj, mergeInteractions } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
-import { ROLE, STATUS, QUESTION_SOURCE, LAYOUT_TYPE } from '../constants.js';
-import { mergeRolesOptions, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
+import { mergeRolesOptions } from './options/index.js';
 import { writeQuestionSourceToPayload, mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
-import { followUp as followUpTemplate } from '../defaults/ask/templates.js';
 import { makeAutocompletable } from './autocompletable.js';
 
-const DEFAULT_API_OPTIONS = Object.freeze({
-  ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS,
-  name: API.NAME.QUESTIONS,
-  payload: {
-    ...AnswerBasedWorkflow.DEFAULT_API_OPTIONS.payload,
-    related_resource_fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at'],
-  },
-});
-
-const DEFAULT_LAYOUTS = Object.freeze({
-  ...AnswerBasedWorkflow.DEFAULT_LAYOUTS,
-  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { templates: { buttonIcon: 'send' } }],
-  [ROLE.REASONING]: LAYOUT_TYPE.TYPEWRITER,
-  [ROLE.RELATED_RESOURCES]: [LAYOUT_TYPE.LIST, { incremental: true, itemType: 'article' }],
-  [ROLE.QUERY_SUGGESTIONS]: LAYOUT_TYPE.OPTION_LIST,
-  [ROLE.FOLLOW_UP_QUESTIONS]: LAYOUT_TYPE.OPTION_LIST,
-});
-
-const DEFAULT_TRACKERS = Object.freeze({
-  ...AnswerBasedWorkflow.DEFAULT_TRACKERS,
-  [ROLE.RELATED_RESOURCES]: DEFAULT_TRACKER_OPTIONS,
-  [ROLE.QUERY_SUGGESTIONS]: {
-    ...DEFAULT_TRACKER_OPTIONS,
-    click: {
-      ...DEFAULT_TRACKER_OPTIONS.click,
-      validate: event => event.button === 0, // loosen criteria, for it's not a hyperlink
-    },
-  },
-});
-
-const DEFAULT_TEMPLATES = Object.freeze({
-  followUp: followUpTemplate,
-});
-
-const DEFAULT_AUTOCOMPLETE_OPTIONS = Object.freeze({
-  api: {
-    group: API.GROUP.ASK,
-    name: API.NAME.AUTOCOMPLETE,
-  },
-});
-
-const DEFAULT_OPTIONS = Object.freeze({
-  ...AnswerBasedWorkflow.DEFAULT_OPTIONS,
-  api: DEFAULT_API_OPTIONS,
-  layouts: DEFAULT_LAYOUTS,
-  trackers: DEFAULT_TRACKERS,
-  templates: DEFAULT_TEMPLATES,
-  autocomplete: DEFAULT_AUTOCOMPLETE_OPTIONS,
-});
-
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
-  members: Object.keys(DEFAULT_LAYOUTS),
+  members: [ROLE.REASONING, ROLE.RELATED_RESOURCES, ROLE.QUERY_SUGGESTIONS, ROLE.FOLLOW_UP_QUESTIONS],
   mappings: {
     [ROLE.QUERY_SUGGESTIONS]: mappingSuggestionsData,
     [ROLE.FOLLOW_UP_QUESTIONS]: mappingFollowUpQuestionsData,
@@ -72,7 +21,6 @@ export default class Ask extends AnswerBasedWorkflow {
       name: 'ask',
       context,
       roles: ROLES_OPTIONS,
-      defaults: DEFAULT_OPTIONS,
       parentQuestionId,
     });
   }

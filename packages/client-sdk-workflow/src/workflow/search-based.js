@@ -1,67 +1,16 @@
-import { API, asArray, trimObj, mergeInteractions } from '@miso.ai/commons';
+import { asArray, trimObj, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE, LAYOUT_TYPE } from '../constants.js';
+import { STATUS, ROLE, WORKFLOW_CONFIGURABLE, REQUEST_TYPE } from '../constants.js';
 import { mappingSortData, writeKeywordsToData, retainFacetCountsInData, writeExhaustionToData, writeMisoIdAsRootMisoId, concatItemsFromMoreResponse } from './processors.js';
-import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, makeConfigurable, DEFAULT_TRACKER_OPTIONS } from './options/index.js';
+import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, makeConfigurable } from './options/index.js';
 import { enableUseLink } from './use-link.js';
 
-const DEFAULT_ROWS = 10;
 const DEFAULT_PAGE_LIMIT = 10;
-
-const DEFAULT_API_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_API_OPTIONS,
-  group: API.GROUP.SEARCH,
-  payload: {
-    ...Workflow.DEFAULT_API_OPTIONS.payload,
-    fl: ['cover_image', 'url', 'created_at', 'updated_at', 'published_at', 'title'],
-    rows: DEFAULT_ROWS,
-  },
-});
-
-function totalContent(layout, { value }) {
-  if (value === undefined) {
-    return '';
-  }
-  const { formatNumber } = layout.templates.helpers;
-  const formatted = formatNumber(value);
-  const label = value === 1 ? 'result' : 'results';
-  return `${formatted} ${label}`;
-}
-
-const DEFAULT_LAYOUTS = Object.freeze({
-  ...Workflow.DEFAULT_LAYOUTS,
-  [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX],
-  [ROLE.PRODUCTS]: [LAYOUT_TYPE.LIST, { incremental: true, infiniteScroll: true }],
-  [ROLE.KEYWORDS]: [LAYOUT_TYPE.TEXT, { raw: true }],
-  [ROLE.TOTAL]: [LAYOUT_TYPE.TEXT, { raw: true, templates: { content: totalContent } }],
-  [ROLE.FACETS]: [LAYOUT_TYPE.FACETS],
-  [ROLE.SORT]: [LAYOUT_TYPE.SELECT],
-  [ROLE.MORE]: [LAYOUT_TYPE.MORE_BUTTON],
-});
-
-const DEFAULT_TRACKERS = Object.freeze({
-  ...Workflow.DEFAULT_TRACKERS,
-  [ROLE.PRODUCTS]: DEFAULT_TRACKER_OPTIONS,
-});
-
-const DEFAULT_PAGINATION = Object.freeze({
-  active: false,
-  mode: 'infiniteScroll',
-  pageLimit: 10,
-});
-
-const DEFAULT_OPTIONS = Object.freeze({
-  ...Workflow.DEFAULT_OPTIONS,
-  api: DEFAULT_API_OPTIONS,
-  layouts: DEFAULT_LAYOUTS,
-  trackers: DEFAULT_TRACKERS,
-  pagination: DEFAULT_PAGINATION,
-});
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.PRODUCTS,
-  members: Object.keys(DEFAULT_LAYOUTS),
+  members: [ROLE.QUERY, ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.SORT, ROLE.MORE],
   mappings: {
     [ROLE.FACETS]: 'facet_counts',
     [ROLE.SORT]: mappingSortData,
@@ -319,10 +268,5 @@ makeConfigurable(SearchBasedWorkflow.prototype, [WORKFLOW_CONFIGURABLE.PAGINATIO
 enableUseLink(SearchBasedWorkflow.prototype);
 
 Object.assign(SearchBasedWorkflow, {
-  DEFAULT_API_OPTIONS,
-  DEFAULT_LAYOUTS,
-  DEFAULT_TRACKERS,
-  DEFAULT_PAGINATION,
-  DEFAULT_OPTIONS,
   ROLES_OPTIONS,
 });

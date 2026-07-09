@@ -1,6 +1,6 @@
 import { LAYOUT_TYPE } from '../../constants.js';
 import { escapeHtml } from '@miso.ai/commons';
-import { fields } from '../../actor/index.js';
+import { fields } from '@miso.ai/client-sdk-workflow';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../mixin/trackable.js';
 import { addOrRemoveClass } from '../../util/dom.js';

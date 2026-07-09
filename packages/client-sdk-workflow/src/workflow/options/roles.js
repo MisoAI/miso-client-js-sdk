@@ -1,4 +1,8 @@
-export function mergeRolesOptions(base, overrides) {
+export function mergeRolesOptions(...optionsList) {
+  return optionsList.reduce(_mergeRolesOptions);
+}
+
+function _mergeRolesOptions(base, overrides) {
   return Object.freeze({
     ...base,
     ...overrides,

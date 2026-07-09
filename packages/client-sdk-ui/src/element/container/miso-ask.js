@@ -22,13 +22,13 @@ export default class MisoAskElement extends MisoContainerElement {
 
   _getWorkflow(client) {
     if (this.boundToActiveWorkflow) {
-      return client.ui.asks.active;
+      return client.workflows.asks.active;
     }
     return this._getWorkflowByParentQuestionId(client, this.parentQuestionId);
   }
 
   _getWorkflowByParentQuestionId(client, id) {
-    return client.ui.asks.getByParentQuestionId(id, { autoCreate: true });
+    return client.workflows.asks.getByParentQuestionId(id, { autoCreate: true });
   }
 
   // properties //
@@ -66,7 +66,7 @@ export default class MisoAskElement extends MisoContainerElement {
   async connectedCallback() {
     await super.connectedCallback();
     if (document.body.contains(this)) { // in case already disconnected
-      const context = this._client.ui.asks;
+      const context = this._client.workflows.asks;
       this._unsubscribes = [
         ...(this._unsubscribes || []),
         context.on('active', (event) => {

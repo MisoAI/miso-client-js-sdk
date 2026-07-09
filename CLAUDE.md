@@ -36,7 +36,8 @@ This is a monorepo for Miso's browser JavaScript SDK, enabling integration of Mi
 ```
 @miso.ai/client-sdk (main entry point)
 ├── @miso.ai/client-sdk-core      # MisoClient class, API layer, plugin system
-├── @miso.ai/client-sdk-ui        # Custom elements, workflows, layouts
+├── @miso.ai/client-sdk-workflow  # Workflows, actors, default options store (std:workflow, browser-free)
+├── @miso.ai/client-sdk-ui        # Custom elements, layouts, workflow presentation
 ├── @miso.ai/client-sdk-ui-markdown  # Markdown rendering extension
 ├── @miso.ai/client-sdk-dev-tool  # Debug and dry-run plugins
 ├── @miso.ai/client-sdk-algolia   # Algolia compatibility layer
@@ -61,7 +62,7 @@ This is a monorepo for Miso's browser JavaScript SDK, enabling integration of Mi
 - `lite.js` - Core only without UI plugin
 - `detached/` variants - Don't auto-attach to window
 
-**UI Workflows** (`packages/client-sdk-ui/src/workflow/`): Orchestrate API calls and UI updates for features like Ask, Search, Recommendations, Explore, and HybridSearch.
+**Workflows** (`packages/client-sdk-workflow/src/workflow/`): Orchestrate API calls and UI updates for features like Ask, Search, Recommendations, Explore, and HybridSearch. Browser-free, importable in Node. Default options are stored in the `std:workflow` plugin's defaults store: the workflow plugin seeds the non-layout options, the UI plugin seeds the layout options.
 
 **Custom Elements**: Defined in `packages/client-sdk-ui/src/element/`, registered via `defineAndUpgrade()`. Main combo element is `<miso-ask-combo>`.
 

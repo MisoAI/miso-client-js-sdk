@@ -1,6 +1,6 @@
 {
-  "name": "@miso.ai/client-sdk-ui",
-  "description": "An SDK plugin for recommendation UI",
+  "name": "@miso.ai/client-sdk-workflow",
+  "description": "Workflow plugin for Miso JavaScript client SDK.",
   "type": "module",
   "main": "dist/cjs/index.js",
   "module": "src/index.js",
@@ -19,9 +19,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MisoAI/miso-client-js-sdk.git",
-    "directory": "packages/client-sdk-ui"
+    "directory": "packages/client-sdk-workflow"
   },
-  "homepage": "https://misoai.github.io/miso-client-js-sdk/sdk",
+  "homepage": "https://misoai.github.io/miso-client-js-sdk/",
   "license": "MIT",
   "contributors": [
     "simonpai <simon.pai@askmiso.com>"
@@ -30,7 +30,6 @@
     "url": "https://github.com/MisoAI/miso-client-js-sdk/issues"
   },
   "dependencies": {
-    "@miso.ai/commons": "file:packages/commons",
-    "@miso.ai/client-sdk-workflow": "file:packages/client-sdk-workflow"
+    "@miso.ai/commons": "file:packages/commons"
   }
 }

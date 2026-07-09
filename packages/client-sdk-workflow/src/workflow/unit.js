@@ -43,9 +43,5 @@ export default class UnitWorkflow extends Workflow {
 }
 
 Object.assign(UnitWorkflow, {
-  DEFAULT_API_OPTIONS: Workflow.DEFAULT_API_OPTIONS,
-  DEFAULT_LAYOUTS: Workflow.DEFAULT_LAYOUTS,
-  DEFAULT_TRACKERS: Workflow.DEFAULT_TRACKERS,
-  DEFAULT_OPTIONS: Workflow.DEFAULT_OPTIONS,
   ROLES_OPTIONS: Workflow.ROLES_OPTIONS,
 });
