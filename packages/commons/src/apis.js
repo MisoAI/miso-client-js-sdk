@@ -3,6 +3,7 @@ export const GROUP = Object.freeze({
   SEARCH: 'search',
   RECOMMENDATION: 'recommendation',
   INTERACTIONS: 'interactions',
+  ASK_USER_HISTORY: 'ask/user_history',
 });
 
 export const NAME = Object.freeze({
