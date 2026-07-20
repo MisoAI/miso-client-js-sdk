@@ -1,5 +1,5 @@
-import { defineValues } from '@miso.ai/commons';
-import { Asks, HybridSearch, Explores, Search, Recommendations } from './workflow/index.js';
+import { defineValues, EventEmitter } from '@miso.ai/commons';
+import { Asks, HybridSearch, Explores, Search, Recommendations, History, Thread } from './workflow/index.js';
 import * as sources from './source.js';
 
 /**
@@ -12,12 +12,20 @@ export default class Workflows {
   constructor(plugin, client) {
     this._plugin = plugin;
     this._client = client;
+    this._events = new EventEmitter();
 
     defineValues(this, {
       sources: {
         api: sources.api(client),
       },
     });
+  }
+
+  /**
+   * The event bus shared by all workflow instances of this client.
+   */
+  get events() {
+    return this._events;
   }
 
   get search() {
@@ -34,6 +42,22 @@ export default class Workflows {
       this._client._events.emit('postworkflow', this._hybridSearch);
     }
     return this._hybridSearch;
+  }
+
+  get history() {
+    if (!this._history) {
+      this._history = new History(this._plugin, this._client);
+      this._client._events.emit('postworkflow', this._history);
+    }
+    return this._history;
+  }
+
+  get thread() {
+    if (!this._thread) {
+      this._thread = new Thread(this._plugin, this._client);
+      this._client._events.emit('postworkflow', this._thread);
+    }
+    return this._thread;
   }
 
   get asks() {

@@ -48,6 +48,8 @@ export default class Workflow extends Component {
     this._pluginContext = {
       processInteractionPasses: [],
     };
+    // the event bus shared by all workflow instances of this client, also exposed as client.workflows.events
+    this._workflowEvents = client.workflows.events;
 
     client._events.emit('workflow', this);
 

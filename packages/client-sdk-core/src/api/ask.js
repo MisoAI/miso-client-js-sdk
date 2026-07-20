@@ -31,6 +31,16 @@ export default class Ask extends ApiBase {
     return this._run(`${NAME.QUESTIONS}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
+  /**
+   * Retrieve multiple question-answer pairs at once.
+   */
+  async answers(payload, options = {}) {
+    if (Array.isArray(payload)) {
+      payload = { question_ids: payload };
+    }
+    return this._run(NAME.ANSWERS, payload, options);
+  }
+
   async relatedQuestions(payload, options = {}) {
     return this._run(NAME.RELATED_QUESTIONS, payload, options);
   }

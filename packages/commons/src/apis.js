@@ -8,6 +8,7 @@ export const GROUP = Object.freeze({
 
 export const NAME = Object.freeze({
   QUESTIONS: 'questions',
+  ANSWERS: 'answers',
   RELATED_QUESTIONS: 'related_questions',
   TRENDING_QUESTIONS: 'trending_questions',
   SEARCH: 'search',
@@ -22,4 +23,5 @@ export const NAME = Object.freeze({
   USER_TO_HISTORY: 'user_to_history',
   PRODUCT_TO_PRODUCTS: 'product_to_products',
   UPLOAD: 'upload',
+  THREADS: 'threads',
 });

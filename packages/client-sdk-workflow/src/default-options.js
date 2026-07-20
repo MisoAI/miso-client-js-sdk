@@ -158,6 +158,36 @@ export default Object.freeze({
     },
   },
 
+  'history': {
+    api: {
+      group: API.GROUP.ASK_USER_HISTORY,
+      name: API.NAME.THREADS,
+      options: {
+        method: 'GET',
+      },
+    },
+  },
+
+  'thread': {
+    api: {
+      group: API.GROUP.ASK_USER_HISTORY,
+      name: API.NAME.THREADS, // `/${threadId}` is appended per request
+      options: {
+        method: 'GET',
+      },
+    },
+    // the follow-up request retrieving question-answer pair contents
+    answers: {
+      api: {
+        group: API.GROUP.ASK,
+        name: API.NAME.ANSWERS,
+        options: {
+          method: 'POST', // override the GET method of the head request api options
+        },
+      },
+    },
+  },
+
   'explore': {
     api: {
       group: API.GROUP.ASK,

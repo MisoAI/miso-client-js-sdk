@@ -13,7 +13,9 @@ WorkflowPlugin ('std:workflow', singleton)
  │    │  by the plugin itself (default-options.js)
  │    └─ seeded with layout options + UI templates by the UI plugin (std:ui)
  ├─ injects client.workflows on each MisoClient instance (workflows.js):
- │    search, hybridSearch, asks/ask, explores/explore, recommendations/recommendation
+ │    search, hybridSearch, asks/ask, explores/explore, recommendations/recommendation,
+ │    history, thread; plus events — the per-client event bus (an EventEmitter shared by
+ │    all workflow instances of the client, for workflow-to-workflow communication)
  ├─ layouts registry reference, provided by the UI plugin via setLayouts()
  └─ exposed via the `workflows` plugin extension point
 
@@ -65,6 +67,8 @@ Workflow (base.js: hub, actors, session, data pipeline, interactions)
 ├── UnitWorkflow (bound to a unit id, started via start())
 │   ├── Explore
 │   └── Recommendation
+├── History (thread list of the chat history interface, user history API)
+├── Thread (conversation panel showing one thread at a time, user history API)
 └── Autocomplete (attached to query inputs)
 
 WorkflowContext (context.js)
@@ -77,6 +81,7 @@ Multi-instance management is a first-class concept, surfaced at `client.workflow
 - **Asks**: `client.workflows.asks.root` is the initial question; each follow-up is a *separate* `Ask` workflow keyed by `parentQuestionId` (`getByParentQuestionId(id, { autoCreate })`). Workflows chain via `previous`/`next`, and `asks.active` tracks the currently loading one.
 - **Explores/Recommendations**: instances keyed by unit id (`client.workflows.recommendations.get(unitId)`, default unit id `'default'`).
 - **Search/HybridSearch**: single lazily-created instances per client (`client.workflows.search`).
+- **History/Thread**: single lazily-created instances per client, forming the chat-history interface (thread list + conversation panel). They never reference each other directly — they communicate over the per-client event bus (`client.workflows.events`) using the `BUS_EVENT` contract (`constants.js`): `thread:select` (History announces a selection; Thread loads it), `thread:loaded` (Thread announces a loaded thread; History marks it as read), `thread:updated` / `thread:deleted` (facts emitted after a mutation API call; **each workflow patches its own local data in its bus handler**, so local and remote changes go through the same code path). Note both workflows must be instantiated (accessed) for the bus wiring to be live. Thread-record field access is centralized in `src/util/threads.js` because the history API shape is still a prototype. Thread's data flow takes **two requests per session**, both going down the standard data path via `_request()` (the search-based query/more pattern, split by `request.type` — `REQUEST_TYPE.THREAD` head / `REQUEST_TYPE.ANSWERS` follow-up — but to *different API paths*, both resolved in `source.js`): the head request (`GET threads/{id}`) yields turns as question ids; the follow-up (`ask.answers`, api group/name overridden per request from the resolved `answers` options — a configurable feature, overridable via `useAnswers()`) carries the pending `question_ids`, and its response is merged into the head data's messages in `_updateDataInHub` (`mergeAnswersDataFromResponse`, the `concatItemsFromMoreResponse` analogue) — its loading update keeps the head data on display, and the head request is restored on the merged data, so the follow-up stays an internal detail.
 
 Workflows are configured via `use*()` methods (`useApi`, `useLayouts`, `useDataProcessor`, ...) from `workflow/options/`; options cascade defaults store → context → workflow.
 
