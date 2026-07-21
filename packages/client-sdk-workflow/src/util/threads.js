@@ -5,10 +5,7 @@
  */
 
 export function getThreadId(thread) {
-  if (!thread) {
-    return undefined;
-  }
-  return thread.id || thread.thread_id || thread.uuid;
+  return thread && thread.thread_id;
 }
 
 export function isThreadUnread(thread) {
@@ -32,7 +29,7 @@ export function normalizeThreadsValue(value) {
 /**
  * Normalize a thread-detail (GET threads/{id}) response value to
  * `{ thread, messages }`: the entire response — the thread metadata and its
- * `question_ids`, with no message content — becomes the thread record, and
+ * `questions_ids`, with no message content — becomes the thread record, and
  * the messages start as `{ question_id }` records, to be filled in by the
  * answers follow-up request.
  */
@@ -42,7 +39,7 @@ export function normalizeThreadValue(value) {
   if (!value || value.messages) {
     return value;
   }
-  const messages = (value.question_ids || []).map(question_id => ({ question_id }));
+  const messages = (value.questions_ids || []).map(question_id => ({ question_id }));
   return { thread: value, messages };
 }
 
@@ -64,16 +61,15 @@ export function getPendingQuestionIds(value) {
   return value.messages.filter(message => !hasAnswer(message)).map(getQuestionId).filter(Boolean);
 }
 
-// TODO: verify this
 /**
  * Normalize an answers API (POST ask/answers) response value to an array of
- * question-answer records.
+ * question-answer records. The response is a bare array.
  */
 export function normalizeAnswersValue(value) {
   if (!value) {
     return [];
   }
-  return Array.isArray(value) ? value : (value.answers || value.data || []);
+  return Array.isArray(value) ? value : (value.answers || []);
 }
 
 /**
