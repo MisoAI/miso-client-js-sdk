@@ -16,20 +16,20 @@
 }
 
 // thread list //
-.miso-list[data-item-type="thread"] {
-  .miso-list__list {
+.miso-threads {
+  .miso-threads__list {
     list-style: none !important;
     padding: 0;
     margin: 0;
   }
-  .miso-list__item {
+  .miso-threads__item {
     margin: var(--miso-thread-list-item-gap) 0 0;
 
     &:first-child {
       margin-top: 0;
     }
   }
-  .miso-list__item-body {
+  .miso-threads__item-body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -47,7 +47,7 @@
       background-color: var(--miso-thread-list-item-selected-background);
     }
     &[data-unread] {
-      .miso-list__thread-title {
+      .miso-threads__title {
         font-weight: 600;
       }
       &::after {
@@ -60,7 +60,7 @@
       }
     }
   }
-  .miso-list__thread-title {
+  .miso-threads__title {
     flex: 1 1 auto;
     overflow: hidden;
     white-space: nowrap;

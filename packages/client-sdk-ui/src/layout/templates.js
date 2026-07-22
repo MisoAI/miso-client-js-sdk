@@ -38,7 +38,7 @@ export function thread(layout, state, data) {
   const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
   const selectedAttr = data.selected ? ' data-selected' : '';
   const title = escapeHtml(data.title || 'Untitled');
-  return `<div class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__thread-title">${title}</div></div>`;
+  return `<div class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__title">${title}</div></div>`;
 }
 
 export function message(layout, state, data) {

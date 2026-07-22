@@ -1,9 +1,10 @@
 import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
 import { LAYOUT_TYPE } from '../../constants.js';
-import ListLayout from './list.js';
+import CollectionLayout from './collection.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.THREADS;
+const DEFAULT_CLASSNAME = 'miso-threads';
 
 /**
  * The thread list of the chat history interface: a list of `thread` items.
@@ -16,10 +17,18 @@ const TYPE = LAYOUT_TYPE.THREADS;
  * (selected, unread) are applied by `_syncSelection` after each render,
  * reading the fresh values off the item bindings — no item re-render needed.
  */
-export default class ThreadsLayout extends ListLayout {
+export default class ThreadsLayout extends CollectionLayout {
 
   static get type() {
     return TYPE;
+  }
+
+  static get defaultClassName() {
+    return DEFAULT_CLASSNAME;
+  }
+
+  constructor({ className = DEFAULT_CLASSNAME, ...options } = {}) {
+    super({ className, ...options });
   }
 
   _afterRender(element, state) {
