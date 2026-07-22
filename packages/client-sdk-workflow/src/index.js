@@ -7,4 +7,5 @@ export * from './workflow/index.js';
 export * from './workflow/options/index.js';
 export * from './actor/index.js';
 export * from './util/trackers.js';
+export * from './util/threads.js';
 export * as sources from './source.js';

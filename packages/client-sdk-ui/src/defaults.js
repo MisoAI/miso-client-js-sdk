@@ -89,4 +89,14 @@ export const defaultLayouts = Object.freeze({
     [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question' }],
   }),
 
+  'history': Object.freeze({
+    ...BASE_LAYOUTS,
+    [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true }],
+  }),
+
+  'thread': Object.freeze({
+    ...BASE_LAYOUTS,
+    [ROLE.MESSAGES]: [LAYOUT_TYPE.LIST, { itemType: 'message' }],
+  }),
+
 });

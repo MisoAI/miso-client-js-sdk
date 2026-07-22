@@ -8,7 +8,12 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
   members: [ROLE.THREADS],
   mappings: {
-    [ROLE.THREADS]: data => data.value && data.value.threads,
+    // decorate each thread with its selection state, so the view renders
+    // selection declaratively from data
+    [ROLE.THREADS]: data => {
+      const { threads, selectedThreadId } = (data.value || {});
+      return threads && threads.map(thread => ({ ...thread, selected: getThreadId(thread) === selectedThreadId }));
+    },
   },
 });
 
@@ -42,12 +47,13 @@ export default class History extends Workflow {
 
   _initSubscriptions(args) {
     super._initSubscriptions(args);
-    const events = this._workflowEvents;
+    const bus = this._workflowEvents;
     this._unsubscribes = [
       ...this._unsubscribes,
-      events.on(BUS_EVENT.THREAD_LOADED, event => this._onThreadLoaded(event)),
-      events.on(BUS_EVENT.THREAD_UPDATED, event => this._onThreadUpdated(event)),
-      events.on(BUS_EVENT.THREAD_DELETED, event => this._onThreadDeleted(event)),
+      bus.on(BUS_EVENT.THREAD_LOADED, event => this._onBusThreadLoaded(event)),
+      bus.on(BUS_EVENT.THREAD_UPDATED, event => this._onBusThreadUpdated(event)),
+      bus.on(BUS_EVENT.THREAD_DELETED, event => this._onBusThreadDeleted(event)),
+      this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
     ];
   }
 
@@ -98,6 +104,7 @@ export default class History extends Workflow {
       throw new Error(`threadId is required in select() call`);
     }
     this._selectedThreadId = threadId;
+    this._recommitData(); // selection is stamped into data, so views refresh
     const event = Object.freeze({ threadId, thread: this.getThread(threadId) });
     this._emit('select', event);
     this._workflowEvents.emit(BUS_EVENT.THREAD_SELECT, event);
@@ -106,27 +113,28 @@ export default class History extends Workflow {
 
   // mutations //
   async renameThread(threadId, title) {
-    await this._api.updateThread(threadId, { title });
+    this._api.updateThread(threadId, { title }); // no await
     this._workflowEvents.emit(BUS_EVENT.THREAD_UPDATED, Object.freeze({ threadId, changes: { title } }));
   }
 
   async markThreadAsRead(threadId) {
-    await this._api.markThreadAsRead(threadId);
+    // TODO: should be in thread workflow
+    this._api.markThreadAsRead(threadId); // no await
     this._workflowEvents.emit(BUS_EVENT.THREAD_UPDATED, Object.freeze({ threadId, changes: { unread: false, read: true } }));
   }
 
   async deleteThread(threadId) {
-    await this._api.deleteThread(threadId);
+    this._api.deleteThread(threadId); // no await
     this._workflowEvents.emit(BUS_EVENT.THREAD_DELETED, Object.freeze({ threadIds: [threadId] }));
   }
 
   async deleteThreads(threadIds) {
-    await this._api.deleteThreads({ thread_ids: threadIds });
+    this._api.deleteThreads({ thread_ids: threadIds }); // no await
     this._workflowEvents.emit(BUS_EVENT.THREAD_DELETED, Object.freeze({ threadIds }));
   }
 
   async deleteAllThreads() {
-    await this._api.deleteAllThreads();
+    this._api.deleteAllThreads(); // no await
     this._workflowEvents.emit(BUS_EVENT.THREAD_DELETED, Object.freeze({ all: true }));
   }
 
@@ -134,8 +142,14 @@ export default class History extends Workflow {
     return this._client.api.ask.userHistory;
   }
 
+  // view actions //
+  _onViewThreadSelect({ value: thread }) {
+    const threadId = getThreadId(thread);
+    threadId && this.select(threadId);
+  }
+
   // bus event handlers //
-  _onThreadLoaded({ threadId }) {
+  _onBusThreadLoaded({ threadId }) {
     // opening a conversation marks it as read
     const thread = this.getThread(threadId);
     if (!thread || !isThreadUnread(thread)) {
@@ -144,26 +158,32 @@ export default class History extends Workflow {
     this.markThreadAsRead(threadId).catch(error => this._error(error));
   }
 
-  _onThreadUpdated({ threadId, changes }) {
+  _onBusThreadUpdated({ threadId, changes }) {
     this._setThreads(this.threads.map(thread => getThreadId(thread) === threadId ? { ...thread, ...changes } : thread));
   }
 
-  _onThreadDeleted({ threadIds, all }) {
+  _onBusThreadDeleted({ threadIds, all }) {
+    if (all || (threadIds && threadIds.includes(this._selectedThreadId))) {
+      this._selectedThreadId = undefined; // clear before the data patch, so it's stamped along
+    }
     if (all) {
       this._setThreads([]);
     } else {
       const removed = new Set(threadIds);
       this._setThreads(this.threads.filter(thread => !removed.has(getThreadId(thread))));
     }
-    if (all || (threadIds && threadIds.includes(this._selectedThreadId))) {
-      this._selectedThreadId = undefined;
-    }
   }
 
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
-    return data.value ? { ...data, value: normalizeThreadsValue(data.value) } : data;
+    if (!data.value) {
+      return data;
+    }
+    // the workflow property is authoritative for selection; every pass stamps
+    // it into the value, so views render selection from data
+    const value = { ...normalizeThreadsValue(data.value), selectedThreadId: this._selectedThreadId };
+    return { ...data, value };
   }
 
   _setThreads(threads) {
@@ -172,6 +192,15 @@ export default class History extends Workflow {
       return; // the list is not loaded yet, nothing to patch
     }
     this.updateData({ ...data, value: { ...data.value, threads } });
+  }
+
+  // re-commit the current data through the pipeline, refreshing views
+  _recommitData() {
+    const data = this._hub.states[fields.data()];
+    if (!data || !data.value) {
+      return; // not loaded yet; selection is stamped when data arrives
+    }
+    this.updateData({ ...data });
   }
 
 }

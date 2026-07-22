@@ -40,6 +40,7 @@ test('select: thread workflow loads the thread and merges answers', async () => 
   await tick();
 
   assert.is(history.selectedThreadId, 't2');
+  assert.is(history.states.data.value.selectedThreadId, 't2'); // selection is stamped into data
   assert.is(thread.threadId, 't2');
   assert.is(thread.status, STATUS.READY);
   assert.is(thread.thread.title, 'Second thread');
@@ -229,8 +230,10 @@ test('bus: event sequence of a select round trip', async () => {
 
   assert.equal(events, [
     BUS_EVENT.THREAD_SELECT,
+    // mark-as-read is emitted synchronously inside the loaded emission (named
+    // subscribers run before '*'), so the '*' observer sees it first
+    BUS_EVENT.THREAD_UPDATED,
     BUS_EVENT.THREAD_LOADED,
-    BUS_EVENT.THREAD_UPDATED, // marked as read
   ]);
 });
 

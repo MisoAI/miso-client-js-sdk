@@ -67,6 +67,11 @@ sections:
     path: /explore/current-page
   - title: Multiple elements
     path: /explore/multiple-elements
+- title: History
+  path: /history
+  pages:
+  - title: Lorem
+    path: /history/lorem
 - title: Hybrid Search
   path: /hybrid-search
   pages:

@@ -1,0 +1,110 @@
+// the chat history interface: thread list (miso-history) + conversation panel (miso-thread)
+
+:root {
+  // the gap between thread list items
+  --miso-thread-list-item-gap: 0.125rem;
+  // the background of a hovered thread list item
+  --miso-thread-list-item-hover-background: rgba(0, 0, 0, 0.05);
+  // the background of the selected thread list item
+  --miso-thread-list-item-selected-background: rgba(0, 0, 0, 0.09);
+  // the color of the unread marker dot
+  --miso-thread-list-unread-marker-color: #1a4ce3;
+  // the gap between messages in the conversation
+  --miso-message-gap: 1.5rem;
+  // the background of the question (user) bubble
+  --miso-message-question-background: rgba(26, 76, 227, 0.09804);
+}
+
+// thread list //
+.miso-list[data-item-type="thread"] {
+  .miso-list__list {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+  }
+  .miso-list__item {
+    margin: var(--miso-thread-list-item-gap) 0 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+  .miso-list__item-body {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    color: var(--miso-text-color);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--miso-transition);
+
+    &:hover {
+      background-color: var(--miso-thread-list-item-hover-background);
+    }
+    &[data-selected] {
+      background-color: var(--miso-thread-list-item-selected-background);
+    }
+    &[data-unread] {
+      .miso-list__thread-title {
+        font-weight: 600;
+      }
+      &::after {
+        content: '';
+        flex: none;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background-color: var(--miso-thread-list-unread-marker-color);
+      }
+    }
+  }
+  .miso-list__thread-title {
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+// conversation //
+.miso-list[data-item-type="message"] {
+  .miso-list__list {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+  }
+  .miso-list__item {
+    margin: var(--miso-message-gap) 0 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+  .miso-list__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    color: var(--miso-text-color);
+  }
+  .miso-list__message-question {
+    align-self: flex-end;
+    max-width: 75%;
+    padding: 0.625rem 1rem;
+    border-radius: 1.25rem;
+    background-color: var(--miso-message-question-background);
+  }
+  .miso-list__message-answer {
+    align-self: stretch;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+
+    // the answer body is still being fetched
+    .miso-loading {
+      display: flex;
+      justify-content: flex-start;
+    }
+  }
+}

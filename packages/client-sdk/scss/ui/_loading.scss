@@ -36,7 +36,9 @@ miso-ask,
 miso-hybrid-search,
 miso-explore,
 miso-search,
-miso-recommendation {
+miso-recommendation,
+miso-history,
+miso-thread {
   &[status~="loading"] {
     [data-role="loading"] {
       display: flex;

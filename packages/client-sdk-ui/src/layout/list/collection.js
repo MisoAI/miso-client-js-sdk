@@ -2,7 +2,7 @@ import { STATUS } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { makeTrackable } from '../mixin/trackable.js';
 import { makeTriggerable } from '../mixin/triggerable.js';
-import { product, article, compactArticle, image, question, productInfoBlock, articleInfoBlock, compactArticleInfoBlock, imageInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, authorsBlock, authorsAndDateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
+import { product, article, compactArticle, image, question, thread, message, messageQuestionBlock, messageAnswerBlock, productInfoBlock, articleInfoBlock, compactArticleInfoBlock, imageInfoBlock, titleBlock, brandBlock, descriptionBlock, dateBlock, authorsBlock, authorsAndDateBlock, priceBlock, discountRateText, ctaBlock, cta, imageBlock, indexBlock } from '../templates.js';
 
 function root(layout, state) {
   const { className, role, templates, options } = layout;
@@ -66,6 +66,10 @@ const DEFAULT_TEMPLATES = Object.freeze({
   compactArticle,
   image,
   question,
+  thread,
+  message,
+  messageQuestionBlock,
+  messageAnswerBlock,
   root,
   [STATUS.READY]: ready,
   empty: () => ``,

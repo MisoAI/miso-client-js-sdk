@@ -1,4 +1,5 @@
 import { escapeHtml } from '@miso.ai/commons';
+import { getThreadId, isThreadUnread } from '@miso.ai/client-sdk-workflow';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
 export function requiresImplementation(...names) {
@@ -28,6 +29,38 @@ export function product(layout, state, data, meta) {
 export function question(layout, state, data) {
   const [openTag, closeTag] = tagPair(layout, data);
   return `${openTag}${data.value || data.text || data}${closeTag}`;
+}
+
+export function thread(layout, state, data) {
+  const { className } = layout;
+  const threadId = getThreadId(data);
+  const threadIdAttr = threadId ? ` data-thread-id="${threadId}"` : '';
+  const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
+  const selectedAttr = data.selected ? ' data-selected' : '';
+  const title = escapeHtml(data.title || 'Untitled');
+  return `<div class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__thread-title">${title}</div></div>`;
+}
+
+export function message(layout, state, data) {
+  const { className, templates } = layout;
+  return [
+    `<div class="${className}__item-body" data-role="item">`,
+    (templates.messageQuestionBlock || messageQuestionBlock)(layout, data),
+    (templates.messageAnswerBlock || messageAnswerBlock)(layout, data),
+    `</div>`,
+  ].join('');
+}
+
+export function messageQuestionBlock({ className }, { question }) {
+  return question ? `<div class="${className}__message-question">${escapeHtml(question)}</div>` : '';
+}
+
+export function messageAnswerBlock({ className }, { answer }) {
+  // no answer body yet -> still fetching from the answers API
+  const content = answer === undefined ?
+    `<div class="miso-loading" aria-label="Loading" data-role="loading"></div>` :
+    escapeHtml(answer);
+  return `<div class="${className}__message-answer">${content}</div>`;
 }
 
 export function article(layout, state, data, meta) {
