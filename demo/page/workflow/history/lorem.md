@@ -3,27 +3,38 @@
 
 {% raw %}
 <style>
+  html, body, main, #demo {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+  footer {
+    display: none;
+  }
+  body.base .miso-body-container {
+    height: 100%;
+    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr);
+  }
   .miso-history-demo {
     display: flex;
     gap: 1rem;
-    height: calc(100vh - 12rem);
-    min-height: 24rem;
-    margin: 1rem;
+    height: 100%;
+    padding: 1rem;
   }
   .miso-history-demo miso-history {
-    flex: 0 0 18rem;
-    padding: 0.75rem;
+    flex: 0 0 20rem;
     overflow-y: auto;
-    background-color: #f4f4f8;
-    border-radius: 0.75rem;
+    padding-right: 1rem;
+    border-right: 1px solid var(--miso-border-color-light);
   }
   .miso-history-demo miso-thread {
     flex: 1 1 auto;
-    min-width: 0;
-    padding: 1.5rem;
     overflow-y: auto;
-    border: 1px solid var(--miso-border-color-light);
-    border-radius: 0.75rem;
   }
   .miso-history-demo .miso-history-demo__placeholder {
     color: var(--miso-text-color-gray);
