@@ -52,15 +52,16 @@ export function message(layout, state, data) {
 }
 
 export function messageQuestionBlock({ className }, { question }) {
-  return question ? `<div class="${className}__message-question">${escapeHtml(question)}</div>` : '';
+  return question ? `<div class="${className}__question">${escapeHtml(question)}</div>` : '';
 }
 
 export function messageAnswerBlock({ className }, { answer }) {
-  // no answer body yet -> still fetching from the answers API
+  // the content is left blank here: the layout fills it in a second pass
+  // (markdown -> HTML); a spinner shows while the answer body is still
+  // being fetched from the answers API
   const content = answer === undefined ?
-    `<div class="miso-loading" aria-label="Loading" data-role="loading"></div>` :
-    escapeHtml(answer);
-  return `<div class="${className}__message-answer">${content}</div>`;
+    `<div class="miso-loading" aria-label="Loading" data-role="loading"></div>` : '';
+  return `<div class="${className}__answer miso-markdown miso-circled-citation-index" data-role="answer">${content}</div>`;
 }
 
 export function article(layout, state, data, meta) {

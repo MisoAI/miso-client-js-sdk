@@ -28,6 +28,7 @@ export const LAYOUT_TYPE = Object.freeze({
   AFFILIATION: 'affiliation',
   LIST: 'list',
   THREADS: 'threads',
+  MESSAGES: 'messages',
   HORIZONTAL: 'horizontal',
   CARDS: 'cards',
   CAROUSEL: 'carousel',

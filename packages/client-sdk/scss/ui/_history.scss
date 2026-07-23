@@ -69,36 +69,34 @@
 }
 
 // conversation //
-.miso-list[data-item-type="message"] {
-  .miso-list__list {
+.miso-messages {
+  .miso-messages__list {
     list-style: none !important;
     padding: 0;
     margin: 0;
   }
-  .miso-list__item {
+  .miso-messages__item {
     margin: var(--miso-message-gap) 0 0;
 
     &:first-child {
       margin-top: 0;
     }
   }
-  .miso-list__item-body {
+  .miso-messages__item-body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     color: var(--miso-text-color);
   }
-  .miso-list__message-question {
+  .miso-messages__question {
     align-self: flex-end;
     max-width: 75%;
     padding: 0.625rem 1rem;
     border-radius: 1.25rem;
     background-color: var(--miso-message-question-background);
   }
-  .miso-list__message-answer {
+  .miso-messages__answer {
     align-self: stretch;
-    line-height: 1.6;
-    white-space: pre-wrap;
     overflow-wrap: break-word;
 
     // the answer body is still being fetched

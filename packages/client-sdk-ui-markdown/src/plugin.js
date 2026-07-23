@@ -1,5 +1,5 @@
 import { Component } from '@miso.ai/commons';
-import { Renderer, mergeRendererOptions, resolvePresets, presetMiso } from '@miso.ai/progressive-markdown';
+import { Renderer, mergeRendererOptions, resolvePresets, presetMiso, transform, transformSync } from '@miso.ai/progressive-markdown';
 
 const PLUGIN_ID = 'std:ui-markdown';
 
@@ -58,8 +58,24 @@ class MarkdownContext extends Component {
   }
 
   createRenderer(options = {}) {
+    return new Renderer(resolvePresets(this._mergeRendererOptions(options)));
+  }
+
+  /**
+   * Pure markdown -> HTML transformation: same option cascade as
+   * createRenderer(), without the progressive rendering machinery.
+   */
+  async transform(markdown, sources, options) {
+    return transform(markdown, sources, this._mergeRendererOptions(options));
+  }
+
+  transformSync(markdown, sources, options) {
+    return transformSync(markdown, sources, this._mergeRendererOptions(options));
+  }
+
+  _mergeRendererOptions(options = {}) {
     const contextOptions = this._options && this._options.renderer || {};
-    return new Renderer(resolvePresets(mergeRendererOptions(DEFAULT_RENDERER_OPTIONS, contextOptions, options)));
+    return mergeRendererOptions(DEFAULT_RENDERER_OPTIONS, contextOptions, options);
   }
 
 }
@@ -72,6 +88,14 @@ class Markdown {
 
   config(...args) {
     return this._context.config(...args);
+  }
+
+  transform(...args) {
+    return this._context.transform(...args);
+  }
+
+  transformSync(...args) {
+    return this._context.transformSync(...args);
   }
 
   get defaultRendererOptions() {

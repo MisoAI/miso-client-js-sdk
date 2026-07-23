@@ -181,6 +181,9 @@ export default Object.freeze({
       api: {
         group: API.GROUP.ASK,
         name: API.NAME.ANSWERS,
+        // same content formatting options as the answer-based workflows, so
+        // citation links and sources render the same way
+        payload: ANSWER_BASED_API_OPTIONS.payload,
         options: {
           method: 'POST', // override the GET method of the head request api options
         },
