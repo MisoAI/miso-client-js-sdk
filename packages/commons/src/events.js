@@ -1,7 +1,21 @@
 import { delegateGetters } from './objects.js';
 import { removeItem } from './arrays.js';
 
-export default class EventEmitter {
+export function createEventMeta(meta = {}) {
+  let defaultPrevented = false;
+  return {
+    ts: Date.now(),
+    get defaultPrevented() {
+      return defaultPrevented;
+    },
+    preventDefault() {
+      defaultPrevented = true;
+    },
+    ...meta,
+  };
+}
+
+export class EventEmitter {
 
   constructor({ target, error, replays = [] } = {}) {
     this._error = error || (e => console.error(e));
@@ -18,8 +32,7 @@ export default class EventEmitter {
   }
 
   emit(name, data, meta) {
-    //console.log('emit', name, data, this._target);
-    const event = { data, meta: { ...meta, name, ts: Date.now() } };
+    const event = { data, meta: createEventMeta({ ...meta, name }) };
     this._queue.push(event);
     this._drain();
 

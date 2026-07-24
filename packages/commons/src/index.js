@@ -20,6 +20,7 @@ export * from './dump.js';
 export * from './classes.js';
 export * from './processors.js';
 export * from './env.js';
+export * from './events.js';
 
 export { signals, API };
 
@@ -27,7 +28,6 @@ export { default as pacer } from './pacer.js';
 export { default as Resources } from './resources.js';
 export { default as Resolution } from './resolution.js';
 export { default as Bulk } from './bulk.js';
-export { default as EventEmitter } from './events.js';
 export { default as Component } from './component.js';
 export { default as Registry } from './registry.js';
 export { default as ContinuityObserver } from './continuity.js';

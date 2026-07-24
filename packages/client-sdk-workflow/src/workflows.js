@@ -1,4 +1,5 @@
 import { defineValues, EventEmitter } from '@miso.ai/commons';
+import WorkflowEventBus from './bus.js';
 import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation } from './workflow/index.js';
 import * as sources from './source.js';
 
@@ -12,7 +13,7 @@ export default class Workflows {
   constructor(plugin, client) {
     this._plugin = plugin;
     this._client = client;
-    this._events = new EventEmitter();
+    this._bus = new WorkflowEventBus();
 
     defineValues(this, {
       sources: {
@@ -24,8 +25,8 @@ export default class Workflows {
   /**
    * The event bus shared by all workflow instances of this client.
    */
-  get events() {
-    return this._events;
+  get bus() {
+    return this._bus;
   }
 
   get search() {

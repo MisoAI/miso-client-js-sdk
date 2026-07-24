@@ -47,12 +47,11 @@ export default class History extends Workflow {
 
   _initSubscriptions(args) {
     super._initSubscriptions(args);
-    const bus = this._workflowEvents;
     this._unsubscribes = [
       ...this._unsubscribes,
-      bus.on(BUS_EVENT.THREAD_LOADED, event => this._onBusThreadLoaded(event)),
-      bus.on(BUS_EVENT.THREAD_UPDATED, event => this._onBusThreadUpdated(event)),
-      bus.on(BUS_EVENT.THREAD_DELETED, event => this._onBusThreadDeleted(event)),
+      //this._bus.on('conversation', 'load', event => this._onBusThreadLoaded(event)),
+      //this._bus.on('conversation', 'update', event => this._onBusThreadUpdated(event)),
+      //this._bus.on('conversation', 'delete', event => this._onBusThreadDeleted(event)),
       this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
     ];
   }
@@ -107,35 +106,39 @@ export default class History extends Workflow {
     this._recommitData(); // selection is stamped into data, so views refresh
     const event = Object.freeze({ threadId, thread: this.getThread(threadId) });
     this._emit('select', event);
-    this._workflowEvents.emit(BUS_EVENT.THREAD_SELECT, event);
+    this._bus.emit('select', event);
     return this;
   }
 
   // mutations //
   async renameThread(threadId, title) {
     this._api.updateThread(threadId, { title }); // no await
-    this._workflowEvents.emit(BUS_EVENT.THREAD_UPDATED, Object.freeze({ threadId, changes: { title } }));
+    const event = Object.freeze({ threadId, changes: { title } });
+    this._bus.emit('update', event);
   }
 
   async markThreadAsRead(threadId) {
     // TODO: should be in conversation workflow
     this._api.markThreadAsRead(threadId); // no await
-    this._workflowEvents.emit(BUS_EVENT.THREAD_UPDATED, Object.freeze({ threadId, changes: { unread: false, read: true } }));
+    const event = Object.freeze({ threadId, changes: { unread: false, read: true } });
+    this._bus.emit('update', event);
   }
 
   async deleteThread(threadId) {
     this._api.deleteThread(threadId); // no await
-    this._workflowEvents.emit(BUS_EVENT.THREAD_DELETED, Object.freeze({ threadIds: [threadId] }));
+    const event = Object.freeze({ threadIds: [threadId] });
+    this._bus.emit('delete', event);
   }
 
   async deleteThreads(threadIds) {
     this._api.deleteThreads({ thread_ids: threadIds }); // no await
-    this._workflowEvents.emit(BUS_EVENT.THREAD_DELETED, Object.freeze({ threadIds }));
+    const event = Object.freeze({ threadIds });
+    this._bus.emit('delete', event);
   }
 
   async deleteAllThreads() {
     this._api.deleteAllThreads(); // no await
-    this._workflowEvents.emit(BUS_EVENT.THREAD_DELETED, Object.freeze({ all: true }));
+    this._bus.emit('delete-all');
   }
 
   get _api() {
@@ -149,6 +152,7 @@ export default class History extends Workflow {
   }
 
   // bus event handlers //
+  /*
   _onBusThreadLoaded({ threadId }) {
     // opening a conversation marks it as read
     const thread = this.getThread(threadId);
@@ -173,6 +177,7 @@ export default class History extends Workflow {
       this._setThreads(this.threads.filter(thread => !removed.has(getThreadId(thread))));
     }
   }
+  */
 
   // data //
   _defaultProcessData(data, oldData) {

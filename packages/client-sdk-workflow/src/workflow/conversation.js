@@ -58,12 +58,11 @@ export default class Conversation extends Workflow {
 
   _initSubscriptions(args) {
     super._initSubscriptions(args);
-    const events = this._workflowEvents;
     this._unsubscribes = [
       ...this._unsubscribes,
-      events.on(BUS_EVENT.THREAD_SELECT, event => this._onThreadSelect(event)),
-      events.on(BUS_EVENT.THREAD_UPDATED, event => this._onThreadUpdated(event)),
-      events.on(BUS_EVENT.THREAD_DELETED, event => this._onThreadDeleted(event)),
+      this._bus.handle('history', 'select', event => this._onThreadSelect(event)),
+      this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
+      this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
     ];
   }
 
@@ -184,7 +183,7 @@ export default class Conversation extends Workflow {
     }
     context.threadLoadedEmitted = true;
     const { thread } = data.value;
-    this._workflowEvents.emit(BUS_EVENT.THREAD_LOADED, Object.freeze({
+    this._bus.emit(BUS_EVENT.THREAD_LOADED, Object.freeze({
       threadId: getThreadId(thread) || this._threadId,
       thread,
     }));
