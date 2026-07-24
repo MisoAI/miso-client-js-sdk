@@ -22,7 +22,7 @@ export default class Hub {
     }
     // emit
     if (!options.silent) {
-      this._events.emit(name, state);
+      this._events.emit(name, state, { ...options, action: 'update' });
     }
     // callback after emit
     if (typeof this._options.onEmit === 'function') {
@@ -37,7 +37,7 @@ export default class Hub {
       this._options.onUpdate(event);
     }
     // emit
-    this._events.emit(name, state);
+    this._events.emit(name, state, { action: 'trigger' });
     // callback after emit
     if (typeof this._options.onEmit === 'function') {
       this._options.onEmit(event);

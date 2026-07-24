@@ -8,6 +8,8 @@ export default class EventEmitter {
     if (!Array.isArray(replays)) {
       throw new Error(`Replays option must be an array of strings: ${replays}`);
     }
+    this._executing = false;
+    this._queue = [];
     this._replays = new Set(replays);
     this._namedCallbacks = {};
     this._unnamedCallbacks = [];
@@ -15,9 +17,37 @@ export default class EventEmitter {
     target && this._injectSubscribeInterface(target);
   }
 
-  emit(name, data) {
-    const event = { data, meta: { name, ts: Date.now() } };
-    const callbacks = this._namedCallbacks[name];
+  emit(name, data, meta) {
+    //console.log('emit', name, data, this._target);
+    const event = { data, meta: { ...meta, name, ts: Date.now() } };
+    this._queue.push(event);
+    this._drain();
+
+    if (this._shallStoreForReplay(name)) {
+      (this._pastEvents[name] || (this._pastEvents[name] = [])).push(event);
+    }
+  }
+
+  _drain() {
+    if (this._executing) {
+      return;
+    }
+    this._executing = true;
+    try {
+      while (this._queue.length > 0) {
+        const event = this._queue.shift();
+        if (!event) {
+          continue;
+        }
+        this._run(event);
+      }
+    } finally {
+      this._executing = false;
+    }
+  }
+
+  _run(event) {
+    const callbacks = this._namedCallbacks[event.meta.name];
     if (callbacks) {
       for (const callback of callbacks) {
         callback(event);
@@ -25,9 +55,6 @@ export default class EventEmitter {
     }
     for (const callback of this._unnamedCallbacks) {
       callback(event);
-    }
-    if (this._shallStoreForReplay(name)) {
-      (this._pastEvents[name] || (this._pastEvents[name] = [])).push(event);
     }
   }
 

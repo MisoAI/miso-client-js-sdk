@@ -80,6 +80,7 @@ export default class Workflow extends Component {
       this._hub.on(fields.session(), session => this._onSession(session)),
       this._hub.on(fields.response(), data => this.updateData(data)),
       this._hub.on(fields.tracker(), args => this._onTracker(args)),
+      this._hub.on('*', (state, meta) => this._emitAsWorkflowEvent(state, meta)),
     ];
     if (roles.main) {
       this._unsubscribes.push(this._hub.on(fields.view(roles.main), state => this._onMainViewUpdate(state)));
@@ -105,12 +106,11 @@ export default class Workflow extends Component {
 
   _onHubEmit(event) {
     this._runCallbacks(this._client.meta.parent._hubEmitCallbacks, event);
-    this._emitAsWorkflowEvent(event);
   }
 
-  _emitAsWorkflowEvent({ action: _action, name, state, silent }) {
+  _emitAsWorkflowEvent(state, { action: _action, name, silent }) {
     if (!silent) {
-      this._emit(name, { _action, ...state });
+      this._emit(name, { _action, ...state }); // TODO: move _action into meta
     }
   }
 
