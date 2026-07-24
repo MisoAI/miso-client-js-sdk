@@ -157,13 +157,13 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
  * deleted). Payloads are frozen plain data objects.
  *
  * - THREAD_SELECT `{ threadId, thread? }` — a thread is selected (in the
- *   history panel); the thread workflow responds by loading it.
- * - THREAD_LOADED `{ threadId, thread }` — the thread workflow finished
+ *   history panel); the conversation workflow responds by loading it.
+ * - THREAD_LOADED `{ threadId, thread }` — the conversation workflow finished
  *   loading a thread; the history workflow responds by marking it as read.
  * - THREAD_UPDATED `{ threadId, changes }` — thread metadata changed (title,
  *   read state); each workflow patches its own local data.
  * - THREAD_DELETED `{ threadIds } | { all: true }` — thread(s) deleted; the
- *   thread workflow resets if its current thread is gone.
+ *   conversation workflow resets if its current thread is gone.
  */
 export const BUS_EVENT = Object.freeze({
   THREAD_SELECT: 'thread:select',

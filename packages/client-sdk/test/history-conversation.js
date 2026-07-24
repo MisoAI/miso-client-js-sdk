@@ -63,16 +63,16 @@ test('lorem: select loads the conversation with answer contents', async () => {
   const rootId = await ask(client, 'What is miso soup?');
   const followUpId = await ask(client, 'Tell me more.', rootId);
 
-  const { history, thread } = client.workflows;
+  const { history, conversation } = client.workflows;
   history.start();
   await tick();
   history.select(history.threads[0].thread_id);
   await tick();
 
-  assert.is(thread.status, STATUS.READY);
-  assert.is(thread.thread.title, 'What is miso soup?');
-  assert.equal(thread.messages.map(m => m.question_id), [rootId, followUpId]);
-  for (const message of thread.messages) {
+  assert.is(conversation.status, STATUS.READY);
+  assert.is(conversation.thread.title, 'What is miso soup?');
+  assert.equal(conversation.messages.map(m => m.question_id), [rootId, followUpId]);
+  for (const message of conversation.messages) {
     assert.type(message.answer, 'string');
     assert.ok(message.answer.length > 0);
     assert.ok(message.finished);
@@ -83,7 +83,7 @@ test('lorem: renameThread syncs the list and the open panel', async () => {
   const client = setup();
   await ask(client, 'What is miso soup?');
 
-  const { history, thread } = client.workflows;
+  const { history, conversation } = client.workflows;
   history.start();
   await tick();
   const threadId = history.threads[0].thread_id;
@@ -93,7 +93,7 @@ test('lorem: renameThread syncs the list and the open panel', async () => {
   await tick();
 
   assert.is(history.getThread(threadId).title, 'Soup talk');
-  assert.is(thread.thread.title, 'Soup talk');
+  assert.is(conversation.thread.title, 'Soup talk');
   // the rename is persisted on the (lorem) server
   history.refresh();
   await tick();
@@ -105,7 +105,7 @@ test('lorem: deleting the open thread resets the panel', async () => {
   await ask(client, 'What is miso soup?');
   await ask(client, 'How to cook ramen?');
 
-  const { history, thread } = client.workflows;
+  const { history, conversation } = client.workflows;
   history.start();
   await tick();
   const threadId = history.threads[0].thread_id;
@@ -115,8 +115,8 @@ test('lorem: deleting the open thread resets the panel', async () => {
   await tick();
 
   assert.is(history.threads.length, 1);
-  assert.is(thread.threadId, undefined);
-  assert.is(thread.status, STATUS.INITIAL);
+  assert.is(conversation.threadId, undefined);
+  assert.is(conversation.status, STATUS.INITIAL);
   // the deletion is persisted on the (lorem) server
   history.refresh();
   await tick();
@@ -128,7 +128,7 @@ test('lorem: opening an unread thread marks it as read', async () => {
   // server-side threads with activity the user has not seen yet
   MisoClient.lorem.api.ask.userHistory.generateThreads({ rows: 8 }, { seed: 11 });
 
-  const { history, thread } = client.workflows;
+  const { history, conversation } = client.workflows;
   history.start();
   await tick();
 
@@ -138,8 +138,8 @@ test('lorem: opening an unread thread marks it as read', async () => {
 
   history.select(threadId);
   await tick();
-  assert.is(thread.threadId, threadId);
-  assert.ok(thread.messages.length > 0);
+  assert.is(conversation.threadId, threadId);
+  assert.ok(conversation.messages.length > 0);
   assert.is(history.getThread(threadId).unread, false);
   // persisted on the (lorem) server
   history.refresh();

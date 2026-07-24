@@ -32,7 +32,7 @@
     padding-right: 1rem;
     border-right: 1px solid var(--miso-border-color-light);
   }
-  .miso-history-demo miso-thread {
+  .miso-history-demo miso-conversation {
     flex: 1 1 auto;
     overflow-y: auto;
   }
@@ -46,10 +46,10 @@
   <miso-history>
     <miso-threads></miso-threads>
   </miso-history>
-  <miso-thread>
+  <miso-conversation>
     <div class="miso-history-demo__placeholder" visible-when="initial">Select a thread to view the conversation</div>
     <miso-messages></miso-messages>
-  </miso-thread>
+  </miso-conversation>
 </div>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);

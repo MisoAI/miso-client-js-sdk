@@ -26,7 +26,7 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * bus (see BUS_EVENT): a mutation method calls the API, then emits a fact
  * event on the bus; local data is patched in the bus event handler, so a
  * change is applied through the same code path whether it originated from
- * this workflow or from the thread workflow.
+ * this workflow or from the conversation workflow.
  */
 export default class History extends Workflow {
 
@@ -97,7 +97,7 @@ export default class History extends Workflow {
 
   /**
    * Mark a thread as selected and announce it on the event bus, for the
-   * thread workflow to load the conversation.
+   * conversation workflow to load it.
    */
   select(threadId) {
     if (!threadId) {
@@ -118,7 +118,7 @@ export default class History extends Workflow {
   }
 
   async markThreadAsRead(threadId) {
-    // TODO: should be in thread workflow
+    // TODO: should be in conversation workflow
     this._api.markThreadAsRead(threadId); // no await
     this._workflowEvents.emit(BUS_EVENT.THREAD_UPDATED, Object.freeze({ threadId, changes: { unread: false, read: true } }));
   }

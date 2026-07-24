@@ -168,7 +168,7 @@ export default Object.freeze({
     },
   },
 
-  'thread': {
+  'conversation': {
     api: {
       group: API.GROUP.ASK_USER_HISTORY,
       name: API.NAME.THREADS, // `/${threadId}` is appended per request

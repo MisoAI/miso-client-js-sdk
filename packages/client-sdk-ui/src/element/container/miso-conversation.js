@@ -1,8 +1,8 @@
 import MisoContainerElement from './miso-container.js';
 
-const TAG_NAME = 'miso-thread';
+const TAG_NAME = 'miso-conversation';
 
-export default class MisoThreadElement extends MisoContainerElement {
+export default class MisoConversationElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -13,7 +13,7 @@ export default class MisoThreadElement extends MisoContainerElement {
   }
 
   _getWorkflow(client) {
-    return client.workflows.thread;
+    return client.workflows.conversation;
   }
 
 }

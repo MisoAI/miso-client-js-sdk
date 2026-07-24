@@ -94,7 +94,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true }],
   }),
 
-  'thread': Object.freeze({
+  'conversation': Object.freeze({
     ...BASE_LAYOUTS,
     [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message' }],
   }),

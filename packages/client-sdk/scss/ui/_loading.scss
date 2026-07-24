@@ -38,7 +38,7 @@ miso-explore,
 miso-search,
 miso-recommendation,
 miso-history,
-miso-thread {
+miso-conversation {
   &[status~="loading"] {
     [data-role="loading"] {
       display: flex;

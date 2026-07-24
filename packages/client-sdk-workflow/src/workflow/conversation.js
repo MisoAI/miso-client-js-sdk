@@ -40,11 +40,11 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * loaded threads (so the history panel marks them as read), and resets when
  * its current thread is deleted.
  */
-export default class Thread extends Workflow {
+export default class Conversation extends Workflow {
 
   constructor(plugin, client) {
     super({
-      name: 'thread',
+      name: 'conversation',
       plugin,
       client,
       roles: ROLES_OPTIONS,
@@ -213,7 +213,7 @@ export default class Thread extends Workflow {
 
 }
 
-makeConfigurable(Thread.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS]);
+makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS]);
 
 // helpers //
 function isAnswersRequestData(data) {
