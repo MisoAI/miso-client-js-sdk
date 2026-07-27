@@ -9,6 +9,7 @@ import * as defaults from './defaults/index.js';
 import { followUp as followUpTemplate } from './defaults/ask/templates.js';
 import * as traits from './trait/index.js';
 import { loadStylesIfNecessary } from './styles.js';
+import confirm from './util/confirm.js';
 
 import MisoContainerElement from './element/container/miso-container.js';
 import MisoContextElement from './element/context/miso-context.js';
@@ -42,7 +43,7 @@ export default class UiPlugin extends Component {
     MisoClient.on('create', this._injectClient.bind(this));
 
     // the UI interface for MisoClient
-    const ui = { defaults, traits };
+    const ui = { defaults, traits, confirm };
     delegateGetters(ui, this, ['layouts', 'ready']);
     defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });

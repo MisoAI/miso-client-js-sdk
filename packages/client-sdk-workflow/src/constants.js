@@ -150,28 +150,6 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
   ANSWERS: 'answers',
 });
 
-/**
- * Events on the per-client workflow event bus (`client.workflows.events`),
- * used by workflows to communicate with each other. Naming convention:
- * imperative for requests (select), past tense for facts (loaded, updated,
- * deleted). Payloads are frozen plain data objects.
- *
- * - THREAD_SELECT `{ threadId, thread? }` — a thread is selected (in the
- *   history panel); the conversation workflow responds by loading it.
- * - THREAD_LOADED `{ threadId, thread }` — the conversation workflow finished
- *   loading a thread; the history workflow responds by marking it as read.
- * - THREAD_UPDATED `{ threadId, changes }` — thread metadata changed (title,
- *   read state); each workflow patches its own local data.
- * - THREAD_DELETED `{ threadIds } | { all: true }` — thread(s) deleted; the
- *   conversation workflow resets if its current thread is gone.
- */
-export const BUS_EVENT = Object.freeze({
-  THREAD_SELECT: 'thread:select',
-  THREAD_LOADED: 'thread:loaded',
-  THREAD_UPDATED: 'thread:updated',
-  THREAD_DELETED: 'thread:deleted',
-});
-
 export const REQUEST_TYPE = Object.freeze({
   QUERY: 'query',
   REFINE: 'refine',

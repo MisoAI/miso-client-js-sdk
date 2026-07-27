@@ -1,6 +1,6 @@
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, BUS_EVENT } from '../constants.js';
+import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
 import { getThreadId, isThreadUnread, normalizeThreadsValue } from '../util/threads.js';
 
@@ -23,10 +23,10 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * (select, rename, delete, mark as read).
  *
  * Mutations follow an event-sourced pattern on the per-client workflow event
- * bus (see BUS_EVENT): a mutation method calls the API, then emits a fact
- * event on the bus; local data is patched in the bus event handler, so a
- * change is applied through the same code path whether it originated from
- * this workflow or from the conversation workflow.
+ * bus (client.workflows.bus): a mutation method calls the API, then emits a
+ * fact event on the bus; local data is patched in the default bus handler
+ * (bus.handle), so a change is applied through the same code path whether it
+ * originated from this workflow or elsewhere.
  */
 export default class History extends Workflow {
 
@@ -49,10 +49,12 @@ export default class History extends Workflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      //this._bus.on('conversation', 'load', event => this._onBusThreadLoaded(event)),
-      //this._bus.on('conversation', 'update', event => this._onBusThreadUpdated(event)),
-      //this._bus.on('conversation', 'delete', event => this._onBusThreadDeleted(event)),
+      this._bus.handle('conversation', 'load', event => this._onThreadLoaded(event)),
+      this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
+      this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
+      this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
+      this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadDelete(event)),
     ];
   }
 
@@ -151,9 +153,13 @@ export default class History extends Workflow {
     threadId && this.select(threadId);
   }
 
+  _onViewThreadDelete({ value: thread }) {
+    const threadId = getThreadId(thread);
+    threadId && this.deleteThread(threadId);
+  }
+
   // bus event handlers //
-  /*
-  _onBusThreadLoaded({ threadId }) {
+  _onThreadLoaded({ threadId }) {
     // opening a conversation marks it as read
     const thread = this.getThread(threadId);
     if (!thread || !isThreadUnread(thread)) {
@@ -162,22 +168,22 @@ export default class History extends Workflow {
     this.markThreadAsRead(threadId).catch(error => this._error(error));
   }
 
-  _onBusThreadUpdated({ threadId, changes }) {
+  _onThreadUpdated({ threadId, changes }) {
     this._setThreads(this.threads.map(thread => getThreadId(thread) === threadId ? { ...thread, ...changes } : thread));
   }
 
-  _onBusThreadDeleted({ threadIds, all }) {
-    if (all || (threadIds && threadIds.includes(this._selectedThreadId))) {
+  _onThreadDeleted({ threadIds }) {
+    if (threadIds && threadIds.includes(this._selectedThreadId)) {
       this._selectedThreadId = undefined; // clear before the data patch, so it's stamped along
     }
-    if (all) {
-      this._setThreads([]);
-    } else {
-      const removed = new Set(threadIds);
-      this._setThreads(this.threads.filter(thread => !removed.has(getThreadId(thread))));
-    }
+    const removed = new Set(threadIds);
+    this._setThreads(this.threads.filter(thread => !removed.has(getThreadId(thread))));
   }
-  */
+
+  _onAllThreadsDeleted() {
+    this._selectedThreadId = undefined;
+    this._setThreads([]);
+  }
 
   // data //
   _defaultProcessData(data, oldData) {

@@ -1,7 +1,7 @@
 import { API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, STATUS, BUS_EVENT, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
 import { getThreadId, normalizeThreadValue, getPendingQuestionIds, mergeAnswersDataFromResponse } from '../util/threads.js';
 
@@ -36,9 +36,9 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *    `concatItemsFromMoreResponse`).
  *
  * Communicates with the history workflow over the per-client workflow event
- * bus (see BUS_EVENT): loads threads selected in the history panel, announces
- * loaded threads (so the history panel marks them as read), and resets when
- * its current thread is deleted.
+ * bus (client.workflows.bus): loads threads selected in the history panel,
+ * announces loaded threads with `conversation:load` (so the history panel
+ * marks them as read), and resets when its current thread is deleted.
  */
 export default class Conversation extends Workflow {
 
@@ -63,6 +63,7 @@ export default class Conversation extends Workflow {
       this._bus.handle('history', 'select', event => this._onThreadSelect(event)),
       this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
+      this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
     ];
   }
 
@@ -128,8 +129,14 @@ export default class Conversation extends Workflow {
     this.updateData({ ...data, value: { ...data.value, thread } });
   }
 
-  _onThreadDeleted({ threadIds, all }) {
-    if (this._threadId && (all || (threadIds && threadIds.includes(this._threadId)))) {
+  _onThreadDeleted({ threadIds }) {
+    if (this._threadId && threadIds && threadIds.includes(this._threadId)) {
+      this.reset();
+    }
+  }
+
+  _onAllThreadsDeleted() {
+    if (this._threadId) {
       this.reset();
     }
   }
@@ -183,7 +190,7 @@ export default class Conversation extends Workflow {
     }
     context.threadLoadedEmitted = true;
     const { thread } = data.value;
-    this._bus.emit(BUS_EVENT.THREAD_LOADED, Object.freeze({
+    this._bus.emit('load', Object.freeze({
       threadId: getThreadId(thread) || this._threadId,
       thread,
     }));

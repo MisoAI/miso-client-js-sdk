@@ -1,5 +1,6 @@
 import { escapeHtml } from '@miso.ai/commons';
 import { getThreadId, isThreadUnread } from '@miso.ai/client-sdk-workflow';
+import { getIcon } from '../asset/svgs.js';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
 export function requiresImplementation(...names) {
@@ -32,13 +33,20 @@ export function question(layout, state, data) {
 }
 
 export function thread(layout, state, data) {
-  const { className } = layout;
+  const { className, templates } = layout;
   const threadId = getThreadId(data);
   const threadIdAttr = threadId ? ` data-thread-id="${threadId}"` : '';
   const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
   const selectedAttr = data.selected ? ' data-selected' : '';
   const title = escapeHtml(data.title || 'Untitled');
-  return `<div class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__title">${title}</div></div>`;
+  return `<div class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__title">${title}</div>${(templates.threadMenuBlock || threadMenuBlock)(layout, data)}</div>`;
+}
+
+export function threadMenuBlock({ className }) {
+  return `<button type="button" class="${className}__menu-button" data-role="thread-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
+    `<div class="${className}__menu" data-role="thread-menu" role="menu" hidden>` +
+    `<button type="button" class="${className}__menu-item ${className}__menu-item--danger" data-role="thread-delete" role="menuitem">Delete</button>` +
+    `</div>`;
 }
 
 export function message(layout, state, data) {

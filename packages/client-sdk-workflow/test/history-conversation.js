@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { STATUS, BUS_EVENT, REQUEST_TYPE } from '../src/index.js';
+import { STATUS, REQUEST_TYPE } from '../src/index.js';
 import { createClient, tick, answersOf } from './dummy.js';
 
 test('history: start() loads the thread list, idempotently', async () => {
@@ -220,8 +220,11 @@ test('bus: events stay within their client', async () => {
 test('bus: event sequence of a select round trip', async () => {
   const { client } = createClient();
   const { history, conversation } = client.workflows; // eslint-disable-line no-unused-vars
+  const { bus } = client.workflows;
   const events = [];
-  client.workflows.events.on('*', (data, meta) => events.push(meta.name));
+  for (const [workflow, event] of [['history', 'select'], ['conversation', 'load'], ['history', 'update']]) {
+    bus.on(workflow, event, () => events.push(`${workflow}:${event}`));
+  }
 
   history.start();
   await tick();
@@ -229,11 +232,11 @@ test('bus: event sequence of a select round trip', async () => {
   await tick();
 
   assert.equal(events, [
-    BUS_EVENT.THREAD_SELECT,
-    BUS_EVENT.THREAD_LOADED,
-    // mark-as-read is triggered during the loaded dispatch, but the emitter
-    // queues nested emissions, so all subscribers observe it after loaded
-    BUS_EVENT.THREAD_UPDATED,
+    'history:select',
+    'conversation:load',
+    // mark-as-read is triggered while handling the load event, but the
+    // emitter queues nested emissions, so subscribers observe it after
+    'history:update',
   ]);
 });
 
