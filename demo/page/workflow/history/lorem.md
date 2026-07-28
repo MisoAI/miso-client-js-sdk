@@ -47,10 +47,19 @@
   .miso-history-demo miso-query {
     flex: none;
   }
-  .miso-history-demo .miso-history-demo__placeholder {
-    color: var(--miso-text-color-gray);
+  /* new-thread (empty) state: intro headline + composer centered in the panel */
+  .miso-history-demo miso-conversation[status~="empty"] {
+    justify-content: center;
+  }
+  .miso-history-demo miso-conversation[status~="empty"] miso-messages {
+    flex: 0 0 auto;
+  }
+  .miso-history-demo .miso-history-demo__intro {
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
     text-align: center;
-    margin-top: 4rem;
+    color: var(--miso-text-color);
   }
 </style>
 <div class="miso-history-demo">
@@ -58,7 +67,7 @@
     <miso-threads></miso-threads>
   </miso-history>
   <miso-conversation>
-    <div class="miso-history-demo__placeholder" visible-when="initial">Select a thread to view the conversation</div>
+    <div class="miso-history-demo__intro" visible-when="empty">What can I help with?</div>
     <miso-messages></miso-messages>
     <miso-query visible-when="ready"></miso-query>
   </miso-conversation>

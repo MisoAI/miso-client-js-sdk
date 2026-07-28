@@ -1,9 +1,9 @@
-import { API } from '@miso.ai/commons';
+import { API, uuidv4 } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getThreadId, getQuestionId, normalizeThreadValue, getPendingQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
+import { getThreadId, getQuestionId, normalizeThreadValue, normalizeThreadsValue, sortThreadsByLatest, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -56,10 +56,16 @@ export default class Conversation extends Workflow {
     this._threadId = undefined;
   }
 
+  _initSession(args) {
+    super._initSession(args);
+    this._loadPlaceholder(); // start in new-thread mode, not an empty panel
+  }
+
   _initSubscriptions(args) {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
+      this._bus.handle('history', 'new', () => this.startNew()),
       this._bus.handle('history', 'select', event => this._onThreadSelect(event)),
       this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
@@ -105,11 +111,63 @@ export default class Conversation extends Workflow {
   }
 
   /**
+   * Send a question: a follow-up to the current thread, or, in new-thread
+   * mode (no thread loaded), the first question of a new thread.
+   */
+  send(question) {
+    return this._threadId ? this._followUp(question) : this._startThread(question);
+  }
+
+  /**
+   * Enter new-thread mode: a fresh session presenting a placeholder thread
+   * with no messages, ready to take the first question.
+   */
+  startNew() {
+    this._threadId = undefined;
+    this.restart();
+    this._loadPlaceholder();
+    return this;
+  }
+
+  _loadPlaceholder() {
+    const { session } = this;
+    this.updateData({ session, value: { thread: { placeholder: true }, messages: [] } });
+  }
+
+  /**
+   * The first question of a new thread: announce a placeholder thread on the
+   * bus (the history workflow lists and selects it), post the question as a
+   * root question, and resolve the placeholder into the server-created
+   * thread once the response arrives (see _resolveIfNecessary).
+   */
+  _startThread(question) {
+    if (!question) {
+      throw new Error(`question is required`);
+    }
+    const data = this._hub.states[fields.data()];
+    if (!data || !data.value) {
+      return this;
+    }
+    const thread = Object.freeze({ thread_id: `placeholder-${uuidv4()}`, title: question, placeholder: true, updated_at: new Date().toISOString() });
+    this._threadId = getThreadId(thread);
+    this._bus.emit('new', Object.freeze({ threadId: this._threadId, thread }));
+    // optimistic: the placeholder thread record and the first question bubble
+    this.updateData({ ...data, value: { ...data.value, thread, messages: [{ question, live: true }] } });
+    // post as a root question (no parent)
+    const { api } = this._options.resolved.followUp;
+    this._request(mergeApiOptions(api, {
+      payload: { question },
+      type: REQUEST_TYPE.FOLLOW_UP,
+    }));
+    return this;
+  }
+
+  /**
    * Post a follow-up question to the current thread, like the ask workflow:
    * the question is appended to the messages optimistically, and the answer
    * streams into the last message pair as it is generated.
    */
-  followUp(question) {
+  _followUp(question) {
     if (!question) {
       throw new Error(`question is required in followUp() call`);
     }
@@ -136,12 +194,10 @@ export default class Conversation extends Workflow {
   }
 
   /**
-   * Clear the conversation panel, back to the initial state.
+   * Clear the conversation panel, back to a fresh new-thread state.
    */
   reset() {
-    this._threadId = undefined;
-    this.restart();
-    return this;
+    return this.startNew();
   }
 
   // bus event handlers //
@@ -175,7 +231,7 @@ export default class Conversation extends Workflow {
 
   // view actions //
   _onQuery({ q }) {
-    q && this.followUp(q);
+    q && this.send(q);
   }
 
   // request //
@@ -215,6 +271,10 @@ export default class Conversation extends Workflow {
     if (!isAnswersRequestData(data)) {
       return data; // the initial state or from the head request
     }
+    if ((data.value || data.error) && data.session) {
+      // the answers request settled; polling may reschedule if needed
+      this._getSessionContext(data.session).answersPending = false;
+    }
     const currentData = this._hub.states[fields.data()];
     return mergeAnswersDataFromResponse(currentData, data);
   }
@@ -226,6 +286,67 @@ export default class Conversation extends Workflow {
     }
     this._emitThreadLoaded(data);
     this._requestAnswersIfNecessary(data);
+    this._resolveIfNecessary(data);
+  }
+
+  // when the first response of a new thread arrives, look up the
+  // server-created thread to replace the placeholders
+  _resolveIfNecessary(data) {
+    const { thread, messages } = data.value || {};
+    if (!thread || !thread.placeholder || !getThreadId(thread)) {
+      return; // not a started new thread
+    }
+    const last = messages && messages[messages.length - 1];
+    const questionId = last && getQuestionId(last);
+    if (!questionId) {
+      return; // the response has not arrived yet
+    }
+    const context = this._getSessionContext(data.session);
+    if (context.threadResolveRequested) {
+      return;
+    }
+    context.threadResolveRequested = true;
+    this._resolveNewThread(data.session, thread, questionId).catch(error => this._error(error));
+  }
+
+  async _resolveNewThread(session, placeholder, questionId) {
+    const thread = await this._pollForNewThread(questionId);
+    const data = this._hub.states[fields.data()];
+    if (!thread || !data || data.session !== session) {
+      return; // not found, or the session has moved on
+    }
+    const placeholderId = getThreadId(placeholder);
+    this._threadId = getThreadId(thread);
+    this.updateData({ ...data, value: { ...data.value, thread } });
+    this._bus.emit('resolve', Object.freeze({ placeholderId, thread }));
+  }
+
+  /**
+   * Find the thread containing the given question, accurately in two passes:
+   * the thread list entries carry no question ids, so each candidate's
+   * detail is fetched and matched by `questions_ids`. Candidates are checked
+   * newest first, and only once across polls.
+   */
+  async _pollForNewThread(questionId, { attempts = 10, interval = 500 } = {}) {
+    const api = this._client.api.ask.userHistory;
+    const checked = new Set();
+    for (let i = 0; i < attempts; i++) {
+      const response = await api.getThreads();
+      const { threads = [] } = normalizeThreadsValue(response) || {};
+      for (const candidate of sortThreadsByLatest(threads)) {
+        const threadId = getThreadId(candidate);
+        if (!threadId || checked.has(threadId)) {
+          continue;
+        }
+        checked.add(threadId);
+        const detail = await api.getThread(threadId);
+        if (((detail && detail.questions_ids) || []).includes(questionId)) {
+          return candidate;
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, interval));
+    }
+    return undefined;
   }
 
   // announce a freshly loaded thread on the bus, once per session
@@ -242,17 +363,35 @@ export default class Conversation extends Workflow {
     }));
   }
 
+  /**
+   * Fetch or poll answer contents, driven by the answer state: any (non-live)
+   * message whose answer is absent or unfinished keeps the answers request
+   * going — an unfinished answer is re-polled regardless of how the panel got
+   * here (posted in this session, or reloaded mid-generation).
+   */
   _requestAnswersIfNecessary(data) {
-    const questionIds = getPendingQuestionIds(data.value);
+    const questionIds = getUnsettledQuestionIds(data.value);
     if (!questionIds.length) {
       return;
     }
-    const context = this._getSessionContext(data.session);
-    if (context.answersRequested) {
+    const { session } = data;
+    const context = this._getSessionContext(session);
+    if (context.answersPending) {
+      return; // a request is in flight, or a poll is scheduled
+    }
+    context.answersPending = true;
+    if (!context.answersRequested) {
+      context.answersRequested = true;
+      this._requestAnswers(questionIds);
       return;
     }
-    context.answersRequested = true;
-    this._requestAnswers(questionIds);
+    // the answers came back unfinished; poll again after an interval
+    const { pollingInterval = 1000 } = this._options.resolved.answers;
+    setTimeout(() => {
+      if (this.session === session) {
+        this._requestAnswers(questionIds);
+      }
+    }, pollingInterval);
   }
 
   _requestAnswers(question_ids) {

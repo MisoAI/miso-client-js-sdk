@@ -27,6 +27,15 @@ export function normalizeThreadsValue(value) {
 }
 
 /**
+ * Sort threads by latest activity (updated_at, descending). The sort is
+ * stable, so records without timestamps keep their relative order, after
+ * the timestamped ones.
+ */
+export function sortThreadsByLatest(threads = []) {
+  return [...threads].sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
+}
+
+/**
  * Normalize a thread-detail (GET threads/{id}) response value to
  * `{ thread, messages }`: the entire response — the thread metadata and its
  * `questions_ids`, with no message content — becomes the thread record, and
@@ -59,6 +68,21 @@ export function getPendingQuestionIds(value) {
     return [];
   }
   return value.messages.filter(message => !hasAnswer(message)).map(getQuestionId).filter(Boolean);
+}
+
+/**
+ * Question ids of messages whose answers are not settled: absent or still
+ * being generated (finished: false) — driving the answers polling. Live
+ * messages are excluded: their content streams in from the posting request.
+ */
+export function getUnsettledQuestionIds(value) {
+  if (!value || !value.messages) {
+    return [];
+  }
+  return value.messages
+    .filter(message => !message.live && (!hasAnswer(message) || message.finished === false))
+    .map(getQuestionId)
+    .filter(Boolean);
 }
 
 /**
@@ -107,9 +131,12 @@ export function mergeFollowUpDataFromResponse(oldData, newData) {
   const messages = [...(oldValue.messages || [])];
   const last = messages.length ? messages[messages.length - 1] : {};
   messages[Math.max(messages.length - 1, 0)] = { ...last, ...newData.value };
+  // restore the head request; in new-thread mode there is none, so strip the
+  // request type marker, lest local patches re-enter this merge
+  const { type: _type, ...typelessRequest } = newData.request || {};
   return {
     ...newData,
-    request: (oldData && oldData.request) || newData.request,
+    request: (oldData && oldData.request) || typelessRequest,
     value: { ...oldValue, messages },
   };
 }

@@ -1,11 +1,26 @@
-import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
-import { LAYOUT_TYPE } from '../../constants.js';
+import { getThreadId, isThreadUnread } from '@miso.ai/client-sdk-workflow';
+import { LAYOUT_TYPE, STATUS } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 import confirm from '../../util/confirm.js';
+import { getIcon } from '../../asset/svgs.js';
 
 const TYPE = LAYOUT_TYPE.THREADS;
 const DEFAULT_CLASSNAME = 'miso-threads';
+
+// the header (with the new chat button) renders even when the list is empty
+function ready(layout, state) {
+  return layout.templates.body(layout, state, layout._getItems(state) || []);
+}
+
+function body(layout, state, values) {
+  const { templates } = layout;
+  return `${(templates.newChatButton || newChatButton)(layout, state)}${templates.list(layout, state, values)}`;
+}
+
+function newChatButton({ className }) {
+  return `<button type="button" class="${className}__new-chat" data-role="new-chat">${getIcon('plus')}<span>New chat</span></button>`;
+}
 
 /**
  * The thread list of the chat history interface: a list of `thread` items.
@@ -32,8 +47,12 @@ export default class ThreadsLayout extends CollectionLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, ...options } = {}) {
-    super({ className, ...options });
+  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+    super({
+      className,
+      templates: { [STATUS.READY]: ready, body, newChatButton, ...templates },
+      ...options,
+    });
   }
 
   initialize(view) {
@@ -51,14 +70,39 @@ export default class ThreadsLayout extends CollectionLayout {
     }
   }
 
-  _afterRender(element, state) {
-    super._afterRender(element, state); // syncs bindings to the latest values
-    this._syncSelection(element);
+  // the list is newest-first, so incremental renders PREPEND the fresh items
+  // (the collection layout's stock incremental mode is append-only)
+  _html(state, rendered, incremental) {
+    if (incremental) {
+      const values = this._getItems(state) || [];
+      const fresh = values.slice(0, values.length - rendered.value.length);
+      return fresh.length > 0 ? this.templates.items(this, state, fresh, { offset: 0 }) : '';
+    }
+    return this.templates.root(this, state);
   }
 
-  // sync in-place item states (selected, and unread for the same reason) from
-  // the bound values onto the existing item elements
-  _syncSelection(element) {
+  _render(element, { state }, { notifyUpdate }) {
+    const { incremental, html } = state;
+    if (incremental) {
+      if (html) {
+        this._getListElement(element).insertAdjacentHTML('afterbegin', html);
+      } else {
+        notifyUpdate(false);
+      }
+    } else {
+      element.innerHTML = html;
+    }
+  }
+
+  _afterRender(element, state) {
+    super._afterRender(element, state); // syncs bindings to the latest values
+    this._syncItems(element);
+  }
+
+  // sync in-place item changes from the bound values onto the existing item
+  // elements: selection/unread state, and record changes that arrive without
+  // a re-render (rename, a placeholder thread resolving to its real record)
+  _syncItems(element) {
     for (const item of this._getItemElements(element)) {
       const binding = this._bindings.get(item);
       if (!binding) {
@@ -67,12 +111,24 @@ export default class ThreadsLayout extends CollectionLayout {
       const { value } = binding;
       setOrRemoveAttribute(item, 'data-selected', value.selected ? '' : undefined);
       setOrRemoveAttribute(item, 'data-unread', isThreadUnread(value) ? '' : undefined);
+      setOrRemoveAttribute(item, 'data-thread-id', getThreadId(value) || undefined);
+      const titleElement = item.querySelector(`.${this.className}__title`);
+      const title = value.title || 'Untitled';
+      if (titleElement && titleElement.textContent !== title) {
+        titleElement.textContent = title;
+      }
     }
   }
 
   // a click on a thread item means selection — a navigation action, not a
   // content-engagement click: emit a select view event and skip click tracking
   _onClick(event) {
+    if (event.target.closest(`[data-role="new-chat"]`)) {
+      this._closeMenus();
+      const { session } = this._view._state;
+      this._view._emit('new', { session, domEvent: event });
+      return;
+    }
     if (event.target.closest(`[data-role="thread-menu-button"]`)) {
       this._toggleMenu(event.target.closest(`[data-role="item"]`));
       return;

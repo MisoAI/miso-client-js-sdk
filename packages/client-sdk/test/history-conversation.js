@@ -116,7 +116,10 @@ test('lorem: deleting the open thread resets the panel', async () => {
 
   assert.is(history.threads.length, 1);
   assert.is(conversation.threadId, undefined);
-  assert.is(conversation.status, STATUS.INITIAL);
+  // back to a fresh new-thread state, not an empty panel
+  assert.is(conversation.status, STATUS.READY);
+  assert.is(conversation.thread.placeholder, true);
+  assert.equal(conversation.messages, []);
   // the deletion is persisted on the (lorem) server
   history.refresh();
   await tick();
@@ -158,7 +161,7 @@ test('lorem: a follow-up question posts and lands in the conversation', async ()
   await tick();
   const before = conversation.messages.length;
 
-  conversation.followUp('Tell me more about dashi.');
+  conversation.send('Tell me more about dashi.');
   // the answer streams via polling (~1s interval); wait for it to finish
   const deadline = Date.now() + 10000;
   while (true) {

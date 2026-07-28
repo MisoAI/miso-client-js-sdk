@@ -2,7 +2,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { getThreadId, isThreadUnread, normalizeThreadsValue } from '../util/threads.js';
+import { getThreadId, isThreadUnread, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
@@ -50,11 +50,14 @@ export default class History extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._bus.handle('conversation', 'load', event => this._onThreadLoaded(event)),
+      this._bus.handle('conversation', 'new', event => this._onConversationNew(event)),
+      this._bus.handle('conversation', 'resolve', event => this._onConversationResolve(event)),
       this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
       this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadDelete(event)),
+      this._views.on(ROLE.THREADS, 'new', () => this.startNew()),
     ];
   }
 
@@ -93,6 +96,18 @@ export default class History extends Workflow {
     this._started = true;
     this.restart();
     this._request();
+    return this;
+  }
+
+  /**
+   * Start a new chat: clear the selection and announce it on the event bus,
+   * for the conversation workflow to enter new-thread mode.
+   */
+  startNew() {
+    this._selectedThreadId = undefined;
+    this._recommitData(); // the cleared selection is stamped into data
+    this._emit('new', {});
+    this._bus.emit('new');
     return this;
   }
 
@@ -185,6 +200,21 @@ export default class History extends Workflow {
     this._setThreads([]);
   }
 
+  // a new thread is started in the conversation panel: list its placeholder
+  // as the selected item (its fresh timestamp sorts it to the top)
+  _onConversationNew({ threadId, thread }) {
+    this._selectedThreadId = threadId;
+    this._setThreads([...this.threads, thread]);
+  }
+
+  // the new thread is created server-side: replace the placeholder item
+  _onConversationResolve({ placeholderId, thread }) {
+    if (this._selectedThreadId === placeholderId) {
+      this._selectedThreadId = getThreadId(thread);
+    }
+    this._setThreads(this.threads.map(t => getThreadId(t) === placeholderId ? thread : t));
+  }
+
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
@@ -192,8 +222,10 @@ export default class History extends Workflow {
       return data;
     }
     // the workflow property is authoritative for selection; every pass stamps
-    // it into the value, so views render selection from data
+    // it into the value, so views render selection from data; threads are
+    // canonically ordered by latest activity
     const value = { ...normalizeThreadsValue(data.value), selectedThreadId: this._selectedThreadId };
+    value.threads = sortThreadsByLatest(value.threads);
     return { ...data, value };
   }
 

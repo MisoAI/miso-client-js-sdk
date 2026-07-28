@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { STATUS, REQUEST_TYPE } from '../src/index.js';
+import { STATUS, REQUEST_TYPE, getThreadId } from '../src/index.js';
 import { createClient, tick, answersOf } from './dummy.js';
 
 test('history: start() loads the thread list, idempotently', async () => {
@@ -112,7 +112,9 @@ test('deleteThread: removes from the list and resets the open panel', async () =
   assert.equal(history.threads.map(t => t.thread_id), ['t2']);
   assert.is(history.selectedThreadId, undefined);
   assert.is(conversation.threadId, undefined);
-  assert.is(conversation.status, STATUS.INITIAL);
+  // back to a fresh new-thread state, not an empty panel
+  assert.is(conversation.status, STATUS.READY);
+  assert.is(conversation.thread.placeholder, true);
   assert.equal(conversation.messages, []);
 });
 
@@ -201,7 +203,111 @@ test('useAnswers: overrides the answers api through the options cascade', async 
   assert.equal(conversation.messages, answersOf(['q1', 'q2']));
 });
 
-test('conversation: followUp posts a question and appends the message pair', async () => {
+test('conversation: starts in new-thread mode with a placeholder thread', async () => {
+  const { client } = createClient();
+  const { conversation } = client.workflows;
+
+  assert.is(conversation.status, STATUS.READY);
+  assert.is(conversation.thread.placeholder, true);
+  assert.equal(conversation.messages, []);
+  assert.is(conversation.threadId, undefined);
+});
+
+test('conversation: sending in new-thread mode creates and resolves the thread', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  const before = history.threads.length;
+
+  conversation.send('A brand new question');
+  // the placeholder thread is listed on top (newest first) and selected
+  const listed = () => history.threads[0];
+  assert.is(history.threads.length, before + 1);
+  assert.is(listed().placeholder, true);
+  assert.is(listed().title, 'A brand new question');
+  assert.is(history.selectedThreadId, getThreadId(listed()));
+  assert.is(conversation.messages.length, 1);
+
+  await tick(30); // response arrives; the placeholder resolves
+
+  // both workflows now carry the server-created thread
+  assert.is(conversation.thread.placeholder, undefined);
+  assert.is(conversation.thread.title, 'A brand new question');
+  assert.ok(conversation.threadId.startsWith('t-'));
+  assert.is(getThreadId(history.threads[0]), conversation.threadId);
+  assert.is(history.selectedThreadId, conversation.threadId);
+  assert.not.ok(history.threads.some(t => t.placeholder));
+
+  // the root question was posted without a parent
+  const rootCall = calls.find(c => c.startsWith('POST questions'));
+  assert.not.ok(rootCall.includes('parent_question_id'));
+
+  // the thread was matched by question id, through the thread detail
+  assert.ok(calls.some(c => c.startsWith('GET threads/t-q-new-')));
+
+  // a subsequent send is a follow-up to the same thread
+  conversation.send('And a follow-up');
+  await tick();
+  assert.is(conversation.messages.length, 2);
+  const followUpCall = calls.filter(c => c.startsWith('POST questions')).pop();
+  assert.ok(followUpCall.includes('parent_question_id'));
+});
+
+test('history: startNew clears the selection and resets the conversation', async () => {
+  const { client } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+  assert.is(conversation.threadId, 't2');
+
+  history.startNew();
+  assert.is(history.selectedThreadId, undefined);
+  assert.is(conversation.threadId, undefined);
+  assert.is(conversation.thread.placeholder, true);
+  assert.equal(conversation.messages, []);
+});
+
+test('conversation: unfinished answers are polled until finished', async () => {
+  let answersCalls = 0;
+  const { client } = createClient({
+    answers: question_ids => {
+      answersCalls++;
+      const finished = answersCalls >= 3;
+      return question_ids.map(question_id => ({
+        question_id,
+        question: `Question of ${question_id}`,
+        answer: finished ? 'The full answer.' : 'The partial an',
+        finished,
+      }));
+    },
+  });
+  const { conversation } = client.workflows;
+  conversation.useAnswers({ pollingInterval: 10 });
+
+  conversation.load('t1');
+  await tick();
+  // the first fetch came back unfinished
+  assert.is(answersCalls, 1);
+  assert.is(conversation.messages[0].finished, false);
+
+  // polling continues by answer state, until finished
+  await tick(80);
+  assert.ok(answersCalls >= 3);
+  assert.is(conversation.messages[0].finished, true);
+  assert.is(conversation.messages[0].answer, 'The full answer.');
+  const settled = answersCalls;
+
+  // and stops once settled
+  await tick(50);
+  assert.is(answersCalls, settled);
+});
+
+test('conversation: send posts a follow-up and appends the message pair', async () => {
   const { client, calls } = createClient();
   const { conversation } = client.workflows;
 
@@ -209,7 +315,7 @@ test('conversation: followUp posts a question and appends the message pair', asy
   await tick();
   assert.is(conversation.messages.length, 2);
 
-  conversation.followUp('What about miso ramen?');
+  conversation.send('What about miso ramen?');
   await tick();
 
   assert.is(conversation.messages.length, 3);

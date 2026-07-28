@@ -29,16 +29,27 @@ export function createClient({
   threadDetail = defaultThreadDetail,
   answers = question_ids => answersOf(question_ids), // the response is a bare array
 } = {}) {
+  threads = threads.map(thread => ({ ...thread })); // a mutable local copy
+  const createdThreads = new Map(); // thread_id -> detail, for threads created by questions
   const calls = [];
 
   const userHistory = {
+    async getThreads() {
+      calls.push('GET threads');
+      return { threads: threads.map(thread => ({ ...thread })) };
+    },
+    async getThread(threadId) {
+      calls.push(`GET threads/${threadId}`);
+      return createdThreads.get(threadId) || threadDetail(threadId);
+    },
     async _run(name, payload, options = {}) {
       calls.push(`${options.method || 'POST'} ${name}`);
       if (name === 'threads') {
         return { threads: threads.map(thread => ({ ...thread })) };
       }
       if (name.startsWith('threads/')) {
-        return threadDetail(name.split('/')[1]);
+        const id = name.split('/')[1];
+        return createdThreads.get(id) || threadDetail(id);
       }
       throw new Error(`unexpected api call: ${name}`);
     },
@@ -69,6 +80,17 @@ export function createClient({
         async questions(payload) {
           calls.push(`POST questions ${JSON.stringify(payload)}`);
           const question_id = `q-new-${++questionSeq}`;
+          if (!payload.parent_question_id) {
+            // a root question creates a new thread server-side
+            const record = {
+              thread_id: `t-${question_id}`,
+              title: payload.question,
+              updated_at: `2026-07-28T00:00:${String(questionSeq).padStart(2, '0')}`,
+              unread: false,
+            };
+            threads.push(record);
+            createdThreads.set(record.thread_id, { ...record, questions_ids: [question_id] });
+          }
           return {
             question_id,
             question: payload.question,

@@ -48,6 +48,8 @@ const DATA_ROLE_SET = new Set([
   ROLE.AFFILIATION,
   ROLE.FACETS,
   ROLE.TOTAL,
+  ROLE.THREADS,
+  ROLE.MESSAGES,
 ]);
 
 export function isDataRole(role) {
