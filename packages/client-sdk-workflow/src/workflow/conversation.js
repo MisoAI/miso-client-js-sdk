@@ -3,11 +3,11 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getThreadId, normalizeThreadValue, getPendingQuestionIds, mergeAnswersDataFromResponse } from '../util/threads.js';
+import { getThreadId, getQuestionId, normalizeThreadValue, getPendingQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  members: [ROLE.MESSAGES],
+  members: [ROLE.MESSAGES, ROLE.QUERY],
   mappings: {
     [ROLE.MESSAGES]: data => data.value && data.value.messages,
   },
@@ -64,6 +64,7 @@ export default class Conversation extends Workflow {
       this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
       this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
+      this._hub.on(fields.query(), args => this._onQuery(args)),
     ];
   }
 
@@ -100,6 +101,37 @@ export default class Conversation extends Workflow {
       name: `${API.NAME.THREADS}/${threadId}`,
       type: REQUEST_TYPE.THREAD,
     });
+    return this;
+  }
+
+  /**
+   * Post a follow-up question to the current thread, like the ask workflow:
+   * the question is appended to the messages optimistically, and the answer
+   * streams into the last message pair as it is generated.
+   */
+  followUp(question) {
+    if (!question) {
+      throw new Error(`question is required in followUp() call`);
+    }
+    if (!this._threadId) {
+      throw new Error(`No thread is loaded; call load() first.`);
+    }
+    const data = this._hub.states[fields.data()];
+    if (!data || !data.value) {
+      return this;
+    }
+    const messages = data.value.messages || [];
+    const last = messages[messages.length - 1];
+    const parent_question_id = last && getQuestionId(last);
+    // optimistically append the question bubble; `live` marks the pair as
+    // being generated in this session (the UI typewrites live answers)
+    this.updateData({ ...data, value: { ...data.value, messages: [...messages, { question, live: true }] } });
+    // post the question; the streamed responses merge into the last message
+    const { api } = this._options.resolved.followUp;
+    this._request(mergeApiOptions(api, {
+      payload: { question, ...(parent_question_id ? { parent_question_id } : {}) },
+      type: REQUEST_TYPE.FOLLOW_UP,
+    }));
     return this;
   }
 
@@ -141,6 +173,11 @@ export default class Conversation extends Workflow {
     }
   }
 
+  // view actions //
+  _onQuery({ q }) {
+    q && this.followUp(q);
+  }
+
   // request //
   _writeRequestTimeToSession(timestamp, options = {}) {
     // only the head request marks the session request time
@@ -153,16 +190,25 @@ export default class Conversation extends Workflow {
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
-    if (!data.value || isAnswersRequestData(data)) {
-      return data; // answers responses are merged later, in _updateDataInHub
+    if (!data.value || isAnswersRequestData(data) || isFollowUpRequestData(data)) {
+      return data; // answers/follow-up responses are merged later, in _updateDataInHub
     }
     return { ...data, value: normalizeThreadValue(data.value) };
   }
 
   _updateDataInHub(data, oldData) {
     data = this._mergeDataFromAnswersRequest(data);
+    data = this._mergeDataFromFollowUpRequest(data);
     super._updateDataInHub(data, oldData);
     this._dispatchFollowUps(data);
+  }
+
+  _mergeDataFromFollowUpRequest(data) {
+    if (!isFollowUpRequestData(data)) {
+      return data;
+    }
+    const currentData = this._hub.states[fields.data()];
+    return mergeFollowUpDataFromResponse(currentData, data);
   }
 
   _mergeDataFromAnswersRequest(data) {
@@ -219,10 +265,15 @@ export default class Conversation extends Workflow {
 
 }
 
-makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS]);
+makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS, WORKFLOW_CONFIGURABLE.FOLLOW_UP]);
 
 // helpers //
 function isAnswersRequestData(data) {
   const { request } = data;
   return !!request && request.type === REQUEST_TYPE.ANSWERS;
+}
+
+function isFollowUpRequestData(data) {
+  const { request } = data;
+  return !!request && request.type === REQUEST_TYPE.FOLLOW_UP;
 }

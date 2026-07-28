@@ -147,6 +147,39 @@ test('lorem: opening an unread thread marks it as read', async () => {
   assert.is(history.getThread(threadId).unread, false);
 });
 
+test('lorem: a follow-up question posts and lands in the conversation', async () => {
+  const client = setup();
+  await ask(client, 'What is miso soup?');
+
+  const { history, conversation } = client.workflows;
+  history.start();
+  await tick();
+  history.select(history.threads[0].thread_id);
+  await tick();
+  const before = conversation.messages.length;
+
+  conversation.followUp('Tell me more about dashi.');
+  // the answer streams via polling (~1s interval); wait for it to finish
+  const deadline = Date.now() + 10000;
+  while (true) {
+    const last = conversation.messages[conversation.messages.length - 1];
+    if (conversation.messages.length === before + 1 && last.finished && last.answer) {
+      break;
+    }
+    if (Date.now() > deadline) {
+      throw new Error('timed out waiting for the follow-up answer');
+    }
+    await tick(100);
+  }
+
+  const last = conversation.messages[conversation.messages.length - 1];
+  assert.ok(last.question.startsWith('Tell me more about dashi.'));
+  assert.ok(last.question_id);
+  assert.ok(last.live);
+  assert.type(last.answer, 'string');
+  assert.ok(last.answer.length > 0);
+});
+
 test('lorem: deleteAllThreads clears the history', async () => {
   const client = setup();
   await ask(client, 'What is miso soup?');

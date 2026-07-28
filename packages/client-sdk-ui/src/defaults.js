@@ -96,7 +96,8 @@ export const defaultLayouts = Object.freeze({
 
   'conversation': Object.freeze({
     ...BASE_LAYOUTS,
-    [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message' }],
+    [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message', incremental: true }],
+    [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a follow-up question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
   }),
 
 });

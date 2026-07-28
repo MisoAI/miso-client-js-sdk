@@ -59,12 +59,24 @@ export function createClient({
     },
   };
 
+  let questionSeq = 0;
   const client = {
     meta: { parent: { _hubUpdateCallbacks: [], _hubEmitCallbacks: [] } },
     _events: new EventEmitter(),
     api: {
       ask: {
         userHistory,
+        async questions(payload) {
+          calls.push(`POST questions ${JSON.stringify(payload)}`);
+          const question_id = `q-new-${++questionSeq}`;
+          return {
+            question_id,
+            question: payload.question,
+            answer: `Answer of ${payload.question}`,
+            finished: true,
+            sources: [],
+          };
+        },
         async answers(payload) {
           calls.push(`POST answers ${JSON.stringify(payload.question_ids)}`);
           return answers(payload.question_ids);

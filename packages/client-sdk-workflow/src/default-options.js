@@ -169,11 +169,23 @@ export default Object.freeze({
   },
 
   'conversation': {
+    // TODO: we need to expand the spec to allow multiple request types per workflow
     api: {
       group: API.GROUP.ASK_USER_HISTORY,
       name: API.NAME.THREADS, // `/${threadId}` is appended per request
       options: {
         method: 'GET',
+      },
+    },
+    // posting a follow-up question, like the ask workflow does
+    followUp: {
+      api: {
+        group: API.GROUP.ASK,
+        name: API.NAME.QUESTIONS,
+        payload: ANSWER_BASED_API_OPTIONS.payload,
+        options: {
+          method: 'POST', // override the GET method of the head request api options
+        },
       },
     },
     // the follow-up request retrieving question-answer pair contents

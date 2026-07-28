@@ -60,7 +60,9 @@ export function message(layout, state, data) {
 }
 
 export function messageQuestionBlock({ className }, { question }) {
-  return question ? `<div class="${className}__question">${escapeHtml(question)}</div>` : '';
+  // always rendered so it can be filled in place when the question text
+  // arrives later (the list renders incrementally)
+  return `<div class="${className}__question" data-role="question"${question ? '' : ' hidden'}>${question ? escapeHtml(question) : ''}</div>`;
 }
 
 export function messageAnswerBlock({ className }, { answer }) {

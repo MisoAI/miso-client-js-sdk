@@ -150,6 +150,30 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       proxyElement.on('focusout', (e) => this._handleFocusOut(e)),
       hub.on(fields.completions(), () => view.refresh({ force: true })),
     ];
+    if (this.options.disableWhenOngoing) {
+      // disable submission while the main view is still displaying an answer
+      const mainRole = view.workflow._roles && view.workflow._roles.main;
+      if (mainRole) {
+        this._unsubscribes.push(hub.on(fields.view(mainRole), state => this._syncDisabled(!!state.ongoing)));
+      }
+    }
+  }
+
+  _syncDisabled(disabled) {
+    if (this._disabled === disabled) {
+      return;
+    }
+    this._disabled = disabled;
+    this._syncDisabledAttributes();
+  }
+
+  _syncDisabledAttributes() {
+    // the user can keep typing; only submission is disabled
+    const element = this._element;
+    const button = element && element.querySelector(`[data-role="submit"]`);
+    if (button) {
+      button.disabled = !!this._disabled;
+    }
   }
 
   focus() {
@@ -197,6 +221,7 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   _afterRender(element, state) {
     this._fullfillFocusRequest(element);
     this._fullfillValueRequest(element);
+    this._syncDisabledAttributes(); // a re-render replaces the input element
   }
 
   _updateCompletions(element, { state, rendered }, { writeToState }) {
@@ -289,7 +314,9 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   _handleKeyDown({ key, target, isComposing }) {
     if (!isComposing && key === 'Enter' && target.matches('[data-role="input"]')) {
       this._submit(target.value);
-      target.blur();
+      if (this.options.blurOnSubmit !== false) {
+        target.blur();
+      }
     }
     // TODO: select completion items with arrow keys
   }
@@ -300,7 +327,9 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
     for (let element = target; element && element !== this._element; element = element.parentElement) {
       if (element.matches('[data-role="submit"]') || element.matches('[data-role="button"]') || element.matches('[type="submit"]')) {
         if (inputElement) {
-          inputElement.blur();
+          if (this.options.blurOnSubmit !== false) {
+            inputElement.blur();
+          }
           this._submit(inputElement.value);
         }
         return;
@@ -329,12 +358,18 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
   }
 
   async _submit(value) {
-    if (!value || !value.trim()) {
+    if (this._disabled || !value || !value.trim()) {
       return;
     }
     this.close();
     // TODO: q -> value
     this._view.hub.update(fields.query(), { q: value });
+    if (this.options.clearOnSubmit) {
+      const inputElement = this._element && this._element.querySelector(`[data-role="input"]`);
+      if (inputElement) {
+        inputElement.value = '';
+      }
+    }
     this._trackSubmit(value);
   }
 

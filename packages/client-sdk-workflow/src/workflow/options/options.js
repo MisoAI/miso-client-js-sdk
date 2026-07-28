@@ -56,6 +56,11 @@ const FEATURES = [
     normalize: normalizeAnswersOptions,
     merge: mergeAnswersOptions,
   },
+  {
+    key: WORKFLOW_CONFIGURABLE.FOLLOW_UP,
+    normalize: normalizeAnswersOptions,
+    merge: mergeAnswersOptions,
+  },
 ];
 
 

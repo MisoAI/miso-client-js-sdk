@@ -148,6 +148,7 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
   PAGINATION: 'pagination',
   TEMPLATES: 'templates',
   ANSWERS: 'answers',
+  FOLLOW_UP: 'followUp',
 });
 
 export const REQUEST_TYPE = Object.freeze({
@@ -156,4 +157,5 @@ export const REQUEST_TYPE = Object.freeze({
   MORE: 'more',
   THREAD: 'thread',
   ANSWERS: 'answers',
+  FOLLOW_UP: 'follow-up',
 });

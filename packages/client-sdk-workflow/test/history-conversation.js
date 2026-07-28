@@ -201,6 +201,32 @@ test('useAnswers: overrides the answers api through the options cascade', async 
   assert.equal(conversation.messages, answersOf(['q1', 'q2']));
 });
 
+test('conversation: followUp posts a question and appends the message pair', async () => {
+  const { client, calls } = createClient();
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  assert.is(conversation.messages.length, 2);
+
+  conversation.followUp('What about miso ramen?');
+  await tick();
+
+  assert.is(conversation.messages.length, 3);
+  const last = conversation.messages[2];
+  assert.is(last.question, 'What about miso ramen?');
+  assert.is(last.answer, 'Answer of What about miso ramen?');
+  assert.ok(last.question_id);
+
+  // posted like the ask workflow, with the parent question id
+  const call = calls.find(c => c.startsWith('POST questions'));
+  assert.ok(call);
+  assert.ok(call.includes('"parent_question_id":"q2"'));
+
+  // the head request stays on the committed data
+  assert.is(conversation.states.data.request.type, REQUEST_TYPE.THREAD);
+});
+
 test('bus: events stay within their client', async () => {
   const a = createClient();
   const b = createClient();

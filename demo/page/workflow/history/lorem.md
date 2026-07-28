@@ -34,7 +34,18 @@
   }
   .miso-history-demo miso-conversation {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .miso-history-demo miso-messages {
+    flex: 1 1 auto;
     overflow-y: auto;
+  }
+  .miso-history-demo miso-query {
+    flex: none;
   }
   .miso-history-demo .miso-history-demo__placeholder {
     color: var(--miso-text-color-gray);
@@ -49,6 +60,7 @@
   <miso-conversation>
     <div class="miso-history-demo__placeholder" visible-when="initial">Select a thread to view the conversation</div>
     <miso-messages></miso-messages>
+    <miso-query visible-when="ready"></miso-query>
   </miso-conversation>
 </div>
 <script>
@@ -56,8 +68,7 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   MisoClient.plugins.use('std:ui');
   await MisoClient.plugins.install('std:lorem');
-  // huge speed rate -> past answers are all finished, rather than streaming
-  MisoClient.plugins.use('std:lorem', { speedRate: 1e9 });
+  MisoClient.plugins.use('std:lorem');
   // seed the user history with server-side threads, some unread
   MisoClient.lorem.api.ask.userHistory.generateThreads({ rows: 12 }, { seed: 42 });
   const client = new MisoClient({

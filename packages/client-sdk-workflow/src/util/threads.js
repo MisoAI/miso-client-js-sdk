@@ -94,6 +94,27 @@ export function mergeAnswersDataFromResponse(oldData, newData) {
 }
 
 /**
+ * Merge a follow-up question (ask questions API) response data into the
+ * current data: the response body is the last message of the conversation.
+ * A valueless update (the loading update of the follow-up request) keeps the
+ * current data; the head request is restored on the merged data.
+ */
+export function mergeFollowUpDataFromResponse(oldData, newData) {
+  if (!newData.value) {
+    return oldData;
+  }
+  const oldValue = (oldData && oldData.value) || {};
+  const messages = [...(oldValue.messages || [])];
+  const last = messages.length ? messages[messages.length - 1] : {};
+  messages[Math.max(messages.length - 1, 0)] = { ...last, ...newData.value };
+  return {
+    ...newData,
+    request: (oldData && oldData.request) || newData.request,
+    value: { ...oldValue, messages },
+  };
+}
+
+/**
  * Merge question-answer records into messages by question id.
  */
 export function mergeAnswersIntoMessages(messages, answers) {
