@@ -19,5 +19,6 @@ export { default as MisoFacetsElement } from './miso-facets.js';
 export { default as MisoMoreElement } from './miso-more.js';
 export { default as MisoSortElement } from './miso-sort.js';
 export { default as MisoThreadsElement } from './miso-threads.js';
+export { default as MisoNewChatElement } from './miso-new-chat.js';
 export { default as MisoMessagesElement } from './miso-messages.js';
 export { default as MisoErrorElement } from './miso-error.js';

@@ -92,6 +92,7 @@ export const defaultLayouts = Object.freeze({
   'history': Object.freeze({
     ...BASE_LAYOUTS,
     [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true }],
+    [ROLE.NEW_CHAT]: [LAYOUT_TYPE.BUTTON, { icon: 'plus', text: 'New chat' }],
   }),
 
   'conversation': Object.freeze({

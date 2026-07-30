@@ -109,12 +109,12 @@ export default class MessagesLayout extends CollectionLayout {
     this._setDisplaying(displaying);
   }
 
-  // whether the (last) message pair is still being displayed: a live message
-  // whose answer is pending, streaming, or still being typed
+  // whether the (last) message pair is still being displayed: its answer is
+  // pending, streaming, or still being typed — live (posted in this session)
+  // or not: an answer still generating is picked up by the answers polling
+  // even after switching away from the thread and back, and must keep
+  // blocking submission all the same
   _isDisplaying(item, message) {
-    if (!message.live) {
-      return false;
-    }
     if (!hasAnswer(message)) {
       return true; // waiting for the answer body
     }
@@ -234,6 +234,7 @@ export default class MessagesLayout extends CollectionLayout {
 
 }
 
+// TODO: can't we just use Controller?
 /**
  * Types a streaming answer into an element: a progressive markdown renderer
  * fed by data updates, advanced by a paced cursor on animation frames — the

@@ -15,33 +15,35 @@
   --miso-message-question-background: rgba(26, 76, 227, 0.09804);
 }
 
+// new chat button (miso-new-chat: the generic button layout) //
+miso-new-chat .miso-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--miso-border-color-light);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--miso-text-color);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--miso-transition), border-color var(--miso-transition);
+
+  &:hover {
+    background-color: var(--miso-thread-list-item-hover-background);
+    border-color: var(--miso-border-color-medium);
+  }
+  .miso-ui-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+  }
+}
+
 // thread list //
 .miso-threads {
-  .miso-threads__new-chat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.75rem;
-    border: 1px solid var(--miso-border-color-light);
-    border-radius: 0.5rem;
-    background: none;
-    color: var(--miso-text-color);
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color var(--miso-transition), border-color var(--miso-transition);
-
-    &:hover {
-      background-color: var(--miso-thread-list-item-hover-background);
-      border-color: var(--miso-border-color-medium);
-    }
-    .miso-ui-icon {
-      width: 1rem;
-      height: 1rem;
-      fill: currentColor;
-    }
-  }
   .miso-threads__list {
     list-style: none !important;
     padding: 0;

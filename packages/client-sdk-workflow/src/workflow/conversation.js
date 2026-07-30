@@ -3,7 +3,8 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getThreadId, getQuestionId, normalizeThreadValue, normalizeThreadsValue, sortThreadsByLatest, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
+import { getThreadId, getPlaceholderId, getQuestionId, normalizeThreadValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
+import { fallbackThreadFields } from '../source.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -54,6 +55,7 @@ export default class Conversation extends Workflow {
   _initProperties(args) {
     super._initProperties(args);
     this._threadId = undefined;
+    this._placeholderId = undefined;
   }
 
   _initSession(args) {
@@ -65,7 +67,7 @@ export default class Conversation extends Workflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._bus.handle('history', 'new', () => this.startNew()),
+      this._bus.handle('history', 'new', () => this.new()),
       this._bus.handle('history', 'select', event => this._onThreadSelect(event)),
       this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
@@ -77,6 +79,14 @@ export default class Conversation extends Workflow {
   // properties //
   get threadId() {
     return this._threadId;
+  }
+
+  /**
+   * The thread on display, as selection sees it: its thread id, or, while it
+   * is being created, the placeholder id standing in for one.
+   */
+  get threadItemId() {
+    return this._threadId || this._placeholderId;
   }
 
   get thread() {
@@ -102,6 +112,7 @@ export default class Conversation extends Workflow {
       return this;
     }
     this._threadId = threadId;
+    this._placeholderId = undefined;
     this.restart();
     this._request({
       name: `${API.NAME.THREADS}/${threadId}`,
@@ -115,15 +126,22 @@ export default class Conversation extends Workflow {
    * mode (no thread loaded), the first question of a new thread.
    */
   send(question) {
-    return this._threadId ? this._followUp(question) : this._startThread(question);
+    return this.threadItemId ? this._followUp(question) : this._startThread(question);
   }
 
+  // why duplicated method with reset()?
   /**
    * Enter new-thread mode: a fresh session presenting a placeholder thread
-   * with no messages, ready to take the first question.
+   * with no messages, ready to take the first question. A no-op when the
+   * panel is already sitting on an untouched new thread — nothing has been
+   * asked, so there is nothing to reset — unless `force` is set.
    */
-  startNew() {
+  new({ force = false } = {}) {
+    if (!this.threadItemId && !force) {
+      return this;
+    }
     this._threadId = undefined;
+    this._placeholderId = undefined;
     this.restart();
     this._loadPlaceholder();
     return this;
@@ -134,11 +152,14 @@ export default class Conversation extends Workflow {
     this.updateData({ session, value: { thread: { placeholder: true }, messages: [] } });
   }
 
+  // should refactor _startThread & _followUp
   /**
    * The first question of a new thread: announce a placeholder thread on the
    * bus (the history workflow lists and selects it), post the question as a
-   * root question, and resolve the placeholder into the server-created
-   * thread once the response arrives (see _resolveIfNecessary).
+   * root question, and settle the placeholder once the response arrives (see
+   * _resolveIfNecessary). The thread has no identity yet — the placeholder
+   * record is keyed by a local `placeholder_id` instead of a thread id, so
+   * nothing addresses it as a thread server-side.
    */
   _startThread(question) {
     if (!question) {
@@ -148,9 +169,10 @@ export default class Conversation extends Workflow {
     if (!data || !data.value) {
       return this;
     }
-    const thread = Object.freeze({ thread_id: `placeholder-${uuidv4()}`, title: question, placeholder: true, updated_at: new Date().toISOString() });
-    this._threadId = getThreadId(thread);
-    this._bus.emit('new', Object.freeze({ threadId: this._threadId, thread }));
+    // TODO: client side time is not reliable, don't use it for comparison with server time
+    const thread = Object.freeze({ placeholder_id: uuidv4(), title: question, placeholder: true, updated_at: new Date().toISOString() });
+    this._placeholderId = getPlaceholderId(thread);
+    this._bus.emit('new', Object.freeze({ placeholderId: this._placeholderId, thread }));
     // optimistic: the placeholder thread record and the first question bubble
     this.updateData({ ...data, value: { ...data.value, thread, messages: [{ question, live: true }] } });
     // post as a root question (no parent)
@@ -171,7 +193,8 @@ export default class Conversation extends Workflow {
     if (!question) {
       throw new Error(`question is required in followUp() call`);
     }
-    if (!this._threadId) {
+    // a thread being created takes follow-ups too, before it has an identity
+    if (!this.threadItemId) {
       throw new Error(`No thread is loaded; call load() first.`);
     }
     const data = this._hub.states[fields.data()];
@@ -193,15 +216,11 @@ export default class Conversation extends Workflow {
     return this;
   }
 
-  /**
-   * Clear the conversation panel, back to a fresh new-thread state.
-   */
-  reset() {
-    return this.startNew();
-  }
-
   // bus event handlers //
-  _onThreadSelect({ threadId }) {
+  _onThreadSelect({ threadId, thread }) {
+    if (getPlaceholderId(thread) || threadId === this._placeholderId) {
+      return; // a thread being created has nothing to load; it is on display
+    }
     this.load(threadId);
   }
 
@@ -219,13 +238,13 @@ export default class Conversation extends Workflow {
 
   _onThreadDeleted({ threadIds }) {
     if (this._threadId && threadIds && threadIds.includes(this._threadId)) {
-      this.reset();
+      this.new();
     }
   }
 
   _onAllThreadsDeleted() {
     if (this._threadId) {
-      this.reset();
+      this.new();
     }
   }
 
@@ -281,7 +300,7 @@ export default class Conversation extends Workflow {
 
   // when the head data lands ready: announce it and issue the follow-up request
   _dispatchFollowUps(data) {
-    if (!data.session || data.status !== STATUS.READY || !this._threadId) {
+    if (!data.session || data.status !== STATUS.READY || !this.threadItemId) {
       return;
     }
     this._emitThreadLoaded(data);
@@ -289,15 +308,18 @@ export default class Conversation extends Workflow {
     this._resolveIfNecessary(data);
   }
 
-  // when the first response of a new thread arrives, look up the
-  // server-created thread to replace the placeholders
+  /**
+   * Settle a started new thread when the first question response arrives: by
+   * contract the thread id *is* the id of the thread's first question, so the
+   * id needs no lookup — only the thread record itself is fetched.
+   */
   _resolveIfNecessary(data) {
     const { thread, messages } = data.value || {};
-    if (!thread || !thread.placeholder || !getThreadId(thread)) {
+    const placeholderId = getPlaceholderId(thread);
+    if (!placeholderId) {
       return; // not a started new thread
     }
-    const last = messages && messages[messages.length - 1];
-    const questionId = last && getQuestionId(last);
+    const questionId = getQuestionId(messages && messages[0]);
     if (!questionId) {
       return; // the response has not arrived yet
     }
@@ -306,47 +328,31 @@ export default class Conversation extends Workflow {
       return;
     }
     context.threadResolveRequested = true;
-    this._resolveNewThread(data.session, thread, questionId).catch(error => this._error(error));
+    this._threadId = questionId; // the thread is addressable right away
+    this._resolveNewThread(data.session, placeholderId, thread, questionId).catch(error => this._error(error));
   }
 
-  async _resolveNewThread(session, placeholder, questionId) {
-    const thread = await this._pollForNewThread(questionId);
+  async _resolveNewThread(session, placeholderId, placeholder, threadId) {
+    const thread = await this._fetchThread(threadId) || settlePlaceholder(placeholder, threadId);
     const data = this._hub.states[fields.data()];
-    if (!thread || !data || data.session !== session) {
-      return; // not found, or the session has moved on
+    if (!data || data.session !== session) {
+      return; // the session has moved on
     }
-    const placeholderId = getThreadId(placeholder);
-    this._threadId = getThreadId(thread);
+    this._placeholderId = undefined; // the thread stands on its own id now
     this.updateData({ ...data, value: { ...data.value, thread } });
     this._bus.emit('resolve', Object.freeze({ placeholderId, thread }));
   }
 
-  /**
-   * Find the thread containing the given question, accurately in two passes:
-   * the thread list entries carry no question ids, so each candidate's
-   * detail is fetched and matched by `questions_ids`. Candidates are checked
-   * newest first, and only once across polls.
-   */
-  async _pollForNewThread(questionId, { attempts = 10, interval = 500 } = {}) {
-    const api = this._client.api.ask.userHistory;
-    const checked = new Set();
-    for (let i = 0; i < attempts; i++) {
-      const response = await api.getThreads();
-      const { threads = [] } = normalizeThreadsValue(response) || {};
-      for (const candidate of sortThreadsByLatest(threads)) {
-        const threadId = getThreadId(candidate);
-        if (!threadId || checked.has(threadId)) {
-          continue;
-        }
-        checked.add(threadId);
-        const detail = await api.getThread(threadId);
-        if (((detail && detail.questions_ids) || []).includes(questionId)) {
-          return candidate;
-        }
-      }
-      await new Promise(resolve => setTimeout(resolve, interval));
+  // the record of the just-created thread. The call bypasses the source, so
+  // the response is adapted here. A failure is not fatal: the local record
+  // stands in, and the next thread list load brings the server one.
+  async _fetchThread(threadId) {
+    try {
+      return fallbackThreadFields(await this._client.api.ask.userHistory.getThread(threadId));
+    } catch (error) {
+      this._warn(`Failed to fetch the created thread ${threadId}`, error);
+      return undefined;
     }
-    return undefined;
   }
 
   // announce a freshly loaded thread on the bus, once per session
@@ -407,6 +413,13 @@ export default class Conversation extends Workflow {
 makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS, WORKFLOW_CONFIGURABLE.FOLLOW_UP]);
 
 // helpers //
+// the local stand-in for a created thread whose record could not be fetched:
+// the placeholder, keyed by the thread id it is known to have
+function settlePlaceholder(placeholder, threadId) {
+  const { placeholder: _placeholder, placeholder_id: _placeholderId, ...thread } = placeholder;
+  return Object.freeze({ ...thread, thread_id: threadId });
+}
+
 function isAnswersRequestData(data) {
   const { request } = data;
   return !!request && request.type === REQUEST_TYPE.ANSWERS;

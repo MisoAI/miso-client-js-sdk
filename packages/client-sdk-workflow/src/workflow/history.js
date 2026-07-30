@@ -2,17 +2,17 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { getThreadId, isThreadUnread, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
+import { getThreadId, getPlaceholderId, getThreadItemId, isThreadUnread, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
-  members: [ROLE.THREADS],
+  members: [ROLE.THREADS, ROLE.NEW_CHAT],
   mappings: {
     // decorate each thread with its selection state, so the view renders
     // selection declaratively from data
     [ROLE.THREADS]: data => {
       const { threads, selectedThreadId } = (data.value || {});
-      return threads && threads.map(thread => ({ ...thread, selected: getThreadId(thread) === selectedThreadId }));
+      return threads && threads.map(thread => ({ ...thread, selected: getThreadItemId(thread) === selectedThreadId }));
     },
   },
 });
@@ -57,7 +57,7 @@ export default class History extends Workflow {
       this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadDelete(event)),
-      this._views.on(ROLE.THREADS, 'new', () => this.startNew()),
+      this._views.on(ROLE.NEW_CHAT, 'submit', () => this._onViewNetChatSubmit()),
     ];
   }
 
@@ -71,8 +71,12 @@ export default class History extends Workflow {
     return this._selectedThreadId;
   }
 
+  /**
+   * The listed record of a thread, by thread id — or, for a thread being
+   * created, by the placeholder id standing in for one.
+   */
   getThread(threadId) {
-    return this.threads.find(thread => getThreadId(thread) === threadId);
+    return this.threads.find(thread => getThreadItemId(thread) === threadId);
   }
 
   // lifecycle //
@@ -96,18 +100,6 @@ export default class History extends Workflow {
     this._started = true;
     this.restart();
     this._request();
-    return this;
-  }
-
-  /**
-   * Start a new chat: clear the selection and announce it on the event bus,
-   * for the conversation workflow to enter new-thread mode.
-   */
-  startNew() {
-    this._selectedThreadId = undefined;
-    this._recommitData(); // the cleared selection is stamped into data
-    this._emit('new', {});
-    this._bus.emit('new');
     return this;
   }
 
@@ -137,7 +129,7 @@ export default class History extends Workflow {
   async markThreadAsRead(threadId) {
     // TODO: should be in conversation workflow
     this._api.markThreadAsRead(threadId); // no await
-    const event = Object.freeze({ threadId, changes: { unread: false, read: true } });
+    const event = Object.freeze({ threadId, changes: { has_new: false } });
     this._bus.emit('update', event);
   }
 
@@ -163,6 +155,17 @@ export default class History extends Workflow {
   }
 
   // view actions //
+  _onViewNetChatSubmit() {
+    if (!this._selectedThreadId) {
+      return;
+    }
+    this._selectedThreadId = undefined;
+    this._recommitData(); // the cleared selection is stamped into data
+    this._emit('new', {});
+    this._bus.emit('new');
+    return this;
+  }
+
   _onViewThreadSelect({ value: thread }) {
     const threadId = getThreadId(thread);
     threadId && this.select(threadId);
@@ -201,9 +204,10 @@ export default class History extends Workflow {
   }
 
   // a new thread is started in the conversation panel: list its placeholder
-  // as the selected item (its fresh timestamp sorts it to the top)
-  _onConversationNew({ threadId, thread }) {
-    this._selectedThreadId = threadId;
+  // as the selected item (its fresh timestamp sorts it to the top). The
+  // record has no thread id yet, so it is selected by its placeholder id
+  _onConversationNew({ placeholderId, thread }) {
+    this._selectedThreadId = placeholderId;
     this._setThreads([...this.threads, thread]);
   }
 
@@ -212,7 +216,7 @@ export default class History extends Workflow {
     if (this._selectedThreadId === placeholderId) {
       this._selectedThreadId = getThreadId(thread);
     }
-    this._setThreads(this.threads.map(t => getThreadId(t) === placeholderId ? thread : t));
+    this._setThreads(this.threads.map(t => getPlaceholderId(t) === placeholderId ? thread : t));
   }
 
   // data //

@@ -3,6 +3,8 @@ import * as assert from 'uvu/assert';
 
 import {
   getThreadId,
+  getPlaceholderId,
+  getThreadItemId,
   isThreadUnread,
   normalizeThreadsValue,
   normalizeThreadValue,
@@ -19,10 +21,17 @@ test('getThreadId', () => {
   assert.is(getThreadId(undefined), undefined);
 });
 
+test('getPlaceholderId / getThreadItemId', () => {
+  assert.is(getPlaceholderId({ placeholder_id: 'p1' }), 'p1');
+  assert.is(getPlaceholderId({ thread_id: 't1' }), undefined);
+  assert.is(getThreadItemId({ thread_id: 't1' }), 't1');
+  assert.is(getThreadItemId({ placeholder_id: 'p1' }), 'p1');
+  assert.is(getThreadItemId(undefined), undefined);
+});
+
 test('isThreadUnread', () => {
-  assert.is(isThreadUnread({ unread: true }), true);
-  assert.is(isThreadUnread({ read: false }), true);
-  assert.is(isThreadUnread({ unread: false }), false);
+  assert.is(isThreadUnread({ has_new: true }), true);
+  assert.is(isThreadUnread({ has_new: false }), false);
   assert.is(isThreadUnread({}), false);
   assert.is(isThreadUnread(undefined), false);
 });

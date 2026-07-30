@@ -9,8 +9,8 @@ import { WorkflowPlugin, Workflows } from '../src/index.js';
 export const tick = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const DEFAULT_THREADS = [
-  { thread_id: 't1', title: 'First thread', unread: false },
-  { thread_id: 't2', title: 'Second thread', unread: true },
+  { thread_id: 't1', title: 'First thread', has_new: false },
+  { thread_id: 't2', title: 'Second thread', has_new: true },
 ];
 
 export const defaultThreadDetail = id => ({
@@ -27,6 +27,7 @@ export const answersOf = question_ids => question_ids.map(question_id => ({
 export function createClient({
   threads = DEFAULT_THREADS,
   threadDetail = defaultThreadDetail,
+  threadDetailError, // when set, direct getThread() calls fail with it
   answers = question_ids => answersOf(question_ids), // the response is a bare array
 } = {}) {
   threads = threads.map(thread => ({ ...thread })); // a mutable local copy
@@ -40,6 +41,9 @@ export function createClient({
     },
     async getThread(threadId) {
       calls.push(`GET threads/${threadId}`);
+      if (threadDetailError) {
+        throw threadDetailError;
+      }
       return createdThreads.get(threadId) || threadDetail(threadId);
     },
     async _run(name, payload, options = {}) {
@@ -81,12 +85,13 @@ export function createClient({
           calls.push(`POST questions ${JSON.stringify(payload)}`);
           const question_id = `q-new-${++questionSeq}`;
           if (!payload.parent_question_id) {
-            // a root question creates a new thread server-side
+            // a root question creates a new thread server-side, whose id is
+            // the id of that first question
             const record = {
-              thread_id: `t-${question_id}`,
+              thread_id: question_id,
               title: payload.question,
-              updated_at: `2026-07-28T00:00:${String(questionSeq).padStart(2, '0')}`,
-              unread: false,
+              time: `2026-07-28T00:00:${String(questionSeq).padStart(2, '0')}`,
+              has_new: false,
             };
             threads.push(record);
             createdThreads.set(record.thread_id, { ...record, questions_ids: [question_id] });
@@ -99,11 +104,7 @@ export function createClient({
             sources: [],
           };
         },
-        async answers(payload) {
-          calls.push(`POST answers ${JSON.stringify(payload.question_ids)}`);
-          return answers(payload.question_ids);
-        },
-        // for custom api names (useAnswers overrides), via the generic source path
+        // the answers endpoint (and useAnswers overrides) via the generic source path
         async _run(name, payload) {
           calls.push(`POST ask/${name} ${JSON.stringify(payload)}`);
           return answers(payload.question_ids);

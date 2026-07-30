@@ -64,6 +64,7 @@
 </style>
 <div class="miso-history-demo">
   <miso-history>
+    <miso-new-chat></miso-new-chat>
     <miso-threads></miso-threads>
   </miso-history>
   <miso-conversation>

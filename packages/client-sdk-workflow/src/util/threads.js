@@ -8,8 +8,34 @@ export function getThreadId(thread) {
   return thread && thread.thread_id;
 }
 
+/**
+ * Local id of a thread being created: a thread has no server identity until
+ * its first question is posted, so its placeholder record carries a
+ * `placeholder_id` in place of a thread id.
+ */
+export function getPlaceholderId(thread) {
+  return thread && thread.placeholder_id;
+}
+
+/**
+ * Identity of a thread item as selection and views see it: the thread id, or
+ * the placeholder id while the thread has none. Only a placeholder record
+ * lacks a thread id, so the two never compete.
+ */
+export function getThreadItemId(thread) {
+  return getThreadId(thread) || getPlaceholderId(thread);
+}
+
 export function isThreadUnread(thread) {
-  return !!thread && (thread.unread === true || thread.read === false);
+  return !!thread && thread.has_new === true;
+}
+
+/**
+ * Time of the latest activity on a thread. Responses carrying the legacy
+ * `time` field are adapted at the source (fallbackThreadFields).
+ */
+export function getThreadTime(thread) {
+  return thread && thread.updated_at;
 }
 
 /**
@@ -28,11 +54,11 @@ export function normalizeThreadsValue(value) {
 
 /**
  * Sort threads by latest activity (updated_at, descending). The sort is
- * stable, so records without timestamps keep their relative order, after
- * the timestamped ones.
+ * stable, so records without timestamps keep their relative order, after the
+ * timestamped ones.
  */
 export function sortThreadsByLatest(threads = []) {
-  return [...threads].sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
+  return [...threads].sort((a, b) => String(getThreadTime(b) || '').localeCompare(String(getThreadTime(a) || '')));
 }
 
 /**

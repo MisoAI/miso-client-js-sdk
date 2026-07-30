@@ -1,26 +1,11 @@
 import { getThreadId, isThreadUnread } from '@miso.ai/client-sdk-workflow';
-import { LAYOUT_TYPE, STATUS } from '../../constants.js';
+import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 import confirm from '../../util/confirm.js';
-import { getIcon } from '../../asset/svgs.js';
 
 const TYPE = LAYOUT_TYPE.THREADS;
 const DEFAULT_CLASSNAME = 'miso-threads';
-
-// the header (with the new chat button) renders even when the list is empty
-function ready(layout, state) {
-  return layout.templates.body(layout, state, layout._getItems(state) || []);
-}
-
-function body(layout, state, values) {
-  const { templates } = layout;
-  return `${(templates.newChatButton || newChatButton)(layout, state)}${templates.list(layout, state, values)}`;
-}
-
-function newChatButton({ className }) {
-  return `<button type="button" class="${className}__new-chat" data-role="new-chat">${getIcon('plus')}<span>New chat</span></button>`;
-}
 
 /**
  * The thread list of the chat history interface: a list of `thread` items.
@@ -50,7 +35,7 @@ export default class ThreadsLayout extends CollectionLayout {
   constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
     super({
       className,
-      templates: { [STATUS.READY]: ready, body, newChatButton, ...templates },
+      templates: { ...templates },
       ...options,
     });
   }
@@ -123,12 +108,6 @@ export default class ThreadsLayout extends CollectionLayout {
   // a click on a thread item means selection — a navigation action, not a
   // content-engagement click: emit a select view event and skip click tracking
   _onClick(event) {
-    if (event.target.closest(`[data-role="new-chat"]`)) {
-      this._closeMenus();
-      const { session } = this._view._state;
-      this._view._emit('new', { session, domEvent: event });
-      return;
-    }
     if (event.target.closest(`[data-role="thread-menu-button"]`)) {
       this._toggleMenu(event.target.closest(`[data-role="item"]`));
       return;

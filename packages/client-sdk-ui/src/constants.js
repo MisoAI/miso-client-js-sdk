@@ -38,6 +38,7 @@ export const LAYOUT_TYPE = Object.freeze({
   FACETS: 'facets',
   SELECT: 'select',
   MORE_BUTTON: 'more-button',
+  BUTTON: 'button',
   FEEDBACK: 'feedback',
   TEXT: 'text',
   TYPEWRITER: 'typewriter',

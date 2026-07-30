@@ -135,7 +135,7 @@ test('lorem: opening an unread thread marks it as read', async () => {
   history.start();
   await tick();
 
-  const unread = history.threads.filter(t => t.unread);
+  const unread = history.threads.filter(t => t.has_new);
   assert.ok(unread.length > 0, 'expect some generated threads to be unread');
   const threadId = unread[0].thread_id;
 
@@ -143,11 +143,11 @@ test('lorem: opening an unread thread marks it as read', async () => {
   await tick();
   assert.is(conversation.threadId, threadId);
   assert.ok(conversation.messages.length > 0);
-  assert.is(history.getThread(threadId).unread, false);
+  assert.is(history.getThread(threadId).has_new, false);
   // persisted on the (lorem) server
   history.refresh();
   await tick();
-  assert.is(history.getThread(threadId).unread, false);
+  assert.is(history.getThread(threadId).has_new, false);
 });
 
 test('lorem: a follow-up question posts and lands in the conversation', async () => {

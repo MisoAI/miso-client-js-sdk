@@ -27,6 +27,7 @@ export const ROLE = Object.freeze({
   SORT: 'sort',
   ERROR: 'error',
   THREADS: 'threads',
+  NEW_CHAT: 'new_chat',
   MESSAGES: 'messages',
 });
 
