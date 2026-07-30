@@ -45,6 +45,7 @@ export function thread(layout, state, data) {
 export function threadMenuBlock({ className }) {
   return `<button type="button" class="${className}__menu-button" data-role="thread-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
     `<div class="${className}__menu" data-role="thread-menu" role="menu" hidden>` +
+    `<button type="button" class="${className}__menu-item" data-role="thread-rename" role="menuitem">Rename</button>` +
     `<button type="button" class="${className}__menu-item ${className}__menu-item--danger" data-role="thread-delete" role="menuitem">Delete</button>` +
     `</div>`;
 }

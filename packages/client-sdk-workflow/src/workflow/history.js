@@ -56,6 +56,7 @@ export default class History extends Workflow {
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
       this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
+      this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadRename(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadDelete(event)),
       this._views.on(ROLE.NEW_CHAT, 'submit', () => this._onViewNetChatSubmit()),
     ];
@@ -169,6 +170,11 @@ export default class History extends Workflow {
   _onViewThreadSelect({ value: thread }) {
     const threadId = getThreadId(thread);
     threadId && this.select(threadId);
+  }
+
+  _onViewThreadRename({ value: thread, title }) {
+    const threadId = getThreadId(thread);
+    threadId && title && this.renameThread(threadId, title);
   }
 
   _onViewThreadDelete({ value: thread }) {

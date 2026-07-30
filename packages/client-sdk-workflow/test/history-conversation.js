@@ -116,6 +116,19 @@ test('renameThread: patches both panels, keeping merged messages', async () => {
   assert.equal(conversation.messages, answersOf(['q1', 'q2'])); // not reset by the patch
 });
 
+test('rename view event: renames the thread', async () => {
+  const { client, calls } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+  history._onViewThreadRename({ value: history.getThread('t1'), title: 'Renamed' });
+  await tick();
+
+  assert.ok(calls.includes('PUT threads/t1 {"title":"Renamed"}'));
+  assert.is(history.getThread('t1').title, 'Renamed');
+});
+
 test('deleteThread: removes from the list and resets the open panel', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
@@ -292,8 +305,9 @@ test('a placeholder item is not addressed as a thread', async () => {
   const apiCallsBefore = calls.length;
 
   // the view actions read the thread id, which a placeholder has none of, so
-  // neither reaches the API
+  // none reaches the API
   history._onViewThreadDelete({ value: placeholder });
+  history._onViewThreadRename({ value: placeholder, title: 'Renamed' });
   history._onViewThreadSelect({ value: placeholder });
   assert.equal(calls.slice(apiCallsBefore), []);
 
@@ -329,7 +343,7 @@ test('conversation: a created thread settles locally if its record cannot be fet
   }
 });
 
-test('history: startNew clears the selection and resets the conversation', async () => {
+test('history: the new chat action clears the selection and resets the conversation', async () => {
   const { client } = createClient();
   const { history, conversation } = client.workflows;
 
@@ -339,14 +353,14 @@ test('history: startNew clears the selection and resets the conversation', async
   await tick();
   assert.is(conversation.threadId, 't2');
 
-  history.startNew();
+  history._onViewNetChatSubmit();
   assert.is(history.selectedThreadId, undefined);
   assert.is(conversation.threadId, undefined);
   assert.is(conversation.thread.placeholder, true);
   assert.equal(conversation.messages, []);
 });
 
-test('history: startNew with nothing selected leaves both panels alone', async () => {
+test('history: the new chat action with nothing selected leaves both panels alone', async () => {
   const { client } = createClient();
   const { history, conversation } = client.workflows;
 
@@ -356,7 +370,7 @@ test('history: startNew with nothing selected leaves both panels alone', async (
   const { thread } = conversation;
   const listData = history.states.data;
 
-  history.startNew(); // nothing is selected, the panel is on a new thread
+  history._onViewNetChatSubmit(); // nothing is selected, the panel is on a new thread
   assert.is(history.states.data, listData); // no selection to clear, no re-commit
   assert.is(conversation.session, session); // no new session, no re-render
   assert.is(conversation.thread, thread);
@@ -365,7 +379,7 @@ test('history: startNew with nothing selected leaves both panels alone', async (
 
   // but a new thread with a question asked does reset
   conversation.send('A brand new question');
-  history.startNew();
+  history._onViewNetChatSubmit();
   assert.is.not(conversation.session, session);
   assert.is(conversation.thread.placeholder, true);
   assert.equal(conversation.messages, []);

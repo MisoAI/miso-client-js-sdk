@@ -1,4 +1,4 @@
-// the shared confirmation dialog (MisoClient.ui.confirm)
+// the shared modal dialogs (MisoClient.ui.confirm / MisoClient.ui.prompt)
 
 :root {
   // color for destructive actions (confirm dialog, context menus)
@@ -7,64 +7,87 @@
   --miso-danger-color-dark: #a31f2d;
 }
 
-.miso-confirm {
-  min-width: 20rem;
-  max-width: 28rem;
-  padding: 1.25rem 1.5rem;
-  border: none;
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  color: var(--miso-text-color);
-
-  &, * {
-    box-sizing: border-box;
-  }
-  &::backdrop {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-
-  .miso-confirm__title {
-    margin-bottom: 0.75rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-  .miso-confirm__message {
-    margin-bottom: 1.25rem;
-    line-height: 1.5;
-    color: var(--miso-text-color-gray);
-    overflow-wrap: break-word;
-  }
-  .miso-confirm__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-  }
-  .miso-confirm__button {
-    padding: 0.375rem 1rem;
-    border: 1px solid var(--miso-border-color-light);
-    border-radius: 0.5rem;
-    background-color: #fff;
+// the common modal look, applied per dialog class name
+@mixin miso-modal($name) {
+  .#{$name} {
+    min-width: 20rem;
+    max-width: 28rem;
+    padding: 1.25rem 1.5rem;
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     color: var(--miso-text-color);
-    cursor: pointer;
-    transition: background-color var(--miso-transition), border-color var(--miso-transition);
 
-    &:hover {
-      border-color: var(--miso-border-color-medium);
+    &, * {
+      box-sizing: border-box;
     }
-  }
-  .miso-confirm__confirm-button {
-    border-color: var(--miso-border-color-medium);
-    font-weight: 500;
+    &::backdrop {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
 
-    &--danger {
-      border-color: var(--miso-danger-color);
-      background-color: var(--miso-danger-color);
-      color: #fff;
+    .#{$name}__title {
+      margin-bottom: 0.75rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    .#{$name}__message {
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+      color: var(--miso-text-color-gray);
+      overflow-wrap: break-word;
+    }
+    .#{$name}__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+    .#{$name}__button {
+      padding: 0.375rem 1rem;
+      border: 1px solid var(--miso-border-color-light);
+      border-radius: 0.5rem;
+      background-color: #fff;
+      color: var(--miso-text-color);
+      cursor: pointer;
+      transition: background-color var(--miso-transition), border-color var(--miso-transition);
 
       &:hover {
-        border-color: var(--miso-danger-color-dark);
-        background-color: var(--miso-danger-color-dark);
+        border-color: var(--miso-border-color-medium);
       }
+    }
+    .#{$name}__confirm-button {
+      border-color: var(--miso-border-color-medium);
+      font-weight: 500;
+
+      &--danger {
+        border-color: var(--miso-danger-color);
+        background-color: var(--miso-danger-color);
+        color: #fff;
+
+        &:hover {
+          border-color: var(--miso-danger-color-dark);
+          background-color: var(--miso-danger-color-dark);
+        }
+      }
+    }
+  }
+}
+
+@include miso-modal(miso-confirm);
+@include miso-modal(miso-prompt);
+
+.miso-prompt {
+  .miso-prompt__input {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--miso-border-color-medium);
+    border-radius: 0.5rem;
+    font: inherit;
+    color: var(--miso-text-color);
+
+    &:focus {
+      outline: none;
+      border-color: var(--miso-text-color-gray);
     }
   }
 }

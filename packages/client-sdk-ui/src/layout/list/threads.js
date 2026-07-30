@@ -3,6 +3,7 @@ import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 import confirm from '../../util/confirm.js';
+import prompt from '../../util/prompt.js';
 
 const TYPE = LAYOUT_TYPE.THREADS;
 const DEFAULT_CLASSNAME = 'miso-threads';
@@ -18,9 +19,10 @@ const DEFAULT_CLASSNAME = 'miso-threads';
  * (selected, unread) are applied by `_syncSelection` after each render,
  * reading the fresh values off the item bindings — no item re-render needed.
  *
- * Each item carries a context menu (vertical dots) with thread actions;
- * `delete` asks for confirmation (the shared confirm dialog util), then
- * emits a delete view event for the history workflow to act on.
+ * Each item carries a context menu (vertical dots) with thread actions,
+ * each asking through a shared modal dialog util, then emitting a view event
+ * for the history workflow to act on: `rename` (a prompt dialog pre-filled
+ * with the current title) and `delete` (a confirm dialog).
  */
 export default class ThreadsLayout extends CollectionLayout {
 
@@ -112,6 +114,12 @@ export default class ThreadsLayout extends CollectionLayout {
       this._toggleMenu(event.target.closest(`[data-role="item"]`));
       return;
     }
+    if (event.target.closest(`[data-role="thread-rename"]`)) {
+      this._closeMenus();
+      const binding = this._bindings.get(event.target.closest(`[data-role="item"]`));
+      binding && this._requestRename(binding);
+      return;
+    }
     if (event.target.closest(`[data-role="thread-delete"]`)) {
       this._closeMenus();
       const binding = this._bindings.get(event.target.closest(`[data-role="item"]`));
@@ -154,6 +162,22 @@ export default class ThreadsLayout extends CollectionLayout {
     for (const menu of element.querySelectorAll(`[data-role="thread-menu"]:not([hidden])`)) {
       menu.hidden = true;
     }
+  }
+
+  // rename //
+  async _requestRename(binding) {
+    const { value, element } = binding;
+    const title = await prompt({
+      title: 'Rename thread',
+      value: value.title || '',
+      placeholder: 'Thread name',
+      confirmText: 'Rename',
+    });
+    if (!title || title === value.title) {
+      return; // cancelled, cleared, or unchanged
+    }
+    const { session } = this._view._state;
+    this._view._emit('rename', { session, value, element, title });
   }
 
   // delete //

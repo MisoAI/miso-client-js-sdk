@@ -77,7 +77,9 @@ export default class DebugPlugin {
 
     bulk && args.push(`(bulk ${bulk.bulkId})`);
 
-    args.push(`POST ${pathname}`);
+    // the api helpers' fetch defaults to POST when no method is specified
+    const { method = 'POST' } = data.options || {};
+    args.push(`${method} ${pathname}`);
 
     if (groupName === 'interactions') {
       // TODO: handle multiple interactions
