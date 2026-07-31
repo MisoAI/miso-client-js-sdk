@@ -5,6 +5,7 @@ import * as helpers from './helpers/index.js';
 const DEFAULT_API_KEY = __DEFAULT_API_KEY__;
 const DEFAULT_ASK_API_KEY = __DEFAULT_ASK_API_KEY__;
 //const DEFAULT_USER_ID = __DEFAULT_USER_ID__;
+const DEFAULT_AUTH = __DEFAULT_AUTH__;
 const ID = 'demo';
 
 export default class DemoPlugin {
@@ -39,6 +40,7 @@ export default class DemoPlugin {
 
   install(MisoClient) {
     window.helpers = helpers;
+    window.DEFAULT_AUTH = DEFAULT_AUTH;
 
     const selection = this._selection;
 

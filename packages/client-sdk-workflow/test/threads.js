@@ -40,7 +40,6 @@ test('normalizeThreadsValue', () => {
   const threads = [{ thread_id: 't1' }];
   assert.equal(normalizeThreadsValue(threads), { threads });
   assert.equal(normalizeThreadsValue({ threads }), { threads });
-  assert.equal(normalizeThreadsValue({ rows: threads }), { rows: threads, threads });
   assert.equal(normalizeThreadsValue({}), { threads: [] });
   assert.is(normalizeThreadsValue(undefined), undefined);
 });

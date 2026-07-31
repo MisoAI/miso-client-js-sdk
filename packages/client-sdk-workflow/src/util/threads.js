@@ -48,7 +48,7 @@ export function normalizeThreadsValue(value) {
   if (Array.isArray(value)) {
     return { threads: value };
   }
-  const threads = value.threads || value.rows || [];
+  const threads = value.threads || [];
   return { ...value, threads };
 }
 

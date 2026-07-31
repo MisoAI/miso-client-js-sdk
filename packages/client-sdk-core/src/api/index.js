@@ -4,5 +4,6 @@ export { default as ApiHelpers } from './helpers.js';
 export { default as Interactions } from './interactions.js';
 export { default as Ask } from './ask.js';
 export { default as UserHistory } from './history.js';
+export { default as UserHistoryV0 } from './history.0.js';
 export { default as Search } from './search.js';
 export { default as Recommendation } from './recommendation.js';

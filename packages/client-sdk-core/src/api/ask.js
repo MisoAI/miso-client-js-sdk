@@ -1,6 +1,6 @@
 import { API, defineValues, trimObj } from '@miso.ai/commons';
 import ApiBase from './base.js';
-import UserHistory from './history.js';
+import UserHistoryV0 from './history.0.js';
 import { IdBasedIterableApiStub } from './iterable.js';
 
 const { GROUP, NAME } = API;
@@ -9,7 +9,9 @@ export default class Ask extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.ASK);
-    this.userHistory = new UserHistory(api);
+    // the deployed (v0) user history API; switch back to UserHistory
+    // (history.js) when the resource-style API ships
+    this.userHistory = new UserHistoryV0(api);
   }
 
   async questions(payload, options = {}) {

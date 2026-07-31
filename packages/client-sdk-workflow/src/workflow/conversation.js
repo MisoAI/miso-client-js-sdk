@@ -56,6 +56,7 @@ export default class Conversation extends Workflow {
     super._initProperties(args);
     this._threadId = undefined;
     this._placeholderId = undefined;
+    this._threadRecord = undefined;
   }
 
   _initSession(args) {
@@ -102,9 +103,11 @@ export default class Conversation extends Workflow {
   // lifecycle //
   /**
    * Load a thread into the conversation panel. Loading the current thread
-   * again is a no-op unless `force` is set.
+   * again is a no-op unless `force` is set. An optional `record` — the
+   * thread's list record, passed along by the history selection — fills in
+   * the thread metadata the head response may not carry.
    */
-  load(threadId, { force = false } = {}) {
+  load(threadId, { force = false, record } = {}) {
     if (!threadId) {
       throw new Error(`threadId is required in load() call`);
     }
@@ -113,6 +116,7 @@ export default class Conversation extends Workflow {
     }
     this._threadId = threadId;
     this._placeholderId = undefined;
+    this._threadRecord = record;
     this.restart();
     this._request({
       name: `${API.NAME.THREADS}/${threadId}`,
@@ -142,6 +146,7 @@ export default class Conversation extends Workflow {
     }
     this._threadId = undefined;
     this._placeholderId = undefined;
+    this._threadRecord = undefined;
     this.restart();
     this._loadPlaceholder();
     return this;
@@ -221,7 +226,7 @@ export default class Conversation extends Workflow {
     if (getPlaceholderId(thread) || threadId === this._placeholderId) {
       return; // a thread being created has nothing to load; it is on display
     }
-    this.load(threadId);
+    this.load(threadId, { record: thread });
   }
 
   _onThreadUpdated({ threadId, changes }) {
@@ -268,7 +273,18 @@ export default class Conversation extends Workflow {
     if (!data.value || isAnswersRequestData(data) || isFollowUpRequestData(data)) {
       return data; // answers/follow-up responses are merged later, in _updateDataInHub
     }
-    return { ...data, value: normalizeThreadValue(data.value) };
+    return { ...data, value: this._mergeThreadRecord(normalizeThreadValue(data.value)) };
+  }
+
+  // the list record of the loaded thread (carried by the selection) fills in
+  // the thread metadata (title, ...) the head response may not carry — the
+  // v0 API returns question ids only
+  _mergeThreadRecord(value) {
+    const record = this._threadRecord;
+    if (!record || !value || !value.thread || getThreadId(record) !== getThreadId(value.thread)) {
+      return value;
+    }
+    return { ...value, thread: { ...record, ...value.thread } };
   }
 
   _updateDataInHub(data, oldData) {
@@ -333,7 +349,11 @@ export default class Conversation extends Workflow {
   }
 
   async _resolveNewThread(session, placeholderId, placeholder, threadId) {
-    const thread = await this._fetchThread(threadId) || settlePlaceholder(placeholder, threadId);
+    // the fetched record over the locally settled one: the server record may
+    // carry no metadata (the v0 API returns question ids only) or the fetch
+    // may fail — the local fields (title, updated_at) stand in either way,
+    // until the next thread list load
+    const thread = Object.freeze({ ...settlePlaceholder(placeholder, threadId), ...await this._fetchThread(threadId) });
     const data = this._hub.states[fields.data()];
     if (!data || data.session !== session) {
       return; // the session has moved on
@@ -413,11 +433,11 @@ export default class Conversation extends Workflow {
 makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS, WORKFLOW_CONFIGURABLE.FOLLOW_UP]);
 
 // helpers //
-// the local stand-in for a created thread whose record could not be fetched:
-// the placeholder, keyed by the thread id it is known to have
+// the local base record of a created thread: the placeholder, keyed by the
+// thread id it is known to have — the fetched server record merges on top
 function settlePlaceholder(placeholder, threadId) {
   const { placeholder: _placeholder, placeholder_id: _placeholderId, ...thread } = placeholder;
-  return Object.freeze({ ...thread, thread_id: threadId });
+  return { ...thread, thread_id: threadId };
 }
 
 function isAnswersRequestData(data) {

@@ -72,6 +72,8 @@ sections:
   pages:
   - title: Lorem
     path: /history/lorem
+  - title: Production
+    path: /history/production
 - title: Hybrid Search
   path: /hybrid-search
   pages:
