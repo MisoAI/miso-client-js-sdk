@@ -63,6 +63,7 @@ export default class DataActor {
           for await (value of response) {
             // A new session invalidates ongoing data fetch for the old session, terminating the loop
             if (!isCurrentSession(this._hub, session)) {
+              this._emitExpiredResponse({ session, request, value });
               break;
             }
             this._emitResponse({ session, request, value });
@@ -79,11 +80,22 @@ export default class DataActor {
 
   _emitResponseWithSessionCheck(response) {
     // A new session invalidates ongoing data fetch
-    isCurrentSession(this._hub, response.session) && this._emitResponse(response);
+    if (isCurrentSession(this._hub, response.session)) {
+      this._emitResponse(response);
+    } else {
+      this._emitExpiredResponse(response);
+    }
   }
 
   _emitResponse(response) {
     this._hub.update(fields.response(), response);
+  }
+
+  // an expired response never enters the data flow, but it is announced (as
+  // a trigger, not persisted) for the workflow to salvage what it can — e.g.
+  // the id of a thread whose creating session was switched away from
+  _emitExpiredResponse(response) {
+    this._hub.trigger(fields.expiredResponse(), response);
   }
 
   _error(error) {

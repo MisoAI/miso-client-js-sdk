@@ -140,7 +140,9 @@ class ClientContext {
   // helpers //
   _set(key, value) {
     this._props[key] = value;
-    this._plugin._events.emit('set', `${key} = '${value}'`);
+    // never emit credentials: the event may end up in the debug console
+    const displayed = key === 'auth' && value ? '****' : value;
+    this._plugin._events.emit('set', `${key} = '${displayed}'`);
   }
 
   _requireString(key, value) {

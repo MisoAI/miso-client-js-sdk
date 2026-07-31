@@ -183,6 +183,47 @@ test('lorem: a follow-up question posts and lands in the conversation', async ()
   assert.ok(last.answer.length > 0);
 });
 
+test('lorem: switching away mid-creation still resolves the new thread, without errors', async () => {
+  const client = setup();
+  await ask(client, 'What is miso soup?');
+
+  const { history, conversation } = client.workflows;
+  history.start();
+  await tick();
+  const existingId = history.threads[0].thread_id;
+
+  // capture console errors: the aborted posting stream must fail silently
+  const errors = [];
+  const consoleError = console.error;
+  console.error = (...args) => errors.push(args);
+  try {
+    // post the first question of a new thread, and switch away immediately
+    conversation.send('A brand new question');
+    history.select(existingId);
+
+    // the created thread is scavenged from the expired response
+    const deadline = Date.now() + 10000;
+    const created = () => history.threads.find(t => t.thread_id && t.title === 'A brand new question');
+    while (!created() || history.threads.some(t => t.placeholder)) {
+      if (Date.now() > deadline) {
+        throw new Error('timed out waiting for the created thread to resolve');
+      }
+      await tick(50);
+    }
+    assert.is(history.selectedThreadId, existingId); // the switch is respected
+    assert.is(conversation.threadId, existingId);
+    assert.equal(errors, []);
+
+    // ... and can be switched to
+    history.select(created().thread_id);
+    await tick();
+    assert.is(conversation.threadId, created().thread_id);
+    assert.ok(conversation.messages[0].question.startsWith('A brand new question'));
+  } finally {
+    console.error = consoleError;
+  }
+});
+
 test('lorem: deleteAllThreads clears the history', async () => {
   const client = setup();
   await ask(client, 'What is miso soup?');

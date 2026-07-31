@@ -320,6 +320,80 @@ test('a placeholder item is not addressed as a thread', async () => {
   assert.is(conversation.threadId, 'q-new-1');
 });
 
+test('switching away mid-creation: the thread is scavenged from the expired response', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  conversation.send('A brand new question');
+  // switch away before the question response arrives; the response of the
+  // expired session still resolves the placeholder item
+  history.select('t1');
+  await tick(30);
+
+  assert.not.ok(history.threads.some(t => t.placeholder));
+  assert.is(calls.filter(c => c === 'GET threads').length, 1); // no list reload
+  const created = history.threads.find(t => getThreadId(t) === 'q-new-1');
+  assert.is(created.title, 'A brand new question');
+  assert.is(history.selectedThreadId, 't1'); // the switch is respected
+  assert.is(conversation.threadId, 't1');
+
+  // ... so the user can switch (back) to the created thread
+  history.select('q-new-1');
+  await tick(30);
+  assert.is(conversation.threadId, 'q-new-1');
+  assert.is(conversation.messages.length, 1);
+});
+
+test('switching to new chat mid-creation: the thread is scavenged all the same', async () => {
+  const { client } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  conversation.send('A brand new question');
+  history._onViewNetChatSubmit();
+  await tick(30);
+
+  assert.not.ok(history.threads.some(t => t.placeholder));
+  assert.ok(history.threads.some(t => getThreadId(t) === 'q-new-1'));
+  assert.is(history.selectedThreadId, undefined);
+  assert.is(conversation.thread.placeholder, true); // new-thread mode
+  assert.equal(conversation.messages, []);
+
+  // the scavenged thread is selectable
+  history.select('q-new-1');
+  await tick(30);
+  assert.is(conversation.threadId, 'q-new-1');
+});
+
+test('switching away mid-resolution: the placeholder still settles', async () => {
+  const { client } = createClient();
+  const { history, conversation } = client.workflows;
+  // hold the created-thread record fetch, so the switch happens mid-resolution
+  const api = client.api.ask.userHistory;
+  const getThread = api.getThread.bind(api);
+  let release;
+  api.getThread = id => new Promise(resolve => { release = () => resolve(getThread(id)); });
+
+  history.start();
+  await tick();
+  conversation.send('A brand new question');
+  await tick(); // the response arrives; the record fetch hangs
+  history.select('t1');
+  await tick();
+  release();
+  await tick();
+
+  // the resolution is announced even though the panel has moved on
+  assert.not.ok(history.threads.some(t => t.placeholder));
+  const created = history.threads.find(t => getThreadId(t) === 'q-new-1');
+  assert.is(created.title, 'A brand new question');
+  assert.is(history.selectedThreadId, 't1'); // the switch is respected
+  assert.is(conversation.threadId, 't1');
+});
+
 test('conversation: a created thread settles locally if its record cannot be fetched', async () => {
   const { client } = createClient({ threadDetailError: new Error('thread not found') });
   const { history, conversation } = client.workflows;

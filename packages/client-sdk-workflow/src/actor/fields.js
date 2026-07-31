@@ -22,6 +22,11 @@ export function response() {
   return 'response';
 }
 
+// a response arriving after its session expired (trigger-only, not persisted)
+export function expiredResponse() {
+  return 'expired-response';
+}
+
 export function data() {
   return 'data';
 }

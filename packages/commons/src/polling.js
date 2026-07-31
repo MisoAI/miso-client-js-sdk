@@ -2,15 +2,18 @@ import { isNullLike } from './objects.js';
 import ValueBuffer from './value-buffer.js';
 
 export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onResponse, signal } = {}) {
+  const buffer = new ValueBuffer();
   if (signal && signal.aborted) {
-    return [];
+    // already aborted -> an ended, empty stream. (Not a bare array, which is
+    // not async-iterable.)
+    buffer.abort(signal.reason);
+    return buffer;
   }
   let consecutiveErrorCount = 0, intervalId, done = false, currResRevision;
   function clear() {
     intervalId && clearInterval(intervalId);
     done = true;
   }
-  const buffer = new ValueBuffer();
   intervalId = setInterval(async () => {
     let response, finished, revision;
     try {

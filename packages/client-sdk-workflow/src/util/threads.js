@@ -158,8 +158,9 @@ export function mergeFollowUpDataFromResponse(oldData, newData) {
   const last = messages.length ? messages[messages.length - 1] : {};
   messages[Math.max(messages.length - 1, 0)] = { ...last, ...newData.value };
   // restore the head request; in new-thread mode there is none, so strip the
-  // request type marker, lest local patches re-enter this merge
-  const { type: _type, ...typelessRequest } = newData.request || {};
+  // request type marker (and the carried placeholder record), lest local
+  // patches re-enter this merge
+  const { type: _type, placeholder: _placeholder, ...typelessRequest } = newData.request || {};
   return {
     ...newData,
     request: (oldData && oldData.request) || typelessRequest,

@@ -74,6 +74,7 @@ export default class Conversation extends Workflow {
       this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
       this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._hub.on(fields.query(), args => this._onQuery(args)),
+      this._hub.on(fields.expiredResponse(), response => this._onExpiredResponse(response)),
     ];
   }
 
@@ -180,11 +181,14 @@ export default class Conversation extends Workflow {
     this._bus.emit('new', Object.freeze({ placeholderId: this._placeholderId, thread }));
     // optimistic: the placeholder thread record and the first question bubble
     this.updateData({ ...data, value: { ...data.value, thread, messages: [{ question, live: true }] } });
-    // post as a root question (no parent)
+    // post as a root question (no parent); the request carries the
+    // placeholder record, so the created thread can be scavenged out of the
+    // response even if the user leaves the panel before it arrives
     const { api } = this._options.resolved.followUp;
     this._request(mergeApiOptions(api, {
       payload: { question },
       type: REQUEST_TYPE.FOLLOW_UP,
+      placeholder: thread,
     }));
     return this;
   }
@@ -348,19 +352,45 @@ export default class Conversation extends Workflow {
     this._resolveNewThread(data.session, placeholderId, thread, questionId).catch(error => this._error(error));
   }
 
+  /**
+   * Scavenge the created thread out of a response arriving after its session
+   * expired: when the user leaves the panel mid-creation, the posting
+   * request keeps carrying its placeholder record, and the response still
+   * tells the question id — the thread id, by contract. The placeholder item
+   * in the history list resolves into a real, selectable record all the
+   * same; only the panel (showing something else by now) is left alone.
+   */
+  _onExpiredResponse({ session, request, value }) {
+    const placeholder = request && request.placeholder;
+    const questionId = value && getQuestionId(value);
+    if (!placeholder || !questionId) {
+      return; // not a thread-creating request, or no response to salvage
+    }
+    const context = this._getSessionContext(session);
+    if (context.threadResolveRequested) {
+      return; // already resolving (the response arrived before the switch)
+    }
+    context.threadResolveRequested = true;
+    this._resolveNewThread(session, getPlaceholderId(placeholder), placeholder, questionId).catch(error => this._error(error));
+  }
+
   async _resolveNewThread(session, placeholderId, placeholder, threadId) {
     // the fetched record over the locally settled one: the server record may
     // carry no metadata (the v0 API returns question ids only) or the fetch
     // may fail — the local fields (title, updated_at) stand in either way,
     // until the next thread list load
     const thread = Object.freeze({ ...settlePlaceholder(placeholder, threadId), ...await this._fetchThread(threadId) });
+    // the thread is created server-side regardless of what the panel shows
+    // by now: announce the resolution even if the user has switched away, so
+    // the history list settles its placeholder item into a real, selectable
+    // record either way
+    this._bus.emit('resolve', Object.freeze({ placeholderId, thread }));
     const data = this._hub.states[fields.data()];
     if (!data || data.session !== session) {
-      return; // the session has moved on
+      return; // the session has moved on; leave the panel alone
     }
     this._placeholderId = undefined; // the thread stands on its own id now
     this.updateData({ ...data, value: { ...data.value, thread } });
-    this._bus.emit('resolve', Object.freeze({ placeholderId, thread }));
   }
 
   // the record of the just-created thread. The call bypasses the source, so
