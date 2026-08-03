@@ -32,11 +32,11 @@ export default class UserHistoryV0 extends UserHistory {
  */
 function translate(apiName, payload, { method = 'POST' } = {}) {
   switch (apiName) {
-    case 'threads': // GET threads -> POST <group root>
-      return { name: '', payload: { ...payload }, adapt: adaptThreadEntries };
+    case 'threads': // GET threads -> POST list
+      return { name: 'list', payload: { ...payload }, adapt: adaptThreadList };
     case 'threads/_delete': {
-      const { thread_ids: ids = [], ...rest } = payload || {};
-      return { name: 'delete', payload: { ...rest, ids } };
+      const { thread_ids: question_ids = [], ...rest } = payload || {};
+      return { name: 'delete', payload: { ...rest, question_ids } };
     }
     case 'threads/_delete_all':
       return { name: 'delete_all', payload: { ...payload } };
@@ -47,14 +47,14 @@ function translate(apiName, payload, { method = 'POST' } = {}) {
   }
   const segments = apiName.split('/');
   if (segments[0] === 'threads' && segments.length === 2) {
-    const question_id = segments[1]; // the thread id is its root question id
+    const thread_id = segments[1]; // the thread id is its root question id
     switch (method) {
       case 'GET': // GET threads/{id} -> POST thread
-        return { name: 'thread', payload: { ...payload, question_id }, adapt: value => adaptThreadDetail(question_id, value) };
+        return { name: 'thread', payload: { ...payload, thread_id }, adapt: value => adaptThreadDetail(thread_id, value) };
       case 'PUT': // PUT threads/{id} { title } -> POST thread/rename
-        return { name: 'thread/rename', payload: { ...payload, question_id } };
+        return { name: 'thread/rename', payload: { ...payload, thread_id } };
       case 'DELETE': // DELETE threads/{id} -> POST delete
-        return { name: 'delete', payload: { ids: [question_id] } };
+        return { name: 'delete', payload: { question_ids: [thread_id] } };
     }
   }
   if (segments[0] === 'threads' && segments.length === 3 && segments[2] === 'read') {
@@ -63,38 +63,49 @@ function translate(apiName, payload, { method = 'POST' } = {}) {
   throw new Error(`Unknown user history API: ${method} ${apiName}`);
 }
 
-function adaptThreadEntries(value) {
-  return Array.isArray(value) ? value.map(adaptThreadEntry) : value;
+/**
+ * A v0 list response nests the entries under `threads`, alongside the paging
+ * fields (has_more, start, rows), which pass through untouched.
+ */
+function adaptThreadList(value) {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map(adaptThreadEntry);
+  }
+  const { threads = [], ...rest } = value;
+  return { ...rest, threads: threads.map(adaptThreadEntry) };
 }
 
 /**
- * A v0 thread entry carries (id, question_id, question, time); the
- * resource-style records read (thread_id, title, updated_at). A thread is
- * keyed by its root question, so question_id serves as the thread id.
+ * A v0 thread entry carries (id, time, question_id, title, subscribed,
+ * has_new); the resource-style records read (thread_id, title, updated_at).
+ * A thread is keyed by its root question, so question_id serves as the
+ * thread id.
  */
 function adaptThreadEntry(entry) {
   if (!entry || typeof entry !== 'object') {
     return entry;
   }
-  const { id, question_id = id, question, time, ...rest } = entry;
+  const { id, question_id = id, time, ...rest } = entry;
   return {
     ...rest,
     thread_id: question_id,
     question_id,
-    title: rest.title !== undefined ? rest.title : question,
     updated_at: rest.updated_at !== undefined ? rest.updated_at : time,
   };
 }
 
 /**
- * The v0 open-thread response carries the question ids only — no thread
- * metadata: synthesize the thread record around them, keyed by the requested
- * question id.
+ * The v0 open-thread response carries the question ids (and a has_more flag,
+ * passed through) but no thread metadata: synthesize the thread record around
+ * them, keyed by the requested thread id.
  */
-function adaptThreadDetail(question_id, value) {
+function adaptThreadDetail(thread_id, value) {
   if (!value || typeof value !== 'object') {
     return value;
   }
   const { question_ids = [], ...rest } = value;
-  return { ...rest, thread_id: question_id, questions_ids: question_ids };
+  return { ...rest, thread_id, questions_ids: question_ids };
 }
