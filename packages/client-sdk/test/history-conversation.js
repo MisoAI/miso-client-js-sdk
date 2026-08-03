@@ -241,4 +241,22 @@ test('lorem: deleteAllThreads clears the history', async () => {
   assert.equal(history.threads, []);
 });
 
+test('lorem: update indicators and subscriptions over the v0 wire', async () => {
+  const client = setup();
+  const rootId = await ask(client, 'What is miso soup?');
+
+  const { userHistory } = client.api.ask;
+  // the subscription endpoints resolve and succeed (the mock validates the
+  // thread but does not model subscription state)
+  await userHistory.subscribeThread(rootId);
+  await userHistory.unsubscribeThread(rootId);
+
+  assert.equal(await userHistory.getNotifications(), { has_new: false });
+  // server-side activity raises the account-level indicator
+  MisoClient.lorem.api.ask.userHistory.touchThread(rootId);
+  assert.equal(await userHistory.getNotifications(), { has_new: true });
+  await userHistory.dismissNotifications();
+  assert.equal(await userHistory.getNotifications(), { has_new: false });
+});
+
 test.run();

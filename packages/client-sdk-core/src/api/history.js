@@ -37,6 +37,14 @@ export default class UserHistory extends ApiBase {
     return this._run(`threads/${threadId}/read`, undefined, options);
   }
 
+  async subscribeThread(threadId, options) {
+    return this._run(`threads/${threadId}/subscribe`, undefined, options);
+  }
+
+  async unsubscribeThread(threadId, options) {
+    return this._run(`threads/${threadId}/unsubscribe`, undefined, options);
+  }
+
   async getNotifications(options) {
     return this._run('notifications', undefined, { ...options, method: 'GET' });
   }

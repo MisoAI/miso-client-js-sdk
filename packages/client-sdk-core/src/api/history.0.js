@@ -57,8 +57,16 @@ function translate(apiName, payload, { method = 'POST' } = {}) {
         return { name: 'delete', payload: { question_ids: [thread_id] } };
     }
   }
-  if (segments[0] === 'threads' && segments.length === 3 && segments[2] === 'read') {
-    return { name: 'thread/updates/dismiss_thread', payload: { ...payload, thread_id: segments[1] } };
+  if (segments[0] === 'threads' && segments.length === 3) {
+    const thread_id = segments[1];
+    switch (segments[2]) {
+      case 'read': // POST threads/{id}/read -> POST thread/updates/dismiss_thread
+        return { name: 'thread/updates/dismiss_thread', payload: { ...payload, thread_id } };
+      case 'subscribe':
+        return { name: 'thread/updates/subscribe', payload: { ...payload, thread_id } };
+      case 'unsubscribe':
+        return { name: 'thread/updates/unsubscribe', payload: { ...payload, thread_id } };
+    }
   }
   throw new Error(`Unknown user history API: ${method} ${apiName}`);
 }
