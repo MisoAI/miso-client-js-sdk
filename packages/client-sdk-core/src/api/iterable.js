@@ -33,6 +33,15 @@ export class IterableApiStub {
     let { pollingInterval: interval, signal, stallTimeout = 120000, ...options } = this._options;
     const stac = new StallTimeoutAbortController(stallTimeout);
     signal = signals.any(this._ac.signal, stac.signal, signal);
+    // the stall timer must die with the stream: a timer armed past an abort
+    // would keep a Node process alive for the full stall timeout. The signal
+    // may have aborted before this iterator was created (it is captured at
+    // request time), so the already-aborted case has to be handled as well.
+    if (signal.aborted) {
+      stac.clear();
+    } else {
+      signal.addEventListener('abort', () => stac.clear());
+    }
 
     let prevResponse;
     const onResponse = (response, finished) => {

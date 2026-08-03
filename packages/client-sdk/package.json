@@ -30,16 +30,16 @@
     "access": "public"
   },
   "scripts": {
-    "test": "npx uvu test",
+    "test": "uvu test",
     "start:umd": "rollup -w -c rollup.config.dev.js",
-    "start:sass": "npx sass --watch scss:dist/css",
-    "start:font": "npx copyfiles ./font/* ./dist",
+    "start:sass": "sass --watch scss:dist/css",
+    "start:font": "node ../../bin/copyfiles.js font dist",
     "start": "concurrently 'npm:start:*'",
-    "build:clean": "npx rimraf dist",
-    "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
+    "build:clean": "rimraf dist",
+    "build:cjs": "BABEL_ENV=cjs babel src --root-mode upward --out-dir dist/cjs",
     "build:umd": "GIT_HASH=$(git rev-parse ${GITHUB_SHA:-HEAD}) rollup -c",
-    "build:sass": "npx sass scss:dist/css",
-    "build:font": "npx copyfiles ./font/* ./dist",
+    "build:sass": "sass scss:dist/css",
+    "build:font": "node ../../bin/copyfiles.js font dist",
     "build": "npm run build:clean && npm run build:cjs && npm run build:umd && npm run build:font && npm run build:sass",
     "purge-cdn": "curl https://purge.jsdelivr.net/npm/@miso.ai/client-sdk@${TAG:-latest}"
   },

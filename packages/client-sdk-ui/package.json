@@ -12,8 +12,8 @@
     "access": "public"
   },
   "scripts": {
-    "build:clean": "npx rimraf dist",
-    "build:cjs": "BABEL_ENV=cjs npx babel src --root-mode upward --out-dir dist/cjs",
+    "build:clean": "rimraf dist",
+    "build:cjs": "BABEL_ENV=cjs babel src --root-mode upward --out-dir dist/cjs",
     "build": "npm run build:clean && npm run build:cjs"
   },
   "repository": {

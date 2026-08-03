@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "npx playwright test",
-    "start:ui": "npx playwright test --ui"
+    "start": "playwright test",
+    "start:ui": "playwright test --ui"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1"

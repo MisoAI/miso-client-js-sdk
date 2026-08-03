@@ -4,17 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "clean": "npx rimraf dist",
-    "build:11ty": "npx eleventy",
-    "start:11ty": "NODE_ENV=development npx eleventy --serve --port=10100",
-    "build:sass": "npx sass scss:dist/css",
-    "start:sass": "npx sass --watch scss:dist/css",
+    "clean": "rimraf dist",
+    "build:11ty": "eleventy",
+    "start:11ty": "NODE_ENV=development eleventy --serve --port=10100",
+    "build:sass": "sass scss:dist/css",
+    "start:sass": "sass --watch scss:dist/css",
     "build:js": "rollup -c",
     "start:js": "rollup -w -c rollup.config.dev.js",
     "start:service": "[[ -f \"$(npm config get prefix -ws=false)/bin/doggoganger\" ]] && (\"$(npm config get prefix -ws=false)/bin/doggoganger\" -w) || (npx -p @miso.ai/doggoganger doggoganger)",
     "_build": "npm-run-all build:*",
     "start": "npm-run-all build:sass --parallel start:*",
-    "debug": "DEBUG=* npx eleventy"
+    "debug": "DEBUG=* eleventy"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.5",
