@@ -20,10 +20,32 @@
     overflow: hidden;
     grid-template-rows: minmax(0, 1fr);
   }
+  .miso-history-demo-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  /* a mock site nav bar, hosting the dev controls */
+  .miso-history-demo__nav {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--miso-border-color-light);
+  }
+  .miso-history-demo__brand {
+    font-weight: 600;
+    color: var(--miso-text-color);
+  }
+  .miso-history-demo__touch {
+    margin-left: auto;
+  }
   .miso-history-demo {
     display: flex;
     gap: 1rem;
-    height: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 1rem;
   }
   .miso-history-demo miso-history {
@@ -62,16 +84,22 @@
     color: var(--miso-text-color);
   }
 </style>
-<div class="miso-history-demo">
-  <miso-history>
-    <miso-new-chat></miso-new-chat>
-    <miso-threads></miso-threads>
-  </miso-history>
-  <miso-conversation>
-    <div class="miso-history-demo__intro" visible-when="empty">What can I help with?</div>
-    <miso-messages></miso-messages>
-    <miso-query visible-when="ready"></miso-query>
-  </miso-conversation>
+<div class="miso-history-demo-page">
+  <nav class="miso-history-demo__nav">
+    <span class="miso-history-demo__brand">Lorem</span>
+    <button type="button" class="miso-history-demo__touch btn btn-sm btn-outline-primary">+ Update</button>
+  </nav>
+  <div class="miso-history-demo">
+    <miso-history>
+      <miso-new-chat></miso-new-chat>
+      <miso-threads></miso-threads>
+    </miso-history>
+    <miso-conversation>
+      <div class="miso-history-demo__intro" visible-when="empty">What can I help with?</div>
+      <miso-messages></miso-messages>
+      <miso-query visible-when="ready"></miso-query>
+    </miso-conversation>
+  </div>
 </div>
 <script>
 const misocmd = window.misocmd || (window.misocmd = []);
@@ -85,6 +113,17 @@ misocmd.push(async () => {
     apiKey: '...',
   });
   client.workflows.history.start();
+  // simulate server-side activity: touch a random thread, generating a fresh
+  // answer in it, so the update indicators can be exercised on demand
+  document.querySelector('.miso-history-demo__touch').addEventListener('click', () => {
+    const { userHistory } = MisoClient.lorem.api.ask;
+    const { threads } = userHistory.threads();
+    if (!threads.length) {
+      return;
+    }
+    const { thread_id } = threads[Math.floor(Math.random() * threads.length)];
+    userHistory.touchThread(thread_id, { generate: true });
+  });
 });
 </script>
 {% endraw %}
