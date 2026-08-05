@@ -177,8 +177,8 @@ export default Object.freeze({
         method: 'GET',
       },
     },
-    // posting a follow-up question, like the ask workflow does
-    followUp: {
+    // posting a question, like the ask workflow does
+    query: {
       api: {
         group: API.GROUP.ASK,
         name: API.NAME.QUESTIONS,

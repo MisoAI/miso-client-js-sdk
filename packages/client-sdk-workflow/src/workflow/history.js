@@ -1,19 +1,16 @@
+import { asArray } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { getThreadId, getPlaceholderId, getThreadItemId, isThreadUnread, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
+import { getThreadId, getPlaceholderId, settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
   members: [ROLE.THREADS, ROLE.NEW_CHAT],
   mappings: {
-    // decorate each thread with its selection state, so the view renders
-    // selection declaratively from data
-    [ROLE.THREADS]: data => {
-      const { threads, selectedThreadId } = (data.value || {});
-      return threads && threads.map(thread => ({ ...thread, selected: getThreadItemId(thread) === selectedThreadId }));
-    },
+    // the records carry their selection state in the data layer already
+    [ROLE.THREADS]: data => data.value && data.value.threads,
   },
 });
 
@@ -22,11 +19,11 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * history API. Loads the list of threads and manages thread-level operations
  * (select, rename, delete, mark as read).
  *
- * Mutations follow an event-sourced pattern on the per-client workflow event
- * bus (client.workflows.bus): a mutation method calls the API, then emits a
- * fact event on the bus; local data is patched in the default bus handler
- * (bus.handle), so a change is applied through the same code path whether it
- * originated from this workflow or elsewhere.
+ * Mutations follow an event-sourced pattern: a mutation method calls the API,
+ * then applies the fact to both panels through the shared handler methods
+ * (_onThreadUpdated / _onThreadDeleted / ... on this workflow and on the
+ * conversation subworkflow), so a change goes through the same code path
+ * whichever panel it originated from.
  */
 export default class History extends Workflow {
 
@@ -41,20 +38,17 @@ export default class History extends Workflow {
 
   _initProperties(args) {
     super._initProperties(args);
+    // the conversation panel is a subworkflow (like hybrid-search/answer),
+    // lazily constructed by the workflows interface (client.workflows
+    // .conversation); every call to it below is guarded by its presence
+    this._conversation = undefined;
     this._started = false;
-    this._selectedThreadId = undefined;
   }
 
   _initSubscriptions(args) {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._bus.handle('conversation', 'load', event => this._onThreadLoaded(event)),
-      this._bus.handle('conversation', 'new', event => this._onConversationNew(event)),
-      this._bus.handle('conversation', 'resolve', event => this._onConversationResolve(event)),
-      this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
-      this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
-      this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
       this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadRename(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadDelete(event)),
@@ -68,16 +62,21 @@ export default class History extends Workflow {
     return (data && data.value && data.value.threads) || [];
   }
 
-  get selectedThreadId() {
-    return this._selectedThreadId;
+  /**
+   * The id of the selected thread item. The selection lives in the data
+   * layer, as part of the committed value.
+   */
+  get selectedId() {
+    const data = this._hub.states[fields.data()];
+    return (data && data.value && data.value.selectedThreadId) || undefined;
   }
 
   /**
    * The listed record of a thread, by thread id — or, for a thread being
    * created, by the placeholder id standing in for one.
    */
-  getThread(threadId) {
-    return this.threads.find(thread => getThreadItemId(thread) === threadId);
+  get(threadId) {
+    return this.threads.find(thread => (getThreadId(thread) || getPlaceholderId(thread)) === threadId);
   }
 
   // lifecycle //
@@ -105,50 +104,55 @@ export default class History extends Workflow {
   }
 
   /**
-   * Mark a thread as selected and announce it on the event bus, for the
-   * conversation workflow to load it.
+   * Mark a thread as selected and load it into the conversation panel.
    */
   select(threadId) {
     if (!threadId) {
       throw new Error(`threadId is required in select() call`);
     }
-    this._selectedThreadId = threadId;
-    this._recommitData(); // selection is stamped into data, so views refresh
-    const event = Object.freeze({ threadId, thread: this.getThread(threadId) });
+    this._patchValue({ selectedThreadId: threadId });
+    const event = Object.freeze({ threadId, thread: this.get(threadId) });
     this._emit('select', event);
-    this._bus.emit('select', event);
+    this._conversation && this._conversation._onThreadSelect(event);
     return this;
   }
 
   // mutations //
-  async renameThread(threadId, title) {
+  async rename(threadId, title) {
     this._api.updateThread(threadId, { title }); // no await
-    const event = Object.freeze({ threadId, changes: { title } });
-    this._bus.emit('update', event);
+    this._applyThreadUpdate(Object.freeze({ threadId, changes: { title } }));
   }
 
-  async markThreadAsRead(threadId) {
-    // TODO: should be in conversation workflow
+  async markAsRead(threadId) {
     this._api.markThreadAsRead(threadId); // no await
-    const event = Object.freeze({ threadId, changes: { has_new: false } });
-    this._bus.emit('update', event);
+    this._applyThreadUpdate(Object.freeze({ threadId, changes: { has_new: false } }));
   }
 
-  async deleteThread(threadId) {
-    this._api.deleteThread(threadId); // no await
-    const event = Object.freeze({ threadIds: [threadId] });
-    this._bus.emit('delete', event);
-  }
-
-  async deleteThreads(threadIds) {
+  /**
+   * Delete one or more threads: takes a thread id or an array of them.
+   */
+  async delete(threadIds) {
+    threadIds = asArray(threadIds);
+    if (!threadIds.length) {
+      return;
+    }
     this._api.deleteThreads({ thread_ids: threadIds }); // no await
     const event = Object.freeze({ threadIds });
-    this._bus.emit('delete', event);
+    this._onThreadDeleted(event);
+    this._conversation && this._conversation._onThreadDeleted(event);
   }
 
-  async deleteAllThreads() {
+  async deleteAll() {
     this._api.deleteAllThreads(); // no await
-    this._bus.emit('delete-all');
+    this._onAllThreadsDeleted();
+    this._conversation && this._conversation._onAllThreadsDeleted();
+  }
+
+  // apply a fact to both panels, so the change goes through the same code
+  // path whichever panel it originated from
+  _applyThreadUpdate(event) {
+    this._onThreadUpdated(event);
+    this._conversation && this._conversation._onThreadUpdated(event);
   }
 
   get _api() {
@@ -157,14 +161,12 @@ export default class History extends Workflow {
 
   // view actions //
   _onViewNetChatSubmit() {
-    if (!this._selectedThreadId) {
+    if (!this.selectedId) {
       return;
     }
-    this._selectedThreadId = undefined;
-    this._recommitData(); // the cleared selection is stamped into data
+    this._patchValue({ selectedThreadId: undefined });
     this._emit('new', {});
-    this._bus.emit('new');
-    return this;
+    this._conversation && this._conversation.new();
   }
 
   _onViewThreadSelect({ value: thread }) {
@@ -174,55 +176,54 @@ export default class History extends Workflow {
 
   _onViewThreadRename({ value: thread, title }) {
     const threadId = getThreadId(thread);
-    threadId && title && this.renameThread(threadId, title);
+    threadId && title && this.rename(threadId, title);
   }
 
   _onViewThreadDelete({ value: thread }) {
+    // TODO: what happens if deleting a placeholder thread?
     const threadId = getThreadId(thread);
-    threadId && this.deleteThread(threadId);
+    threadId && this.delete(threadId);
   }
 
-  // bus event handlers //
-  _onThreadLoaded({ threadId }) {
-    // opening a conversation marks it as read
-    const thread = this.getThread(threadId);
-    if (!thread || !isThreadUnread(thread)) {
-      return;
-    }
-    this.markThreadAsRead(threadId).catch(error => this._error(error));
-  }
-
+  // fact handlers //
   _onThreadUpdated({ threadId, changes }) {
-    this._setThreads(this.threads.map(thread => getThreadId(thread) === threadId ? { ...thread, ...changes } : thread));
+    this._patchValue({ threads: this.threads.map(thread => getThreadId(thread) === threadId ? { ...thread, ...changes } : thread) });
   }
 
   _onThreadDeleted({ threadIds }) {
-    if (threadIds && threadIds.includes(this._selectedThreadId)) {
-      this._selectedThreadId = undefined; // clear before the data patch, so it's stamped along
-    }
     const removed = new Set(threadIds);
-    this._setThreads(this.threads.filter(thread => !removed.has(getThreadId(thread))));
+    this._patchValue({
+      threads: this.threads.filter(thread => !removed.has(getThreadId(thread))),
+      ...(threadIds && threadIds.includes(this.selectedId) ? { selectedThreadId: undefined } : {}),
+    });
   }
 
   _onAllThreadsDeleted() {
-    this._selectedThreadId = undefined;
-    this._setThreads([]);
+    this._patchValue({ threads: [], selectedThreadId: undefined });
   }
 
+  // called by the conversation subworkflow //
   // a new thread is started in the conversation panel: list its placeholder
   // as the selected item (its fresh timestamp sorts it to the top). The
   // record has no thread id yet, so it is selected by its placeholder id
-  _onConversationNew({ placeholderId, thread }) {
-    this._selectedThreadId = placeholderId;
-    this._setThreads([...this.threads, thread]);
+  _onConversationNew(thread) {
+    this._patchValue({
+      threads: [...this.threads, thread],
+      selectedThreadId: getPlaceholderId(thread),
+    });
   }
 
-  // the new thread is created server-side: replace the placeholder item
-  _onConversationResolve({ placeholderId, thread }) {
-    if (this._selectedThreadId === placeholderId) {
-      this._selectedThreadId = getThreadId(thread);
+  // the new thread is created server-side: the thread id is the only thing
+  // the resolution gains — settle the listed placeholder item around it
+  _onConversationResolve(placeholderId, threadId) {
+    if (!this.get(placeholderId)) {
+      return; // already settled (announced from both the live and the expired path)
     }
-    this._setThreads(this.threads.map(t => getPlaceholderId(t) === placeholderId ? thread : t));
+    this._patchValue({
+      threads: this.threads.map(thread =>
+        getPlaceholderId(thread) === placeholderId ? settlePlaceholder(thread, threadId) : thread),
+      ...(this.selectedId === placeholderId ? { selectedThreadId: threadId } : {}),
+    });
   }
 
   // data //
@@ -231,29 +232,34 @@ export default class History extends Workflow {
     if (!data.value) {
       return data;
     }
-    // the workflow property is authoritative for selection; every pass stamps
-    // it into the value, so views render selection from data; threads are
-    // canonically ordered by latest activity
-    const value = { ...normalizeThreadsValue(data.value), selectedThreadId: this._selectedThreadId };
-    value.threads = sortThreadsByLatest(value.threads);
+    // the selection is part of the value: local patches carry their own
+    // (including an explicit undefined to clear it), while a fresh server
+    // response carries none — the current selection is carried over, so it
+    // survives a refresh
+    const selectedThreadId = oldData && oldData.value && oldData.value.selectedThreadId;
+    const value = { selectedThreadId, ...normalizeThreadsValue(data.value) };
+    // threads are canonically ordered by latest activity, and each record
+    // carries its selection state, so views render it right off the data
+    value.threads = sortThreadsByLatest(value.threads).map(thread => ({
+      ...thread,
+      selected: (getThreadId(thread) || getPlaceholderId(thread)) === value.selectedThreadId,
+    }));
     return { ...data, value };
   }
 
-  _setThreads(threads) {
+  // patch the committed value — the threads, the selection, or both at once
+  _patchValue(patch) {
     const data = this._hub.states[fields.data()];
     if (!data || !data.value) {
       return; // the list is not loaded yet, nothing to patch
     }
-    this.updateData({ ...data, value: { ...data.value, threads } });
+    this.updateData({ ...data, value: { ...data.value, ...patch } });
   }
 
-  // re-commit the current data through the pipeline, refreshing views
-  _recommitData() {
-    const data = this._hub.states[fields.data()];
-    if (!data || !data.value) {
-      return; // not loaded yet; selection is stamped when data arrives
-    }
-    this.updateData({ ...data });
+  // destroy //
+  _destroy(options) {
+    this._conversation && this._conversation.destroy(options);
+    super._destroy(options);
   }
 
 }

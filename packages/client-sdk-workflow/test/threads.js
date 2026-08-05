@@ -4,7 +4,6 @@ import * as assert from 'uvu/assert';
 import {
   getThreadId,
   getPlaceholderId,
-  getThreadItemId,
   isThreadUnread,
   normalizeThreadsValue,
   normalizeThreadValue,
@@ -21,12 +20,9 @@ test('getThreadId', () => {
   assert.is(getThreadId(undefined), undefined);
 });
 
-test('getPlaceholderId / getThreadItemId', () => {
+test('getPlaceholderId', () => {
   assert.is(getPlaceholderId({ placeholder_id: 'p1' }), 'p1');
   assert.is(getPlaceholderId({ thread_id: 't1' }), undefined);
-  assert.is(getThreadItemId({ thread_id: 't1' }), 't1');
-  assert.is(getThreadItemId({ placeholder_id: 'p1' }), 'p1');
-  assert.is(getThreadItemId(undefined), undefined);
 });
 
 test('isThreadUnread', () => {
@@ -111,10 +107,11 @@ test('mergeAnswersDataFromResponse: merges and restores the head request', () =>
     request: headRequest,
     value: { thread: { thread_id: 't1' }, messages: [{ question_id: 'q1' }] },
   };
+  // the value arrives normalized to { messages } by the default data pass
   const newData = {
     status: 'ready',
     request: { name: 'answers', type: 'answers' },
-    value: { answers: [{ question_id: 'q1', answer: 'A1' }] },
+    value: { messages: [{ question_id: 'q1', answer: 'A1' }] },
   };
   const merged = mergeAnswersDataFromResponse(oldData, newData);
   assert.is(merged.request, headRequest);

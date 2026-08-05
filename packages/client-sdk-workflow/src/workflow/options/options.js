@@ -57,7 +57,7 @@ const FEATURES = [
     merge: mergeAnswersOptions,
   },
   {
-    key: WORKFLOW_CONFIGURABLE.FOLLOW_UP,
+    key: WORKFLOW_CONFIGURABLE.QUERY,
     normalize: normalizeAnswersOptions,
     merge: mergeAnswersOptions,
   },

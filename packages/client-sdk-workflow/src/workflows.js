@@ -1,4 +1,4 @@
-import { defineValues, EventEmitter } from '@miso.ai/commons';
+import { defineValues } from '@miso.ai/commons';
 import WorkflowEventBus from './bus.js';
 import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation } from './workflow/index.js';
 import * as sources from './source.js';
@@ -54,11 +54,12 @@ export default class Workflows {
   }
 
   get conversation() {
-    if (!this._conversation) {
-      this._conversation = new Conversation(this._plugin, this._client);
-      this._client._events.emit('postworkflow', this._conversation);
-    }
-    return this._conversation;
+    // a subworkflow of history (like hybrid-search's answer), lazily
+    // constructed here: the history workflow guards its calls to the
+    // conversation, so the thread list works standalone until this accessor
+    // brings the panel to life
+    const history = this.history;
+    return history._conversation || (history._conversation = new Conversation(history));
   }
 
   get asks() {

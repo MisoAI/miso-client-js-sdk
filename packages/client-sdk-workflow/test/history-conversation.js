@@ -1,8 +1,23 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { STATUS, REQUEST_TYPE, getThreadId, getPlaceholderId, getThreadItemId } from '../src/index.js';
+import { STATUS, REQUEST_TYPE, getThreadId, getPlaceholderId } from '../src/index.js';
 import { createClient, tick, answersOf } from './dummy.js';
+
+test('history: works standalone, with no conversation panel constructed', async () => {
+  const { client } = createClient();
+  const { history } = client.workflows; // client.workflows.conversation is never accessed
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await history.delete('t1');
+  await tick();
+
+  assert.is(history.selectedId, 't2');
+  assert.equal(history.threads.map(t => t.thread_id), ['t2']);
+  assert.is(history._conversation, undefined); // the subworkflow stays unconstructed
+});
 
 test('history: start() loads the thread list, idempotently', async () => {
   const { client, calls } = createClient();
@@ -58,7 +73,7 @@ test('select: conversation workflow loads the thread and merges answers', async 
   history.select('t2');
   await tick();
 
-  assert.is(history.selectedThreadId, 't2');
+  assert.is(history.selectedId, 't2');
   assert.is(history.states.data.value.selectedThreadId, 't2'); // selection is stamped into data
   assert.is(conversation.threadId, 't2');
   assert.is(conversation.status, STATUS.READY);
@@ -86,12 +101,12 @@ test('select: an unread thread is marked as read once loaded', async () => {
 
   history.start();
   await tick();
-  assert.is(history.getThread('t2').has_new, true);
+  assert.is(history.get('t2').has_new, true);
 
   history.select('t2');
   await tick();
-  assert.is(history.getThread('t2').has_new, false);
-  assert.is(conversation.thread.has_new, false); // patched over the bus
+  assert.is(history.get('t2').has_new, false);
+  assert.is(conversation.thread.has_new, false); // patched by the history workflow
   assert.ok(calls.includes('POST threads/t2/read'));
 
   // an already-read thread is left alone
@@ -100,7 +115,7 @@ test('select: an unread thread is marked as read once loaded', async () => {
   assert.not.ok(calls.includes('POST threads/t1/read'));
 });
 
-test('renameThread: patches both panels, keeping merged messages', async () => {
+test('rename: patches both panels, keeping merged messages', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
 
@@ -108,10 +123,10 @@ test('renameThread: patches both panels, keeping merged messages', async () => {
   await tick();
   history.select('t2');
   await tick();
-  await history.renameThread('t2', 'Renamed');
+  await history.rename('t2', 'Renamed');
 
   assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
-  assert.is(history.getThread('t2').title, 'Renamed');
+  assert.is(history.get('t2').title, 'Renamed');
   assert.is(conversation.thread.title, 'Renamed');
   assert.equal(conversation.messages, answersOf(['q1', 'q2'])); // not reset by the patch
 });
@@ -122,14 +137,14 @@ test('rename view event: renames the thread', async () => {
 
   history.start();
   await tick();
-  history._onViewThreadRename({ value: history.getThread('t1'), title: 'Renamed' });
+  history._onViewThreadRename({ value: history.get('t1'), title: 'Renamed' });
   await tick();
 
   assert.ok(calls.includes('PUT threads/t1 {"title":"Renamed"}'));
-  assert.is(history.getThread('t1').title, 'Renamed');
+  assert.is(history.get('t1').title, 'Renamed');
 });
 
-test('deleteThread: removes from the list and resets the open panel', async () => {
+test('delete: removes from the list and resets the open panel', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
 
@@ -137,12 +152,12 @@ test('deleteThread: removes from the list and resets the open panel', async () =
   await tick();
   history.select('t1');
   await tick();
-  await history.deleteThread('t1');
+  await history.delete('t1'); // a single id works without an array
   await tick();
 
-  assert.ok(calls.includes('DELETE threads/t1'));
+  assert.ok(calls.includes('POST threads/_delete {"thread_ids":["t1"]}'));
   assert.equal(history.threads.map(t => t.thread_id), ['t2']);
-  assert.is(history.selectedThreadId, undefined);
+  assert.is(history.selectedId, undefined);
   assert.is(conversation.threadId, undefined);
   // back to a fresh new-thread state, not an empty panel
   assert.is(conversation.status, STATUS.READY);
@@ -150,7 +165,7 @@ test('deleteThread: removes from the list and resets the open panel', async () =
   assert.equal(conversation.messages, []);
 });
 
-test('deleteThread: an unrelated thread leaves the open panel alone', async () => {
+test('delete: an unrelated thread leaves the open panel alone', async () => {
   const { client } = createClient();
   const { history, conversation } = client.workflows;
 
@@ -158,14 +173,14 @@ test('deleteThread: an unrelated thread leaves the open panel alone', async () =
   await tick();
   history.select('t2');
   await tick();
-  await history.deleteThread('t1');
+  await history.delete(['t1']);
   await tick();
 
   assert.is(conversation.threadId, 't2');
   assert.is(conversation.status, STATUS.READY);
 });
 
-test('deleteAllThreads: clears the list and resets the panel', async () => {
+test('deleteAll: clears the list and resets the panel', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
 
@@ -173,7 +188,7 @@ test('deleteAllThreads: clears the list and resets the panel', async () => {
   await tick();
   history.select('t2');
   await tick();
-  await history.deleteAllThreads();
+  await history.deleteAll();
   await tick();
 
   assert.ok(calls.includes('POST threads/_delete_all'));
@@ -263,7 +278,7 @@ test('conversation: sending in new-thread mode creates and resolves the thread',
   assert.is(listed().title, 'A brand new question');
   assert.is(getThreadId(listed()), undefined);
   assert.ok(getPlaceholderId(listed()));
-  assert.is(history.selectedThreadId, getThreadItemId(listed()));
+  assert.is(history.selectedId, getPlaceholderId(listed()));
   assert.is(conversation.threadId, undefined);
   assert.is(conversation.messages.length, 1);
 
@@ -275,16 +290,18 @@ test('conversation: sending in new-thread mode creates and resolves the thread',
   assert.is(conversation.thread.title, 'A brand new question');
   assert.is(conversation.threadId, 'q-new-1');
   assert.is(getThreadId(history.threads[0]), conversation.threadId);
-  assert.is(history.selectedThreadId, conversation.threadId);
+  assert.is(history.selectedId, conversation.threadId);
   assert.not.ok(history.threads.some(t => t.placeholder));
 
   // the root question was posted without a parent
   const rootCall = calls.find(c => c.startsWith('POST questions'));
   assert.not.ok(rootCall.includes('parent_question_id'));
 
-  // the thread id comes from the question response, so the thread record is
-  // fetched directly — no lookup of the created thread through the list
-  assert.equal(calls.slice(apiCallsBefore), [rootCall, 'GET threads/q-new-1']);
+  // the thread id comes from the question response, so the resolution needs
+  // no server round trip at all: no lookup of the created thread, no reload,
+  // no read call — the posting is the only api call, its answer streaming
+  // into the panel
+  assert.equal(calls.slice(apiCallsBefore), [rootCall]);
 
   // a subsequent send is a follow-up to the same thread
   conversation.send('And a follow-up');
@@ -336,7 +353,7 @@ test('switching away mid-creation: the thread is scavenged from the expired resp
   assert.is(calls.filter(c => c === 'GET threads').length, 1); // no list reload
   const created = history.threads.find(t => getThreadId(t) === 'q-new-1');
   assert.is(created.title, 'A brand new question');
-  assert.is(history.selectedThreadId, 't1'); // the switch is respected
+  assert.is(history.selectedId, 't1'); // the switch is respected
   assert.is(conversation.threadId, 't1');
 
   // ... so the user can switch (back) to the created thread
@@ -358,7 +375,7 @@ test('switching to new chat mid-creation: the thread is scavenged all the same',
 
   assert.not.ok(history.threads.some(t => t.placeholder));
   assert.ok(history.threads.some(t => getThreadId(t) === 'q-new-1'));
-  assert.is(history.selectedThreadId, undefined);
+  assert.is(history.selectedId, undefined);
   assert.is(conversation.thread.placeholder, true); // new-thread mode
   assert.equal(conversation.messages, []);
 
@@ -368,53 +385,44 @@ test('switching to new chat mid-creation: the thread is scavenged all the same',
   assert.is(conversation.threadId, 'q-new-1');
 });
 
-test('switching away mid-resolution: the placeholder still settles', async () => {
+test('switching away after resolution: the settled thread is left alone', async () => {
   const { client } = createClient();
   const { history, conversation } = client.workflows;
-  // hold the created-thread record fetch, so the switch happens mid-resolution
-  const api = client.api.ask.userHistory;
-  const getThread = api.getThread.bind(api);
-  let release;
-  api.getThread = id => new Promise(resolve => { release = () => resolve(getThread(id)); });
 
   history.start();
   await tick();
   conversation.send('A brand new question');
-  await tick(); // the response arrives; the record fetch hangs
-  history.select('t1');
-  await tick();
-  release();
-  await tick();
-
-  // the resolution is announced even though the panel has moved on
+  await tick(); // the response arrives; the placeholder settles in-session
   assert.not.ok(history.threads.some(t => t.placeholder));
+  assert.is(conversation.threadId, 'q-new-1');
+
+  history.select('t1');
+  await tick(30); // the rest of the posting stream expires without effect
+
   const created = history.threads.find(t => getThreadId(t) === 'q-new-1');
   assert.is(created.title, 'A brand new question');
-  assert.is(history.selectedThreadId, 't1'); // the switch is respected
+  assert.is(history.selectedId, 't1'); // the switch is respected
   assert.is(conversation.threadId, 't1');
 });
 
-test('conversation: a created thread settles locally if its record cannot be fetched', async () => {
-  const { client } = createClient({ threadDetailError: new Error('thread not found') });
+test('conversation: a created thread settles without any thread detail call', async () => {
+  // resolving involves no server round trip: a failing thread-detail api
+  // does not matter
+  const { client, calls } = createClient({ threadDetailError: new Error('thread not found') });
   const { history, conversation } = client.workflows;
-  const warn = console.warn;
-  console.warn = () => {}; // the failed fetch warns
 
-  try {
-    history.start();
-    await tick();
-    conversation.send('A brand new question');
-    await tick(30);
+  history.start();
+  await tick();
+  conversation.send('A brand new question');
+  await tick(30);
 
-    // the id is settled by contract, so the local record stands in
-    assert.is(conversation.threadId, 'q-new-1');
-    assert.is(conversation.thread.placeholder, undefined);
-    assert.is(conversation.thread.title, 'A brand new question');
-    assert.is(getThreadId(history.threads[0]), 'q-new-1');
-    assert.not.ok(history.threads.some(t => t.placeholder));
-  } finally {
-    console.warn = warn;
-  }
+  // the id is settled by contract — the resolution does not wait on the server
+  assert.is(conversation.threadId, 'q-new-1');
+  assert.is(getThreadId(history.threads[0]), 'q-new-1');
+  assert.is(history.threads[0].title, 'A brand new question');
+  assert.not.ok(history.threads.some(t => t.placeholder));
+  assert.is(conversation.status, STATUS.READY);
+  assert.not.ok(calls.some(c => c.includes('threads/q-new-1')));
 });
 
 test('history: the new chat action clears the selection and resets the conversation', async () => {
@@ -428,7 +436,7 @@ test('history: the new chat action clears the selection and resets the conversat
   assert.is(conversation.threadId, 't2');
 
   history._onViewNetChatSubmit();
-  assert.is(history.selectedThreadId, undefined);
+  assert.is(history.selectedId, undefined);
   assert.is(conversation.threadId, undefined);
   assert.is(conversation.thread.placeholder, true);
   assert.equal(conversation.messages, []);
@@ -520,7 +528,7 @@ test('conversation: send posts a follow-up and appends the message pair', async 
   assert.is(conversation.states.data.request.type, REQUEST_TYPE.THREAD);
 });
 
-test('bus: events stay within their client', async () => {
+test('workflow coordination stays within its client', async () => {
   const a = createClient();
   const b = createClient();
   const historyA = a.client.workflows.history;
@@ -534,29 +542,6 @@ test('bus: events stay within their client', async () => {
 
   assert.is(conversationA.threadId, 't2');
   assert.is(conversationB.threadId, undefined);
-});
-
-test('bus: event sequence of a select round trip', async () => {
-  const { client } = createClient();
-  const { history, conversation } = client.workflows; // eslint-disable-line no-unused-vars
-  const { bus } = client.workflows;
-  const events = [];
-  for (const [workflow, event] of [['history', 'select'], ['conversation', 'load'], ['history', 'update']]) {
-    bus.on(workflow, event, () => events.push(`${workflow}:${event}`));
-  }
-
-  history.start();
-  await tick();
-  history.select('t2');
-  await tick();
-
-  assert.equal(events, [
-    'history:select',
-    'conversation:load',
-    // mark-as-read is triggered while handling the load event, but the
-    // emitter queues nested emissions, so subscribers observe it after
-    'history:update',
-  ]);
 });
 
 test.run();

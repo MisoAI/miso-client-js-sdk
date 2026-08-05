@@ -1,10 +1,9 @@
 import { API, uuidv4 } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { ROLE, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getThreadId, getPlaceholderId, getQuestionId, normalizeThreadValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
-import { fallbackThreadFields } from '../source.js';
+import { getThreadId, getPlaceholderId, getQuestionId, isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -36,59 +35,63 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *    display (`mergeAnswersDataFromResponse`, in the manner of
  *    `concatItemsFromMoreResponse`).
  *
- * Communicates with the history workflow over the per-client workflow event
- * bus (client.workflows.bus): loads threads selected in the history panel,
- * announces loaded threads with `conversation:load` (so the history panel
- * marks them as read), and resets when its current thread is deleted.
+ * A subworkflow of the history workflow (like hybrid-search/answer): created
+ * and owned by History, exposed as `history.conversation`. The two coordinate
+ * by direct method calls: History loads its selection into this panel
+ * (_onThreadSelect) and applies thread facts to it (_onThreadUpdated,
+ * _onThreadDeleted, ...); Conversation marks loaded threads as read (via
+ * the superworkflow's markAsRead, once their answer contents arrive) and
+ * announces the placeholder lifecycle of a thread being created
+ * (_onConversationNew, _onConversationResolve).
  */
 export default class Conversation extends Workflow {
 
-  constructor(plugin, client) {
+  constructor(superworkflow) {
     super({
       name: 'conversation',
-      plugin,
-      client,
+      plugin: superworkflow._plugin,
+      client: superworkflow._client,
       roles: ROLES_OPTIONS,
+      superworkflow,
     });
   }
 
   _initProperties(args) {
     super._initProperties(args);
-    this._threadId = undefined;
-    this._placeholderId = undefined;
-    this._threadRecord = undefined;
-  }
-
-  _initSession(args) {
-    super._initSession(args);
-    this._loadPlaceholder(); // start in new-thread mode, not an empty panel
+    this._superworkflow = args.superworkflow;
   }
 
   _initSubscriptions(args) {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._bus.handle('history', 'new', () => this.new()),
-      this._bus.handle('history', 'select', event => this._onThreadSelect(event)),
-      this._bus.handle('history', 'update', event => this._onThreadUpdated(event)),
-      this._bus.handle('history', 'delete', event => this._onThreadDeleted(event)),
-      this._bus.handle('history', 'delete-all', () => this._onAllThreadsDeleted()),
       this._hub.on(fields.query(), args => this._onQuery(args)),
       this._hub.on(fields.expiredResponse(), response => this._onExpiredResponse(response)),
     ];
   }
 
-  // properties //
-  get threadId() {
-    return this._threadId;
+  restart() {
+    super.restart();
+    // presenting a placeholder thread is a direct side effect of a new
+    // session: every fresh session starts in new-thread mode, not an empty
+    // panel (a load() takes it to loading right away)
+    this._loadPlaceholder();
+    return this;
   }
 
+  // properties //
   /**
-   * The thread on display, as selection sees it: its thread id, or, while it
-   * is being created, the placeholder id standing in for one.
+   * The id of the thread on display, or being loaded. The identity lives in
+   * the data layer: the committed thread record, or — while the head request
+   * is in flight and no value is committed yet — the request itself.
    */
-  get threadItemId() {
-    return this._threadId || this._placeholderId;
+  get threadId() {
+    const id = getThreadId(this.thread);
+    if (id) {
+      return id;
+    }
+    const request = this._hub.states[fields.request()];
+    return (request && request.session === this.session && request.threadId) || undefined;
   }
 
   get thread() {
@@ -104,37 +107,87 @@ export default class Conversation extends Workflow {
   // lifecycle //
   /**
    * Load a thread into the conversation panel. Loading the current thread
-   * again is a no-op unless `force` is set. An optional `record` — the
+   * again is a no-op unless `force` is set. An optional `data` — the
    * thread's list record, passed along by the history selection — fills in
    * the thread metadata the head response may not carry.
    */
-  load(threadId, { force = false, record } = {}) {
+  load(threadId, { force = false, data } = {}) {
     if (!threadId) {
       throw new Error(`threadId is required in load() call`);
     }
-    if (threadId === this._threadId && !force) {
+    if (threadId === this.threadId && !force) {
       return this;
     }
-    this._threadId = threadId;
-    this._placeholderId = undefined;
-    this._threadRecord = record;
     this.restart();
+    // the request carries the thread identity and the list record, so the
+    // data layer holds all the state of the load
     this._request({
       name: `${API.NAME.THREADS}/${threadId}`,
       type: REQUEST_TYPE.THREAD,
+      threadId,
+      thread: data,
     });
+    // mark as read as soon as it's loading: user may just want to clear the red dot
+    this._markAsReadIfNecessary(data);
     return this;
   }
 
   /**
    * Send a question: a follow-up to the current thread, or, in new-thread
-   * mode (no thread loaded), the first question of a new thread.
+   * mode (no thread loaded), the first question of a new thread. Either way,
+   * the question bubble is appended optimistically (`live` marks the pair as
+   * being generated in this session; the UI typewrites live answers) and
+   * posted through the query api, with the last message as its parent —
+   * a new thread's first question simply has none, making it a root question.
+   *
+   * A new thread additionally starts from a placeholder record announced to
+   * the history workflow (which lists and selects it), settled once the
+   * response arrives (see _resolveIfNecessary). The thread has no identity
+   * yet — the placeholder record is keyed by a local `placeholder_id`
+   * instead of a thread id, so nothing addresses it as a thread server-side.
+   * The posting request carries the placeholder record, so the created
+   * thread can be scavenged out of the response even if the user leaves the
+   * panel before it arrives.
    */
   send(question) {
-    return this.threadItemId ? this._followUp(question) : this._startThread(question);
+    if (!question) {
+      throw new Error(`question is required in send() call`);
+    }
+    const data = this._hub.states[fields.data()];
+    if (!data || !data.value) {
+      return this;
+    }
+    // starting a new thread, unless one is loaded or already being created
+    const placeholder = (this.threadId || getPlaceholderId(this.thread)) ? undefined : this._startPlaceholderThread(question);
+    const messages = data.value.messages || [];
+    const last = messages[messages.length - 1];
+    const parent_question_id = last && getQuestionId(last);
+    this.updateData({
+      ...data,
+      value: {
+        ...data.value,
+        ...(placeholder ? { thread: placeholder } : {}),
+        messages: [...messages, { question, live: true }],
+      },
+    });
+    const { api } = this._options.resolved.query;
+    this._request(mergeApiOptions(api, {
+      payload: { question, ...(parent_question_id ? { parent_question_id } : {}) },
+      type: REQUEST_TYPE.QUERY,
+      ...(placeholder ? { placeholder } : {}),
+    }));
+    return this;
   }
 
-  // why duplicated method with reset()?
+  // the local record standing in for a thread being created, announced to
+  // the history workflow (which lists and selects it)
+  _startPlaceholderThread(question) {
+    // TODO: client side time is not reliable, don't use it for comparison with server time
+    const thread = Object.freeze({ placeholder_id: uuidv4(), title: question, placeholder: true, updated_at: new Date().toISOString() });
+    this._superworkflow._onConversationNew(thread);
+    return thread;
+  }
+
   /**
    * Enter new-thread mode: a fresh session presenting a placeholder thread
    * with no messages, ready to take the first question. A no-op when the
@@ -142,14 +195,10 @@ export default class Conversation extends Workflow {
    * asked, so there is nothing to reset — unless `force` is set.
    */
   new({ force = false } = {}) {
-    if (!this.threadItemId && !force) {
+    if (!this.threadId && !getPlaceholderId(this.thread) && !force) {
       return this;
     }
-    this._threadId = undefined;
-    this._placeholderId = undefined;
-    this._threadRecord = undefined;
     this.restart();
-    this._loadPlaceholder();
     return this;
   }
 
@@ -158,83 +207,16 @@ export default class Conversation extends Workflow {
     this.updateData({ session, value: { thread: { placeholder: true }, messages: [] } });
   }
 
-  // should refactor _startThread & _followUp
-  /**
-   * The first question of a new thread: announce a placeholder thread on the
-   * bus (the history workflow lists and selects it), post the question as a
-   * root question, and settle the placeholder once the response arrives (see
-   * _resolveIfNecessary). The thread has no identity yet — the placeholder
-   * record is keyed by a local `placeholder_id` instead of a thread id, so
-   * nothing addresses it as a thread server-side.
-   */
-  _startThread(question) {
-    if (!question) {
-      throw new Error(`question is required`);
-    }
-    const data = this._hub.states[fields.data()];
-    if (!data || !data.value) {
-      return this;
-    }
-    // TODO: client side time is not reliable, don't use it for comparison with server time
-    const thread = Object.freeze({ placeholder_id: uuidv4(), title: question, placeholder: true, updated_at: new Date().toISOString() });
-    this._placeholderId = getPlaceholderId(thread);
-    this._bus.emit('new', Object.freeze({ placeholderId: this._placeholderId, thread }));
-    // optimistic: the placeholder thread record and the first question bubble
-    this.updateData({ ...data, value: { ...data.value, thread, messages: [{ question, live: true }] } });
-    // post as a root question (no parent); the request carries the
-    // placeholder record, so the created thread can be scavenged out of the
-    // response even if the user leaves the panel before it arrives
-    const { api } = this._options.resolved.followUp;
-    this._request(mergeApiOptions(api, {
-      payload: { question },
-      type: REQUEST_TYPE.FOLLOW_UP,
-      placeholder: thread,
-    }));
-    return this;
-  }
-
-  /**
-   * Post a follow-up question to the current thread, like the ask workflow:
-   * the question is appended to the messages optimistically, and the answer
-   * streams into the last message pair as it is generated.
-   */
-  _followUp(question) {
-    if (!question) {
-      throw new Error(`question is required in followUp() call`);
-    }
-    // a thread being created takes follow-ups too, before it has an identity
-    if (!this.threadItemId) {
-      throw new Error(`No thread is loaded; call load() first.`);
-    }
-    const data = this._hub.states[fields.data()];
-    if (!data || !data.value) {
-      return this;
-    }
-    const messages = data.value.messages || [];
-    const last = messages[messages.length - 1];
-    const parent_question_id = last && getQuestionId(last);
-    // optimistically append the question bubble; `live` marks the pair as
-    // being generated in this session (the UI typewrites live answers)
-    this.updateData({ ...data, value: { ...data.value, messages: [...messages, { question, live: true }] } });
-    // post the question; the streamed responses merge into the last message
-    const { api } = this._options.resolved.followUp;
-    this._request(mergeApiOptions(api, {
-      payload: { question, ...(parent_question_id ? { parent_question_id } : {}) },
-      type: REQUEST_TYPE.FOLLOW_UP,
-    }));
-    return this;
-  }
-
-  // bus event handlers //
+  // called by the history workflow //
   _onThreadSelect({ threadId, thread }) {
-    if (getPlaceholderId(thread) || threadId === this._placeholderId) {
+    if (getPlaceholderId(thread) || threadId === getPlaceholderId(this.thread)) {
       return; // a thread being created has nothing to load; it is on display
     }
-    this.load(threadId, { record: thread });
+    this.load(threadId, { data: thread });
   }
 
   _onThreadUpdated({ threadId, changes }) {
-    if (threadId !== this._threadId) {
+    if (threadId !== this.threadId) {
       return;
     }
     const data = this._hub.states[fields.data()];
@@ -246,13 +228,14 @@ export default class Conversation extends Workflow {
   }
 
   _onThreadDeleted({ threadIds }) {
-    if (this._threadId && threadIds && threadIds.includes(this._threadId)) {
+    const threadId = this.threadId;
+    if (threadId && threadIds && threadIds.includes(threadId)) {
       this.new();
     }
   }
 
   _onAllThreadsDeleted() {
-    if (this._threadId) {
+    if (this.threadId) {
       this.new();
     }
   }
@@ -272,60 +255,107 @@ export default class Conversation extends Workflow {
   }
 
   // data //
+  /**
+   * Homogenize the value to the canonical { thread, messages } shape, by
+   * request type — but merge nothing: merging into the current data happens
+   * later, in _updateDataInHub, past the custom data processors, so each
+   * piece of data runs through them exactly once, in the one shape.
+   */
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
-    if (!data.value || isAnswersRequestData(data) || isFollowUpRequestData(data)) {
-      return data; // answers/follow-up responses are merged later, in _updateDataInHub
+    if (!data.value) {
+      return data;
     }
-    return { ...data, value: this._mergeThreadRecord(normalizeThreadValue(data.value)) };
+    switch (data.request && data.request.type) {
+      case REQUEST_TYPE.ANSWERS:
+        // TODO: we will pull partial data later
+        return { ...data, value: { messages: normalizeAnswersValue(data.value) } };
+      case REQUEST_TYPE.QUERY:
+        // the response body is the (last) message of the conversation
+        return { ...data, value: { messages: [data.value] } };
+      case REQUEST_TYPE.THREAD:
+        return { ...data, value: this._mergeThreadData(normalizeThreadValue(data.value), data.request) };
+      default:
+        return data;
+    }
   }
 
-  // the list record of the loaded thread (carried by the selection) fills in
-  // the thread metadata (title, ...) the head response may not carry — the
-  // v0 API returns question ids only
-  _mergeThreadRecord(value) {
-    const record = this._threadRecord;
-    if (!record || !value || !value.thread || getThreadId(record) !== getThreadId(value.thread)) {
+  // the list record of the loaded thread (carried by the head request) fills
+  // in the thread metadata (title, ...) the head response may not carry —
+  // the v0 API returns question ids only
+  _mergeThreadData(value, { thread } = {}) {
+    if (!thread || !value || !value.thread || getThreadId(thread) !== getThreadId(value.thread)) {
       return value;
     }
-    return { ...value, thread: { ...record, ...value.thread } };
+    return { ...value, thread: { ...thread, ...value.thread } };
   }
 
   _updateDataInHub(data, oldData) {
-    data = this._mergeDataFromAnswersRequest(data);
-    data = this._mergeDataFromFollowUpRequest(data);
+    // captured before the merges: they restore the head request on the
+    // merged data, and swap the current data in for a valueless update
+    const type = data.request && data.request.type;
+    const hasResponse = !!data.value;
+    switch (type) {
+      case REQUEST_TYPE.ANSWERS:
+        data = this._mergeDataFromAnswersRequest(data, oldData);
+        break;
+      case REQUEST_TYPE.QUERY:
+        data = this._mergeDataFromQueryRequest(data, oldData);
+        break;
+    }
     super._updateDataInHub(data, oldData);
-    this._dispatchFollowUps(data);
+    // follow-up actions, each tied to the one point of the flow it matters:
+    // dispatched by the request type that produced the data (the merges
+    // restore the head request on the merged data, so the original type
+    // drives the dispatch)
+    switch (type) {
+      case REQUEST_TYPE.THREAD:
+        // the head data tells which answer contents to fetch
+        this._requestAnswersIfNecessary(data);
+        break;
+      case REQUEST_TYPE.ANSWERS:
+        // unfinished answers keep the polling going
+        this._requestAnswersIfNecessary(data);
+        break;
+      case REQUEST_TYPE.QUERY:
+        // the posting response carries the question id that settles a
+        // thread being created; the loading update carries nothing yet
+        hasResponse && this._resolveIfNecessary(data);
+        break;
+    }
   }
 
-  _mergeDataFromFollowUpRequest(data) {
-    if (!isFollowUpRequestData(data)) {
-      return data;
-    }
-    const currentData = this._hub.states[fields.data()];
-    return mergeFollowUpDataFromResponse(currentData, data);
+  _mergeDataFromQueryRequest(data, oldData) {
+    return mergeFollowUpDataFromResponse(oldData, data);
   }
 
-  _mergeDataFromAnswersRequest(data) {
-    if (!isAnswersRequestData(data)) {
-      return data; // the initial state or from the head request
-    }
+  _mergeDataFromAnswersRequest(data, oldData) {
     if ((data.value || data.error) && data.session) {
       // the answers request settled; polling may reschedule if needed
       this._getSessionContext(data.session).answersPending = false;
     }
-    const currentData = this._hub.states[fields.data()];
-    return mergeAnswersDataFromResponse(currentData, data);
+    return mergeAnswersDataFromResponse(oldData, data);
   }
 
-  // when the head data lands ready: announce it and issue the follow-up request
-  _dispatchFollowUps(data) {
-    if (!data.session || data.status !== STATUS.READY || !this.threadItemId) {
+  /**
+   * Opening a thread marks it as read — once its answer contents arrive,
+   * not at load() time: the mark patches both panels optimistically, and a
+   * response still in flight would carry the unread flag back in. The
+   * unread state is read off the displayed record, falling back to the list
+   * record for responses that carry no metadata; the patch itself flips
+   * has_new off everywhere, so the mark fires once.
+   */
+  _markAsReadIfNecessary(data) {
+    const { thread } = data.value || {};
+    const threadId = getThreadId(thread);
+    if (!threadId) {
+      return; // a placeholder (new or creating a thread), not landed thread data
+    }
+    if (!isThreadUnread(thread)) {
+      // TODO: check spec: do we always want to mark as read?
       return;
     }
-    this._emitThreadLoaded(data);
-    this._requestAnswersIfNecessary(data);
-    this._resolveIfNecessary(data);
+    this._superworkflow.markAsRead(threadId).catch(error => this._error(error));
   }
 
   /**
@@ -337,86 +367,41 @@ export default class Conversation extends Workflow {
     const { thread, messages } = data.value || {};
     const placeholderId = getPlaceholderId(thread);
     if (!placeholderId) {
-      return; // not a started new thread
+      return; // not a new thread
     }
     const questionId = getQuestionId(messages && messages[0]);
     if (!questionId) {
-      return; // the response has not arrived yet
+      throw new Error(`questionId is required for thread resolving`);
     }
-    const context = this._getSessionContext(data.session);
-    if (context.threadResolveRequested) {
-      return;
-    }
-    context.threadResolveRequested = true;
-    this._threadId = questionId; // the thread is addressable right away
-    this._resolveNewThread(data.session, placeholderId, thread, questionId).catch(error => this._error(error));
+    // notify history workflow to settle the thread ID
+    this._superworkflow._onConversationResolve(placeholderId, questionId);
+    // settle the panel's own record likewise: with the placeholder gone the
+    // resolution cannot fire twice, and the thread is addressable right away
+    this.updateData({ ...data, value: { ...data.value, thread: settlePlaceholder(thread, questionId) } });
   }
 
   /**
    * Scavenge the created thread out of a response arriving after its session
    * expired: when the user leaves the panel mid-creation, the posting
    * request keeps carrying its placeholder record, and the response still
-   * tells the question id — the thread id, by contract. The placeholder item
-   * in the history list resolves into a real, selectable record all the
-   * same; only the panel (showing something else by now) is left alone.
+   * tells the question id — the thread id, by contract. The session has
+   * moved on, so the panel is left alone: the resolution is only announced,
+   * and the history list settles its placeholder item into a real,
+   * selectable record all the same.
    */
   _onExpiredResponse({ session, request, value }) {
-    const placeholder = request && request.placeholder;
-    const questionId = value && getQuestionId(value);
+    if (!request || request.type !== REQUEST_TYPE.QUERY) {
+      return; // only a posting request may carry a thread creation
+    }
+    const placeholder = request.placeholder;
+    const questionId = getQuestionId(value);
     if (!placeholder || !questionId) {
       return; // not a thread-creating request, or no response to salvage
     }
-    const context = this._getSessionContext(session);
-    if (context.threadResolveRequested) {
-      return; // already resolving (the response arrived before the switch)
-    }
-    context.threadResolveRequested = true;
-    this._resolveNewThread(session, getPlaceholderId(placeholder), placeholder, questionId).catch(error => this._error(error));
-  }
-
-  async _resolveNewThread(session, placeholderId, placeholder, threadId) {
-    // the fetched record over the locally settled one: the server record may
-    // carry no metadata (the v0 API returns question ids only) or the fetch
-    // may fail — the local fields (title, updated_at) stand in either way,
-    // until the next thread list load
-    const thread = Object.freeze({ ...settlePlaceholder(placeholder, threadId), ...await this._fetchThread(threadId) });
-    // the thread is created server-side regardless of what the panel shows
-    // by now: announce the resolution even if the user has switched away, so
-    // the history list settles its placeholder item into a real, selectable
-    // record either way
-    this._bus.emit('resolve', Object.freeze({ placeholderId, thread }));
-    const data = this._hub.states[fields.data()];
-    if (!data || data.session !== session) {
-      return; // the session has moved on; leave the panel alone
-    }
-    this._placeholderId = undefined; // the thread stands on its own id now
-    this.updateData({ ...data, value: { ...data.value, thread } });
-  }
-
-  // the record of the just-created thread. The call bypasses the source, so
-  // the response is adapted here. A failure is not fatal: the local record
-  // stands in, and the next thread list load brings the server one.
-  async _fetchThread(threadId) {
-    try {
-      return fallbackThreadFields(await this._client.api.ask.userHistory.getThread(threadId));
-    } catch (error) {
-      this._warn(`Failed to fetch the created thread ${threadId}`, error);
-      return undefined;
-    }
-  }
-
-  // announce a freshly loaded thread on the bus, once per session
-  _emitThreadLoaded(data) {
-    const context = this._getSessionContext(data.session);
-    if (context.threadLoadedEmitted) {
-      return;
-    }
-    context.threadLoadedEmitted = true;
-    const { thread } = data.value;
-    this._bus.emit('load', Object.freeze({
-      threadId: getThreadId(thread) || this._threadId,
-      thread,
-    }));
+    // notify history workflow to settle the thread ID; if the resolution
+    // had already run in-session before the switch, the settled list item
+    // makes this announcement a no-op
+    this._superworkflow._onConversationResolve(getPlaceholderId(placeholder), questionId);
   }
 
   /**
@@ -451,6 +436,7 @@ export default class Conversation extends Workflow {
   }
 
   _requestAnswers(question_ids) {
+    // TODO: use single answer endpoint when array length = 1
     const { api } = this._options.resolved.answers;
     this._request(mergeApiOptions(api, {
       payload: { question_ids },
@@ -460,22 +446,4 @@ export default class Conversation extends Workflow {
 
 }
 
-makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS, WORKFLOW_CONFIGURABLE.FOLLOW_UP]);
-
-// helpers //
-// the local base record of a created thread: the placeholder, keyed by the
-// thread id it is known to have — the fetched server record merges on top
-function settlePlaceholder(placeholder, threadId) {
-  const { placeholder: _placeholder, placeholder_id: _placeholderId, ...thread } = placeholder;
-  return { ...thread, thread_id: threadId };
-}
-
-function isAnswersRequestData(data) {
-  const { request } = data;
-  return !!request && request.type === REQUEST_TYPE.ANSWERS;
-}
-
-function isFollowUpRequestData(data) {
-  const { request } = data;
-  return !!request && request.type === REQUEST_TYPE.FOLLOW_UP;
-}
+makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.ANSWERS, WORKFLOW_CONFIGURABLE.QUERY]);

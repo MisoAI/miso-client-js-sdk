@@ -27,7 +27,7 @@ export const answersOf = question_ids => question_ids.map(question_id => ({
 export function createClient({
   threads = DEFAULT_THREADS,
   threadDetail = defaultThreadDetail,
-  threadDetailError, // when set, direct getThread() calls fail with it
+  threadDetailError, // when set, thread detail requests fail with it
   answers = question_ids => answersOf(question_ids), // the response is a bare array
 } = {}) {
   threads = threads.map(thread => ({ ...thread })); // a mutable local copy
@@ -39,19 +39,15 @@ export function createClient({
       calls.push('GET threads');
       return { threads: threads.map(thread => ({ ...thread })) };
     },
-    async getThread(threadId) {
-      calls.push(`GET threads/${threadId}`);
-      if (threadDetailError) {
-        throw threadDetailError;
-      }
-      return createdThreads.get(threadId) || threadDetail(threadId);
-    },
     async _run(name, payload, options = {}) {
       calls.push(`${options.method || 'POST'} ${name}`);
       if (name === 'threads') {
         return { threads: threads.map(thread => ({ ...thread })) };
       }
       if (name.startsWith('threads/')) {
+        if (threadDetailError) {
+          throw threadDetailError;
+        }
         const id = name.split('/')[1];
         return createdThreads.get(id) || threadDetail(id);
       }
@@ -59,9 +55,6 @@ export function createClient({
     },
     async updateThread(threadId, payload) {
       calls.push(`PUT threads/${threadId} ${JSON.stringify(payload)}`);
-    },
-    async deleteThread(threadId) {
-      calls.push(`DELETE threads/${threadId}`);
     },
     async deleteThreads(payload) {
       calls.push(`POST threads/_delete ${JSON.stringify(payload)}`);

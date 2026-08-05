@@ -79,7 +79,7 @@ test('lorem: select loads the conversation with answer contents', async () => {
   }
 });
 
-test('lorem: renameThread syncs the list and the open panel', async () => {
+test('lorem: rename syncs the list and the open panel', async () => {
   const client = setup();
   await ask(client, 'What is miso soup?');
 
@@ -89,10 +89,10 @@ test('lorem: renameThread syncs the list and the open panel', async () => {
   const threadId = history.threads[0].thread_id;
   history.select(threadId);
   await tick();
-  await history.renameThread(threadId, 'Soup talk');
+  await history.rename(threadId, 'Soup talk');
   await tick();
 
-  assert.is(history.getThread(threadId).title, 'Soup talk');
+  assert.is(history.get(threadId).title, 'Soup talk');
   assert.is(conversation.thread.title, 'Soup talk');
   // the rename is persisted on the (lorem) server
   history.refresh();
@@ -111,7 +111,7 @@ test('lorem: deleting the open thread resets the panel', async () => {
   const threadId = history.threads[0].thread_id;
   history.select(threadId);
   await tick();
-  await history.deleteThread(threadId);
+  await history.delete(threadId);
   await tick();
 
   assert.is(history.threads.length, 1);
@@ -143,11 +143,11 @@ test('lorem: opening an unread thread marks it as read', async () => {
   await tick();
   assert.is(conversation.threadId, threadId);
   assert.ok(conversation.messages.length > 0);
-  assert.is(history.getThread(threadId).has_new, false);
+  assert.is(history.get(threadId).has_new, false);
   // persisted on the (lorem) server
   history.refresh();
   await tick();
-  assert.is(history.getThread(threadId).has_new, false);
+  assert.is(history.get(threadId).has_new, false);
 });
 
 test('lorem: a follow-up question posts and lands in the conversation', async () => {
@@ -210,7 +210,7 @@ test('lorem: switching away mid-creation still resolves the new thread, without 
       }
       await tick(50);
     }
-    assert.is(history.selectedThreadId, existingId); // the switch is respected
+    assert.is(history.selectedId, existingId); // the switch is respected
     assert.is(conversation.threadId, existingId);
     assert.equal(errors, []);
 
@@ -224,7 +224,7 @@ test('lorem: switching away mid-creation still resolves the new thread, without 
   }
 });
 
-test('lorem: deleteAllThreads clears the history', async () => {
+test('lorem: deleteAll clears the history', async () => {
   const client = setup();
   await ask(client, 'What is miso soup?');
   await ask(client, 'How to cook ramen?');
@@ -232,7 +232,7 @@ test('lorem: deleteAllThreads clears the history', async () => {
   const { history } = client.workflows;
   history.start();
   await tick();
-  await history.deleteAllThreads();
+  await history.deleteAll();
   await tick();
 
   assert.equal(history.threads, []);
@@ -246,16 +246,24 @@ test('lorem: update indicators and subscriptions over the v0 wire', async () => 
   const rootId = await ask(client, 'What is miso soup?');
 
   const { userHistory } = client.api.ask;
-  // the subscription endpoints resolve and succeed (the mock validates the
-  // thread but does not model subscription state)
-  await userHistory.subscribeThread(rootId);
-  await userHistory.unsubscribeThread(rootId);
-
   assert.equal(await userHistory.getNotifications(), { has_new: false });
-  // server-side activity raises the account-level indicator
+
+  // a fresh thread is not subscribed: server-side activity passes it by
+  MisoClient.lorem.api.ask.userHistory.touchThread(rootId);
+  assert.equal(await userHistory.getNotifications(), { has_new: false });
+
+  // a subscribed thread receives updates, raising the account-level indicator
+  await userHistory.subscribeThread(rootId);
   MisoClient.lorem.api.ask.userHistory.touchThread(rootId);
   assert.equal(await userHistory.getNotifications(), { has_new: true });
+
   await userHistory.dismissNotifications();
+  assert.equal(await userHistory.getNotifications(), { has_new: false });
+
+  // unsubscribing withdraws the thread from the updates
+  MisoClient.lorem.api.ask.userHistory.touchThread(rootId);
+  assert.equal(await userHistory.getNotifications(), { has_new: true });
+  await userHistory.unsubscribeThread(rootId);
   assert.equal(await userHistory.getNotifications(), { has_new: false });
 });
 

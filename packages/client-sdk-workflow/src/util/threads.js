@@ -18,12 +18,13 @@ export function getPlaceholderId(thread) {
 }
 
 /**
- * Identity of a thread item as selection and views see it: the thread id, or
- * the placeholder id while the thread has none. Only a placeholder record
- * lacks a thread id, so the two never compete.
+ * Settle a placeholder record into a real thread record, keyed by the thread
+ * id it is known to have: the placeholder marks are stripped, the local
+ * fields (title, updated_at) stand in until server data arrives.
  */
-export function getThreadItemId(thread) {
-  return getThreadId(thread) || getPlaceholderId(thread);
+export function settlePlaceholder(placeholder, threadId) {
+  const { placeholder: _placeholder, placeholder_id: _placeholderId, ...thread } = placeholder;
+  return { ...thread, thread_id: threadId };
 }
 
 export function isThreadUnread(thread) {
@@ -123,19 +124,20 @@ export function normalizeAnswersValue(value) {
 }
 
 /**
- * Merge an answers response data into the current (head) data, in the manner
- * of concatItemsFromMoreResponse: a valueless update (the loading update of
- * the answers request) keeps the current data, so the head data stays on
- * display; a response merges into the head data's messages. The head request
- * is restored on the merged data, so the answers request stays an internal
- * detail of the data flow.
+ * Merge an answers response data — its value normalized to `{ messages }` by
+ * the workflow's default data pass — into the current (head) data, in the
+ * manner of concatItemsFromMoreResponse: a valueless update (the loading
+ * update of the answers request) keeps the current data, so the head data
+ * stays on display; a response merges into the head data's messages. The
+ * head request is restored on the merged data, so the answers request stays
+ * an internal detail of the data flow.
  */
 export function mergeAnswersDataFromResponse(oldData, newData) {
   if (!newData.value) {
     return oldData;
   }
   const oldValue = (oldData && oldData.value) || {};
-  const messages = mergeAnswersIntoMessages(oldValue.messages || [], normalizeAnswersValue(newData.value));
+  const messages = mergeAnswersIntoMessages(oldValue.messages || [], newData.value.messages || []);
   return {
     ...newData,
     request: (oldData && oldData.request) || newData.request,
@@ -144,19 +146,22 @@ export function mergeAnswersDataFromResponse(oldData, newData) {
 }
 
 /**
- * Merge a follow-up question (ask questions API) response data into the
- * current data: the response body is the last message of the conversation.
- * A valueless update (the loading update of the follow-up request) keeps the
- * current data; the head request is restored on the merged data.
+ * Merge a posted question (ask questions API) response data — its value
+ * normalized to `{ messages }` by the workflow's default data pass, carrying
+ * the last message of the conversation — into the current data. A valueless
+ * update (the loading update of the posting request) keeps the current data;
+ * the head request is restored on the merged data.
  */
 export function mergeFollowUpDataFromResponse(oldData, newData) {
   if (!newData.value) {
     return oldData;
   }
+  const newMessages = newData.value.messages || [];
+  const patch = newMessages[newMessages.length - 1] || {};
   const oldValue = (oldData && oldData.value) || {};
   const messages = [...(oldValue.messages || [])];
   const last = messages.length ? messages[messages.length - 1] : {};
-  messages[Math.max(messages.length - 1, 0)] = { ...last, ...newData.value };
+  messages[Math.max(messages.length - 1, 0)] = { ...last, ...patch };
   // restore the head request; in new-thread mode there is none, so strip the
   // request type marker (and the carried placeholder record), lest local
   // patches re-enter this merge
