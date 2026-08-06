@@ -27,8 +27,13 @@ export function settlePlaceholder(placeholder, threadId) {
   return { ...thread, thread_id: threadId };
 }
 
+/**
+ * Whether the thread presents as unread — the UI red dot: it carries new
+ * updates AND the user subscribes to its updates. The two fields are
+ * independent facts; they combine only at presentation.
+ */
 export function isThreadUnread(thread) {
-  return !!thread && thread.has_new === true;
+  return !!thread && thread.subscribed === true && thread.has_new === true;
 }
 
 /**

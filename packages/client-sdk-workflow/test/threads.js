@@ -25,9 +25,11 @@ test('getPlaceholderId', () => {
   assert.is(getPlaceholderId({ thread_id: 't1' }), undefined);
 });
 
-test('isThreadUnread', () => {
-  assert.is(isThreadUnread({ has_new: true }), true);
-  assert.is(isThreadUnread({ has_new: false }), false);
+test('isThreadUnread: derives from subscribed && has_new', () => {
+  assert.is(isThreadUnread({ subscribed: true, has_new: true }), true);
+  assert.is(isThreadUnread({ subscribed: true, has_new: false }), false);
+  assert.is(isThreadUnread({ subscribed: false, has_new: true }), false);
+  assert.is(isThreadUnread({ has_new: true }), false);
   assert.is(isThreadUnread({}), false);
   assert.is(isThreadUnread(undefined), false);
 });

@@ -9,14 +9,16 @@
   --miso-thread-list-item-selected-background: rgba(0, 0, 0, 0.09);
   // the color of the unread marker dot
   --miso-thread-list-unread-marker-color: #e8677a;
+  // the accent of the subscription toggle in its checked (subscribed) state
+  --miso-subscription-checked-color: #1a4ce3;
   // the gap between messages in the conversation
   --miso-message-gap: 1.5rem;
   // the background of the question (user) bubble
   --miso-message-question-background: rgba(26, 76, 227, 0.09804);
 }
 
-// new chat button (miso-new-chat: the generic button layout) //
-miso-new-chat .miso-button {
+// new chat button (miso-new-thread: the generic button layout) //
+miso-new-thread .miso-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -49,14 +51,14 @@ miso-new-chat .miso-button {
     padding: 0;
     margin: 0;
   }
+  // the <li> is the item: it carries the item role and state
   .miso-threads__item {
     margin: var(--miso-thread-list-item-gap) 0 0;
 
     &:first-child {
       margin-top: 0;
     }
-  }
-  .miso-threads__item-body {
+
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -100,7 +102,7 @@ miso-new-chat .miso-button {
   }
 
   // item context menu //
-  .miso-threads__item-body {
+  .miso-threads__item {
     position: relative;
 
     // reveal the menu button on hover/focus
@@ -170,6 +172,47 @@ miso-new-chat .miso-button {
 }
 
 // conversation //
+
+// the thread title of the open thread
+miso-title .miso-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--miso-text-color);
+  font-weight: 600;
+}
+
+// the subscription toggle (miso-subscription: the checkbox layout, which
+// looks like a button) //
+miso-subscription .miso-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--miso-border-color-light);
+  border-radius: 999px;
+  background: none;
+  color: var(--miso-text-color-gray);
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--miso-transition), border-color var(--miso-transition), color var(--miso-transition);
+
+  &:hover {
+    border-color: var(--miso-border-color-medium);
+    background-color: var(--miso-thread-list-item-hover-background);
+  }
+  // checked: the user subscribes to this thread's answer updates
+  &[data-checked] {
+    border-color: var(--miso-subscription-checked-color);
+    color: var(--miso-subscription-checked-color);
+  }
+  .miso-ui-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
 .miso-messages {
   .miso-messages__list {
     list-style: none !important;

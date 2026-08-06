@@ -8,6 +8,13 @@ import prompt from '../../util/prompt.js';
 const TYPE = LAYOUT_TYPE.THREADS;
 const DEFAULT_CLASSNAME = 'miso-threads';
 
+// the thread template renders the <li> itself (it is the item, carrying the
+// item role and state), so the stock <li> wrapping is skipped
+function item(layout, state, value, index) {
+  const { templates, options } = layout;
+  return templates[options.itemType](layout, state, value, { index });
+}
+
 /**
  * The thread list of the chat history interface: a list of `thread` items.
  *
@@ -37,7 +44,7 @@ export default class ThreadsLayout extends CollectionLayout {
   constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
     super({
       className,
-      templates: { ...templates },
+      templates: { item, ...templates },
       ...options,
     });
   }

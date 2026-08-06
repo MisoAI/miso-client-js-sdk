@@ -32,6 +32,9 @@ export function question(layout, state, data) {
   return `${openTag}${data.value || data.text || data}${closeTag}`;
 }
 
+// the <li> itself is the item: it carries the item role, the thread identity
+// and the item state — a thread item is not a link, so no anchor body (and
+// the wrapper div around it) is needed
 export function thread(layout, state, data) {
   const { className, templates } = layout;
   const threadId = getThreadId(data);
@@ -39,7 +42,7 @@ export function thread(layout, state, data) {
   const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
   const selectedAttr = data.selected ? ' data-selected' : '';
   const title = escapeHtml(data.title || 'Untitled');
-  return `<div class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__title">${title}</div>${(templates.threadMenuBlock || threadMenuBlock)(layout, data)}</div>`;
+  return `<li class="${className}__item" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__title">${title}</div>${(templates.threadMenuBlock || threadMenuBlock)(layout, data)}</li>`;
 }
 
 export function threadMenuBlock({ className }) {

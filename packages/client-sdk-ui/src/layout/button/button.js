@@ -35,7 +35,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
  *
  * It carries no data of its own, so it renders in any state; use it for
  * actions that stand apart from the data they act on, such as the new chat
- * button (role `new_chat`) of the chat history interface.
+ * button (role `new_thread`) of the chat history interface.
  */
 export default class ButtonLayout extends TemplateBasedLayout {
 

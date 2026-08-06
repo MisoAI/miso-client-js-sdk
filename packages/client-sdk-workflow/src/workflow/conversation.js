@@ -7,11 +7,18 @@ import { getThreadId, getPlaceholderId, getQuestionId, isThreadUnread, settlePla
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  members: [ROLE.MESSAGES, ROLE.QUERY],
+  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.SUBSCRIPTION],
   mappings: {
     [ROLE.MESSAGES]: data => data.value && data.value.messages,
+    [ROLE.TITLE]: data => threadOf(data) && threadOf(data).title,
+    // the checkbox renders its checked state right off the data
+    [ROLE.SUBSCRIPTION]: data => !!(threadOf(data) && threadOf(data).subscribed),
   },
 });
+
+function threadOf(data) {
+  return data.value && data.value.thread;
+}
 
 /**
  * The conversation panel of the chat history interface, backed by the user
@@ -67,6 +74,7 @@ export default class Conversation extends Workflow {
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._onQuery(args)),
       this._hub.on(fields.expiredResponse(), response => this._onExpiredResponse(response)),
+      this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
     ];
   }
 
@@ -119,6 +127,9 @@ export default class Conversation extends Workflow {
       return this;
     }
     this.restart();
+    // mark as read as soon as it's loading: the user may just want to clear
+    // the red dot
+    this._markAsReadIfNecessary(threadId, data);
     // the request carries the thread identity and the list record, so the
     // data layer holds all the state of the load
     this._request({
@@ -127,8 +138,6 @@ export default class Conversation extends Workflow {
       threadId,
       thread: data,
     });
-    // mark as read as soon as it's loading: user may just want to clear the red dot
-    this._markAsReadIfNecessary(data);
     return this;
   }
 
@@ -177,6 +186,37 @@ export default class Conversation extends Workflow {
       ...(placeholder ? { placeholder } : {}),
     }));
     return this;
+  }
+
+  // thread operations //
+  /**
+   * Thread-level operations on the thread on display, delegated to the
+   * history workflow, where the mutation calls the API and applies the fact
+   * to both panels. They require a loaded thread: a thread being created
+   * (or none at all) has no server identity to operate on.
+   */
+  rename(title) {
+    return this._superworkflow.rename(this._requireThreadId('rename'), title);
+  }
+
+  subscribe() {
+    return this._superworkflow.subscribe(this._requireThreadId('subscribe'));
+  }
+
+  unsubscribe() {
+    return this._superworkflow.unsubscribe(this._requireThreadId('unsubscribe'));
+  }
+
+  delete() {
+    return this._superworkflow.delete(this._requireThreadId('delete'));
+  }
+
+  _requireThreadId(method) {
+    const threadId = this.threadId;
+    if (!threadId) {
+      throw new Error(`No thread is on display for ${method}() call`);
+    }
+    return threadId;
   }
 
   // the local record standing in for a thread being created, announced to
@@ -245,6 +285,13 @@ export default class Conversation extends Workflow {
     q && this.send(q);
   }
 
+  _onViewSubscriptionChange({ checked }) {
+    if (!this.threadId) {
+      return; // a thread being created has no subscription to toggle yet
+    }
+    checked ? this.subscribe() : this.unsubscribe();
+  }
+
   // request //
   _writeRequestTimeToSession(timestamp, options = {}) {
     // only the head request marks the session request time
@@ -282,12 +329,15 @@ export default class Conversation extends Workflow {
 
   // the list record of the loaded thread (carried by the head request) fills
   // in the thread metadata (title, ...) the head response may not carry —
-  // the v0 API returns question ids only
+  // the v0 API returns question ids only. The thread on display carries no
+  // unread flag whatever the record or the response says: load() marks it as
+  // read, so an open thread is read by definition
   _mergeThreadData(value, { thread } = {}) {
-    if (!thread || !value || !value.thread || getThreadId(thread) !== getThreadId(value.thread)) {
+    if (!value || !value.thread) {
       return value;
     }
-    return { ...value, thread: { ...thread, ...value.thread } };
+    const record = thread && getThreadId(thread) === getThreadId(value.thread) ? thread : undefined;
+    return { ...value, thread: { ...record, ...value.thread, has_new: false } };
   }
 
   _updateDataInHub(data, oldData) {
@@ -338,24 +388,16 @@ export default class Conversation extends Workflow {
   }
 
   /**
-   * Opening a thread marks it as read — once its answer contents arrive,
-   * not at load() time: the mark patches both panels optimistically, and a
-   * response still in flight would carry the unread flag back in. The
-   * unread state is read off the displayed record, falling back to the list
-   * record for responses that carry no metadata; the patch itself flips
-   * has_new off everywhere, so the mark fires once.
+   * Opening a thread marks it as read, right at load time. The unread state
+   * is read off the list record passed along by the selection, falling back
+   * to the listed record for recordless loads.
    */
-  _markAsReadIfNecessary(data) {
-    const { thread } = data.value || {};
-    const threadId = getThreadId(thread);
-    if (!threadId) {
-      return; // a placeholder (new or creating a thread), not landed thread data
-    }
-    if (!isThreadUnread(thread)) {
+  _markAsReadIfNecessary(threadId, thread) {
+    if (!isThreadUnread(thread) && !isThreadUnread(this._superworkflow.get(threadId))) {
       // TODO: check spec: do we always want to mark as read?
       return;
     }
-    this._superworkflow.markAsRead(threadId).catch(error => this._error(error));
+    this._superworkflow.markAsRead(threadId);
   }
 
   /**

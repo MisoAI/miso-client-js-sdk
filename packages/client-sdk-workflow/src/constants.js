@@ -27,8 +27,10 @@ export const ROLE = Object.freeze({
   SORT: 'sort',
   ERROR: 'error',
   THREADS: 'threads',
-  NEW_CHAT: 'new_chat',
+  NEW_THREAD: 'new_thread',
   MESSAGES: 'messages',
+  TITLE: 'title',
+  SUBSCRIPTION: 'subscription',
 });
 
 const DATA_ROLE_SET = new Set([

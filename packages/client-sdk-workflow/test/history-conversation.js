@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { STATUS, REQUEST_TYPE, getThreadId, getPlaceholderId } from '../src/index.js';
+import { STATUS, ROLE, REQUEST_TYPE, getThreadId, getPlaceholderId, isThreadUnread } from '../src/index.js';
 import { createClient, tick, answersOf } from './dummy.js';
 
 test('history: works standalone, with no conversation panel constructed', async () => {
@@ -11,7 +11,7 @@ test('history: works standalone, with no conversation panel constructed', async 
   history.start();
   await tick();
   history.select('t2');
-  await history.delete('t1');
+  history.delete('t1');
   await tick();
 
   assert.is(history.selectedId, 't2');
@@ -123,7 +123,7 @@ test('rename: patches both panels, keeping merged messages', async () => {
   await tick();
   history.select('t2');
   await tick();
-  await history.rename('t2', 'Renamed');
+  history.rename('t2', 'Renamed');
 
   assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
   assert.is(history.get('t2').title, 'Renamed');
@@ -137,11 +137,106 @@ test('rename view event: renames the thread', async () => {
 
   history.start();
   await tick();
-  history._onViewThreadRename({ value: history.get('t1'), title: 'Renamed' });
+  history._onViewThreadsRename({ value: history.get('t1'), title: 'Renamed' });
   await tick();
 
   assert.ok(calls.includes('PUT threads/t1 {"title":"Renamed"}'));
   assert.is(history.get('t1').title, 'Renamed');
+});
+
+test('subscribe/unsubscribe: patches the record and calls the api', async () => {
+  const { client, calls } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+  assert.is(history.get('t2').has_new, true);
+
+  history.unsubscribe('t2');
+  assert.ok(calls.includes('POST threads/t2/unsubscribe'));
+  assert.is(history.get('t2').subscribed, false);
+  // the unread fact is independent; the unread presentation derives from both
+  assert.is(history.get('t2').has_new, true);
+  assert.is(isThreadUnread(history.get('t2')), false);
+
+  history.subscribe('t2');
+  assert.ok(calls.includes('POST threads/t2/subscribe'));
+  assert.is(history.get('t2').subscribed, true);
+  assert.is(isThreadUnread(history.get('t2')), true);
+});
+
+test('conversation thread operations delegate to the history workflow', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+
+  conversation.rename('Renamed');
+  assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
+  assert.is(history.get('t2').title, 'Renamed');
+  assert.is(conversation.thread.title, 'Renamed');
+
+  conversation.unsubscribe();
+  assert.is(history.get('t2').subscribed, false);
+  conversation.subscribe();
+  assert.is(history.get('t2').subscribed, true);
+
+  conversation.delete();
+  assert.ok(calls.includes('POST threads/_delete {"thread_ids":["t2"]}'));
+  assert.not.ok(history.get('t2'));
+  assert.is(conversation.threadId, undefined); // the panel resets
+  assert.is(conversation.thread.placeholder, true);
+});
+
+test('conversation: the subscription role maps the state and toggles it', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+  const roles = conversation._roles.mappings;
+  const subscribed = () => roles[ROLE.SUBSCRIPTION](conversation.states.data);
+  const title = () => roles[ROLE.TITLE](conversation.states.data);
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+
+  // the header roles render right off the data
+  assert.is(title(), 'Second thread');
+  assert.is(subscribed(), true);
+
+  // the checkbox reports the state it requests; the workflow acts on it
+  conversation._onViewSubscriptionChange({ checked: false });
+  await tick();
+  assert.ok(calls.includes('POST threads/t2/unsubscribe'));
+  assert.is(subscribed(), false);
+
+  conversation._onViewSubscriptionChange({ checked: true });
+  await tick();
+  assert.ok(calls.includes('POST threads/t2/subscribe'));
+  assert.is(subscribed(), true);
+});
+
+test('conversation: the subscription toggle is a no-op with no thread loaded', async () => {
+  const { client, calls } = createClient();
+  const { conversation } = client.workflows;
+  const before = calls.length;
+
+  // new-thread mode: nothing to subscribe to
+  conversation._onViewSubscriptionChange({ checked: true });
+  await tick();
+  assert.equal(calls.slice(before), []);
+});
+
+test('conversation thread operations require a loaded thread', async () => {
+  const { client } = createClient();
+  const { conversation } = client.workflows;
+
+  // new-thread mode: no server identity to operate on
+  assert.throws(() => conversation.rename('Renamed'), /No thread is on display/);
+  assert.throws(() => conversation.delete(), /No thread is on display/);
 });
 
 test('delete: removes from the list and resets the open panel', async () => {
@@ -152,7 +247,7 @@ test('delete: removes from the list and resets the open panel', async () => {
   await tick();
   history.select('t1');
   await tick();
-  await history.delete('t1'); // a single id works without an array
+  history.delete('t1'); // a single id works without an array
   await tick();
 
   assert.ok(calls.includes('POST threads/_delete {"thread_ids":["t1"]}'));
@@ -173,7 +268,7 @@ test('delete: an unrelated thread leaves the open panel alone', async () => {
   await tick();
   history.select('t2');
   await tick();
-  await history.delete(['t1']);
+  history.delete(['t1']);
   await tick();
 
   assert.is(conversation.threadId, 't2');
@@ -188,7 +283,7 @@ test('deleteAll: clears the list and resets the panel', async () => {
   await tick();
   history.select('t2');
   await tick();
-  await history.deleteAll();
+  history.deleteAll();
   await tick();
 
   assert.ok(calls.includes('POST threads/_delete_all'));
@@ -323,9 +418,9 @@ test('a placeholder item is not addressed as a thread', async () => {
 
   // the view actions read the thread id, which a placeholder has none of, so
   // none reaches the API
-  history._onViewThreadDelete({ value: placeholder });
-  history._onViewThreadRename({ value: placeholder, title: 'Renamed' });
-  history._onViewThreadSelect({ value: placeholder });
+  history._onViewThreadsDelete({ value: placeholder });
+  history._onViewThreadsRename({ value: placeholder, title: 'Renamed' });
+  history._onViewThreadsSelect({ value: placeholder });
   assert.equal(calls.slice(apiCallsBefore), []);
 
   // and selecting it explicitly does not load it as a thread either: the
@@ -370,7 +465,7 @@ test('switching to new chat mid-creation: the thread is scavenged all the same',
   history.start();
   await tick();
   conversation.send('A brand new question');
-  history._onViewNetChatSubmit();
+  history._onViewNewThreadSubmit();
   await tick(30);
 
   assert.not.ok(history.threads.some(t => t.placeholder));
@@ -435,7 +530,7 @@ test('history: the new chat action clears the selection and resets the conversat
   await tick();
   assert.is(conversation.threadId, 't2');
 
-  history._onViewNetChatSubmit();
+  history._onViewNewThreadSubmit();
   assert.is(history.selectedId, undefined);
   assert.is(conversation.threadId, undefined);
   assert.is(conversation.thread.placeholder, true);
@@ -452,7 +547,7 @@ test('history: the new chat action with nothing selected leaves both panels alon
   const { thread } = conversation;
   const listData = history.states.data;
 
-  history._onViewNetChatSubmit(); // nothing is selected, the panel is on a new thread
+  history._onViewNewThreadSubmit(); // nothing is selected, the panel is on a new thread
   assert.is(history.states.data, listData); // no selection to clear, no re-commit
   assert.is(conversation.session, session); // no new session, no re-render
   assert.is(conversation.thread, thread);
@@ -461,7 +556,7 @@ test('history: the new chat action with nothing selected leaves both panels alon
 
   // but a new thread with a question asked does reset
   conversation.send('A brand new question');
-  history._onViewNetChatSubmit();
+  history._onViewNewThreadSubmit();
   assert.is.not(conversation.session, session);
   assert.is(conversation.thread.placeholder, true);
   assert.equal(conversation.messages, []);

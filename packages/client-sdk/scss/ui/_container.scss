@@ -62,7 +62,12 @@ miso-hybrid-search-combo {
 miso-query,
 miso-answer,
 miso-threads,
-miso-new-chat,
+miso-new-thread,
+miso-title,
 miso-messages {
   display: block;
+}
+
+miso-subscription {
+  display: inline-flex;
 }

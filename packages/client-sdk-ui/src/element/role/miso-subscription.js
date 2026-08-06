@@ -1,16 +1,16 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoNewChatElement extends MisoComponentElement {
+export default class MisoSubscriptionElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.NEW_CHAT,
+      role: ROLE.SUBSCRIPTION,
     });
   }
 
   static get tagName() {
-    return 'miso-new-chat';
+    return 'miso-subscription';
   }
 
 }

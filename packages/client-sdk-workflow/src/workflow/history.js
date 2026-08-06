@@ -7,7 +7,7 @@ import { getThreadId, getPlaceholderId, settlePlaceholder, normalizeThreadsValue
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
-  members: [ROLE.THREADS, ROLE.NEW_CHAT],
+  members: [ROLE.THREADS, ROLE.NEW_THREAD],
   mappings: {
     // the records carry their selection state in the data layer already
     [ROLE.THREADS]: data => data.value && data.value.threads,
@@ -49,10 +49,10 @@ export default class History extends Workflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadSelect(event)),
-      this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadRename(event)),
-      this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadDelete(event)),
-      this._views.on(ROLE.NEW_CHAT, 'submit', () => this._onViewNetChatSubmit()),
+      this._views.on(ROLE.THREADS, 'select', event => this._onViewThreadsSelect(event)),
+      this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadsRename(event)),
+      this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadsDelete(event)),
+      this._views.on(ROLE.NEW_THREAD, 'submit', () => this._onViewNewThreadSubmit()),
     ];
   }
 
@@ -117,21 +117,40 @@ export default class History extends Workflow {
     return this;
   }
 
-  // mutations //
-  async rename(threadId, title) {
+  rename(threadId, title) {
     this._api.updateThread(threadId, { title }); // no await
     this._applyThreadUpdate(Object.freeze({ threadId, changes: { title } }));
   }
 
-  async markAsRead(threadId) {
+  markAsRead(threadId) {
     this._api.markThreadAsRead(threadId); // no await
-    this._applyThreadUpdate(Object.freeze({ threadId, changes: { has_new: false } }));
+    // no need to notify conversation
+    this._onThreadUpdated(Object.freeze({ threadId, changes: { has_new: false } }));
+  }
+
+  /**
+   * Subscribe the thread to answer updates.
+   */
+  subscribe(threadId) {
+    this._api.subscribeThread(threadId); // no await
+    this._applyThreadUpdate(Object.freeze({ threadId, changes: { subscribed: true } }));
+  }
+
+  /**
+   * Withdraw the thread from answer updates. The unread fact (has_new) is
+   * untouched — subscribed and has_new are independent, and the unread
+   * presentation (isThreadUnread) derives from both, so the red dot hides
+   * all the same.
+   */
+  unsubscribe(threadId) {
+    this._api.unsubscribeThread(threadId); // no await
+    this._applyThreadUpdate(Object.freeze({ threadId, changes: { subscribed: false } }));
   }
 
   /**
    * Delete one or more threads: takes a thread id or an array of them.
    */
-  async delete(threadIds) {
+  delete(threadIds) {
     threadIds = asArray(threadIds);
     if (!threadIds.length) {
       return;
@@ -142,7 +161,7 @@ export default class History extends Workflow {
     this._conversation && this._conversation._onThreadDeleted(event);
   }
 
-  async deleteAll() {
+  deleteAll() {
     this._api.deleteAllThreads(); // no await
     this._onAllThreadsDeleted();
     this._conversation && this._conversation._onAllThreadsDeleted();
@@ -160,7 +179,7 @@ export default class History extends Workflow {
   }
 
   // view actions //
-  _onViewNetChatSubmit() {
+  _onViewNewThreadSubmit() {
     if (!this.selectedId) {
       return;
     }
@@ -169,17 +188,17 @@ export default class History extends Workflow {
     this._conversation && this._conversation.new();
   }
 
-  _onViewThreadSelect({ value: thread }) {
+  _onViewThreadsSelect({ value: thread }) {
     const threadId = getThreadId(thread);
     threadId && this.select(threadId);
   }
 
-  _onViewThreadRename({ value: thread, title }) {
+  _onViewThreadsRename({ value: thread, title }) {
     const threadId = getThreadId(thread);
     threadId && title && this.rename(threadId, title);
   }
 
-  _onViewThreadDelete({ value: thread }) {
+  _onViewThreadsDelete({ value: thread }) {
     // TODO: what happens if deleting a placeholder thread?
     const threadId = getThreadId(thread);
     threadId && this.delete(threadId);

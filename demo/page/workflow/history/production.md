@@ -47,6 +47,27 @@
   .miso-history-demo miso-query {
     flex: none;
   }
+  /* conversation header: thread title on the left, subscription toggle on the
+     right. The visible-when mechanism forces `display: block` on the element
+     it toggles, so the flex row lives in an inner wrapper. */
+  .miso-history-demo__header {
+    flex: none;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--miso-border-color-light);
+  }
+  .miso-history-demo__header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .miso-history-demo__header miso-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 1.125rem;
+  }
+  .miso-history-demo__header miso-subscription {
+    flex: none;
+  }
   /* new-thread (empty) state: intro headline + composer centered in the panel */
   .miso-history-demo miso-conversation[status~="empty"] {
     justify-content: center;
@@ -64,10 +85,16 @@
 </style>
 <div class="miso-history-demo">
   <miso-history>
-    <miso-new-chat></miso-new-chat>
+    <miso-new-thread></miso-new-thread>
     <miso-threads></miso-threads>
   </miso-history>
   <miso-conversation>
+    <div class="miso-history-demo__header" visible-when="nonempty">
+      <div class="miso-history-demo__header-row">
+        <miso-title></miso-title>
+        <miso-subscription></miso-subscription>
+      </div>
+    </div>
     <div class="miso-history-demo__intro" visible-when="empty">What can I help with?</div>
     <miso-messages></miso-messages>
     <miso-query visible-when="ready"></miso-query>

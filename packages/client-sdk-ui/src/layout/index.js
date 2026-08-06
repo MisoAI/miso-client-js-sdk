@@ -20,3 +20,4 @@ export { default as FacetsLayout } from './input/facets.js';
 export { default as SelectLayout } from './input/select.js';
 export { default as MoreButtonLayout } from './button/more-button.js';
 export { default as ButtonLayout } from './button/button.js';
+export { default as CheckboxLayout } from './button/checkbox.js';

@@ -9,8 +9,8 @@ import { WorkflowPlugin, Workflows } from '../src/index.js';
 export const tick = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const DEFAULT_THREADS = [
-  { thread_id: 't1', title: 'First thread', has_new: false },
-  { thread_id: 't2', title: 'Second thread', has_new: true },
+  { thread_id: 't1', title: 'First thread', subscribed: true, has_new: false },
+  { thread_id: 't2', title: 'Second thread', subscribed: true, has_new: true },
 ];
 
 export const defaultThreadDetail = id => ({
@@ -64,6 +64,12 @@ export function createClient({
     },
     async markThreadAsRead(threadId) {
       calls.push(`POST threads/${threadId}/read`);
+    },
+    async subscribeThread(threadId) {
+      calls.push(`POST threads/${threadId}/subscribe`);
+    },
+    async unsubscribeThread(threadId) {
+      calls.push(`POST threads/${threadId}/unsubscribe`);
     },
   };
 

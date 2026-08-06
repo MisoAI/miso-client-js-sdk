@@ -89,7 +89,7 @@ test('lorem: rename syncs the list and the open panel', async () => {
   const threadId = history.threads[0].thread_id;
   history.select(threadId);
   await tick();
-  await history.rename(threadId, 'Soup talk');
+  history.rename(threadId, 'Soup talk');
   await tick();
 
   assert.is(history.get(threadId).title, 'Soup talk');
@@ -111,7 +111,7 @@ test('lorem: deleting the open thread resets the panel', async () => {
   const threadId = history.threads[0].thread_id;
   history.select(threadId);
   await tick();
-  await history.delete(threadId);
+  history.delete(threadId);
   await tick();
 
   assert.is(history.threads.length, 1);
@@ -232,7 +232,7 @@ test('lorem: deleteAll clears the history', async () => {
   const { history } = client.workflows;
   history.start();
   await tick();
-  await history.deleteAll();
+  history.deleteAll();
   await tick();
 
   assert.equal(history.threads, []);
@@ -260,10 +260,13 @@ test('lorem: update indicators and subscriptions over the v0 wire', async () => 
   await userHistory.dismissNotifications();
   assert.equal(await userHistory.getNotifications(), { has_new: false });
 
-  // unsubscribing withdraws the thread from the updates
+  // unsubscribing stops future updates, but an already raised indicator
+  // stays until dismissed — subscribed and has_new are independent facts
   MisoClient.lorem.api.ask.userHistory.touchThread(rootId);
   assert.equal(await userHistory.getNotifications(), { has_new: true });
   await userHistory.unsubscribeThread(rootId);
+  assert.equal(await userHistory.getNotifications(), { has_new: true });
+  await userHistory.dismissNotifications();
   assert.equal(await userHistory.getNotifications(), { has_new: false });
 });
 
