@@ -21,6 +21,7 @@ export { default as MisoSortElement } from './miso-sort.js';
 export { default as MisoThreadsElement } from './miso-threads.js';
 export { default as MisoNewThreadElement } from './miso-new-thread.js';
 export { default as MisoTitleElement } from './miso-title.js';
+export { default as MisoRenameElement } from './miso-rename.js';
 export { default as MisoSubscriptionElement } from './miso-subscription.js';
 export { default as MisoMessagesElement } from './miso-messages.js';
 export { default as MisoErrorElement } from './miso-error.js';

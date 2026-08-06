@@ -245,8 +245,11 @@ function asMappingFunction(fn) {
   switch (typeof fn) {
     case 'function':
       return fn;
-    case 'string':
-      return data => data.value && data.value[fn];
+    case 'string': {
+      // a (dot-separated) path into the data value, e.g. 'thread.title'
+      const path = fn.split('.');
+      return data => path.reduce((value, key) => value === undefined || value === null ? undefined : value[key], data.value);
+    }
     default:
       throw new Error(`Invalid mapping function: ${fn}`);
   }

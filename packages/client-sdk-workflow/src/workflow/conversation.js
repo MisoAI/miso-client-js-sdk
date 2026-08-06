@@ -7,18 +7,16 @@ import { getThreadId, getPlaceholderId, getQuestionId, isThreadUnread, settlePla
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.SUBSCRIPTION],
+  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.SUBSCRIPTION],
   mappings: {
-    [ROLE.MESSAGES]: data => data.value && data.value.messages,
-    [ROLE.TITLE]: data => threadOf(data) && threadOf(data).title,
-    // the checkbox renders its checked state right off the data
-    [ROLE.SUBSCRIPTION]: data => !!(threadOf(data) && threadOf(data).subscribed),
+    // the header roles map (dot-path) into the open thread's record: the
+    // title text, the rename dialog's pre-fill, the checkbox's checked state
+    [ROLE.MESSAGES]: 'messages',
+    [ROLE.TITLE]: 'thread.title',
+    [ROLE.RENAME]: 'thread.title',
+    [ROLE.SUBSCRIPTION]: 'thread.subscribed',
   },
 });
-
-function threadOf(data) {
-  return data.value && data.value.thread;
-}
 
 /**
  * The conversation panel of the chat history interface, backed by the user
@@ -74,6 +72,7 @@ export default class Conversation extends Workflow {
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._onQuery(args)),
       this._hub.on(fields.expiredResponse(), response => this._onExpiredResponse(response)),
+      this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
     ];
   }
@@ -283,6 +282,13 @@ export default class Conversation extends Workflow {
   // view actions //
   _onQuery({ q }) {
     q && this.send(q);
+  }
+
+  _onViewRenameSubmit({ value }) {
+    if (!value || !this.threadId) {
+      return; // a thread being created has no server identity to rename yet
+    }
+    this.rename(value);
   }
 
   _onViewSubscriptionChange({ checked }) {

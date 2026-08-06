@@ -58,15 +58,19 @@
   .miso-history-demo__header-row {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
   }
   .miso-history-demo__header miso-title {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
     font-size: 1.125rem;
   }
+  .miso-history-demo__header miso-rename {
+    flex: none;
+  }
   .miso-history-demo__header miso-subscription {
     flex: none;
+    margin-left: auto;
   }
   /* new-thread (empty) state: intro headline + composer centered in the panel */
   .miso-history-demo miso-conversation[status~="empty"] {
@@ -92,6 +96,7 @@
     <div class="miso-history-demo__header" visible-when="nonempty">
       <div class="miso-history-demo__header-row">
         <miso-title></miso-title>
+        <miso-rename></miso-rename>
         <miso-subscription></miso-subscription>
       </div>
     </div>

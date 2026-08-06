@@ -195,16 +195,18 @@ test('conversation: the subscription role maps the state and toggles it', async 
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
   const roles = conversation._roles.mappings;
-  const subscribed = () => roles[ROLE.SUBSCRIPTION](conversation.states.data);
-  const title = () => roles[ROLE.TITLE](conversation.states.data);
+  const subscribed = () => conversation.thread && conversation.thread.subscribed;
+
+  // the header roles are dot-paths into the open thread's record
+  assert.is(roles[ROLE.TITLE], 'thread.title');
+  assert.is(roles[ROLE.SUBSCRIPTION], 'thread.subscribed');
 
   history.start();
   await tick();
   history.select('t2');
   await tick();
 
-  // the header roles render right off the data
-  assert.is(title(), 'Second thread');
+  assert.is(conversation.thread.title, 'Second thread');
   assert.is(subscribed(), true);
 
   // the checkbox reports the state it requests; the workflow acts on it
@@ -217,6 +219,34 @@ test('conversation: the subscription role maps the state and toggles it', async 
   await tick();
   assert.ok(calls.includes('POST threads/t2/subscribe'));
   assert.is(subscribed(), true);
+});
+
+test('conversation: the rename submit renames through the history workflow', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+  const roles = conversation._roles.mappings;
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+
+  // the rename role maps the current title, pre-filling the dialog
+  assert.is(roles[ROLE.RENAME], 'thread.title');
+
+  conversation._onViewRenameSubmit({ value: 'Renamed' });
+  await tick();
+  assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
+  assert.is(history.get('t2').title, 'Renamed');
+  assert.is(conversation.thread.title, 'Renamed');
+
+  // an empty title, or no thread loaded, is a no-op
+  const before = calls.length;
+  conversation._onViewRenameSubmit({ value: '' });
+  conversation.new({ force: true });
+  conversation._onViewRenameSubmit({ value: 'Nope' });
+  await tick();
+  assert.equal(calls.slice(before), []);
 });
 
 test('conversation: the subscription toggle is a no-op with no thread loaded', async () => {

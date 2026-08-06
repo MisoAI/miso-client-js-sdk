@@ -30,6 +30,7 @@ export const ROLE = Object.freeze({
   NEW_THREAD: 'new_thread',
   MESSAGES: 'messages',
   TITLE: 'title',
+  RENAME: 'rename',
   SUBSCRIPTION: 'subscription',
 });
 

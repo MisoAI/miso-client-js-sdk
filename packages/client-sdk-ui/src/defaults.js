@@ -100,6 +100,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message', incremental: true }],
     [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a follow-up question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div' }],
+    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { icon: 'pencil', prompt: { title: 'Rename thread', placeholder: 'Thread name', confirmText: 'Rename' } }],
     [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
   }),
 
