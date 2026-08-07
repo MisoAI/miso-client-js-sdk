@@ -100,7 +100,7 @@
         <miso-subscription></miso-subscription>
       </div>
     </div>
-    <div class="miso-history-demo__intro" visible-when="empty">What can I help with?</div>
+    <div class="miso-history-demo__intro" visible-when="ready+empty">What can I help with?</div>
     <miso-messages></miso-messages>
     <miso-query visible-when="ready"></miso-query>
   </miso-conversation>

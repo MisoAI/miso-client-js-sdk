@@ -80,7 +80,7 @@
   .miso-history-demo__header-row {
     display: flex;
     align-items: center;
-    gap: gap: 0.5rem;
+    gap: 0.5rem;
   }
   .miso-history-demo__header miso-title {
     flex: 0 1 auto;
@@ -127,7 +127,7 @@
           <miso-subscription></miso-subscription>
         </div>
       </div>
-      <div class="miso-history-demo__intro" visible-when="empty">What can I help with?</div>
+      <div class="miso-history-demo__intro" visible-when="ready+empty">What can I help with?</div>
       <miso-messages></miso-messages>
       <miso-query visible-when="ready"></miso-query>
     </miso-conversation>
@@ -138,12 +138,16 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   MisoClient.plugins.use('std:ui');
   await MisoClient.plugins.install('std:lorem');
-  MisoClient.plugins.use('std:lorem');
+  // mock latency exposes issues in the loading phase
+  MisoClient.plugins.use('std:lorem', { latency: 500 });
   // seed the user history with server-side threads, some unread
-  MisoClient.lorem.api.ask.userHistory.generateThreads({ rows: 12 }, { seed: 42 });
-  const client = new MisoClient({
-    apiKey: '...',
+  const { userHistory } = MisoClient.lorem.api.ask;
+  userHistory.generateThreads({ rows: 12 }, { seed: 42 });
+  // touch a few threads up front, so update indicators show right away
+  userHistory.threads().threads.filter(t => t.subscribed).slice(0, 3).forEach((thread, i) => {
+    userHistory.touchThread(thread.thread_id, { generate: true }, { seed: 100 + i });
   });
+  const client = new MisoClient('...');
   client.workflows.history.start();
   // simulate server-side activity: touch a random thread, generating a fresh
   // answer in it, so the update indicators can be exercised on demand

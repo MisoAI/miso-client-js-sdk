@@ -1,8 +1,10 @@
 import { Resolution, pacer, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { hasAnswer } from '@miso.ai/client-sdk-workflow';
+import { hasAnswer, getGeneratedBy } from '@miso.ai/client-sdk-workflow';
 import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { cursorClassName } from '../text/typewriter/utils.js';
+import { messageAuthor } from '../templates.js';
+import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.MESSAGES;
 const DEFAULT_CLASSNAME = 'miso-messages';
@@ -123,9 +125,16 @@ export default class MessagesLayout extends CollectionLayout {
     return typewriter ? !typewriter.done : message.finished === false;
   }
 
-  _syncQuestion(item, { question }) {
+  _syncQuestion(item, message) {
     const questionElement = item.querySelector('[data-role="question"]');
-    if (!questionElement || !question || questionElement.textContent === question) {
+    if (!questionElement) {
+      return;
+    }
+    // the authorship arrives with the answers response, after the stub render
+    setOrRemoveAttribute(questionElement, 'data-author', messageAuthor(message));
+    setOrRemoveAttribute(questionElement, 'data-generated-by', getGeneratedBy(message));
+    const { question } = message;
+    if (!question || questionElement.textContent === question) {
       return;
     }
     questionElement.textContent = question;

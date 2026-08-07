@@ -15,6 +15,10 @@
   --miso-message-gap: 1.5rem;
   // the background of the question (user) bubble
   --miso-message-question-background: rgba(26, 76, 227, 0.09804);
+  // the background of a question bubble written by the answer-updates monitor
+  --miso-message-generated-question-background: rgba(111, 66, 193, 0.09);
+  // the author label over the question bubble
+  --miso-message-author-color: var(--miso-text-color-gray);
 }
 
 // new chat button (miso-new-thread: the generic button layout) //
@@ -260,11 +264,34 @@ miso-subscription .miso-checkbox {
     color: var(--miso-text-color);
   }
   .miso-messages__question {
+    position: relative;
     align-self: flex-end;
     max-width: 75%;
     padding: 0.625rem 1rem;
     border-radius: 1.25rem;
     background-color: var(--miso-message-question-background);
+
+    &[data-author] {
+      margin-top: 0.5rem; // room for the author label overlapping the top border
+    }
+    // the author label (e.g. 'Written by Miso', stamped as data-author),
+    // overlapping the left side of the top border
+    &[data-author]::before {
+      content: attr(data-author);
+      position: absolute;
+      bottom: calc(100% + 0.5em);
+      right: 1rem;
+      color: var(--miso-message-author-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      line-height: 1rem;
+      white-space: nowrap;
+    }
+
+    // a question written by the answer-updates monitor, not the user
+    &[data-generated-by='answer_update_monitor'] {
+      background-color: var(--miso-message-generated-question-background);
+    }
   }
   .miso-messages__answer {
     align-self: stretch;

@@ -2,6 +2,7 @@ import { isInBrowser } from '@miso.ai/commons';
 import { lorem } from '@miso.ai/lorem';
 import buildApi from '@miso.ai/doggoganger/src/api.js';
 import fetch from '@miso.ai/doggoganger/src/fetch.js';
+import { delay, rollLatency } from '@miso.ai/doggoganger/src/utils.js';
 
 const PLUGIN_ID = 'std:lorem';
 
@@ -16,8 +17,14 @@ export default class LoremPlugin {
     this._api = buildApi();
   }
 
-  config({ seed, ...options } = {}) {
+  /**
+   * `latency` adds a mock request latency to every api call, in the manner
+   * of the doggoganger server's latency middleware: a number of milliseconds
+   * (e.g. 500), or `{ min, max }` for a randomized roll.
+   */
+  config({ seed, latency, ...options } = {}) {
     this._lorem = lorem({ seed });
+    this._latency = latency;
     this._api = buildApi(options);
   }
 
@@ -45,8 +52,14 @@ export default class LoremPlugin {
     };
   }
 
-  _fetch(url, options) {
+  async _fetch(url, options) {
+    // the seed is captured before the delay, so the generated content stays
+    // tied to the request order, not the completion order
     const seed = this._lorem.prng.seed();
+    const latency = this._latency;
+    if (latency) {
+      await delay(typeof latency === 'number' ? latency : rollLatency(latency.min || 0, latency.max || 0));
+    }
     return fetch(this._api, url, { seed, ...options });
   }
 

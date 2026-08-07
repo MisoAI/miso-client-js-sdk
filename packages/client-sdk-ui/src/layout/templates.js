@@ -1,5 +1,5 @@
 import { escapeHtml } from '@miso.ai/commons';
-import { getThreadId, isThreadUnread } from '@miso.ai/client-sdk-workflow';
+import { getThreadId, isThreadUnread, getGeneratedBy } from '@miso.ai/client-sdk-workflow';
 import { getIcon } from '../asset/svgs.js';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
@@ -63,10 +63,24 @@ export function message(layout, state, data) {
   ].join('');
 }
 
-export function messageQuestionBlock({ className }, { question }) {
+export function messageQuestionBlock({ className }, message) {
+  const { question } = message;
+  const generatedBy = getGeneratedBy(message);
+  const author = messageAuthor(message);
   // always rendered so it can be filled in place when the question text
-  // arrives later (the list renders incrementally)
-  return `<div class="${className}__question" data-role="question"${question ? '' : ' hidden'}>${question ? escapeHtml(question) : ''}</div>`;
+  // arrives later (the list renders incrementally); the authorship attrs
+  // drive the author label and the bubble color
+  const attrs = `${author ? ` data-author="${escapeHtml(author)}"` : ''}${generatedBy ? ` data-generated-by="${escapeHtml(generatedBy)}"` : ''}`;
+  return `<div class="${className}__question" data-role="question"${attrs}${question ? '' : ' hidden'}>${question ? escapeHtml(question) : ''}</div>`;
+}
+
+/**
+ * The author label of a message's question bubble: labeled only when the
+ * question was written by the answer-updates monitor — the user's own
+ * questions carry no label.
+ */
+export function messageAuthor(message) {
+  return getGeneratedBy(message) === 'answer_update_monitor' ? 'Written by Miso' : undefined;
 }
 
 export function messageAnswerBlock({ className }, { answer }) {

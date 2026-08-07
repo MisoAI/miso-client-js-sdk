@@ -88,6 +88,15 @@ export function getQuestionId(message) {
   return message && message.question_id;
 }
 
+/**
+ * Who generated the message's question, read off its metadata — e.g.
+ * 'answer_update_monitor' for a question written by the answer-updates
+ * monitor rather than the user.
+ */
+export function getGeneratedBy(message) {
+  return (message && message.metadata && message.metadata.miso_generated_by) || undefined;
+}
+
 export function hasAnswer(message) {
   return !!message && message.answer !== undefined;
 }
