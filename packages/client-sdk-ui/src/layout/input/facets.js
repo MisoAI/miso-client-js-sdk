@@ -7,6 +7,40 @@ const TYPE = 'facets';
 const DEFAULT_CLASSNAME = 'miso-facets';
 const DEDAULT_FACET_CLASSNAME = 'miso-facet';
 const CUSTOM_ATTRIBUTES_PREFIX = 'custom_attributes.';
+const DEFAULT_HIERARCHY_SEPARATOR = ':::';
+
+// The response keys facet_fields by ALIAS, while filtering must use the real
+// FIELD. Read the definitions the page already declared in useApi({facets}) so
+// both are known here, instead of assuming key === field.
+function facetDefinitions(layout) {
+  const view = layout._view;
+  // useApi({ facets: [...] }) is normalized into api.payload.facets.
+  const api = (view && view.workflowOptions && view.workflowOptions.api) || {};
+  const payload = api.payload || {};
+  const definitions = {};
+  for (const definition of payload.facets || []) {
+    if (typeof definition === 'string') {
+      definitions[definition] = { field: definition, alias: definition };
+    } else {
+      const alias = definition.alias || definition.field;
+      definitions[alias] = { ...definition, alias, field: definition.field };
+    }
+  }
+  return definitions;
+}
+
+// A definition may declare that its values are hierarchical paths, and name a
+// second facet holding the level below it:
+//   { field: 'category_path_depth_1', alias: 'cat_top',
+//     hierarchy: { childrenAlias: 'cat_top_l2', separator: ':::' } }
+function hierarchyOf(definition) {
+  return (definition && definition.hierarchy) || undefined;
+}
+
+function leafOf(value, separator) {
+  const parts = value.split(separator);
+  return parts[parts.length - 1];
+}
 
 function root(layout, state) {
   const { className, role, templates } = layout;
@@ -17,13 +51,40 @@ function root(layout, state) {
 function facets(layout, state) {
   const { templates } = layout;
   const { facet_fields = {} } = state.value || {};
-  return Object.keys(facet_fields).map(field => templates.facet(layout, { field, entries: facet_fields[field] }, state)).join('');
+  const definitions = facetDefinitions(layout);
+
+  // An alias that only supplies the child level of another facet is rendered
+  // inside its parent, not as a box of its own.
+  const childAliases = new Set();
+  for (const alias in definitions) {
+    const hierarchy = hierarchyOf(definitions[alias]);
+    if (hierarchy && hierarchy.childrenAlias) {
+      childAliases.add(hierarchy.childrenAlias);
+    }
+  }
+
+  return Object.keys(facet_fields)
+    .filter(alias => !childAliases.has(alias))
+    .map(alias => {
+      const definition = definitions[alias] || { field: alias, alias };
+      return templates.facet(layout, {
+        alias,
+        field: definition.field || alias,
+        name: definition.name,
+        definition,
+        entries: facet_fields[alias],
+        children: (hierarchyOf(definition) && facet_fields[hierarchyOf(definition).childrenAlias]) || undefined,
+      }, state);
+    })
+    .join('');
 }
 
 function facet(layout, facet, state) {
   const { facetClassName = DEDAULT_FACET_CLASSNAME, templates } = layout;
-  const { field } = facet;
-  return `<div class="${facetClassName}" data-role="facet" data-field="${escapeHtml(field)}">${templates.header(layout, facet, state)}${templates.options(layout, facet, state)}</div>`;
+  const { field, alias = field } = facet;
+  // data-key is the response key, used to bind values to elements.
+  // data-field is the index field, used when a click becomes a filter.
+  return `<div class="${facetClassName}" data-role="facet" data-key="${escapeHtml(alias)}" data-field="${escapeHtml(field)}">${templates.header(layout, facet, state)}${templates.options(layout, facet, state)}</div>`;
 }
 
 function header(layout, facet, state) {
@@ -31,7 +92,10 @@ function header(layout, facet, state) {
   return `<div class="${facetClassName}__header">${templates.title(layout, facet, state)}</div>`;
 }
 
-function title(layout, { field }) {
+function title(layout, { field, name }) {
+  if (name) {
+    return escapeHtml(name);
+  }
   if (field.startsWith(CUSTOM_ATTRIBUTES_PREFIX)) {
     field = field.substring(CUSTOM_ATTRIBUTES_PREFIX.length);
   }
@@ -39,23 +103,58 @@ function title(layout, { field }) {
   return escapeHtml(field);
 }
 
-function options(layout, { field, entries }, state) {
+function options(layout, facet, state) {
   const { facetClassName = DEDAULT_FACET_CLASSNAME, templates } = layout;
-  return `<ul class="${facetClassName}__options" data-role="options">${entries.map(([value, count]) => templates.option(layout, { field, value, count }, state)).join('')}</ul>`;
+  const { field, entries = [], children, definition } = facet;
+  const hierarchy = hierarchyOf(definition);
+  const separator = (hierarchy && hierarchy.separator) || DEFAULT_HIERARCHY_SEPARATOR;
+
+  const rows = entries.map(([value, count]) => {
+    // Children of this row come from the facet one level down, matched on the
+    // parent path. The level itself is guaranteed by the depth field, so no
+    // pattern has to express it.
+    const kids = hierarchy && children
+      ? children.filter(([childValue]) => childValue.startsWith(value + separator))
+      : undefined;
+    return templates.option(layout, { field, value, count, hierarchy, separator, children: kids }, state);
+  }).join('');
+
+  return `<ul class="${facetClassName}__options" data-role="options">${rows}</ul>`;
 }
 
 function option(layout, entry, state) {
   const { facetClassName = DEDAULT_FACET_CLASSNAME, templates } = layout;
+  const { children, hierarchy, separator, field } = entry;
+  const hasChildren = !!(children && children.length);
+
+  // The toggle sits outside the clickable option row, so expanding a branch
+  // does not also select it.
+  const toggle = hasChildren
+    ? `<span class="${facetClassName}__toggle" data-role="toggle"></span>`
+    : `<span class="${facetClassName}__toggle-spacer"></span>`;
+
+  const nested = hasChildren
+    ? `<ul class="${facetClassName}__children">${children.map(([value, count]) =>
+        templates.option(layout, { field, value, count, hierarchy, separator }, state)).join('')}</ul>`
+    : '';
+
   return `
-<li class="${facetClassName}__option" data-role="option" tabindex="0">
-  <span class="${facetClassName}__value">${templates.value(layout, entry, state)}</span>
-  <span class="${facetClassName}__count">${templates.count(layout, entry, state)}</span>
+<li class="${facetClassName}__item"${hasChildren ? ' data-expanded="false"' : ''}>
+  <div class="${facetClassName}__row">
+    ${toggle}
+    <span class="${facetClassName}__option" data-role="option" tabindex="0" data-value="${escapeHtml(entry.value)}">
+      <span class="${facetClassName}__value">${templates.value(layout, entry, state)}</span>
+      <span class="${facetClassName}__count">${templates.count(layout, entry, state)}</span>
+    </span>
+  </div>
+  ${nested}
 </li>`;
 }
 
 
-function value(layout, { value }, state) {
-  return escapeHtml(value);
+function value(layout, { value, hierarchy, separator }, state) {
+  // Under a heading that already names the branch, the leaf is the useful label.
+  return escapeHtml(hierarchy ? leafOf(value, separator || DEFAULT_HIERARCHY_SEPARATOR) : value);
 }
 
 function count(layout, { count }, state) {
@@ -164,22 +263,24 @@ export default class FacetsLayout extends TemplateBasedLayout {
     if (!element || !state.value) {
       return;
     }
-    const items = this._getItems(state);
     const keys = [];
     const values = [];
     const elements = [];
     for (const facetElement of this._getFacetElements(element)) {
+      // The FIELD, not the response key: a click has to become a filter on the
+      // real index field even when several facets share one field under
+      // different aliases.
       const field = facetElement.getAttribute('data-field');
-      const _values = items[field];
-      if (!_values) {
+      if (!field) {
         continue;
       }
-      const itemElements = this._getItemElements(facetElement);
-      for (let i = 0; i < itemElements.length; i++) {
-        const itemElement = itemElements[i];
-        const value = _values[i];
+      for (const itemElement of this._getItemElements(facetElement)) {
+        // Read the value off the element rather than pairing by position. A
+        // nested tree interleaves parents and children in the DOM, so index
+        // pairing against a flat list of values would bind the wrong rows.
+        const value = itemElement.getAttribute('data-value');
         if (!value) {
-          break;
+          continue;
         }
         keys.push(getItemKey(field, value));
         values.push({ field, value });
@@ -218,6 +319,16 @@ export default class FacetsLayout extends TemplateBasedLayout {
   _handleClick(event) {
     // only left click
     if (event.button !== 0) {
+      return;
+    }
+    // Expanding a branch changes what is visible, not what is selected.
+    const toggle = event.target.closest(`[data-role="toggle"]`);
+    if (toggle) {
+      const item = toggle.closest(`.${this.facetClassName || DEDAULT_FACET_CLASSNAME}__item`);
+      if (item) {
+        const expanded = item.getAttribute('data-expanded') === 'true';
+        item.setAttribute('data-expanded', expanded ? 'false' : 'true');
+      }
       return;
     }
     const element = event.target.closest(`[data-role="option"]`);

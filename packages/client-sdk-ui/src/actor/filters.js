@@ -12,10 +12,10 @@ function mergeState(state = {}, update = {}) {
   }));
 }
 
-function optionsToState({ sort } = {}) {
-  // TODO: facets
+function optionsToState({ sort, facets } = {}) {
   return trimObj({
-    facets: Object.freeze({}),
+    // `facets.initial` lets a page start with filters already applied.
+    facets: Object.freeze({ ...((facets && facets.initial) || {}) }),
     sort: sortOptionsToState(sort),
   });
 }
@@ -62,7 +62,12 @@ export default class Filters {
 
   update(updates) {
     const oldStates = this._getStates();
-    this._states = mergeState({ ...oldStates, ...updates });
+    // mergeState takes (state, update) and merges `facets` per field. Passing a
+    // single pre-spread object made that per-field merge a no-op, so updating
+    // one field dropped every other active filter — including via
+    // Facets._unselect, which sets one field to undefined and relies on the
+    // rest surviving. To clear a field, pass { [field]: undefined }.
+    this._states = mergeState(oldStates, updates);
     const states = this._getStates();
     this._events.emit('update', { updates, states, oldStates });
   }
@@ -99,7 +104,18 @@ class Facets {
 
   constructor(filters, options = {}) {
     this._filters = filters;
-    this._options = options;
+    this._fallbackOptions = options;
+  }
+
+  // Read live, so useFilters({ facets: { multivalued: true } }) takes effect.
+  // Previously this was a constructor argument and Filters was always built as
+  // `new Filters(views)`, so the option could not be set by any public path.
+  // A method rather than a getter: the production build runs terser with
+  // pure_getters, which is free to assume getters have no side effects.
+  _getOptions() {
+    const views = this._filters && this._filters._views;
+    const resolved = views && views._options && views._options.resolved.filters;
+    return (resolved && resolved.facets) || this._fallbackOptions || {};
   }
 
   isSelected(field, value) {
@@ -133,7 +149,7 @@ class Facets {
   }
 
   _select(field, value) {
-    const values = this._options.multivalued ? [...this._getFieldValues(field), value] : [value];
+    const values = this._getOptions().multivalued ? [...this._getFieldValues(field), value] : [value];
     values.sort();
     this._filters.update({ facets: { [field]: values } });
   }

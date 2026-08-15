@@ -17,6 +17,15 @@ export function normalizeApiOptions([name, payload] = []) {
   if ((name && typeof name !== 'string') || (payload !== undefined && typeof payload !== 'object')) {
     throw new Error(`Invalid arguments for useApi(): ${name}, ${payload}`);
   }
+  // useApi({ fl: [...] }) is the payload. Nesting it — useApi({ payload: {...} })
+  // — used to be accepted in silence and the inner keys never reached the API.
+  if (payload && typeof payload === 'object' && payload.payload && typeof payload.payload === 'object') {
+    console.warn(
+      `[miso] useApi(): a "payload" key was found inside the payload. Its contents ` +
+      `(${Object.keys(payload.payload).join(', ')}) will be sent as a field named "payload" and ignored. ` +
+      `Pass these options at the top level, e.g. useApi({ fl: [...] }).`
+    );
+  }
   return trimObj({ group, name, payload });
 }
 

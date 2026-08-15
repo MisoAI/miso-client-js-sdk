@@ -62,6 +62,11 @@ export default class MisoContainerElement extends MisoStubElement {
   }
 
   set workflow(workflow) {
+    // An explicit assignment wins over the default this container would pick up
+    // on connect. Without this, several searches on one page are not possible:
+    // connectedCallback awaits the client and then overwrites whatever was
+    // assigned, so every container ends up on whichever client resolved first.
+    this._workflowAssigned = workflow !== undefined;
     this._setWorkflow(workflow);
   }
 
@@ -86,13 +91,19 @@ export default class MisoContainerElement extends MisoStubElement {
     super.connectedCallback();
     const client = this._client = await getClient(MisoContainerElement);
     if (document.body.contains(this)) { // in case already disconnected
-      this._setWorkflow(this._getWorkflow(client));
+      if (!this._workflowAssigned) {
+        this._setWorkflow(this._getWorkflow(client));
+      }
       this._onConnected(client);
     }
   }
 
   disconnectedCallback() {
+    // Keep the explicit assignment flag: a container that is moved or
+    // re-attached should return to the workflow it was given, not the default.
+    const assigned = this._workflowAssigned;
     this._setWorkflow(undefined);
+    this._workflowAssigned = assigned;
     super.disconnectedCallback();
   }
 

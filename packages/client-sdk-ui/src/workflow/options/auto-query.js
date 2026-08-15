@@ -6,6 +6,8 @@ import { ROLE, QUESTION_SOURCE } from '../../constants.js';
 export const DEFAULT_AUTO_QUERY_PARAM = 'q';
 export const DEFAULT_AUTO_QUERY_SOURCE_PARAM = 'qs';
 
+const KNOWN_AUTO_QUERY_OPTIONS = ['setValue', 'focus', 'updateUrl', 'param', 'sourceParam'];
+
 export function normalizeAutoQueryOptions({
   setValue = true,
   focus = true,
@@ -14,6 +16,15 @@ export function normalizeAutoQueryOptions({
   sourceParam = DEFAULT_AUTO_QUERY_SOURCE_PARAM,
   ...options
 } = {}) {
+  // autoQuery takes OPTIONS, not a query. autoQuery({ q: 'shoes' }) used to be
+  // accepted in silence: the page rendered and no request was ever made. Say so.
+  const unknown = Object.keys(options).filter(key => !KNOWN_AUTO_QUERY_OPTIONS.includes(key));
+  if (unknown.length) {
+    const hint = unknown.includes('q')
+      ? ` To run a query, use workflow.query({ q: … }); autoQuery() reads it from the ?${param} parameter.`
+      : '';
+    console.warn(`[miso] autoQuery(): unknown option(s) ${unknown.map(k => `"${k}"`).join(', ')}, ignored.` + hint);
+  }
   return { setValue, focus, updateUrl, param, sourceParam, ...options };
 }
 
