@@ -107,7 +107,11 @@ function options(layout, facet, state) {
   const { facetClassName = DEDAULT_FACET_CLASSNAME, templates } = layout;
   const { field, entries = [], children, definition } = facet;
   const hierarchy = hierarchyOf(definition);
-  const separator = (hierarchy && hierarchy.separator) || DEFAULT_HIERARCHY_SEPARATOR;
+  // `separator` may be declared on its own, for a facet whose values are paths
+  // but which is not rendered as a tree. Both cases want the leaf as the label.
+  const separator =
+    (hierarchy && hierarchy.separator) || (definition && definition.separator) || DEFAULT_HIERARCHY_SEPARATOR;
+  const pathValues = !!(hierarchy || (definition && definition.separator));
 
   const rows = entries.map(([value, count]) => {
     // Children of this row come from the facet one level down, matched on the
@@ -116,7 +120,7 @@ function options(layout, facet, state) {
     const kids = hierarchy && children
       ? children.filter(([childValue]) => childValue.startsWith(value + separator))
       : undefined;
-    return templates.option(layout, { field, value, count, hierarchy, separator, children: kids }, state);
+    return templates.option(layout, { field, value, count, hierarchy, separator, pathValues, children: kids }, state);
   }).join('');
 
   return `<ul class="${facetClassName}__options" data-role="options">${rows}</ul>`;
@@ -124,7 +128,7 @@ function options(layout, facet, state) {
 
 function option(layout, entry, state) {
   const { facetClassName = DEDAULT_FACET_CLASSNAME, templates } = layout;
-  const { children, hierarchy, separator, field } = entry;
+  const { children, hierarchy, separator, pathValues, field } = entry;
   const hasChildren = !!(children && children.length);
 
   // The toggle sits outside the clickable option row, so expanding a branch
@@ -135,7 +139,7 @@ function option(layout, entry, state) {
 
   const nested = hasChildren
     ? `<ul class="${facetClassName}__children">${children.map(([value, count]) =>
-        templates.option(layout, { field, value, count, hierarchy, separator }, state)).join('')}</ul>`
+        templates.option(layout, { field, value, count, hierarchy, separator, pathValues: true }, state)).join('')}</ul>`
     : '';
 
   return `
@@ -152,9 +156,9 @@ function option(layout, entry, state) {
 }
 
 
-function value(layout, { value, hierarchy, separator }, state) {
+function value(layout, { value, pathValues, separator }, state) {
   // Under a heading that already names the branch, the leaf is the useful label.
-  return escapeHtml(hierarchy ? leafOf(value, separator || DEFAULT_HIERARCHY_SEPARATOR) : value);
+  return escapeHtml(pathValues ? leafOf(value, separator || DEFAULT_HIERARCHY_SEPARATOR) : value);
 }
 
 function count(layout, { count }, state) {
