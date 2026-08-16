@@ -112,6 +112,10 @@ function options(layout, facet, state) {
   const separator =
     (hierarchy && hierarchy.separator) || (definition && definition.separator) || DEFAULT_HIERARCHY_SEPARATOR;
   const pathValues = !!(hierarchy || (definition && definition.separator));
+  // 'single' means picking a value replaces the previous one on that field;
+  // 'multiple' adds to it. Unset falls back to the workflow-level setting.
+  const single = definition && definition.select === 'single';
+  const alias = facet.alias || field;
 
   const rows = entries.map(([value, count]) => {
     // Children of this row come from the facet one level down, matched on the
@@ -120,15 +124,15 @@ function options(layout, facet, state) {
     const kids = hierarchy && children
       ? children.filter(([childValue]) => childValue.startsWith(value + separator))
       : undefined;
-    return templates.option(layout, { field, value, count, hierarchy, separator, pathValues, children: kids }, state);
+    return templates.option(layout, { field, value, count, hierarchy, separator, pathValues, single, alias, children: kids }, state);
   }).join('');
 
   return `<ul class="${facetClassName}__options" data-role="options">${rows}</ul>`;
 }
 
 function option(layout, entry, state) {
-  const { facetClassName = DEDAULT_FACET_CLASSNAME, templates } = layout;
-  const { children, hierarchy, separator, pathValues, field } = entry;
+  const { facetClassName = DEDAULT_FACET_CLASSNAME, checkbox = false, templates } = layout;
+  const { children, hierarchy, separator, pathValues, field, alias, single } = entry;
   const hasChildren = !!(children && children.length);
 
   // The toggle sits outside the clickable option row, so expanding a branch
@@ -139,7 +143,7 @@ function option(layout, entry, state) {
 
   const nested = hasChildren
     ? `<ul class="${facetClassName}__children">${children.map(([value, count]) =>
-        templates.option(layout, { field, value, count, hierarchy, separator, pathValues: true }, state)).join('')}</ul>`
+        templates.option(layout, { field, value, count, hierarchy, separator, pathValues: true, single, alias }, state)).join('')}</ul>`
     : '';
 
   return `
@@ -147,6 +151,7 @@ function option(layout, entry, state) {
   <div class="${facetClassName}__row">
     ${toggle}
     <span class="${facetClassName}__option" data-role="option" tabindex="0" data-value="${escapeHtml(entry.value)}">
+      ${checkbox ? `<input type="${single ? 'radio' : 'checkbox'}"${single ? ` name="${escapeHtml(alias || field)}"` : ''} class="${facetClassName}__checkbox" data-role="checkbox" tabindex="-1">` : ''}
       <span class="${facetClassName}__value">${templates.value(layout, entry, state)}</span>
       <span class="${facetClassName}__count">${templates.count(layout, entry, state)}</span>
     </span>
@@ -203,11 +208,17 @@ export default class FacetsLayout extends TemplateBasedLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+  constructor({ className = DEFAULT_CLASSNAME, facetClassName, checkbox = false, templates, ...options } = {}) {
     super({
       className,
       templates: { ...DEFAULT_TEMPLATES, ...templates },
       ...options,
+    });
+    // The base layout keeps only className and templates, so options the
+    // templates read have to be held here or they are silently dropped.
+    Object.defineProperties(this, {
+      checkbox: { value: checkbox, enumerable: true },
+      facetClassName: { value: facetClassName || DEDAULT_FACET_CLASSNAME, enumerable: true },
     });
     this._bindings = new Bindings();
   }
@@ -261,6 +272,12 @@ export default class FacetsLayout extends TemplateBasedLayout {
     } else {
       element.classList.remove('selected');
     }
+    // The filter state is the source of truth, not the input's own toggling: a
+    // click flips the box, and this puts it back in step with what was applied.
+    const box = element.querySelector(`[data-role="checkbox"]`);
+    if (box) {
+      box.checked = !!selected;
+    }
   }
 
   _syncBindings(element, state) {
@@ -278,6 +295,7 @@ export default class FacetsLayout extends TemplateBasedLayout {
       if (!field) {
         continue;
       }
+      const key = facetElement.getAttribute('data-key') || field;
       for (const itemElement of this._getItemElements(facetElement)) {
         // Read the value off the element rather than pairing by position. A
         // nested tree interleaves parents and children in the DOM, so index
@@ -287,7 +305,7 @@ export default class FacetsLayout extends TemplateBasedLayout {
           continue;
         }
         keys.push(getItemKey(field, value));
-        values.push({ field, value });
+        values.push({ field, value, key });
         elements.push(itemElement);
       }
     }
@@ -344,8 +362,11 @@ export default class FacetsLayout extends TemplateBasedLayout {
     if (!option) {
       return;
     }
-    const { field, value } = option;
-    this._view.filters.facets.toggle(field, value);
+    const { field, value, key } = option;
+    const definition = facetDefinitions(this)[key];
+    const select = definition && definition.select;
+    this._view.filters.facets.toggle(field, value,
+      select ? { multivalued: select !== 'single' } : undefined);
     this._view.filters.apply(); // TODO: support autoApply = false
   }
 

@@ -103,4 +103,28 @@ test('without multivalued, selecting replaces the value on that field', () => {
   assert.equal(facets.type, ['Release notes']);
 });
 
+test('facets.toggle() honours a per-call multivalued override', () => {
+  const views = createViews();                       // workflow default: single
+  const filters = new Filters(views);
+
+  filters.facets.toggle('category_path_depth_1', 'Editorial', { multivalued: true });
+  filters.facets.toggle('category_path_depth_1', 'Access rules', { multivalued: true });
+
+  const facets = appliedFacets(views, filters);
+  assert.equal(facets.category_path_depth_1, ['Access rules', 'Editorial'],
+    'a facet may allow several values even when the workflow default is single');
+});
+
+test('a per-call override of false keeps a facet single-choice', () => {
+  const views = createViews({ facets: { multivalued: true } });   // workflow default: multi
+  const filters = new Filters(views);
+
+  filters.facets.toggle('type', 'User guides', { multivalued: false });
+  filters.facets.toggle('type', 'Release notes', { multivalued: false });
+
+  const facets = appliedFacets(views, filters);
+  assert.equal(facets.type, ['Release notes'],
+    'the second pick replaces the first on a single-choice facet');
+});
+
 test.run();

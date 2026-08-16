@@ -122,11 +122,11 @@ class Facets {
     return this._getFieldValues(field).includes(value);
   }
 
-  select(field, value) {
+  select(field, value, options) {
     if (this.isSelected(field, value)) {
       return;
     }
-    this._select(field, value);
+    this._select(field, value, options);
   }
 
   unselect(field, value) {
@@ -136,11 +136,13 @@ class Facets {
     this._unselect(field, value);
   }
 
-  toggle(field, value) {
+  // `options.multivalued` overrides the workflow-level setting for this call, so
+  // one facet can allow several values while another is single-choice.
+  toggle(field, value, options) {
     if (this.isSelected(field, value)) {
       this._unselect(field, value);
     } else {
-      this._select(field, value);
+      this._select(field, value, options);
     }
   }
 
@@ -148,8 +150,9 @@ class Facets {
     return this._filters._getStates().facets[field] || [];
   }
 
-  _select(field, value) {
-    const values = this._getOptions().multivalued ? [...this._getFieldValues(field), value] : [value];
+  _select(field, value, { multivalued } = {}) {
+    const multi = multivalued !== undefined ? multivalued : this._getOptions().multivalued;
+    const values = multi ? [...this._getFieldValues(field), value] : [value];
     values.sort();
     this._filters.update({ facets: { [field]: values } });
   }
