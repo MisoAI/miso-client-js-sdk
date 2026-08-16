@@ -29,10 +29,21 @@ function facetDefinitions(layout) {
   return definitions;
 }
 
-// A definition may declare that its values are hierarchical paths, and name a
-// second facet holding the level below it:
-//   { field: 'category_path_depth_1', alias: 'cat_top',
-//     hierarchy: { childrenAlias: 'cat_top_l2', separator: ':::' } }
+// A definition may declare that its values are hierarchical paths. Two shapes:
+//
+//   one field holding EVERY ancestor path (recommended) — both levels come from
+//   the same facet and are split here by depth:
+//     { field: 'custom_attributes.category_paths', alias: 'cat_top',
+//       branch: null, hierarchy: { levels: 2, separator: ':::' } }
+//
+//   or one facet per level, naming the facet that holds the level below:
+//     { field: 'category_path_depth_1', alias: 'cat_top',
+//       hierarchy: { childrenAlias: 'cat_top_l2', separator: ':::' } }
+//
+// Prefer the first. Splitting a category tree across several fields means the
+// filters land in several facet_filters entries, which AND rather than OR, and
+// the engine's same-field exclusion no longer covers the whole dimension — so
+// picking a value at one level distorts the counts shown at another.
 function hierarchyOf(definition) {
   return (definition && definition.hierarchy) || undefined;
 }
@@ -40,6 +51,12 @@ function hierarchyOf(definition) {
 function leafOf(value, separator) {
   const parts = value.split(separator);
   return parts[parts.length - 1];
+}
+
+// How many levels below `branch` a value sits. A direct child is 1.
+function relativeDepth(value, branch, separator) {
+  const base = branch ? branch.split(separator).length : 0;
+  return value.split(separator).length - base;
 }
 
 function root(layout, state) {
@@ -117,12 +134,22 @@ function options(layout, facet, state) {
   const single = definition && definition.select === 'single';
   const alias = facet.alias || field;
 
-  const rows = entries.map(([value, count]) => {
-    // Children of this row come from the facet one level down, matched on the
-    // parent path. The level itself is guaranteed by the depth field, so no
-    // pattern has to express it.
-    const kids = hierarchy && children
-      ? children.filter(([childValue]) => childValue.startsWith(value + separator))
+  const branch = (definition && definition.branch) || undefined;
+
+  // With one field holding every level, the facet returns the whole subtree and
+  // the levels are separated here. With one facet per level, `children` carries
+  // the level below. Either way `rows` ends up as the direct children only.
+  const singleField = !!(hierarchy && !hierarchy.childrenAlias);
+  const rowEntries = singleField
+    ? entries.filter(([v]) => relativeDepth(v, branch, separator) === 1)
+    : entries;
+  const childEntries = singleField
+    ? entries.filter(([v]) => relativeDepth(v, branch, separator) === 2)
+    : children;
+
+  const rows = rowEntries.map(([value, count]) => {
+    const kids = hierarchy && childEntries
+      ? childEntries.filter(([childValue]) => childValue.startsWith(value + separator))
       : undefined;
     return templates.option(layout, { field, value, count, hierarchy, separator, pathValues, single, alias, children: kids }, state);
   }).join('');
