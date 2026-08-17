@@ -213,6 +213,14 @@ function getItemKey(field, value) {
   return `${field}:::${value}`;
 }
 
+// A filter may be stored under the field or under the facet alias, depending on
+// the facet's `filterBy`. A row is selected if either carries its value.
+function isValueSelected(selectedValues, field, key, value) {
+  const byField = selectedValues[field];
+  const byAlias = key && key !== field ? selectedValues[key] : undefined;
+  return !!((byField && byField.has(value)) || (byAlias && byAlias.has(value)));
+}
+
 function getSelectedValues(facets) {
   const selections = {};
   for (const field in facets) {
@@ -275,18 +283,20 @@ export default class FacetsLayout extends TemplateBasedLayout {
 
   _syncSelections() {
     const selectedValues = getSelectedValues(this._view.hub.states[fields.filters()].facets);
-    for (const { value: { field, value }, element } of this._bindings.entries) {
-      this._setSelected(element, selectedValues[field] && selectedValues[field].has(value));
+    for (const { value: { field, value, key }, element } of this._bindings.entries) {
+      this._setSelected(element, isValueSelected(selectedValues, field, key, value));
     }
   }
 
   _updateSelections({ updates }) {
     const selectedValues = getSelectedValues(updates.facets);
-    for (const { value: { field, value }, element } of this._bindings.entries) {
-      if (!selectedValues[field]) {
+    for (const { value: { field, value, key }, element } of this._bindings.entries) {
+      // Only touch rows this update actually speaks about, so an update to one
+      // facet does not clear the marks on another.
+      if (!selectedValues[field] && !selectedValues[key]) {
         continue;
       }
-      this._setSelected(element, selectedValues[field].has(value));
+      this._setSelected(element, isValueSelected(selectedValues, field, key, value));
     }
   }
 
@@ -392,7 +402,19 @@ export default class FacetsLayout extends TemplateBasedLayout {
     const { field, value, key } = option;
     const definition = facetDefinitions(this)[key];
     const select = definition && definition.select;
-    this._view.filters.facets.toggle(field, value,
+
+    // Which key the filter is sent under decides how several facets on one field
+    // relate to each other. The engine excludes a field-keyed filter from every
+    // facet on that field, and an alias-keyed one only from the facet it came
+    // from:
+    //   'field' (default) - the facets are one dimension. Selections OR, and the
+    //                       counts in every one of them stay comparable.
+    //   'alias'           - the facets are independent dimensions that happen to
+    //                       share a field. Selections AND, and choosing in one
+    //                       moves the others' counts while leaving its own alone.
+    const filterKey = definition && definition.filterBy === 'alias' ? key : field;
+
+    this._view.filters.facets.toggle(filterKey, value,
       select ? { multivalued: select !== 'single' } : undefined);
     this._view.filters.apply(); // TODO: support autoApply = false
   }
