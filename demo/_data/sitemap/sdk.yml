@@ -34,6 +34,8 @@ sections:
   pages:
   - title: Viewable
     path: /helpers/viewable
+  - title: Centered
+    path: /helpers/centered
   - title: Debug
     path: /helpers/debug
   - title: Lorem

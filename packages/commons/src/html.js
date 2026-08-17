@@ -67,6 +67,49 @@ export async function requestAnimationFrame(callback) {
 }
 
 /**
+ * Observe an element with an IntersectionObserver and resolve when its intersection state
+ * holds true continuously for the given duration. Reject on signal abort.
+ */
+async function sustainedIntersection(element, {
+  duration = 1000,
+  signal,
+  ...observerOptions
+} = {}) {
+  element = asElement(element);
+  // TODO: check element
+  return new Promise((resolve, reject) => {
+    if (signal && signal.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+    const disconnect = () => {
+      continuity.disconnect();
+      intersection.disconnect();
+    };
+    const continuity = new ContinuityObserver((value) => {
+      if (value) {
+        disconnect();
+        resolve();
+      }
+    }, {
+      onDuration: duration,
+    });
+    const intersection = new IntersectionObserver((entries) => {
+      // entries are in chronological order; the last one reflects the current state
+      continuity.value = entries[entries.length - 1].isIntersecting;
+    }, observerOptions);
+    intersection.observe(element);
+
+    if (signal && signal.addEventListener) {
+      signal.addEventListener('abort', () => {
+        disconnect();
+        reject(new DOMException('Aborted', 'AbortError'));
+      });
+    }
+  });
+}
+
+/**
  * Return a promise resolved when the given element reaches viewable condition.
  */
 export async function viewable(element, {
@@ -74,32 +117,32 @@ export async function viewable(element, {
   duration = 1000,
   signal,
 } = {}) {
-  element = asElement(element);
-  // TODO: check element
-  return new Promise((resolve, reject) => {
-    const continuity = new ContinuityObserver((value) => {
-      if (value) {
-        continuity.disconnect();
-        intersection.disconnect();
-        resolve();
-      }
-    }, {
-      onDuration: duration,
-    });
-    const intersection = new IntersectionObserver((entries) => {
-      continuity.value = entries[0].isIntersecting;
-    }, {
-      threshold: area,
-    });
-    intersection.observe(element);
+  return sustainedIntersection(element, {
+    duration,
+    signal,
+    threshold: area,
+  });
+}
 
-    if (signal && signal.addEventListener) {
-      signal.addEventListener('abort', () => {
-        continuity.disconnect();
-        intersection.disconnect();
-        reject(new DOMException('Aborted', 'AbortError'));
-      });
-    }
+/**
+ * Return a promise resolved when the given element overlaps the vertical center of the viewport
+ * continuously for the given duration. Unlike viewable(), this works for elements much taller
+ * than the viewport, which can never satisfy an area threshold.
+ *
+ * Note: rootMargin is not honored in cross-origin iframes, where this degrades to "any overlap
+ * with the viewport", a much looser condition. Avoid relying on it in embedded contexts.
+ */
+export async function centered(element, {
+  duration = 1000,
+  signal,
+} = {}) {
+  return sustainedIntersection(element, {
+    duration,
+    signal,
+    // collapse the root to a zero-height line at the viewport's vertical center;
+    // isIntersecting still reports zero-area (edge-adjacent) contact
+    rootMargin: '-50% 0px -50% 0px',
+    threshold: 0,
   });
 }
 

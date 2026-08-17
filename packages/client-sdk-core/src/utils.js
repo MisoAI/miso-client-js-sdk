@@ -1,1 +1,1 @@
-export { viewable, debounce } from '@miso.ai/commons';
+export { viewable, centered, debounce } from '@miso.ai/commons';
