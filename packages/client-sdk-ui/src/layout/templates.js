@@ -1,5 +1,5 @@
 import { escapeHtml } from '@miso.ai/commons';
-import { getThreadId, isThreadUnread, getGeneratedBy } from '@miso.ai/client-sdk-workflow';
+import { isThreadUnread, isUpdateMessage } from '@miso.ai/client-sdk-workflow';
 import { getIcon } from '../asset/svgs.js';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
@@ -37,7 +37,7 @@ export function question(layout, state, data) {
 // the wrapper div around it) is needed
 export function thread(layout, state, data) {
   const { className, templates } = layout;
-  const threadId = getThreadId(data);
+  const threadId = data.thread_id;
   const threadIdAttr = threadId ? ` data-thread-id="${threadId}"` : '';
   const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
   const selectedAttr = data.selected ? ' data-selected' : '';
@@ -65,7 +65,7 @@ export function message(layout, state, data) {
 
 export function messageQuestionBlock({ className }, message) {
   const { question } = message;
-  const generatedBy = getGeneratedBy(message);
+  const generatedBy = message.metadata && message.metadata.miso_generated_by;
   const author = messageAuthor(message);
   // always rendered so it can be filled in place when the question text
   // arrives later (the list renders incrementally); the authorship attrs
@@ -80,7 +80,7 @@ export function messageQuestionBlock({ className }, message) {
  * questions carry no label.
  */
 export function messageAuthor(message) {
-  return getGeneratedBy(message) === 'answer_update_monitor' ? 'Written by Miso' : undefined;
+  return isUpdateMessage(message) ? 'Written by Miso' : undefined;
 }
 
 export function messageAnswerBlock({ className }, { answer }) {

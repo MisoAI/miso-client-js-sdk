@@ -201,6 +201,24 @@ export default Object.freeze({
         },
       },
     },
+    // the answer-content trackings of the ask workflow, applied per message:
+    // the answer tracker takes generic link clicks, the sources tracker takes
+    // citation-link clicks. Neither role has a view of its own here — clicks
+    // arrive through the messages view — so per-session deduplication has no
+    // session to follow and is turned off
+    trackers: {
+      answer: {
+        active: true,
+        itemless: true,
+        deduplicated: false,
+        click: DEFAULT_TRACKER_OPTIONS.click, // click only
+      },
+      sources: {
+        active: true,
+        deduplicated: false,
+        click: DEFAULT_TRACKER_OPTIONS.click, // click only
+      },
+    },
   },
 
   'explore': {

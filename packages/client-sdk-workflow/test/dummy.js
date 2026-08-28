@@ -33,6 +33,7 @@ export function createClient({
   threads = threads.map(thread => ({ ...thread })); // a mutable local copy
   const createdThreads = new Map(); // thread_id -> detail, for threads created by questions
   const calls = [];
+  const interactions = []; // interaction payloads uploaded by the workflows
 
   const userHistory = {
     async getThreads() {
@@ -109,9 +110,14 @@ export function createClient({
           return answers(payload.question_ids);
         },
       },
+      interactions: {
+        upload(payloads) {
+          interactions.push(...payloads);
+        },
+      },
     },
   };
   client.workflows = new Workflows(new WorkflowPlugin(), client);
 
-  return { client, calls };
+  return { client, calls, interactions };
 }

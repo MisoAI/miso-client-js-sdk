@@ -1,26 +1,18 @@
 /**
- * Helpers to read thread records from the history API. The API is a
- * prototype, so field access is kept tolerant and centralized here: when the
- * response schema settles, this is the only place to update.
+ * Helpers to work with thread records from the history API. The API is a
+ * prototype, so the shape-dependent logic — normalization, merging, and the
+ * semantic predicates — is centralized here. Simple field reads (thread_id,
+ * placeholder_id, question_id, ...) are inlined at the call sites; the
+ * response-shape fallbacks live at the API boundary (`processResponse()` in
+ * source.js), so only canonical fields are ever read.
  */
-
-export function getThreadId(thread) {
-  return thread && thread.thread_id;
-}
-
-/**
- * Local id of a thread being created: a thread has no server identity until
- * its first question is posted, so its placeholder record carries a
- * `placeholder_id` in place of a thread id.
- */
-export function getPlaceholderId(thread) {
-  return thread && thread.placeholder_id;
-}
 
 /**
  * Settle a placeholder record into a real thread record, keyed by the thread
  * id it is known to have: the placeholder marks are stripped, the local
- * fields (title, updated_at) stand in until server data arrives.
+ * fields (title, updated_at) stand in until server data arrives. (A thread
+ * has no server identity until its first question is posted, so its
+ * placeholder record carries a `placeholder_id` in place of a thread id.)
  */
 export function settlePlaceholder(placeholder, threadId) {
   const { placeholder: _placeholder, placeholder_id: _placeholderId, ...thread } = placeholder;
@@ -34,14 +26,6 @@ export function settlePlaceholder(placeholder, threadId) {
  */
 export function isThreadUnread(thread) {
   return !!thread && thread.subscribed === true && thread.has_new === true;
-}
-
-/**
- * Time of the latest activity on a thread. Responses carrying the legacy
- * `time` field are adapted at the source (fallbackThreadFields).
- */
-export function getThreadTime(thread) {
-  return thread && thread.updated_at;
 }
 
 /**
@@ -59,12 +43,12 @@ export function normalizeThreadsValue(value) {
 }
 
 /**
- * Sort threads by latest activity (updated_at, descending). The sort is
- * stable, so records without timestamps keep their relative order, after the
- * timestamped ones.
+ * Sort threads by latest activity (updated_at, descending; the legacy `time`
+ * field is adapted at the source). The sort is stable, so records without
+ * timestamps keep their relative order, after the timestamped ones.
  */
 export function sortThreadsByLatest(threads = []) {
-  return [...threads].sort((a, b) => String(getThreadTime(b) || '').localeCompare(String(getThreadTime(a) || '')));
+  return [...threads].sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
 }
 
 /**
@@ -84,31 +68,12 @@ export function normalizeThreadValue(value) {
   return { thread: value, messages };
 }
 
-export function getQuestionId(message) {
-  return message && message.question_id;
-}
-
 /**
- * Who generated the message's question, read off its metadata — e.g.
- * 'answer_update_monitor' for a question written by the answer-updates
- * monitor rather than the user.
+ * Whether the message is an update message: its question was written by the
+ * answer-updates monitor rather than the user, per its metadata.
  */
-export function getGeneratedBy(message) {
-  return (message && message.metadata && message.metadata.miso_generated_by) || undefined;
-}
-
-export function hasAnswer(message) {
-  return !!message && message.answer !== undefined;
-}
-
-/**
- * Question ids of messages whose answers are not present yet.
- */
-export function getPendingQuestionIds(value) {
-  if (!value || !value.messages) {
-    return [];
-  }
-  return value.messages.filter(message => !hasAnswer(message)).map(getQuestionId).filter(Boolean);
+export function isUpdateMessage(message) {
+  return !!(message && message.metadata && message.metadata.miso_generated_by === 'answer_update_monitor');
 }
 
 /**
@@ -121,8 +86,8 @@ export function getUnsettledQuestionIds(value) {
     return [];
   }
   return value.messages
-    .filter(message => !message.live && (!hasAnswer(message) || message.finished === false))
-    .map(getQuestionId)
+    .filter(message => !message.live && (message.answer === undefined || message.finished === false))
+    .map(message => message.question_id)
     .filter(Boolean);
 }
 
@@ -193,11 +158,10 @@ export function mergeFollowUpDataFromResponse(oldData, newData) {
 export function mergeAnswersIntoMessages(messages, answers) {
   const byId = new Map();
   for (const answer of answers) {
-    const id = getQuestionId(answer);
-    id && byId.set(id, answer);
+    answer.question_id && byId.set(answer.question_id, answer);
   }
   return messages.map(message => {
-    const answer = byId.get(getQuestionId(message));
+    const answer = byId.get(message.question_id);
     return answer ? { ...message, ...answer } : message;
   });
 }

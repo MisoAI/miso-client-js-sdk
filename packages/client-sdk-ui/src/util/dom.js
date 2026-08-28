@@ -1,3 +1,19 @@
+// data-* attributes of an element as a JSON string, for click interactions
+export function dumpElementAttributes(element) {
+  const { attributes } = element;
+  const attrs = {};
+  for (const { name, value } of attributes) {
+    if (name.startsWith('data-')) {
+      attrs[name] = value;
+    }
+  }
+  try {
+    return JSON.stringify(attrs);
+  } catch (e) {
+    return '{}';
+  }
+}
+
 export function setOrRemoveAttribute(element, name, value) {
   if (value === undefined) {
     element.removeAttribute(name);

@@ -2,28 +2,14 @@ import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
 import {
-  getThreadId,
-  getPlaceholderId,
   isThreadUnread,
   normalizeThreadsValue,
   normalizeThreadValue,
-  getQuestionId,
-  hasAnswer,
-  getPendingQuestionIds,
+  getUnsettledQuestionIds,
   normalizeAnswersValue,
   mergeAnswersIntoMessages,
   mergeAnswersDataFromResponse,
 } from '../src/util/threads.js';
-
-test('getThreadId', () => {
-  assert.is(getThreadId({ thread_id: 't1' }), 't1');
-  assert.is(getThreadId(undefined), undefined);
-});
-
-test('getPlaceholderId', () => {
-  assert.is(getPlaceholderId({ placeholder_id: 'p1' }), 'p1');
-  assert.is(getPlaceholderId({ thread_id: 't1' }), undefined);
-});
 
 test('isThreadUnread: derives from subscribed && has_new', () => {
   assert.is(isThreadUnread({ subscribed: true, has_new: true }), true);
@@ -61,25 +47,18 @@ test('normalizeThreadValue: idempotent', () => {
   assert.is(normalizeThreadValue(merged), merged);
 });
 
-test('getQuestionId / hasAnswer', () => {
-  assert.is(getQuestionId({ question_id: 'q1' }), 'q1');
-  assert.is(getQuestionId(undefined), undefined);
-  assert.is(hasAnswer({ question_id: 'q1', answer: 'A' }), true);
-  assert.is(hasAnswer({ question_id: 'q1' }), false);
-  assert.is(hasAnswer(undefined), false);
-});
-
-test('getPendingQuestionIds', () => {
+test('getUnsettledQuestionIds', () => {
   const value = {
     messages: [
       { question_id: 'q1', answer: 'A' },
       { question_id: 'q2' },
-      { question_id: 'q3' },
+      { question_id: 'q3', answer: 'A3', finished: false },
+      { question_id: 'q4', live: true },
     ],
   };
-  assert.equal(getPendingQuestionIds(value), ['q2', 'q3']);
-  assert.equal(getPendingQuestionIds({}), []);
-  assert.equal(getPendingQuestionIds(undefined), []);
+  assert.equal(getUnsettledQuestionIds(value), ['q2', 'q3']);
+  assert.equal(getUnsettledQuestionIds({}), []);
+  assert.equal(getUnsettledQuestionIds(undefined), []);
 });
 
 test('normalizeAnswersValue', () => {

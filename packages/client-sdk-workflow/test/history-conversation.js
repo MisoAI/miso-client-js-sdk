@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { STATUS, ROLE, REQUEST_TYPE, getThreadId, getPlaceholderId, isThreadUnread } from '../src/index.js';
+import { STATUS, ROLE, REQUEST_TYPE, isThreadUnread } from '../src/index.js';
 import { createClient, tick, answersOf } from './dummy.js';
 
 test('history: works standalone, with no conversation panel constructed', async () => {
@@ -401,9 +401,9 @@ test('conversation: sending in new-thread mode creates and resolves the thread',
   assert.is(history.threads.length, before + 1);
   assert.is(listed().placeholder, true);
   assert.is(listed().title, 'A brand new question');
-  assert.is(getThreadId(listed()), undefined);
-  assert.ok(getPlaceholderId(listed()));
-  assert.is(history.selectedId, getPlaceholderId(listed()));
+  assert.is(listed().thread_id, undefined);
+  assert.ok(listed().placeholder_id);
+  assert.is(history.selectedId, listed().placeholder_id);
   assert.is(conversation.threadId, undefined);
   assert.is(conversation.messages.length, 1);
 
@@ -414,7 +414,7 @@ test('conversation: sending in new-thread mode creates and resolves the thread',
   assert.is(conversation.thread.placeholder_id, undefined);
   assert.is(conversation.thread.title, 'A brand new question');
   assert.is(conversation.threadId, 'q-new-1');
-  assert.is(getThreadId(history.threads[0]), conversation.threadId);
+  assert.is(history.threads[0].thread_id, conversation.threadId);
   assert.is(history.selectedId, conversation.threadId);
   assert.not.ok(history.threads.some(t => t.placeholder));
 
@@ -455,7 +455,7 @@ test('a placeholder item is not addressed as a thread', async () => {
 
   // and selecting it explicitly does not load it as a thread either: the
   // placeholder id never addresses the API
-  const placeholderId = getPlaceholderId(placeholder);
+  const placeholderId = placeholder.placeholder_id;
   history.select(placeholderId);
   await tick(30); // the pending question settles in the meantime
   assert.not.ok(calls.some(c => c.includes(placeholderId)));
@@ -476,7 +476,7 @@ test('switching away mid-creation: the thread is scavenged from the expired resp
 
   assert.not.ok(history.threads.some(t => t.placeholder));
   assert.is(calls.filter(c => c === 'GET threads').length, 1); // no list reload
-  const created = history.threads.find(t => getThreadId(t) === 'q-new-1');
+  const created = history.threads.find(t => t.thread_id === 'q-new-1');
   assert.is(created.title, 'A brand new question');
   assert.is(history.selectedId, 't1'); // the switch is respected
   assert.is(conversation.threadId, 't1');
@@ -499,7 +499,7 @@ test('switching to new chat mid-creation: the thread is scavenged all the same',
   await tick(30);
 
   assert.not.ok(history.threads.some(t => t.placeholder));
-  assert.ok(history.threads.some(t => getThreadId(t) === 'q-new-1'));
+  assert.ok(history.threads.some(t => t.thread_id === 'q-new-1'));
   assert.is(history.selectedId, undefined);
   assert.is(conversation.thread.placeholder, true); // new-thread mode
   assert.equal(conversation.messages, []);
@@ -524,7 +524,7 @@ test('switching away after resolution: the settled thread is left alone', async 
   history.select('t1');
   await tick(30); // the rest of the posting stream expires without effect
 
-  const created = history.threads.find(t => getThreadId(t) === 'q-new-1');
+  const created = history.threads.find(t => t.thread_id === 'q-new-1');
   assert.is(created.title, 'A brand new question');
   assert.is(history.selectedId, 't1'); // the switch is respected
   assert.is(conversation.threadId, 't1');
@@ -543,7 +543,7 @@ test('conversation: a created thread settles without any thread detail call', as
 
   // the id is settled by contract — the resolution does not wait on the server
   assert.is(conversation.threadId, 'q-new-1');
-  assert.is(getThreadId(history.threads[0]), 'q-new-1');
+  assert.is(history.threads[0].thread_id, 'q-new-1');
   assert.is(history.threads[0].title, 'A brand new question');
   assert.not.ok(history.threads.some(t => t.placeholder));
   assert.is(conversation.status, STATUS.READY);
@@ -644,13 +644,117 @@ test('conversation: send posts a follow-up and appends the message pair', async 
   assert.is(last.answer, 'Answer of What about miso ramen?');
   assert.ok(last.question_id);
 
-  // posted like the ask workflow, with the parent question id
+  // posted like the ask workflow, with the parent question id and the
+  // (always organic) question source
   const call = calls.find(c => c.startsWith('POST questions'));
   assert.ok(call);
   assert.ok(call.includes('"parent_question_id":"q2"'));
+  assert.ok(call.includes('"question_source":"_organic"'));
 
   // the head request stays on the committed data
   assert.is(conversation.states.data.request.type, REQUEST_TYPE.THREAD);
+});
+
+test('interactions: citation clicks go out as sources clicks with per-message ask context', async () => {
+  const { client, interactions } = createClient({
+    answers: question_ids => answersOf(question_ids).map(answer => ({
+      ...answer,
+      sources: [{ product_id: `product-of-${answer.question_id}` }],
+      // q1 is an update message, written by the answer-updates monitor
+      ...(answer.question_id === 'q1' ? { metadata: { miso_generated_by: 'answer_update_monitor' } } : {}),
+      // the lineage lives on the record: the chain may fork, so the workflow
+      // must read the parent off the message, never off the message order
+      ...(answer.question_id === 'q2' ? { parent_question_id: 'q1' } : {}),
+    })),
+  });
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+
+  const message = conversation.messages[1]; // q2
+  conversation._onCitationClick({ index: 1, message, event: { button: 0 } });
+
+  assert.is(interactions.length, 1);
+  const interaction = interactions[0];
+  assert.is(interaction.type, 'click');
+  assert.equal(interaction.product_ids, ['product-of-q2']);
+  const context = interaction.context.custom_context;
+  assert.is(context.property, 'sources');
+  assert.is(context.event_target, 'citation-link');
+  // the message's question lineage: the thread id is the root question id,
+  // and the parent question id comes off the message record
+  assert.is(context.root_question_id, 't2');
+  assert.is(context.question_id, 'q2');
+  assert.is(context.parent_question_id, 'q1');
+  assert.is(context.question_source, '_organic');
+  assert.ok(context.session_id);
+
+  // a citation index with no source behind it is not tracked
+  conversation._onCitationClick({ index: 2, message, event: { button: 0 } });
+  // neither is a non-left click
+  conversation._onCitationClick({ index: 1, message, event: { button: 1 } });
+  assert.is(interactions.length, 1);
+
+  // a click on an update message carries the update question source
+  conversation._onCitationClick({ index: 1, message: conversation.messages[0], event: { button: 0 } });
+  assert.is(interactions.length, 2);
+  const updateContext = interactions[1].context.custom_context;
+  assert.is(updateContext.question_id, 'q1');
+  assert.is(updateContext.question_source, '_update');
+});
+
+test('interactions: generic answer link clicks go out as answer clicks', async () => {
+  const { client, interactions } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+
+  const message = conversation.messages[0]; // q1: the root question
+  conversation._onAnswerLinkClick({
+    event: { button: 0 },
+    message,
+    url: 'https://example.com/',
+    text: 'Example',
+    className: '',
+    attributes: '{}',
+  });
+
+  assert.is(interactions.length, 1);
+  const interaction = interactions[0];
+  assert.is(interaction.type, 'click');
+  assert.equal(interaction.product_ids, []);
+  const context = interaction.context.custom_context;
+  assert.is(context.property, 'answer');
+  assert.equal(context.urls, ['https://example.com/']);
+  assert.equal(context.texts, ['Example']);
+  assert.is(context.root_question_id, 't1');
+  assert.is(context.question_id, 'q1');
+  assert.is(context.parent_question_id, undefined); // the record carries no parent
+  assert.is(context.question_source, '_organic');
+});
+
+test('inline follow-up links submit through send()', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+
+  conversation._onFollowUpClick({ q: ' What about miso ramen? ', event: { button: 0 } });
+  await tick();
+
+  assert.is(conversation.messages.length, 3);
+  const call = calls.filter(c => c.startsWith('POST questions')).pop();
+  assert.ok(call.includes('"question":"What about miso ramen?"'));
+  assert.ok(call.includes('"parent_question_id":"q2"'));
 });
 
 test('workflow coordination stays within its client', async () => {

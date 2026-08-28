@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { getThreadId, getPlaceholderId, settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
+import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
@@ -76,7 +76,7 @@ export default class History extends Workflow {
    * created, by the placeholder id standing in for one.
    */
   get(threadId) {
-    return this.threads.find(thread => (getThreadId(thread) || getPlaceholderId(thread)) === threadId);
+    return this.threads.find(thread => (thread.thread_id || thread.placeholder_id) === threadId);
   }
 
   // lifecycle //
@@ -189,30 +189,30 @@ export default class History extends Workflow {
   }
 
   _onViewThreadsSelect({ value: thread }) {
-    const threadId = getThreadId(thread);
+    const threadId = thread && thread.thread_id;
     threadId && this.select(threadId);
   }
 
   _onViewThreadsRename({ value: thread, title }) {
-    const threadId = getThreadId(thread);
+    const threadId = thread && thread.thread_id;
     threadId && title && this.rename(threadId, title);
   }
 
   _onViewThreadsDelete({ value: thread }) {
     // TODO: what happens if deleting a placeholder thread?
-    const threadId = getThreadId(thread);
+    const threadId = thread && thread.thread_id;
     threadId && this.delete(threadId);
   }
 
   // fact handlers //
   _onThreadUpdated({ threadId, changes }) {
-    this._patchValue({ threads: this.threads.map(thread => getThreadId(thread) === threadId ? { ...thread, ...changes } : thread) });
+    this._patchValue({ threads: this.threads.map(thread => thread.thread_id === threadId ? { ...thread, ...changes } : thread) });
   }
 
   _onThreadDeleted({ threadIds }) {
     const removed = new Set(threadIds);
     this._patchValue({
-      threads: this.threads.filter(thread => !removed.has(getThreadId(thread))),
+      threads: this.threads.filter(thread => !removed.has(thread.thread_id)),
       ...(threadIds && threadIds.includes(this.selectedId) ? { selectedThreadId: undefined } : {}),
     });
   }
@@ -228,7 +228,7 @@ export default class History extends Workflow {
   _onConversationNew(thread) {
     this._patchValue({
       threads: [...this.threads, thread],
-      selectedThreadId: getPlaceholderId(thread),
+      selectedThreadId: thread.placeholder_id,
     });
   }
 
@@ -240,7 +240,7 @@ export default class History extends Workflow {
     }
     this._patchValue({
       threads: this.threads.map(thread =>
-        getPlaceholderId(thread) === placeholderId ? settlePlaceholder(thread, threadId) : thread),
+        thread.placeholder_id === placeholderId ? settlePlaceholder(thread, threadId) : thread),
       ...(this.selectedId === placeholderId ? { selectedThreadId: threadId } : {}),
     });
   }
@@ -261,7 +261,7 @@ export default class History extends Workflow {
     // carries its selection state, so views render it right off the data
     value.threads = sortThreadsByLatest(value.threads).map(thread => ({
       ...thread,
-      selected: (getThreadId(thread) || getPlaceholderId(thread)) === value.selectedThreadId,
+      selected: (thread.thread_id || thread.placeholder_id) === value.selectedThreadId,
     }));
     return { ...data, value };
   }

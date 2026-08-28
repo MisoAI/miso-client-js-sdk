@@ -1,5 +1,6 @@
 import { trimObj, defineValues, Resolution, pacer } from '@miso.ai/commons';
 import { STATUS, LAYOUT_TYPE } from '../../../constants.js';
+import { dumpElementAttributes } from '../../../util/dom.js';
 import ProgressiveLayout from '../../progressive.js';
 import PlaintextRenderer from './plaintext.js';
 import { containerElement, cursorClassName, fromSameSession, normalizeOnDebug } from './utils.js';
@@ -193,20 +194,5 @@ export default class TypewriterLayout extends ProgressiveLayout {
       }
       return;
     }
-  }
-}
-
-function dumpElementAttributes(element) {
-  const { attributes } = element;
-  const attrs = {};
-  for (const { name, value } of attributes) {
-    if (name.startsWith('data-')) {
-      attrs[name] = value;
-    }
-  }
-  try {
-    return JSON.stringify(attrs);
-  } catch (e) {
-    return '{}';
   }
 }

@@ -1,4 +1,4 @@
-import { getThreadId, isThreadUnread } from '@miso.ai/client-sdk-workflow';
+import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
 import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
@@ -105,7 +105,7 @@ export default class ThreadsLayout extends CollectionLayout {
       const { value } = binding;
       setOrRemoveAttribute(item, 'data-selected', value.selected ? '' : undefined);
       setOrRemoveAttribute(item, 'data-unread', isThreadUnread(value) ? '' : undefined);
-      setOrRemoveAttribute(item, 'data-thread-id', getThreadId(value) || undefined);
+      setOrRemoveAttribute(item, 'data-thread-id', value.thread_id || undefined);
       const titleElement = item.querySelector(`.${this.className}__title`);
       const title = value.title || 'Untitled';
       if (titleElement && titleElement.textContent !== title) {

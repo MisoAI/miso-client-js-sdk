@@ -1,13 +1,18 @@
-import { API, uuidv4 } from '@miso.ai/commons';
+import { API, uuidv4, trimObj, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { ROLE, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { getThreadId, getPlaceholderId, getQuestionId, isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
+import { writeQuestionSourceToPayload, writeAnswerClickInfoToInteraction, writeEventTargetToInteraction } from './processors.js';
+import { isTracked, markAsTracked } from '../util/trackers.js';
+import { isUpdateMessage, isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.SUBSCRIPTION],
+  // answer and sources are tracking-only channels, with no element of their
+  // own: answer-content clicks arrive through the messages view, and go out
+  // as interactions under the same roles the ask workflow uses
+  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.SUBSCRIPTION, ROLE.ANSWER, ROLE.SOURCES],
   mappings: {
     // the header roles map (dot-path) into the open thread's record: the
     // title text, the rename dialog's pre-fill, the checkbox's checked state
@@ -48,6 +53,14 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * the superworkflow's markAsRead, once their answer contents arrive) and
  * announces the placeholder lifecycle of a thread being created
  * (_onConversationNew, _onConversationResolve).
+ *
+ * Answer-content interactions mirror the ask workflow's, per message: the
+ * messages layout emits clicks inside an answer body with the message they
+ * happened on — citation-link clicks go out as sources clicks
+ * (event_target: 'citation-link'), generic link clicks as answer clicks —
+ * and each interaction carries the message's question lineage
+ * (_writeMessageInfoToInteraction) in place of ask's session-level one.
+ * Inline follow-up links submit through send(), like ask's follow-up flow.
  */
 export default class Conversation extends Workflow {
 
@@ -74,6 +87,11 @@ export default class Conversation extends Workflow {
       this._hub.on(fields.expiredResponse(), response => this._onExpiredResponse(response)),
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
+      // answer-content clicks, emitted by the messages layout with the
+      // message they happened on
+      this._views.on(ROLE.MESSAGES, 'citation-click', event => this._onCitationClick(event)),
+      this._views.on(ROLE.MESSAGES, 'link-click', event => this._onAnswerLinkClick(event)),
+      this._views.on(ROLE.MESSAGES, 'follow-up-click', event => this._onFollowUpClick(event)),
     ];
   }
 
@@ -93,7 +111,8 @@ export default class Conversation extends Workflow {
    * is in flight and no value is committed yet — the request itself.
    */
   get threadId() {
-    const id = getThreadId(this.thread);
+    const { thread } = this;
+    const id = thread && thread.thread_id;
     if (id) {
       return id;
     }
@@ -166,10 +185,10 @@ export default class Conversation extends Workflow {
       return this;
     }
     // starting a new thread, unless one is loaded or already being created
-    const placeholder = (this.threadId || getPlaceholderId(this.thread)) ? undefined : this._startPlaceholderThread(question);
+    const placeholder = (this.threadId || (this.thread && this.thread.placeholder_id)) ? undefined : this._startPlaceholderThread(question);
     const messages = data.value.messages || [];
     const last = messages[messages.length - 1];
-    const parent_question_id = last && getQuestionId(last);
+    const parent_question_id = last && last.question_id;
     this.updateData({
       ...data,
       value: {
@@ -180,7 +199,9 @@ export default class Conversation extends Workflow {
     });
     const { api } = this._options.resolved.query;
     this._request(mergeApiOptions(api, {
-      payload: { question, ...(parent_question_id ? { parent_question_id } : {}) },
+      // like the ask workflow, the payload carries the question source; in
+      // this panel every question is typed, so it is always organic
+      payload: writeQuestionSourceToPayload({ question, ...(parent_question_id ? { parent_question_id } : {}) }),
       type: REQUEST_TYPE.QUERY,
       ...(placeholder ? { placeholder } : {}),
     }));
@@ -234,7 +255,7 @@ export default class Conversation extends Workflow {
    * asked, so there is nothing to reset — unless `force` is set.
    */
   new({ force = false } = {}) {
-    if (!this.threadId && !getPlaceholderId(this.thread) && !force) {
+    if (!this.threadId && !(this.thread && this.thread.placeholder_id) && !force) {
       return this;
     }
     this.restart();
@@ -248,7 +269,7 @@ export default class Conversation extends Workflow {
 
   // called by the history workflow //
   _onThreadSelect({ threadId, thread }) {
-    if (getPlaceholderId(thread) || threadId === getPlaceholderId(this.thread)) {
+    if ((thread && thread.placeholder_id) || threadId === (this.thread && this.thread.placeholder_id)) {
       return; // a thread being created has nothing to load; it is on display
     }
     this.load(threadId, { data: thread });
@@ -298,6 +319,96 @@ export default class Conversation extends Workflow {
     checked ? this.subscribe() : this.unsubscribe();
   }
 
+  // answer-content clicks //
+  // the trackings of the ask workflow, per message: the messages layout
+  // emits the click with the message it happened on, and the interaction
+  // goes out under the same role (sources, answer) as it would in ask
+  _onCitationClick({ index, message, event }) {
+    if (event.button !== 0) {
+      return; // only left click
+    }
+    if (isTracked(event)) {
+      return;
+    }
+    const { sources } = message || {};
+    // index is 1-based
+    const source = sources && sources[index - 1];
+    if (!source || !source.product_id) {
+      return;
+    }
+    markAsTracked(event);
+    // distinguish from regular sources element click
+    this._views.trackers.sources.click([source.product_id], { event_target: 'citation-link', message });
+  }
+
+  _onAnswerLinkClick({ event, message, ...item }) {
+    if (event.button !== 0) {
+      return; // only left click
+    }
+    if (isTracked(event)) {
+      return;
+    }
+    markAsTracked(event);
+    // put everything into args and let _defaultProcessInteraction() handle it
+    // for it's hard to make it a standard item
+    this._views.trackers.answer.click([], { items: [item], message });
+  }
+
+  _onFollowUpClick({ q, event } = {}) {
+    if (event.button !== 0) {
+      return; // only left click
+    }
+    const { ongoing } = this._hub.states[fields.view(ROLE.MESSAGES)] || {};
+    if (ongoing) {
+      return; // an answer is still being displayed; hold, as the search box does
+    }
+    q = q ? q.trim() : '';
+    q && this.send(q);
+  }
+
+  // interactions //
+  _defaultProcessInteraction(payload, args) {
+    payload = super._defaultProcessInteraction(payload, args);
+    payload = writeAnswerClickInfoToInteraction(payload, args);
+    payload = writeEventTargetToInteraction(payload, args);
+    payload = this._writeMessageInfoToInteraction(payload, args);
+    // a question in this panel is either written by the answer-updates
+    // monitor (an update message) or typed by the user (organic)
+    payload = mergeInteractions(payload, {
+      context: {
+        custom_context: {
+          question_source: isUpdateMessage(args.message) ? QUESTION_SOURCE.UPDATE : QUESTION_SOURCE.ORGANIC,
+        },
+      },
+    });
+    return payload;
+  }
+
+  /**
+   * The per-message counterpart of the ask workflow's question lineage: the
+   * message the interaction happened on supplies the question id, its own
+   * parent question id (off the record — the question chain may fork, so
+   * message order implies no lineage), and its miso_id, when it carries one;
+   * the thread id — the id of the thread's first question, by contract — is
+   * the root question id.
+   */
+  _writeMessageInfoToInteraction(payload, { message } = {}) {
+    if (!message) {
+      return payload;
+    }
+    const { question_id, parent_question_id } = message;
+    return mergeInteractions(payload, trimObj({
+      miso_id: message.miso_id,
+      context: {
+        custom_context: trimObj({
+          root_question_id: this.threadId,
+          parent_question_id,
+          question_id,
+        }),
+      },
+    }));
+  }
+
   // request //
   _writeRequestTimeToSession(timestamp, options = {}) {
     // only the head request marks the session request time
@@ -342,7 +453,7 @@ export default class Conversation extends Workflow {
     if (!value || !value.thread) {
       return value;
     }
-    const record = thread && getThreadId(thread) === getThreadId(value.thread) ? thread : undefined;
+    const record = thread && thread.thread_id === value.thread.thread_id ? thread : undefined;
     return { ...value, thread: { ...record, ...value.thread, has_new: false } };
   }
 
@@ -413,11 +524,11 @@ export default class Conversation extends Workflow {
    */
   _resolveIfNecessary(data) {
     const { thread, messages } = data.value || {};
-    const placeholderId = getPlaceholderId(thread);
+    const placeholderId = thread && thread.placeholder_id;
     if (!placeholderId) {
       return; // not a new thread
     }
-    const questionId = getQuestionId(messages && messages[0]);
+    const questionId = messages && messages[0] && messages[0].question_id;
     if (!questionId) {
       throw new Error(`questionId is required for thread resolving`);
     }
@@ -442,14 +553,14 @@ export default class Conversation extends Workflow {
       return; // only a posting request may carry a thread creation
     }
     const placeholder = request.placeholder;
-    const questionId = getQuestionId(value);
+    const questionId = value && value.question_id;
     if (!placeholder || !questionId) {
       return; // not a thread-creating request, or no response to salvage
     }
     // notify history workflow to settle the thread ID; if the resolution
     // had already run in-session before the switch, the settled list item
     // makes this announcement a no-op
-    this._superworkflow._onConversationResolve(getPlaceholderId(placeholder), questionId);
+    this._superworkflow._onConversationResolve(placeholder.placeholder_id, questionId);
   }
 
   /**

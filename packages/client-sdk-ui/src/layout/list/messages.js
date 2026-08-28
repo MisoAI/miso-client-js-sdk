@@ -1,10 +1,9 @@
-import { Resolution, pacer, requestAnimationFrame as raf } from '@miso.ai/commons';
-import { hasAnswer, getGeneratedBy } from '@miso.ai/client-sdk-workflow';
+import { trimObj, Resolution, pacer, requestAnimationFrame as raf } from '@miso.ai/commons';
 import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { cursorClassName } from '../text/typewriter/utils.js';
 import { messageAuthor } from '../templates.js';
-import { setOrRemoveAttribute } from '../../util/dom.js';
+import { setOrRemoveAttribute, dumpElementAttributes } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.MESSAGES;
 const DEFAULT_CLASSNAME = 'miso-messages';
@@ -117,7 +116,7 @@ export default class MessagesLayout extends CollectionLayout {
   // even after switching away from the thread and back, and must keep
   // blocking submission all the same
   _isDisplaying(item, message) {
-    if (!hasAnswer(message)) {
+    if (!message || message.answer === undefined) {
       return true; // waiting for the answer body
     }
     const answerElement = item.querySelector('[data-role="answer"]');
@@ -132,7 +131,7 @@ export default class MessagesLayout extends CollectionLayout {
     }
     // the authorship arrives with the answers response, after the stub render
     setOrRemoveAttribute(questionElement, 'data-author', messageAuthor(message));
-    setOrRemoveAttribute(questionElement, 'data-generated-by', getGeneratedBy(message));
+    setOrRemoveAttribute(questionElement, 'data-generated-by', (message.metadata && message.metadata.miso_generated_by) || undefined);
     const { question } = message;
     if (!question || questionElement.textContent === question) {
       return;
@@ -152,7 +151,7 @@ export default class MessagesLayout extends CollectionLayout {
       typewriter.update(message);
       return;
     }
-    if (!hasAnswer(message)) {
+    if (message.answer === undefined) {
       return; // still loading; the spinner stays
     }
     if (message.live || message.finished === false) {
@@ -191,6 +190,60 @@ export default class MessagesLayout extends CollectionLayout {
     }
     this._displaying = displaying;
     this._notifyUpdate && this._notifyUpdate({ ongoing: displaying });
+  }
+
+  // event //
+  /**
+   * Clicks inside a message's answer body take the answer-content paths of
+   * the ask workflow — citation links, inline follow-up links, and generic
+   * links — emitted with the message they happened on, so the workflow can
+   * attach per-message context to the interaction. Anything else falls back
+   * to the standard item click handling.
+   */
+  _onClick(event) {
+    const itemElement = event.target.closest(`[data-role="item"]`);
+    const binding = itemElement && this._bindings.get(itemElement);
+    const message = binding && binding.value;
+    if (message && event.target.closest(`[data-role="answer"]`)) {
+      // citation link click
+      const citationLinkElement = event.target.closest(`[data-role="citation-link"]`);
+      if (citationLinkElement) {
+        const index = parseInt(citationLinkElement.dataset.index);
+        if (!Number.isNaN(index)) {
+          this._view._emit('citation-click', { event, index, message });
+        }
+        return;
+      }
+      // follow-up link click
+      const followUpLinkElement = event.target.closest(`[data-role="follow-up-link"]`);
+      if (followUpLinkElement) {
+        let { q } = followUpLinkElement.dataset;
+        q = q ? q.trim() : undefined;
+        if (q) {
+          this._view._emit('follow-up-click', { event, q, message });
+        }
+        return;
+      }
+      // generic link click
+      const anchorElement = event.target.closest('a');
+      if (anchorElement) {
+        if (!event.defaultPrevented) {
+          const { href, innerText, className } = anchorElement;
+          if (href) {
+            this._view._emit('link-click', trimObj({
+              event,
+              message,
+              url: href,
+              text: innerText ? innerText.trim() : '',
+              className: className || '',
+              attributes: dumpElementAttributes(anchorElement),
+            }));
+          }
+        }
+        return;
+      }
+    }
+    super._onClick(event);
   }
 
   // scrolling //
