@@ -1,5 +1,6 @@
 import { defineValues } from '@miso.ai/commons';
 import WorkflowEventBus from './bus.js';
+import { ThreadsModel } from './actor/index.js';
 import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation } from './workflow/index.js';
 import * as sources from './source.js';
 
@@ -45,21 +46,28 @@ export default class Workflows {
     return this._hybridSearch;
   }
 
+  // the model of thread operations shared by the history/conversation peers
+  _getThreadsModel() {
+    return this._threadsModel || (this._threadsModel = new ThreadsModel(this._client));
+  }
+
   get history() {
     if (!this._history) {
-      this._history = new History(this._plugin, this._client);
+      this._history = new History(this._plugin, this._client, this._getThreadsModel());
       this._client._events.emit('postworkflow', this._history);
     }
     return this._history;
   }
 
   get conversation() {
-    // a subworkflow of history (like hybrid-search's answer), lazily
-    // constructed here: the history workflow guards its calls to the
-    // conversation, so the thread list works standalone until this accessor
-    // brings the panel to life
-    const history = this.history;
-    return history._conversation || (history._conversation = new Conversation(history));
+    // a peer of the history workflow, created independently: the two share
+    // the threads model, look each other up here (without constructing) and
+    // coordinate only when both exist, so either panel works standalone
+    if (!this._conversation) {
+      this._conversation = new Conversation(this._plugin, this._client, this._getThreadsModel());
+      this._client._events.emit('postworkflow', this._conversation);
+    }
+    return this._conversation;
   }
 
   get asks() {

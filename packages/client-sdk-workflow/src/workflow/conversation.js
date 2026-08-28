@@ -47,13 +47,12 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *    display (`mergeAnswersDataFromResponse`, in the manner of
  *    `concatItemsFromMoreResponse`).
  *
- * A subworkflow of the history workflow (like hybrid-search/answer): created
- * and owned by History, exposed as `history.conversation`. The two coordinate
- * by direct method calls: History loads its selection into this panel
- * (_onThreadSelect) and applies thread facts to it (_onThreadUpdated,
- * _onThreadDeleted, ...); Conversation marks loaded threads as read (via
- * the superworkflow's markAsRead, once their answer contents arrive) and
- * announces the placeholder lifecycle of a thread being created
+ * A peer of the History workflow: the two are created independently and
+ * coordinate by direct method calls only when both exist. Thread mutations
+ * go through the shared ThreadsModel, whose facts both peers subscribe to
+ * (_onThreadUpdated, ...). History loads its selection into this panel
+ * (_onThreadSelect); Conversation marks loaded threads as read and announces
+ * the placeholder lifecycle of a thread being created to the listed side
  * (_onConversationNew, _onConversationResolve).
  *
  * Answer-content interactions mirror the ask workflow's, per message: the
@@ -66,19 +65,24 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  */
 export default class Conversation extends Workflow {
 
-  constructor(superworkflow) {
+  constructor(plugin, client, model) {
     super({
       name: 'conversation',
-      plugin: superworkflow._plugin,
-      client: superworkflow._client,
+      plugin,
+      client,
       roles: ROLES_OPTIONS,
-      superworkflow,
+      model,
     });
   }
 
   _initProperties(args) {
     super._initProperties(args);
-    this._superworkflow = args.superworkflow;
+    this._model = args.model;
+  }
+
+  // the history (thread list) workflow, if constructed
+  get _peer() {
+    return this._client.workflows._history;
   }
 
   _initSubscriptions(args) {
@@ -94,6 +98,10 @@ export default class Conversation extends Workflow {
       this._views.on(ROLE.MESSAGES, 'citation-click', event => this._onCitationClick(event)),
       this._views.on(ROLE.MESSAGES, 'link-click', event => this._onAnswerLinkClick(event)),
       this._views.on(ROLE.MESSAGES, 'follow-up-click', event => this._onFollowUpClick(event)),
+      // thread facts from the shared model
+      this._model.on('updated', event => this._onThreadUpdated(event)),
+      this._model.on('deleted', event => this._onThreadDeleted(event)),
+      this._model.on('all-deleted', () => this._onAllThreadsDeleted()),
     ];
   }
 
@@ -211,25 +219,25 @@ export default class Conversation extends Workflow {
 
   // thread operations //
   /**
-   * Thread-level operations on the thread on display, delegated to the
-   * history workflow, where the mutation calls the API and applies the fact
-   * to both panels. They require a loaded thread: a thread being created
-   * (or none at all) has no server identity to operate on.
+   * Thread-level operations on the thread on display, on the shared
+   * ThreadsModel — the facts come back through the model subscriptions, to
+   * both panels. They require a loaded thread: a thread being created (or
+   * none at all) has no server identity to operate on.
    */
   rename(title) {
-    return this._superworkflow.rename(this._requireThreadId('rename'), title);
+    this._model.rename(this._requireThreadId('rename'), title);
   }
 
   subscribe() {
-    return this._superworkflow.subscribe(this._requireThreadId('subscribe'));
+    this._model.subscribe(this._requireThreadId('subscribe'));
   }
 
   unsubscribe() {
-    return this._superworkflow.unsubscribe(this._requireThreadId('unsubscribe'));
+    this._model.unsubscribe(this._requireThreadId('unsubscribe'));
   }
 
   delete() {
-    return this._superworkflow.delete(this._requireThreadId('delete'));
+    this._model.delete(this._requireThreadId('delete'));
   }
 
   _requireThreadId(method) {
@@ -241,11 +249,12 @@ export default class Conversation extends Workflow {
   }
 
   // the local record standing in for a thread being created, announced to
-  // the history workflow (which lists and selects it)
+  // the history workflow (which lists and selects it), if constructed
   _startPlaceholderThread(question) {
     // TODO: client side time is not reliable, don't use it for comparison with server time
     const thread = Object.freeze({ placeholder_id: uuidv4(), title: question, placeholder: true, updated_at: new Date().toISOString() });
-    this._superworkflow._onConversationNew(thread);
+    const peer = this._peer;
+    peer && peer._onConversationNew(thread);
     return thread;
   }
 
@@ -494,14 +503,18 @@ export default class Conversation extends Workflow {
 
   /**
    * Opening a thread marks it as read, right at load time. The unread state
-   * is read off the listed record.
+   * is read off the peer's listed record; with no history workflow around,
+   * no unread state is tracked and nothing is marked.
    */
   _markAsReadIfNecessary(threadId) {
-    if (!isThreadUnread(this._superworkflow.get(threadId))) {
+    /*
+    const history = this._peer;
+    if (!history || !isThreadUnread(history.get(threadId))) {
       // TODO: check spec: do we always want to mark as read?
       return;
     }
-    this._superworkflow.markAsRead(threadId);
+    */
+    this._model.markAsRead(threadId);
   }
 
   /**
@@ -519,8 +532,9 @@ export default class Conversation extends Workflow {
     if (!questionId) {
       throw new Error(`questionId is required for thread resolving`);
     }
-    // notify history workflow to settle the thread ID
-    this._superworkflow._onConversationResolve(placeholderId, questionId);
+    // notify the history workflow, if constructed, to settle the thread ID
+    const peer = this._peer;
+    peer && peer._onConversationResolve(placeholderId, questionId);
     // settle the panel's own record likewise: with the placeholder gone the
     // resolution cannot fire twice, and the thread is addressable right away
     this.updateData({ ...data, value: { ...data.value, thread: settlePlaceholder(thread, questionId) } });
@@ -544,10 +558,11 @@ export default class Conversation extends Workflow {
     if (!placeholder || !questionId) {
       return; // not a thread-creating request, or no response to salvage
     }
-    // notify history workflow to settle the thread ID; if the resolution
-    // had already run in-session before the switch, the settled list item
-    // makes this announcement a no-op
-    this._superworkflow._onConversationResolve(placeholder.placeholder_id, questionId);
+    // notify the history workflow, if constructed, to settle the thread ID;
+    // if the resolution had already run in-session before the switch, the
+    // settled list item makes this announcement a no-op
+    const peer = this._peer;
+    peer && peer._onConversationResolve(placeholder.placeholder_id, questionId);
   }
 
   /**

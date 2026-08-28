@@ -16,7 +16,31 @@ test('history: works standalone, with no conversation panel constructed', async 
 
   assert.is(history.selectedId, 't2');
   assert.equal(history.threads.map(t => t.thread_id), ['t2']);
-  assert.is(history._conversation, undefined); // the subworkflow stays unconstructed
+  assert.is(client.workflows._conversation, undefined); // the peer stays unconstructed
+});
+
+test('conversation: works standalone, with no history workflow constructed', async () => {
+  const { client, calls } = createClient();
+  const { conversation } = client.workflows; // client.workflows.history is never accessed
+
+  conversation.load('t1');
+  await tick();
+  assert.is(conversation.threadId, 't1');
+  assert.equal(conversation.messages, answersOf(['q1', 'q2']));
+
+  // the shared mutations call the API without a history workflow around
+  conversation.rename('Renamed');
+  assert.ok(calls.includes('PUT threads/t1 {"title":"Renamed"}'));
+  assert.is(conversation.thread.title, 'Renamed');
+
+  // a new thread is created and resolved with no listed side to announce to
+  conversation.new();
+  conversation.send('A brand new question');
+  await tick(30);
+  assert.is(conversation.threadId, 'q-new-1');
+  assert.is(conversation.thread.placeholder, undefined);
+
+  assert.is(client.workflows._history, undefined); // the peer stays unconstructed
 });
 
 test('history: start() loads the thread list, idempotently', async () => {

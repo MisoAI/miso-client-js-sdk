@@ -1,4 +1,3 @@
-import { asArray } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
@@ -19,30 +18,32 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * history API. Loads the list of threads and manages thread-level operations
  * (select, rename, delete, mark as read).
  *
- * Mutations follow an event-sourced pattern: a mutation method calls the API,
- * then applies the fact to both panels through the shared handler methods
- * (_onThreadUpdated / _onThreadDeleted / ... on this workflow and on the
- * conversation subworkflow), so a change goes through the same code path
- * whichever panel it originated from.
+ * A peer of the Conversation workflow: the two are created independently,
+ * and every call to the peer is guarded by its presence, so the thread list
+ * works standalone. Thread mutations go through the shared ThreadsModel,
+ * whose facts both peers subscribe to (_onThreadUpdated, ...).
  */
 export default class History extends Workflow {
 
-  constructor(plugin, client) {
+  constructor(plugin, client, model) {
     super({
       name: 'history',
       plugin,
       client,
       roles: ROLES_OPTIONS,
+      model,
     });
   }
 
   _initProperties(args) {
     super._initProperties(args);
-    // the conversation panel is a subworkflow (like hybrid-search/answer),
-    // lazily constructed by the workflows interface (client.workflows
-    // .conversation); every call to it below is guarded by its presence
-    this._conversation = undefined;
+    this._model = args.model;
     this._started = false;
+  }
+
+  // the conversation panel workflow, if constructed
+  get _peer() {
+    return this._client.workflows._conversation;
   }
 
   _initSubscriptions(args) {
@@ -53,6 +54,10 @@ export default class History extends Workflow {
       this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadsRename(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadsDelete(event)),
       this._views.on(ROLE.NEW_THREAD, 'submit', () => this._onViewNewThreadSubmit()),
+      // thread facts from the shared model
+      this._model.on('updated', event => this._onThreadUpdated(event)),
+      this._model.on('deleted', event => this._onThreadDeleted(event)),
+      this._model.on('all-deleted', () => this._onAllThreadsDeleted()),
     ];
   }
 
@@ -117,70 +122,36 @@ export default class History extends Workflow {
     // id never addresses the API, and the panel either already displays the
     // thread or has nothing to fetch
     if (!(thread && thread.placeholder_id)) {
-      this._conversation && this._conversation._onThreadSelect(threadId);
+      const peer = this._peer;
+      peer && peer._onThreadSelect(threadId);
     }
     return this;
   }
 
+  // thread mutations, on the shared model — the facts come back through the
+  // model subscriptions
   rename(threadId, title) {
-    this._api.updateThread(threadId, { title }); // no await
-    this._applyThreadUpdate(Object.freeze({ threadId, changes: { title } }));
+    this._model.rename(threadId, title);
   }
 
   markAsRead(threadId) {
-    this._api.markThreadAsRead(threadId); // no await
-    // no need to notify conversation
-    this._onThreadUpdated(Object.freeze({ threadId, changes: { has_new: false } }));
+    this._model.markAsRead(threadId);
   }
 
-  /**
-   * Subscribe the thread to answer updates.
-   */
   subscribe(threadId) {
-    this._api.subscribeThread(threadId); // no await
-    this._applyThreadUpdate(Object.freeze({ threadId, changes: { subscribed: true } }));
+    this._model.subscribe(threadId);
   }
 
-  /**
-   * Withdraw the thread from answer updates. The unread fact (has_new) is
-   * untouched — subscribed and has_new are independent, and the unread
-   * presentation (isThreadUnread) derives from both, so the red dot hides
-   * all the same.
-   */
   unsubscribe(threadId) {
-    this._api.unsubscribeThread(threadId); // no await
-    this._applyThreadUpdate(Object.freeze({ threadId, changes: { subscribed: false } }));
+    this._model.unsubscribe(threadId);
   }
 
-  /**
-   * Delete one or more threads: takes a thread id or an array of them.
-   */
   delete(threadIds) {
-    threadIds = asArray(threadIds);
-    if (!threadIds.length) {
-      return;
-    }
-    this._api.deleteThreads({ thread_ids: threadIds }); // no await
-    const event = Object.freeze({ threadIds });
-    this._onThreadDeleted(event);
-    this._conversation && this._conversation._onThreadDeleted(event);
+    this._model.delete(threadIds);
   }
 
   deleteAll() {
-    this._api.deleteAllThreads(); // no await
-    this._onAllThreadsDeleted();
-    this._conversation && this._conversation._onAllThreadsDeleted();
-  }
-
-  // apply a fact to both panels, so the change goes through the same code
-  // path whichever panel it originated from
-  _applyThreadUpdate(event) {
-    this._onThreadUpdated(event);
-    this._conversation && this._conversation._onThreadUpdated(event);
-  }
-
-  get _api() {
-    return this._client.api.ask.userHistory;
+    this._model.deleteAll();
   }
 
   // view actions //
@@ -190,7 +161,8 @@ export default class History extends Workflow {
     }
     this._patchValue({ selectedThreadId: undefined });
     this._emit('new', {});
-    this._conversation && this._conversation.new();
+    const peer = this._peer;
+    peer && peer.new();
   }
 
   _onViewThreadsSelect({ value: thread }) {
@@ -226,7 +198,7 @@ export default class History extends Workflow {
     this._patchValue({ threads: [], selectedThreadId: undefined });
   }
 
-  // called by the conversation subworkflow //
+  // called by the conversation workflow //
   // a new thread is started in the conversation panel: list its placeholder
   // as the selected item (its fresh timestamp sorts it to the top). The
   // record has no thread id yet, so it is selected by its placeholder id
@@ -278,12 +250,6 @@ export default class History extends Workflow {
       return; // the list is not loaded yet, nothing to patch
     }
     this.updateData({ ...data, value: { ...data.value, ...patch } });
-  }
-
-  // destroy //
-  _destroy(options) {
-    this._conversation && this._conversation.destroy(options);
-    super._destroy(options);
   }
 
 }
