@@ -300,6 +300,20 @@ export function carryOverQuestionIdToData(data, oldData) {
   };
 }
 
+/**
+ * Stamp the thread record of a conversation value as read: the head response
+ * carries the full thread record (the same properties as the thread list
+ * API) — except that the thread on display carries no unread flag whatever
+ * the response says: load() marks it as read, so an open thread is read by
+ * definition.
+ */
+export function writeThreadAsRead(value) {
+  if (!value || !value.thread) {
+    return value;
+  }
+  return { ...value, thread: { ...value.thread, has_new: false } };
+}
+
 export function writeUnanswerableToMeta(data) {
   const { value } = data;
   if (!value) {

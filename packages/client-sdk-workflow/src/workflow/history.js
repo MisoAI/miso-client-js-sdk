@@ -110,10 +110,15 @@ export default class History extends Workflow {
     if (!threadId) {
       throw new Error(`threadId is required in select() call`);
     }
+    const thread = this.get(threadId);
     this._patchValue({ selectedThreadId: threadId });
-    const event = Object.freeze({ threadId, thread: this.get(threadId) });
-    this._emit('select', event);
-    this._conversation && this._conversation._onThreadSelect(event);
+    this._emit('select', Object.freeze({ threadId, thread }));
+    // a thread being created has no server identity to load: the placeholder
+    // id never addresses the API, and the panel either already displays the
+    // thread or has nothing to fetch
+    if (!(thread && thread.placeholder_id)) {
+      this._conversation && this._conversation._onThreadSelect(threadId);
+    }
     return this;
   }
 

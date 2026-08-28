@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { writeQuestionSourceToPayload, writeAnswerClickInfoToInteraction, writeEventTargetToInteraction } from './processors.js';
+import { writeQuestionSourceToPayload, writeThreadAsRead, writeAnswerClickInfoToInteraction, writeEventTargetToInteraction } from './processors.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 import { isUpdateMessage, isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
 
@@ -33,8 +33,10 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * manner of search-based workflows' query/more requests, with the handling
  * split by `request.type` (REQUEST_TYPE) on the way in:
  *
- * 1. THREAD (head): `GET threads/{id}` retrieves the thread detail, whose
- *    turns are question ids (or records without answer bodies).
+ * 1. THREAD (head): `GET threads/{id}` retrieves the thread detail: the
+ *    thread record — assumed to carry the same properties as the thread
+ *    list API — and its turns, as question ids (or records without answer
+ *    bodies).
  * 2. ANSWERS (follow-up): when the head data lands, a request to the answers
  *    API is issued with the pending `question_ids`, overriding the api
  *    group/name per request (from the resolved `answers` options, a
@@ -133,11 +135,11 @@ export default class Conversation extends Workflow {
   // lifecycle //
   /**
    * Load a thread into the conversation panel. Loading the current thread
-   * again is a no-op unless `force` is set. An optional `data` — the
-   * thread's list record, passed along by the history selection — fills in
-   * the thread metadata the head response may not carry.
+   * again is a no-op unless `force` is set. The head response carries the
+   * full thread record (the same properties as the thread list API), so the
+   * thread id is all a load needs.
    */
-  load(threadId, { force = false, data } = {}) {
+  load(threadId, { force = false } = {}) {
     if (!threadId) {
       throw new Error(`threadId is required in load() call`);
     }
@@ -147,14 +149,13 @@ export default class Conversation extends Workflow {
     this.restart();
     // mark as read as soon as it's loading: the user may just want to clear
     // the red dot
-    this._markAsReadIfNecessary(threadId, data);
-    // the request carries the thread identity and the list record, so the
-    // data layer holds all the state of the load
+    this._markAsReadIfNecessary(threadId);
+    // the request carries the thread identity, so the data layer holds all
+    // the state of the load
     this._request({
       name: `${API.NAME.THREADS}/${threadId}`,
       type: REQUEST_TYPE.THREAD,
       threadId,
-      thread: data,
     });
     return this;
   }
@@ -268,11 +269,11 @@ export default class Conversation extends Workflow {
   }
 
   // called by the history workflow //
-  _onThreadSelect({ threadId, thread }) {
-    if ((thread && thread.placeholder_id) || threadId === (this.thread && this.thread.placeholder_id)) {
-      return; // a thread being created has nothing to load; it is on display
+  _onThreadSelect(threadId) {
+    if (threadId === (this.thread && this.thread.placeholder_id)) {
+      return; // the thread being created is on display already
     }
-    this.load(threadId, { data: thread });
+    this.load(threadId);
   }
 
   _onThreadUpdated({ threadId, changes }) {
@@ -438,23 +439,10 @@ export default class Conversation extends Workflow {
         // the response body is the (last) message of the conversation
         return { ...data, value: { messages: [data.value] } };
       case REQUEST_TYPE.THREAD:
-        return { ...data, value: this._mergeThreadData(normalizeThreadValue(data.value), data.request) };
+        return { ...data, value: writeThreadAsRead(normalizeThreadValue(data.value)) };
       default:
         return data;
     }
-  }
-
-  // the list record of the loaded thread (carried by the head request) fills
-  // in the thread metadata (title, ...) the head response may not carry —
-  // the v0 API returns question ids only. The thread on display carries no
-  // unread flag whatever the record or the response says: load() marks it as
-  // read, so an open thread is read by definition
-  _mergeThreadData(value, { thread } = {}) {
-    if (!value || !value.thread) {
-      return value;
-    }
-    const record = thread && thread.thread_id === value.thread.thread_id ? thread : undefined;
-    return { ...value, thread: { ...record, ...value.thread, has_new: false } };
   }
 
   _updateDataInHub(data, oldData) {
@@ -506,11 +494,10 @@ export default class Conversation extends Workflow {
 
   /**
    * Opening a thread marks it as read, right at load time. The unread state
-   * is read off the list record passed along by the selection, falling back
-   * to the listed record for recordless loads.
+   * is read off the listed record.
    */
-  _markAsReadIfNecessary(threadId, thread) {
-    if (!isThreadUnread(thread) && !isThreadUnread(this._superworkflow.get(threadId))) {
+  _markAsReadIfNecessary(threadId) {
+    if (!isThreadUnread(this._superworkflow.get(threadId))) {
       // TODO: check spec: do we always want to mark as read?
       return;
     }
