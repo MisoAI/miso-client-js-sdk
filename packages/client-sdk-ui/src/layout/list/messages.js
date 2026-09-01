@@ -1,28 +1,30 @@
-import { trimObj, Resolution, pacer, requestAnimationFrame as raf } from '@miso.ai/commons';
 import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
-import { cursorClassName } from '../text/typewriter/utils.js';
-import { messageAuthor } from '../templates.js';
-import { setOrRemoveAttribute, dumpElementAttributes } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.MESSAGES;
 const DEFAULT_CLASSNAME = 'miso-messages';
-const TYPEWRITER_CLASSNAME = 'miso-typewriter';
 
 /**
- * The conversation panel of the chat history interface: a list of `message`
- * items (question bubble + answer body), rendered incrementally — appended
- * messages (e.g. a posted follow-up question) render as new items, while
- * in-place changes are applied to existing items by a post-render pass
- * (`_syncMessages`):
+ * The conversation panel of the chat history interface: a shell that renders
+ * one <miso-message> container element per message item, incrementally —
+ * appended messages (e.g. a posted follow-up question) render as new items.
+ * The content of a message is not rendered here: each <miso-message> is
+ * assigned its item subworkflow (workflow.getMessageWorkflow, off the item
+ * binding) in the post-render sync pass, and the role elements inside
+ * (question, answer, ...) render through that workflow's own layouts.
  *
- * - question texts are filled in when they arrive (the head request carries
- *   question ids only)
- * - a finished answer body is transformed from markdown to HTML in one shot
- *   through the `std:ui-markdown` plugin
- * - a streaming answer (a follow-up being generated, `finished: false`) is
- *   driven by a per-message typewriter: a progressive markdown renderer with
- *   a paced cursor, like the typewriter layout of the ask workflow
+ * All message-level presentation is the message workflow's own: a record
+ * without its answer body presents as status `loading`, stamped on the
+ * <miso-message> element by its container layout — there is deliberately no
+ * per-message loading icon; the answer typewriter's blinking caret is the
+ * loading indication — and the question bubble (text, authorship
+ * attributes) renders through the `question` layout.
+ *
+ * The shell keeps the panel-level behaviors: scroll pinning (the view sticks
+ * to the bottom while the user has not scrolled up, following content growth
+ * as answers type out), and the `ongoing` view state read off the data — the
+ * last message's answer absent or unfinished — which e.g. disables the
+ * search box while an answer is on its way.
  */
 export default class MessagesLayout extends CollectionLayout {
 
@@ -36,214 +38,62 @@ export default class MessagesLayout extends CollectionLayout {
 
   constructor({ className = DEFAULT_CLASSNAME, ...options } = {}) {
     super({ className, ...options });
-    this._renderedAnswers = new WeakMap(); // answer element -> rendered markdown
-    this._typewriters = new WeakMap(); // answer element -> MessageTypewriter
-    this._readiness = new Resolution();
     this._pinned = true; // whether the view sticks to the bottom on updates
-    this._displaying = false; // whether a typewriter is still displaying an answer
-    // kick off sooner
-    MessagesLayout.MisoClient.plugins.install('std:ui-markdown');
+    this._ongoing = undefined;
   }
 
-  initialize(view) {
-    super.initialize(view);
-    this._setup();
-  }
-
-  // setup //
-  async _setup() {
-    try {
-      const plugin = await MessagesLayout.MisoClient.plugins.install('std:ui-markdown');
-      if (!this._view) {
-        return; // destroyed
-      }
-      this._markdown = plugin.getContext(this._view.workflow._client);
-      this._readiness.resolve();
-    } catch (e) {
-      this._readiness.reject(e);
-    }
-  }
-
-  async _ready() {
-    return this._readiness.promise;
+  // item identity: the question id, or the local placeholder id standing in
+  // for it while a posted question awaits its response — the placeholder id
+  // survives the settle, so the element and its workflow do too
+  _getItemKey(message) {
+    return message.placeholder_id || message.question_id || message;
   }
 
   // render //
   async render(element, state, controls = {}) {
-    // capture the view state callback, so the typewriter can report the
-    // `ongoing` state outside the render cycle
+    // capture the view state callback for the ongoing report
     this._notifyUpdate = controls.notifyUpdate;
     await super.render(element, state, controls);
   }
 
   _afterRender(element, state) {
     super._afterRender(element, state); // syncs bindings to the latest values
-    if (!state.incremental) {
-      this._displaying = false; // a fresh render (thread load) drops any ongoing typewriter
-    }
     if (!state.incremental || state.html) {
       // a fresh render (thread load) or appended items (posted follow-up):
       // jump to the bottom
       this._scrollToBottom({ force: true });
     }
-    this._syncMessages(element).catch(error => console.error(error));
+    this._watchGrowth(this._getListElement(element) || element);
+    this._syncWorkflows(element);
+    this._syncOngoing(state);
   }
 
-  async _syncMessages(element) {
-    await this._ready();
-    const items = this._getItemElements(element);
-    let displaying = false;
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
+  // assign each <miso-message> its item subworkflow, off the item binding
+  _syncWorkflows(element) {
+    const workflow = this._view && this._view.workflow;
+    if (!workflow || typeof workflow.getMessageWorkflow !== 'function') {
+      return;
+    }
+    for (const item of this._getItemElements(element)) {
       const binding = this._bindings.get(item);
-      if (!binding) {
-        continue;
-      }
-      const message = binding.value;
-      const last = i === items.length - 1;
-      this._syncQuestion(item, message);
-      this._syncAnswer(item, message, { last });
-      if (last) {
-        displaying = this._isDisplaying(item, message);
+      if (binding && item.isContainer) {
+        item.workflow = workflow.getMessageWorkflow(binding.value);
       }
     }
-    this._setDisplaying(displaying);
   }
 
-  // whether the (last) message pair is still being displayed: its answer is
-  // pending, streaming, or still being typed — live (posted in this session)
-  // or not: an answer still generating is picked up by the answers polling
-  // even after switching away from the thread and back, and must keep
-  // blocking submission all the same
-  _isDisplaying(item, message) {
-    if (!message || message.answer === undefined) {
-      return true; // waiting for the answer body
-    }
-    const answerElement = item.querySelector('[data-role="answer"]');
-    const typewriter = answerElement && this._typewriters.get(answerElement);
-    return typewriter ? !typewriter.done : message.finished === false;
-  }
-
-  _syncQuestion(item, message) {
-    const questionElement = item.querySelector('[data-role="question"]');
-    if (!questionElement) {
+  // whether an answer is on its way — pending, or still being generated —
+  // reported as the `ongoing` view state, e.g. for the search box to disable
+  // submission
+  _syncOngoing(state) {
+    const messages = state.value || [];
+    const last = messages[messages.length - 1];
+    const ongoing = !!last && (last.answer === undefined || last.finished === false);
+    if (this._ongoing === ongoing) {
       return;
     }
-    // the authorship arrives with the answers response, after the stub render
-    setOrRemoveAttribute(questionElement, 'data-author', messageAuthor(message));
-    setOrRemoveAttribute(questionElement, 'data-generated-by', (message.metadata && message.metadata.miso_generated_by) || undefined);
-    const { question } = message;
-    if (!question || questionElement.textContent === question) {
-      return;
-    }
-    questionElement.textContent = question;
-    questionElement.hidden = false;
-  }
-
-  _syncAnswer(item, message, { last = false } = {}) {
-    const answerElement = item.querySelector('[data-role="answer"]');
-    if (!answerElement) {
-      return;
-    }
-    // an ongoing typewriter keeps consuming updates until it finishes typing
-    const typewriter = this._typewriters.get(answerElement);
-    if (typewriter) {
-      typewriter.update(message);
-      return;
-    }
-    if (message.answer === undefined) {
-      return; // still loading; the spinner stays
-    }
-    if (message.live || message.finished === false) {
-      // an answer being generated live in this session: drive it with a
-      // typewriter (even if the data arrived complete in one shot)
-      const typewriter = new MessageTypewriter(this._markdown, answerElement, {
-        onUpdate: () => this._scrollToBottom(), // keep pinned to the bottom while typing
-        onDone: () => this._setDisplaying(false),
-      });
-      this._typewriters.set(answerElement, typewriter);
-      typewriter.update(message);
-      return;
-    }
-    // a finished answer: transform in one shot
-    if (this._renderedAnswers.get(answerElement) === message.answer) {
-      return; // already rendered
-    }
-    this._renderedAnswers.set(answerElement, message.answer);
-    this._transform(answerElement, message).then(() => {
-      last && this._scrollToBottom();
-    }).catch(error => {
-      this._renderedAnswers.delete(answerElement);
-      console.error(error);
-    });
-  }
-
-  async _transform(answerElement, { answer, sources }) {
-    answerElement.innerHTML = await this._markdown.transform(answer, sources);
-  }
-
-  // whether the last answer is still being displayed (typed); reported as
-  // the `ongoing` view state, e.g. for the search box to disable submission
-  _setDisplaying(displaying) {
-    if (this._displaying === displaying) {
-      return;
-    }
-    this._displaying = displaying;
-    this._notifyUpdate && this._notifyUpdate({ ongoing: displaying });
-  }
-
-  // event //
-  /**
-   * Clicks inside a message's answer body take the answer-content paths of
-   * the ask workflow — citation links, inline follow-up links, and generic
-   * links — emitted with the message they happened on, so the workflow can
-   * attach per-message context to the interaction. Anything else falls back
-   * to the standard item click handling.
-   */
-  _onClick(event) {
-    const itemElement = event.target.closest(`[data-role="item"]`);
-    const binding = itemElement && this._bindings.get(itemElement);
-    const message = binding && binding.value;
-    if (message && event.target.closest(`[data-role="answer"]`)) {
-      // citation link click
-      const citationLinkElement = event.target.closest(`[data-role="citation-link"]`);
-      if (citationLinkElement) {
-        const index = parseInt(citationLinkElement.dataset.index);
-        if (!Number.isNaN(index)) {
-          this._view._emit('citation-click', { event, index, message });
-        }
-        return;
-      }
-      // follow-up link click
-      const followUpLinkElement = event.target.closest(`[data-role="follow-up-link"]`);
-      if (followUpLinkElement) {
-        let { q } = followUpLinkElement.dataset;
-        q = q ? q.trim() : undefined;
-        if (q) {
-          this._view._emit('follow-up-click', { event, q, message });
-        }
-        return;
-      }
-      // generic link click
-      const anchorElement = event.target.closest('a');
-      if (anchorElement) {
-        if (!event.defaultPrevented) {
-          const { href, innerText, className } = anchorElement;
-          if (href) {
-            this._view._emit('link-click', trimObj({
-              event,
-              message,
-              url: href,
-              text: innerText ? innerText.trim() : '',
-              className: className || '',
-              attributes: dumpElementAttributes(anchorElement),
-            }));
-          }
-        }
-        return;
-      }
-    }
-    super._onClick(event);
+    this._ongoing = ongoing;
+    this._notifyUpdate && this._notifyUpdate({ ongoing });
   }
 
   // scrolling //
@@ -294,78 +144,23 @@ export default class MessagesLayout extends CollectionLayout {
     this._unsubscribes.push(() => this._unwatchScroll === unwatch && unwatch());
   }
 
-}
-
-// TODO: can't we just use Controller?
-/**
- * Types a streaming answer into an element: a progressive markdown renderer
- * fed by data updates, advanced by a paced cursor on animation frames — the
- * typewriting effect, without the full typewriter layout machinery.
- */
-class MessageTypewriter {
-
-  constructor(markdown, element, { onUpdate, onDone } = {}) {
-    this._element = element;
-    this._onUpdate = onUpdate;
-    this._onDone = onDone;
-    // the element acts as a typewriter container: it starts as the caret ref
-    // (the cursor class moves into the content as it types), and the preset
-    // stamps the `done` class on finish, which hides the caret via CSS
-    element.classList.add(TYPEWRITER_CLASSNAME, cursorClassName(TYPEWRITER_CLASSNAME));
-    this._renderer = markdown.createRenderer({
-      cursorClass: cursorClassName(TYPEWRITER_CLASSNAME),
-      getSource: index => (this._sources || [])[index],
-    });
-    this._getNextCursor = pacer();
-    this._rendered = this._renderer.clear(element);
-    this._timestamp = undefined;
-    this._value = '';
-    this._sources = undefined;
-    this._dataDone = false;
-    this._doneAt = undefined;
-    this._requested = false;
-  }
-
-  get done() {
-    return this._rendered.done;
-  }
-
-  update({ answer = '', finished, sources }) {
-    this._value = answer;
-    this._sources = sources;
-    this._dataDone = finished !== false;
-    this._requestFrame();
-  }
-
-  _requestFrame() {
-    if (this._requested || this._rendered.done) {
+  // the message contents render (and type out) through their own workflows,
+  // outside this layout's render cycle: follow the content growth to keep
+  // the view pinned to the bottom
+  _watchGrowth(element) {
+    if (!element || this._watchedGrowth === element || typeof ResizeObserver === 'undefined') {
       return;
     }
-    this._requested = true;
-    raf(timestamp => this._frame(timestamp));
-  }
-
-  _frame(timestamp) {
-    this._requested = false;
-    if (!this._element.isConnected) {
-      // the element is gone (re-render, thread switch); stop typing
-      this._onDone && this._onDone();
-      return;
-    }
-    const prev = this._rendered;
-    const prevTimestamp = this._timestamp !== undefined ? this._timestamp : timestamp;
-    if (this._dataDone && this._doneAt === undefined) {
-      this._doneAt = timestamp;
-    }
-    const cursor = this._getNextCursor(prev.cursor, this._doneAt, prevTimestamp, timestamp);
-    this._rendered = this._renderer.update(this._element, prev, { value: this._value, cursor, timestamp, done: this._dataDone });
-    this._timestamp = timestamp;
-    this._onUpdate && this._onUpdate();
-    if (!this._rendered.done) {
-      this._requestFrame();
-    } else {
-      this._onDone && this._onDone();
-    }
+    this._unwatchGrowth && this._unwatchGrowth();
+    const observer = new ResizeObserver(() => this._scrollToBottom());
+    observer.observe(element);
+    this._watchedGrowth = element;
+    const unwatch = this._unwatchGrowth = () => {
+      observer.disconnect();
+      this._watchedGrowth = undefined;
+      this._unwatchGrowth = undefined;
+    };
+    this._unsubscribes.push(() => this._unwatchGrowth === unwatch && unwatch());
   }
 
 }

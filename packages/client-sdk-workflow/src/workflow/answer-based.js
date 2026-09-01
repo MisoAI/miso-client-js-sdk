@@ -43,9 +43,7 @@ export default class AnswerBasedWorkflow extends Workflow {
   // lifecycle //
   restart() {
     // clear question id from previous session
-    if (this._questionId) {
-      this._questionId = undefined;
-    }
+    this._clearQuestionId();
     // restart
     super.restart();
   }
@@ -154,7 +152,7 @@ export default class AnswerBasedWorkflow extends Workflow {
     this._writeQuestionIdFromData(data);
 
     // if it's the head response, write question id and return
-    if (data.value && !data.value.answer_stage) {
+    if (this._shallHandleAsHeadResponse(data)) {
       this._handleHeadResponse(data);
       return;
     }
@@ -162,6 +160,10 @@ export default class AnswerBasedWorkflow extends Workflow {
 
     // update URL if autoQuery.updateUrl is not false
     updateQueryParametersInUrl.call(this, data);
+  }
+
+  _shallHandleAsHeadResponse(data) {
+    return !!(data.value && !data.value.answer_stage);
   }
 
   _handleHeadResponse(data) {}

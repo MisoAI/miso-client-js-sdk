@@ -1,5 +1,5 @@
 import { escapeHtml } from '@miso.ai/commons';
-import { isThreadUnread, isUpdateMessage } from '@miso.ai/client-sdk-workflow';
+import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
 import { getIcon } from '../asset/svgs.js';
 import { ATTR_DATA_MISO_PRODUCT_ID } from '../constants.js';
 
@@ -53,44 +53,27 @@ export function threadMenuBlock({ className }) {
     `</div>`;
 }
 
+/**
+ * A message item is a <miso-message> container element hosting the message
+ * item subworkflow — the messages layout is a shell: it assigns the workflow
+ * (and the item-level attributes) in its post-render sync pass, and the role
+ * elements inside render the actual content through the message workflow's
+ * own layouts.
+ */
 export function message(layout, state, data) {
   const { className, templates } = layout;
   return [
-    `<div class="${className}__item-body" data-role="item">`,
-    (templates.messageQuestionBlock || messageQuestionBlock)(layout, data),
-    (templates.messageAnswerBlock || messageAnswerBlock)(layout, data),
-    `</div>`,
+    `<miso-message class="${className}__item-body" data-role="item">`,
+    (templates.messageBody || messageBody)(layout, data),
+    `</miso-message>`,
   ].join('');
 }
 
-export function messageQuestionBlock({ className }, message) {
-  const { question } = message;
-  const generatedBy = message.metadata && message.metadata.miso_generated_by;
-  const author = messageAuthor(message);
-  // always rendered so it can be filled in place when the question text
-  // arrives later (the list renders incrementally); the authorship attrs
-  // drive the author label and the bubble color
-  const attrs = `${author ? ` data-author="${escapeHtml(author)}"` : ''}${generatedBy ? ` data-generated-by="${escapeHtml(generatedBy)}"` : ''}`;
-  return `<div class="${className}__question" data-role="question"${attrs}${question ? '' : ' hidden'}>${question ? escapeHtml(question) : ''}</div>`;
+export function messageBody({ className }) {
+  return `<miso-question class="${className}__question" hidden></miso-question>` +
+    `<miso-answer class="${className}__answer miso-circled-citation-index"></miso-answer>`;
 }
 
-/**
- * The author label of a message's question bubble: labeled only when the
- * question was written by the answer-updates monitor — the user's own
- * questions carry no label.
- */
-export function messageAuthor(message) {
-  return isUpdateMessage(message) ? 'Written by Miso' : undefined;
-}
-
-export function messageAnswerBlock({ className }, { answer }) {
-  // the content is left blank here: the layout fills it in a second pass
-  // (markdown -> HTML); a spinner shows while the answer body is still
-  // being fetched from the answers API
-  const content = answer === undefined ?
-    `<div class="miso-loading" aria-label="Loading" data-role="loading"></div>` : '';
-  return `<div class="${className}__answer miso-markdown miso-circled-citation-index" data-role="answer">${content}</div>`;
-}
 
 export function article(layout, state, data, meta) {
   const { templates } = layout;

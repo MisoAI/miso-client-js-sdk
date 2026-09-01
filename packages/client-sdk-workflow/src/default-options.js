@@ -201,23 +201,19 @@ export default Object.freeze({
         },
       },
     },
-    // the answer-content trackings of the ask workflow, applied per message:
-    // the answer tracker takes generic link clicks, the sources tracker takes
-    // citation-link clicks. Neither role has a view of its own here — clicks
-    // arrive through the messages view — so per-session deduplication has no
-    // session to follow and is turned off
+  },
+
+  'message': {
+    // an item subworkflow of the conversation workflow: the parent pushes
+    // the message record in via updateData(), so the data actor is off and
+    // this workflow makes no requests of its own
+    api: {
+      actor: false,
+    },
+    // the answer-based trackings, deduplicated at the message level: each
+    // message workflow keeps its own tracker states
     trackers: {
-      answer: {
-        active: true,
-        itemless: true,
-        deduplicated: false,
-        click: DEFAULT_TRACKER_OPTIONS.click, // click only
-      },
-      sources: {
-        active: true,
-        deduplicated: false,
-        click: DEFAULT_TRACKER_OPTIONS.click, // click only
-      },
+      ...ANSWER_BASED_TRACKERS,
     },
   },
 

@@ -1,18 +1,14 @@
-import { API, uuidv4, trimObj, mergeInteractions } from '@miso.ai/commons';
+import { API, uuidv4 } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { ROLE, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, mergeApiOptions, makeConfigurable } from './options/index.js';
-import { writeQuestionSourceToPayload, writeThreadAsRead, writeAnswerClickInfoToInteraction, writeEventTargetToInteraction } from './processors.js';
-import { isTracked, markAsTracked } from '../util/trackers.js';
-import { isUpdateMessage, isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
+import { writeQuestionSourceToPayload, writeThreadAsRead } from './processors.js';
+import { isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeFollowUpDataFromResponse } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  // answer and sources are tracking-only channels, with no element of their
-  // own: answer-content clicks arrive through the messages view, and go out
-  // as interactions under the same roles the ask workflow uses
-  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.SUBSCRIPTION, ROLE.ANSWER, ROLE.SOURCES],
+  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.SUBSCRIPTION],
   mappings: {
     // the header roles map (dot-path) into the open thread's record: the
     // title text, the rename dialog's pre-fill, the checkbox's checked state
@@ -55,13 +51,13 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * the placeholder lifecycle of a thread being created to the listed side
  * (_onConversationNew, _onConversationResolve).
  *
- * Answer-content interactions mirror the ask workflow's, per message: the
- * messages layout emits clicks inside an answer body with the message they
- * happened on — citation-link clicks go out as sources clicks
- * (event_target: 'citation-link'), generic link clicks as answer clicks —
- * and each interaction carries the message's question lineage
- * (_writeMessageInfoToInteraction) in place of ask's session-level one.
- * Inline follow-up links submit through send(), like ask's follow-up flow.
+ * The panel's items live as workflows of their own: the messages layout is
+ * a shell rendering one <miso-message> element per record, each hosting a
+ * message item subworkflow (getMessageWorkflow) that this workflow feeds
+ * through updateData() as data commits (_updateMessageWorkflows). All
+ * answer-content rendering and interactions (citation clicks, link clicks,
+ * feedback) happen on the message workflows; inline follow-up links submit
+ * back through send() (_onFollowUpClick, delegated by the message workflow).
  */
 export default class Conversation extends Workflow {
 
@@ -93,11 +89,6 @@ export default class Conversation extends Workflow {
       this._hub.on(fields.expiredResponse(), response => this._onExpiredResponse(response)),
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
-      // answer-content clicks, emitted by the messages layout with the
-      // message they happened on
-      this._views.on(ROLE.MESSAGES, 'citation-click', event => this._onCitationClick(event)),
-      this._views.on(ROLE.MESSAGES, 'link-click', event => this._onAnswerLinkClick(event)),
-      this._views.on(ROLE.MESSAGES, 'follow-up-click', event => this._onFollowUpClick(event)),
       // thread facts from the shared model
       this._model.on('updated', event => this._onThreadUpdated(event)),
       this._model.on('deleted', event => this._onThreadDeleted(event)),
@@ -203,7 +194,9 @@ export default class Conversation extends Workflow {
       value: {
         ...data.value,
         ...(placeholder ? { thread: placeholder } : {}),
-        messages: [...messages, { question, live: true }],
+        // the local placeholder id keys the message (its item binding and
+        // its workflow) until the response brings the question id
+        messages: [...messages, { placeholder_id: uuidv4(), question, live: true }],
       },
     });
     const { api } = this._options.resolved.query;
@@ -329,41 +322,9 @@ export default class Conversation extends Workflow {
     checked ? this.subscribe() : this.unsubscribe();
   }
 
-  // answer-content clicks //
-  // the trackings of the ask workflow, per message: the messages layout
-  // emits the click with the message it happened on, and the interaction
-  // goes out under the same role (sources, answer) as it would in ask
-  _onCitationClick({ index, message, event }) {
-    if (event.button !== 0) {
-      return; // only left click
-    }
-    if (isTracked(event)) {
-      return;
-    }
-    const { sources } = message || {};
-    // index is 1-based
-    const source = sources && sources[index - 1];
-    if (!source || !source.product_id) {
-      return;
-    }
-    markAsTracked(event);
-    // distinguish from regular sources element click
-    this._views.trackers.sources.click([source.product_id], { event_target: 'citation-link', message });
-  }
-
-  _onAnswerLinkClick({ event, message, ...item }) {
-    if (event.button !== 0) {
-      return; // only left click
-    }
-    if (isTracked(event)) {
-      return;
-    }
-    markAsTracked(event);
-    // put everything into args and let _defaultProcessInteraction() handle it
-    // for it's hard to make it a standard item
-    this._views.trackers.answer.click([], { items: [item], message });
-  }
-
+  // an inline follow-up link inside a message answer, delegated here by the
+  // message workflow — answer-content interactions themselves live on the
+  // message item subworkflows
   _onFollowUpClick({ q, event } = {}) {
     if (event.button !== 0) {
       return; // only left click
@@ -374,49 +335,6 @@ export default class Conversation extends Workflow {
     }
     q = q ? q.trim() : '';
     q && this.send(q);
-  }
-
-  // interactions //
-  _defaultProcessInteraction(payload, args) {
-    payload = super._defaultProcessInteraction(payload, args);
-    payload = writeAnswerClickInfoToInteraction(payload, args);
-    payload = writeEventTargetToInteraction(payload, args);
-    payload = this._writeMessageInfoToInteraction(payload, args);
-    // a question in this panel is either written by the answer-updates
-    // monitor (an update message) or typed by the user (organic)
-    payload = mergeInteractions(payload, {
-      context: {
-        custom_context: {
-          question_source: isUpdateMessage(args.message) ? QUESTION_SOURCE.UPDATE : QUESTION_SOURCE.ORGANIC,
-        },
-      },
-    });
-    return payload;
-  }
-
-  /**
-   * The per-message counterpart of the ask workflow's question lineage: the
-   * message the interaction happened on supplies the question id, its own
-   * parent question id (off the record — the question chain may fork, so
-   * message order implies no lineage), and its miso_id, when it carries one;
-   * the thread id — the id of the thread's first question, by contract — is
-   * the root question id.
-   */
-  _writeMessageInfoToInteraction(payload, { message } = {}) {
-    if (!message) {
-      return payload;
-    }
-    const { question_id, parent_question_id } = message;
-    return mergeInteractions(payload, trimObj({
-      miso_id: message.miso_id,
-      context: {
-        custom_context: trimObj({
-          root_question_id: this.threadId,
-          parent_question_id,
-          question_id,
-        }),
-      },
-    }));
   }
 
   // request //
@@ -468,6 +386,8 @@ export default class Conversation extends Workflow {
         break;
     }
     super._updateDataInHub(data, oldData);
+    // propagate the committed records into the message item subworkflows
+    this._updateMessageWorkflows();
     // follow-up actions, each tied to the one point of the flow it matters:
     // dispatched by the request type that produced the data (the merges
     // restore the head request on the merged data, so the original type
@@ -487,6 +407,52 @@ export default class Conversation extends Workflow {
         hasResponse && this._resolveIfNecessary(data);
         break;
     }
+  }
+
+  // messages as item subworkflows //
+  /**
+   * The message workflow of the given message: the item subworkflow behind
+   * a <miso-message> element. Takes the message record — the messages
+   * layout passes the item binding's value, which also covers a just-posted
+   * message that has no question id yet (keyed by its local placeholder id,
+   * adopting the question id when the response arrives) — or a question id,
+   * for an explicitly bound element. Created on demand from the messages
+   * context (client.workflows.messages) and seeded with the record on
+   * display, if present; from then on, every data commit propagates the
+   * record in through updateData().
+   */
+  getMessageWorkflow(message) {
+    const context = this._client.workflows.messages;
+    if (typeof message === 'string') {
+      message = this.messages.find(m => m.question_id === message) || { question_id: message };
+    }
+    let workflow = context.get(message);
+    if (!workflow) {
+      workflow = context.get(message, { autoCreate: true });
+      workflow && this.messages.includes(message) && this._updateMessageWorkflow(workflow, message);
+    }
+    return workflow;
+  }
+
+  // propagate the committed records — only ever into existing message
+  // workflows: instances are created by elements (getMessageWorkflow), not
+  // by data, so nothing is constructed when <miso-message> is not in play
+  _updateMessageWorkflows() {
+    const context = this._client.workflows._messages;
+    if (!context) {
+      return;
+    }
+    for (const message of this.messages) {
+      const workflow = context.get(message);
+      workflow && this._updateMessageWorkflow(workflow, message);
+    }
+  }
+
+  _updateMessageWorkflow(workflow, message) {
+    if (workflow.message === message) {
+      return; // the very record on display already, nothing to propagate
+    }
+    workflow.updateData({ session: workflow.session, value: message });
   }
 
   _mergeDataFromQueryRequest(data, oldData) {

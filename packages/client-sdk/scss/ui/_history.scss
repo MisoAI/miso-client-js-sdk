@@ -257,6 +257,7 @@ miso-subscription .miso-checkbox {
       margin-top: 0;
     }
   }
+  // the <miso-message> container element hosting the message item subworkflow
   .miso-messages__item-body {
     display: flex;
     flex-direction: column;
@@ -264,6 +265,7 @@ miso-subscription .miso-checkbox {
     color: var(--miso-text-color);
   }
   .miso-messages__question {
+    display: block;
     position: relative;
     align-self: flex-end;
     max-width: 75%;
@@ -292,15 +294,15 @@ miso-subscription .miso-checkbox {
     &[data-generated-by='answer_update_monitor'] {
       background-color: var(--miso-message-generated-question-background);
     }
+
+    // the [hidden] attribute must win over the display above
+    &[hidden] {
+      display: none;
+    }
   }
   .miso-messages__answer {
+    display: block;
     align-self: stretch;
     overflow-wrap: break-word;
-
-    // the answer body is still being fetched
-    .miso-loading {
-      display: flex;
-      justify-content: flex-start;
-    }
   }
 }

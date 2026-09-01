@@ -33,6 +33,8 @@ function totalContent(layout, { value }) {
   return `${formatted} ${label}`;
 }
 
+const { [ROLE.QUERY]: _answerBasedQueryLayout, ...MESSAGE_LAYOUTS } = ANSWER_BASED_LAYOUTS;
+
 const SEARCH_BASED_LAYOUTS = {
   ...BASE_LAYOUTS,
   [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX],
@@ -93,6 +95,17 @@ export const defaultLayouts = Object.freeze({
     ...BASE_LAYOUTS,
     [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true }],
     [ROLE.NEW_THREAD]: [LAYOUT_TYPE.BUTTON, { icon: 'plus', text: 'New chat' }],
+  }),
+
+  // the message item subworkflow behind <miso-message>: the answer-based
+  // layouts, minus the query role — a message has no query flow of its own.
+  // The answer types out only while being generated (`instant` renders an
+  // already-finished answer in one shot), and no per-message logo banner
+  'message': Object.freeze({
+    ...MESSAGE_LAYOUTS,
+    [ROLE.CONTAINER]: [LAYOUT_TYPE.CONTAINER, { logo: false }],
+    [ROLE.QUESTION]: LAYOUT_TYPE.QUESTION,
+    [ROLE.ANSWER]: [LAYOUT_TYPE.TYPEWRITER, { instant: true }],
   }),
 
   'conversation': Object.freeze({

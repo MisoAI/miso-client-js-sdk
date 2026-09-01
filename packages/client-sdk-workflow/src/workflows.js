@@ -1,7 +1,7 @@
 import { defineValues } from '@miso.ai/commons';
 import WorkflowEventBus from './bus.js';
 import { ThreadsModel } from './actor/index.js';
-import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation } from './workflow/index.js';
+import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation, Messages } from './workflow/index.js';
 import * as sources from './source.js';
 
 /**
@@ -68,6 +68,12 @@ export default class Workflows {
       this._client._events.emit('postworkflow', this._conversation);
     }
     return this._conversation;
+  }
+
+  get messages() {
+    // the context of message workflows: the item subworkflows behind
+    // <miso-message> elements in the conversation panel
+    return this._messages || (this._messages = new Messages(this._plugin, this._client));
   }
 
   get asks() {

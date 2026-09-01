@@ -42,5 +42,6 @@ export const LAYOUT_TYPE = Object.freeze({
   CHECKBOX: 'checkbox',
   FEEDBACK: 'feedback',
   TEXT: 'text',
+  QUESTION: 'question',
   TYPEWRITER: 'typewriter',
 });
