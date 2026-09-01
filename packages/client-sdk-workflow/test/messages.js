@@ -80,6 +80,29 @@ test('message interactions carry the question lineage and dedupe per message', a
   assert.is(interactions[1].context.custom_context.parent_question_id, undefined);
 });
 
+test('message feedback goes out with the question lineage', async () => {
+  const { client, interactions } = createClient({ answers: answersWithSources });
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  const message = conversation.getMessageWorkflow('q2');
+
+  // the feedback layout submits into the workflow's feedback hub field
+  message._hub.update('feedback', { value: 'helpful' });
+
+  assert.is(interactions.length, 1);
+  const interaction = interactions[0];
+  assert.is(interaction.type, 'feedback');
+  assert.is(interaction.value, 'helpful');
+  assert.is(interaction.result_type, 'answer');
+  const context = interaction.context.custom_context;
+  assert.is(context.question_id, 'q2');
+  assert.is(context.parent_question_id, 'q1');
+  assert.is(context.root_question_id, 't1');
+  assert.is(context.question_source, '_organic');
+});
+
 test('a just-posted message gets a workflow before its question id, and adopts it', async () => {
   const { client } = createClient();
   const { conversation } = client.workflows;

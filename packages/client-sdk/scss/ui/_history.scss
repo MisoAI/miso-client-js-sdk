@@ -305,4 +305,11 @@ miso-subscription .miso-checkbox {
     align-self: stretch;
     overflow-wrap: break-word;
   }
+  // the message's sources (compact horizontal cards, as in hybrid-search)
+  // and feedback buttons
+  .miso-messages__sources,
+  .miso-messages__feedback {
+    display: block;
+    align-self: stretch;
+  }
 }

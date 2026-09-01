@@ -62,8 +62,10 @@ export function threadMenuBlock({ className }) {
  */
 export function message(layout, state, data) {
   const { className, templates } = layout;
+  // miso-circled-citation-index covers both the citation links in the answer
+  // and the indexes on the source cards, as the hybrid-search UI scopes it
   return [
-    `<miso-message class="${className}__item-body" data-role="item">`,
+    `<miso-message class="${className}__item-body miso-circled-citation-index" data-role="item">`,
     (templates.messageBody || messageBody)(layout, data),
     `</miso-message>`,
   ].join('');
@@ -71,7 +73,9 @@ export function message(layout, state, data) {
 
 export function messageBody({ className }) {
   return `<miso-question class="${className}__question" hidden></miso-question>` +
-    `<miso-answer class="${className}__answer miso-circled-citation-index"></miso-answer>`;
+    `<miso-answer class="${className}__answer"></miso-answer>` +
+    // `<miso-feedback class="${className}__feedback"></miso-feedback>` +
+    `<miso-sources class="${className}__sources"></miso-sources>`;
 }
 
 

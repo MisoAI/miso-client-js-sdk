@@ -48,6 +48,13 @@ const SEARCH_BASED_TRACKERS = {
   products: DEFAULT_TRACKER_OPTIONS,
 };
 
+// the conversation content requests: the answer-based formatting options,
+// plus the source fields the compact source cards render (as in hybrid-search)
+const CONVERSATION_CONTENT_PAYLOAD = {
+  ...ANSWER_BASED_API_OPTIONS.payload,
+  source_fl: [...ANSWER_BASED_API_OPTIONS.payload.source_fl, 'title', 'authors'],
+};
+
 const SEARCH_BASED_PAGINATION = {
   active: false,
   mode: 'infiniteScroll',
@@ -182,7 +189,7 @@ export default Object.freeze({
       api: {
         group: API.GROUP.ASK,
         name: API.NAME.QUESTIONS,
-        payload: ANSWER_BASED_API_OPTIONS.payload,
+        payload: CONVERSATION_CONTENT_PAYLOAD,
         options: {
           method: 'POST', // override the GET method of the head request api options
         },
@@ -195,7 +202,7 @@ export default Object.freeze({
         name: API.NAME.ANSWERS,
         // same content formatting options as the answer-based workflows, so
         // citation links and sources render the same way
-        payload: ANSWER_BASED_API_OPTIONS.payload,
+        payload: CONVERSATION_CONTENT_PAYLOAD,
         options: {
           method: 'POST', // override the GET method of the head request api options
         },

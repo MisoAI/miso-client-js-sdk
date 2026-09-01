@@ -100,12 +100,25 @@ export const defaultLayouts = Object.freeze({
   // the message item subworkflow behind <miso-message>: the answer-based
   // layouts, minus the query role — a message has no query flow of its own.
   // The answer types out only while being generated (`instant` renders an
-  // already-finished answer in one shot), and no per-message logo banner
+  // already-finished answer in one shot), the sources render as the compact
+  // horizontal cards of the hybrid-search UI, and no per-message logo banner
   'message': Object.freeze({
     ...MESSAGE_LAYOUTS,
     [ROLE.CONTAINER]: [LAYOUT_TYPE.CONTAINER, { logo: false }],
     [ROLE.QUESTION]: LAYOUT_TYPE.QUESTION,
     [ROLE.ANSWER]: [LAYOUT_TYPE.TYPEWRITER, { instant: true }],
+    [ROLE.SOURCES]: [
+      LAYOUT_TYPE.HORIZONTAL,
+      {
+        incremental: true,
+        itemType: 'article',
+        templates: {
+          ordered: true,
+          article: compactArticle,
+          articleInfoBlock: compactArticleInfoBlock
+        }
+      }
+    ],
   }),
 
   'conversation': Object.freeze({
