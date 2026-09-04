@@ -1,4 +1,4 @@
-import { trimObj, mergeInteractions } from '@miso.ai/commons';
+import { defineValues, trimObj, mergeInteractions } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
@@ -34,18 +34,22 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
  */
 export default class Message extends AnswerBasedWorkflow {
 
-  constructor(context, questionId) {
+  // the parent question id is part of the message's identity, like the
+  // question id: the lineage of a message never changes
+  constructor(context, { questionId, parentQuestionId } = {}) {
     super({
       name: 'message',
       context,
       roles: ROLES_OPTIONS,
       questionId,
+      parentQuestionId,
     });
   }
 
   _initProperties(args) {
     super._initProperties(args);
     this._questionId = args.questionId;
+    defineValues(this, { parentQuestionId: args.parentQuestionId });
   }
 
   _initSubscriptions(args) {
@@ -88,8 +92,8 @@ export default class Message extends AnswerBasedWorkflow {
    * from the request's loading commit on.
    */
   // TODO: bad name, use query()
-  post(message, { parentQuestionId } = {}) {
-    this.query({ q: message.question, parentQuestionId, message });
+  post(message) {
+    this.query({ q: message.question, message });
   }
 
   // the session is started by query(), like in the base class
@@ -99,11 +103,11 @@ export default class Message extends AnswerBasedWorkflow {
     this._request({ payload, message });
   }
 
-  _buildPayload({ q, qs, parentQuestionId, ...options } = {}) {
+  _buildPayload({ q, qs, ...options } = {}) {
     let payload = trimObj({
       ...options,
       question: q, // question, not q
-      parent_question_id: parentQuestionId,
+      parent_question_id: this.parentQuestionId,
     });
     payload = writeQuestionSourceToPayload({ ...payload, qs });
     return payload;

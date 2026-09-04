@@ -1,4 +1,4 @@
-import { API, uuidv4 } from '@miso.ai/commons';
+import { API, trimObj, uuidv4 } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, REQUEST_TYPE } from '../constants.js';
@@ -201,10 +201,15 @@ export default class Conversation extends Workflow {
     const placeholder = (this.threadId || (this.thread && this.thread.placeholder_id)) ? undefined : this._startPlaceholderThread(question);
     const messages = data.value.messages || [];
     const last = messages[messages.length - 1];
-    const parent_question_id = last && last.question_id;
     // the local placeholder id keys the message (its item binding and its
-    // workflow) until the response brings the question id
-    const message = { placeholder_id: uuidv4(), question, live: true };
+    // workflow) until the response brings the question id; the record
+    // carries its lineage from the start, like a server record does
+    const message = trimObj({
+      placeholder_id: uuidv4(),
+      question,
+      parent_question_id: last && last.question_id,
+      live: true,
+    });
     this.updateData({
       ...data,
       value: {
@@ -215,7 +220,7 @@ export default class Conversation extends Workflow {
     });
     const workflow = this.getMessageWorkflow(message);
     this._followLiveMessage(workflow, message, placeholder);
-    workflow.post(message, { parentQuestionId: parent_question_id });
+    workflow.post(message);
     return this;
   }
 
