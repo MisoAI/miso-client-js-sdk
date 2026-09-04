@@ -36,13 +36,14 @@ export default class Message extends AnswerBasedWorkflow {
 
   // the parent question id is part of the message's identity, like the
   // question id: the lineage of a message never changes
-  constructor(context, { questionId, parentQuestionId } = {}) {
+  constructor(context, { questionId, parentQuestionId, superworkflow } = {}) {
     super({
       name: 'message',
       context,
       roles: ROLES_OPTIONS,
       questionId,
       parentQuestionId,
+      superworkflow,
     });
   }
 

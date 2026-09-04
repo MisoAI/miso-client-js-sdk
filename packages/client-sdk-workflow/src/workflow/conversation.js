@@ -487,7 +487,7 @@ export default class Conversation extends Workflow {
     }
     let workflow = context.get(message);
     if (!workflow) {
-      workflow = context.get(message, { autoCreate: true });
+      workflow = context.get(message, { autoCreate: true, superworkflow: this });
       workflow && !message.live && this.messages.includes(message) && this._updateMessageWorkflow(workflow, message);
     }
     return workflow;

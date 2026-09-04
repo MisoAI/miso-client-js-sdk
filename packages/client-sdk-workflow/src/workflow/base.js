@@ -58,7 +58,11 @@ export default class Workflow extends Component {
     this._initSession(args);
   }
 
-  _initProperties() {}
+  _initProperties({ superworkflow }) {
+    // the workflow this one is a part of (hybrid search's answer section,
+    // the conversation panel's messages), when it acts as a subworkflow
+    this._superworkflow = superworkflow;
+  }
 
   _initActors({ roles }) {
     const hub = this._hub;
@@ -292,6 +296,7 @@ export default class Workflow extends Component {
   }
 
   _defaultProcessInteraction(payload, args) {
+    payload = this._writeWorkflowInfoToInteraction(payload, args);
     payload = this._writeApiInfoToInteraction(payload, args);
     payload = this._writeMisoIdToInteraction(payload, args);
     payload = writeSessionInfoToInteraction(payload, args);
@@ -299,6 +304,18 @@ export default class Workflow extends Component {
     payload = writeRequestMetadataToInteraction(payload, args);
     payload = writeAffiliationInfoToInteraction(payload, args);
     return payload;
+  }
+
+  // a subworkflow's interactions present as its superworkflow's
+  _writeWorkflowInfoToInteraction(payload) {
+    const { _name: workflow } = this._superworkflow || this;
+    return mergeInteractions(payload, {
+      context: {
+        custom_context: {
+          workflow,
+        },
+      },
+    });
   }
 
   _writeApiInfoToInteraction(payload) {

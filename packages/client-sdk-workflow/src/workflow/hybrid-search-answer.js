@@ -18,11 +18,6 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
     });
   }
 
-  _initProperties(args) {
-    super._initProperties(args);
-    this._superworkflow = args.superworkflow;
-  }
-
   _initSession() {} // no reset here, will manually reset later
 
   _doLoading(data) {
