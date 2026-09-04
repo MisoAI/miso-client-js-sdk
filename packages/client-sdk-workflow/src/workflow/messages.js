@@ -19,11 +19,11 @@ export default class Messages extends WorkflowContext {
   constructor(plugin, client) {
     super('messages', plugin, client);
     this._byQid = new Map();
-    this._byPid = new Map();
+    this._byPlaceholderId = new Map();
   }
 
   get workflows() {
-    return [...new Set([...this._byQid.values(), ...this._byPid.values()])];
+    return [...new Set([...this._byQid.values(), ...this._byPlaceholderId.values()])];
   }
 
   /**
@@ -32,7 +32,7 @@ export default class Messages extends WorkflowContext {
    */
   get(message, { autoCreate = false } = {}) {
     const { question_id, placeholder_id, parent_question_id } = message || {};
-    let workflow = (question_id && this._byQid.get(question_id)) || (placeholder_id && this._byPid.get(placeholder_id)) || undefined;
+    let workflow = (question_id && this._byQid.get(question_id)) || (placeholder_id && this._byPlaceholderId.get(placeholder_id)) || undefined;
     if (!workflow && autoCreate && (question_id || placeholder_id)) {
       workflow = new Message(this, { questionId: question_id, parentQuestionId: parent_question_id });
       if (!message.live) {
@@ -42,7 +42,7 @@ export default class Messages extends WorkflowContext {
         workflow.useApi(false);
       }
       question_id && this._byQid.set(question_id, workflow);
-      placeholder_id && this._byPid.set(placeholder_id, workflow);
+      placeholder_id && this._byPlaceholderId.set(placeholder_id, workflow);
       this._client._events.emit('postworkflow', workflow);
     }
     return workflow;
@@ -60,7 +60,7 @@ export default class Messages extends WorkflowContext {
       workflow.destroy(options);
     }
     this._byQid.clear();
-    this._byPid.clear();
+    this._byPlaceholderId.clear();
   }
 
 }
