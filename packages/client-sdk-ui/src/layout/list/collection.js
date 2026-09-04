@@ -180,7 +180,15 @@ export default class CollectionLayout extends TemplateBasedLayout {
   }
 
   _getItemElements(element) {
-    return element ? Array.from(element.querySelectorAll(`[data-role="item"]`)) : [];
+    if (!element) {
+      return [];
+    }
+    // an item may host a nested collection with items of its own (a
+    // conversation message and its source cards): ours are only those whose
+    // closest list is this layout's own list
+    const listElement = this._getListElement(element);
+    return Array.from((listElement || element).querySelectorAll(`[data-role="item"]`))
+      .filter(item => item.closest(`[data-role="list"]`) === listElement);
   }
 
   _onClick(event) {

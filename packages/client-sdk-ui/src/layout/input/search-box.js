@@ -362,8 +362,10 @@ export default class SearchBoxLayout extends TemplateBasedLayout {
       return;
     }
     this.close();
-    // TODO: q -> value
-    this._view.hub.update(fields.query(), { q: value });
+    // a view event, like the buttons: the workflow routes it into its query
+    // flow (or its own submission semantics), the layout stays hands-off
+    const { session } = this._view._state || {};
+    this._view._emit('submit', Object.freeze({ session, value }));
     if (this.options.clearOnSubmit) {
       const inputElement = this._element && this._element.querySelector(`[data-role="input"]`);
       if (inputElement) {

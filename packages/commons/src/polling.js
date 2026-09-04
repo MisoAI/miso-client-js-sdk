@@ -1,7 +1,7 @@
 import { isNullLike } from './objects.js';
 import ValueBuffer from './value-buffer.js';
 
-export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onResponse, signal } = {}) {
+export function polling(fetch, { interval = 1000, errorLimit = 10, immediate = false, onError, onResponse, signal } = {}) {
   const buffer = new ValueBuffer();
   if (signal && signal.aborted) {
     // already aborted -> an ended, empty stream. (Not a bare array, which is
@@ -14,7 +14,7 @@ export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onRe
     intervalId && clearInterval(intervalId);
     done = true;
   }
-  intervalId = setInterval(async () => {
+  async function tick() {
     let response, finished, revision;
     try {
       [response, finished, revision] = await fetch(signal ? { signal } : {});
@@ -39,7 +39,12 @@ export function polling(fetch, { interval = 1000, errorLimit = 10, onError, onRe
     if (finished) {
       clear();
     }
-  }, interval);
+  }
+  intervalId = setInterval(tick, interval);
+  if (immediate) {
+    // fire the first fetch right away, not one interval in
+    tick();
+  }
 
   if (signal && signal.addEventListener) {
     signal.addEventListener('abort', () => {

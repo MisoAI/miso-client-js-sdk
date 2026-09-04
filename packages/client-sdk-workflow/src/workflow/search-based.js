@@ -26,8 +26,15 @@ export default class SearchBasedWorkflow extends Workflow {
       this._hub.on(fields.query(), args => this._query(args)),
       this._hub.on(fields.filters(), () => this._refine()),
       this._hub.on(fields.more(), () => this._more()),
+      this._views.on(ROLE.QUERY, 'submit', event => this._onQuerySubmit(event)),
       this._views.on(ROLE.SORT, 'select', event => this._handleSortSelect(event)),
     ];
+  }
+
+  // the search box submits as a `submit` view event on the query role,
+  // routed into the query flow
+  _onQuerySubmit({ value }) {
+    this.query({ q: value });
   }
 
   restart() {
@@ -54,21 +61,24 @@ export default class SearchBasedWorkflow extends Workflow {
     if (!args.q) {
       throw new Error(`q is required in query() call`);
     }
+    if (!this._linkFn) {
+      // reset filters view
+      this._views.filters.reset({ silent: true });
+      // start the new session here, ahead of the query dispatch: the hub
+      // queues reentrant emissions, so a restart inside _query() would land
+      // its session-reset data commit after the request's loading commit
+      this.restart({ type: REQUEST_TYPE.QUERY });
+    }
     this._hub.update(fields.query(), args);
   }
 
   _query(args) {
     if (this._linkFn) {
+      // TODO: shall we move this to query()?
       this._submitToPage(args);
       return;
     }
     const type = REQUEST_TYPE.QUERY;
-
-    // reset filters view
-    this._views.filters.reset({ silent: true });
-
-    // start a new session
-    this.restart({ type });
 
     // payload
     const payload = this._buildPayload(args, type);
@@ -83,6 +93,7 @@ export default class SearchBasedWorkflow extends Workflow {
     const { facet_counts } = this._hub.states[fields.data()].value || {};
     this._currentFacetCounts = facet_counts;
 
+    // TODO: wrong event order
     // start a new session
     this.restart({ type });
 

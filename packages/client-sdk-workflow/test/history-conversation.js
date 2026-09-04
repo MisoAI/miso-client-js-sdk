@@ -103,7 +103,9 @@ test('select: conversation workflow loads the thread and merges answers', async 
   assert.is(conversation.status, STATUS.READY);
   assert.is(conversation.thread.title, 'Second thread');
   assert.equal(conversation.messages, answersOf(['q1', 'q2']));
-  assert.ok(calls.includes('GET threads/t2'));
+  // the head request is served by the threads model alone: the data actor
+  // bypasses it (actor: false), so it is fetched exactly once
+  assert.is(calls.filter(c => c === 'GET threads/t2').length, 1);
   assert.ok(calls.some(c => c.startsWith('POST ask/answers') && c.includes('"question_ids":["q1","q2"]')));
 });
 
@@ -384,19 +386,38 @@ test('conversation: stale answers of an abandoned session are dropped', async ()
   assert.equal(conversation.messages, answersOf(['b1', 'b2']));
 });
 
-test('useAnswers: overrides the answers api through the options cascade', async () => {
+test('useApi overrides the api options through the cascade', () => {
+  const { client } = createClient();
+  const { history } = client.workflows;
+
+  history.useApi('custom_group/custom_name', { rows: 5 });
+
+  const api = history._options.resolved.api;
+  assert.is(api.group, 'custom_group');
+  assert.is(api.name, 'custom_name');
+  assert.is(api.payload.rows, 5);
+  // the built-in defaults stay beneath the override
+  assert.is(api.options.method, 'GET');
+});
+
+test('messages: useApi on the context configures the posting api', async () => {
   const { client, calls } = createClient();
   const { conversation } = client.workflows;
 
-  conversation.useAnswers({ api: { name: 'custom_answers', payload: { fl: ['title'] } } });
+  // the payload-object form of useApi(), cascading into the live message
+  // workflow that posts the question — the ask/hybrid-search experience
+  client.workflows.messages.useApi({ custom_flag: 1 });
   conversation.load('t1');
   await tick();
+  conversation.send('What about miso ramen?');
+  await tick();
 
-  const call = calls.find(c => c.startsWith('POST ask/custom_answers'));
+  const call = calls.find(c => c.startsWith('POST questions'));
   assert.ok(call);
-  assert.ok(call.includes('"fl":["title"]'));
-  assert.ok(call.includes('"question_ids":["q1","q2"]'));
-  assert.equal(conversation.messages, answersOf(['q1', 'q2']));
+  assert.ok(call.includes('"custom_flag":1'));
+  // the conversation's own requests ran as usual
+  assert.ok(calls.includes('GET threads/t1'));
+  assert.ok(calls.some(c => c.startsWith('POST ask/answers')));
 });
 
 test('conversation: starts in new-thread mode with a placeholder thread', async () => {
@@ -630,8 +651,13 @@ test('conversation: unfinished answers are polled until finished', async () => {
       }));
     },
   });
+  // api call options (e.g. the polling interval) are not part of the
+  // useApi() surface; they are configured through the defaults store,
+  // before the workflow is created
+  client.workflows._plugin.defaults.set('conversation', {
+    api: { group: 'ask', name: 'answers', options: { method: 'POST', pollingInterval: 10 } },
+  });
   const { conversation } = client.workflows;
-  conversation.useAnswers({ pollingInterval: 10 });
 
   conversation.load('t1');
   await tick();
@@ -649,6 +675,83 @@ test('conversation: unfinished answers are polled until finished', async () => {
   // and stops once settled
   await tick(50);
   assert.is(answersCalls, settled);
+});
+
+test('conversation: a new unsettled message is picked up by the running poll', async () => {
+  const polledIds = [];
+  const { client } = createClient({
+    answers: question_ids => {
+      polledIds.push(question_ids);
+      // never finishing, so the loop keeps polling
+      return question_ids.map(question_id => ({
+        question_id,
+        question: `Question of ${question_id}`,
+        answer: 'partial',
+        finished: false,
+      }));
+    },
+  });
+  client.workflows._plugin.defaults.set('conversation', {
+    api: { group: 'ask', name: 'answers', options: { method: 'POST', pollingInterval: 10 } },
+  });
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  assert.equal(polledIds[0], ['q1', 'q2']);
+
+  // a new unsettled message enters the data; the running loop picks its
+  // question id up on the next poll — no restart (as further pages of
+  // messages will rely on, later)
+  const data = conversation.states.data;
+  conversation.updateData({ ...data, value: { ...data.value, messages: [...data.value.messages, { question_id: 'q3' }] } });
+  await tick(30);
+  assert.ok(polledIds.some(ids => ids.includes('q3') && ids.includes('q1')));
+
+  conversation.new({ force: true }); // offload; the loop dies with the session
+  const polls = polledIds.length;
+  await tick(30);
+  assert.is(polledIds.length, polls);
+});
+
+test('conversation: an outdated answers response is dropped', async () => {
+  // each answers call hangs until resolved by hand, so responses can be
+  // delivered out of order
+  const deferred = [];
+  const { client } = createClient({
+    answers: question_ids => new Promise(resolve => {
+      deferred.push(answer => resolve(question_ids.map(question_id => ({
+        question_id,
+        question: `Question of ${question_id}`,
+        answer,
+        finished: false,
+      }))));
+    }),
+  });
+  client.workflows._plugin.defaults.set('conversation', {
+    api: { group: 'ask', name: 'answers', options: { method: 'POST', pollingInterval: 10 } },
+  });
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick(25); // several polls issued, all pending
+  assert.ok(deferred.length >= 2);
+
+  // a later poll's response arrives first and merges...
+  deferred[1]('The newer answer');
+  await tick();
+  assert.is(conversation.messages[0].answer, 'The newer answer');
+
+  // ...then an earlier poll's response arrives late, and is dropped
+  deferred[0]('The stale answer');
+  await tick();
+  assert.is(conversation.messages[0].answer, 'The newer answer');
+
+  // offloading the thread aborts the loop
+  conversation.new({ force: true });
+  const polls = deferred.length;
+  await tick(30);
+  assert.is(deferred.length, polls); // no further polls
 });
 
 test('conversation: send posts a follow-up and appends the message pair', async () => {

@@ -3,6 +3,7 @@ import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
+import { writeQuestionSourceToPayload } from './processors.js';
 import { isUpdateMessage } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
@@ -18,13 +19,18 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
  * subworkflow behind a <miso-message> element, keyed by its question id and
  * managed by the Messages context (client.workflows.messages).
  *
- * An answer-based workflow with no data flow of its own: the data actor is
- * turned off (api.actor: false in the default options), and the conversation
- * workflow propagates the message record in through updateData() as its data
- * commits. Being a workflow of its own gives each message its own roles,
- * layout options, and trackers — so answer-content interactions (citation
- * clicks, answer link clicks, feedback) run through the standard
- * answer-based machinery and deduplicate at the message level.
+ * An answer-based workflow that delivers its own data only when live: a
+ * *live* message — one just posted in this session — posts its question and
+ * streams the answer through its own data actor, exactly like the ask
+ * workflow (post()); the conversation folds the stream back into its list.
+ * A message that is *not* live has its data actor turned off (useApi(false),
+ * applied by the Messages context at creation) and receives its record from
+ * the conversation workflow through updateData() as data commits.
+ *
+ * Being a workflow of its own gives each message its own roles, layout
+ * options, and trackers — so answer-content interactions (citation clicks,
+ * answer link clicks, feedback) run through the standard answer-based
+ * machinery and deduplicate at the message level.
  */
 export default class Message extends AnswerBasedWorkflow {
 
@@ -70,15 +76,50 @@ export default class Message extends AnswerBasedWorkflow {
     return data && data.value;
   }
 
+  // query //
+  /**
+   * Post a live message's question: an ask-style query through the data
+   * actor, streaming the answer into this workflow's own data. The optimistic
+   * record rides the request and is merged under every data commit
+   * (writePostedMessageToData, like the keywords in the search-based
+   * workflow) — the response values carry only the answer content, so the
+   * record supplies the question and identity fields (question,
+   * placeholder_id, live, ...) throughout the stream, and the question shows
+   * from the request's loading commit on.
+   */
+  // TODO: bad name, use query()
+  post(message, { parentQuestionId } = {}) {
+    this.query({ q: message.question, parentQuestionId, message });
+  }
+
+  // the session is started by query(), like in the base class
+  _query({ message, ...args } = {}) {
+    this._writeQuestionSourceToSession(args);
+    const payload = this._buildPayload(args);
+    this._request({ payload, message });
+  }
+
+  _buildPayload({ q, qs, parentQuestionId, ...options } = {}) {
+    let payload = trimObj({
+      ...options,
+      question: q, // question, not q
+      parent_question_id: parentQuestionId,
+    });
+    payload = writeQuestionSourceToPayload({ ...payload, qs });
+    return payload;
+  }
+
   // data //
-  // the record is pushed in whole by the conversation workflow; there is no
-  // head/streamed-response distinction to dispatch on
+  // a record is committed in whole — pushed by the conversation workflow, or
+  // streamed by the posting; there is no head-response distinction to
+  // dispatch on
   _shallHandleAsHeadResponse() {
     return false;
   }
 
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
+    data = writePostedMessageToData(data);
     data = writeStatusFromAnswer(data);
     data = writeOngoingFromFinished(data);
     return data;
@@ -126,6 +167,21 @@ export default class Message extends AnswerBasedWorkflow {
     conversation && conversation._onFollowUpClick(event);
   }
 
+}
+
+// the posted record under the value, off the request it rides (like the
+// keywords in the search-based workflow): the streamed responses carry the
+// answer content only, so a value replacing the previous one wholesale would
+// drop the question and identity fields (question, placeholder_id, live)
+// between commits — runs after the base pass, which carries the request
+// onto commits missing one
+function writePostedMessageToData(data) {
+  const { request, value } = data;
+  const { message } = request || {};
+  if (!message) {
+    return data;
+  }
+  return { ...data, value: { ...message, ...value } };
 }
 
 // a record whose answer body has not arrived presents as loading — the

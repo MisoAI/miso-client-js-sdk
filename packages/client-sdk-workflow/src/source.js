@@ -15,6 +15,8 @@ function sendApi(client, { group, name, payload, options }) {
     switch (name) {
       case API.NAME.QUESTIONS:
         return client.api.ask.questions(payload, options);
+      case API.NAME.ANSWERS:
+        return client.api.ask.answers(payload, options);
       case API.NAME.SEARCH:
         return client.api.ask.search(payload, options);
     }

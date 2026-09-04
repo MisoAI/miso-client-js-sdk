@@ -35,7 +35,8 @@ export default class AnswerBasedWorkflow extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._hub.on(fields.query(), args => this._query(args)),
-      this._views.on(ROLE.ANSWER, 'citation-click', event => this._onCitationClick(event)),
+      this._views.on(ROLE.QUERY, 'submit', event => this._onQuerySubmit(event)),
+      this._views.on(ROLE.ANSWER, 'citation-click', event => this._onAnswerCitationClick(event)),
       this._views.on(ROLE.ANSWER, 'link-click', event => this._onAnswerLinkClick(event)),
     ];
   }
@@ -109,17 +110,21 @@ export default class AnswerBasedWorkflow extends Workflow {
     if (!args.q && !args.questionId) {
       throw new Error(`q is required in query() call`);
     }
+    if (!this._linkFn) {
+      // start the new session here, ahead of the query dispatch: the hub
+      // queues reentrant emissions, so a restart inside _query() would land
+      // its session-reset data commit after the request's loading commit
+      this.restart();
+    }
     this._hub.update(fields.query(), args);
   }
 
   _query(args = {}) {
     if (this._linkFn) {
+      // TODO: shall we move this to query()?
       this._submitToPage(args);
       return;
     }
-    // start a new session
-    this.restart();
-
     // keep track of question source on this session, for suggested questions interactions
     this._writeQuestionSourceToSession(args);
 
@@ -193,7 +198,13 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   // handlers //
-  _onCitationClick({ index, event }) {
+  // the search box submits as a `submit` view event on the query role,
+  // routed into the query flow
+  _onQuerySubmit({ value }) {
+    this.query({ q: value });
+  }
+
+  _onAnswerCitationClick({ index, event }) {
     if (event.button !== 0) {
       return; // only left click
     }

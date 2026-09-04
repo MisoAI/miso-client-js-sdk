@@ -48,13 +48,6 @@ const SEARCH_BASED_TRACKERS = {
   products: DEFAULT_TRACKER_OPTIONS,
 };
 
-// the conversation content requests: the answer-based formatting options,
-// plus the source fields the compact source cards render (as in hybrid-search)
-const CONVERSATION_CONTENT_PAYLOAD = {
-  ...ANSWER_BASED_API_OPTIONS.payload,
-  source_fl: [...ANSWER_BASED_API_OPTIONS.payload.source_fl, 'title', 'authors'],
-};
-
 const SEARCH_BASED_PAGINATION = {
   active: false,
   mode: 'infiniteScroll',
@@ -176,46 +169,35 @@ export default Object.freeze({
   },
 
   'conversation': {
-    // TODO: we need to expand the spec to allow multiple request types per workflow
+    // the sole api option: the follow-up request retrieving question-answer
+    // pair contents — a polling request served by the data actor; the
+    // endpoint takes no formatting payload, the per-poll payload being the
+    // question_ids alone. The head (thread) request is served by the shared
+    // ThreadsModel and is not an api option (see Conversation.load); the
+    // question posting belongs to the live message workflow (see 'message')
     api: {
-      group: API.GROUP.ASK_USER_HISTORY,
-      name: API.NAME.THREADS, // `/${threadId}` is appended per request
+      group: API.GROUP.ASK,
+      name: API.NAME.ANSWERS,
       options: {
-        method: 'GET',
-      },
-    },
-    // posting a question, like the ask workflow does
-    query: {
-      api: {
-        group: API.GROUP.ASK,
-        name: API.NAME.QUESTIONS,
-        payload: CONVERSATION_CONTENT_PAYLOAD,
-        options: {
-          method: 'POST', // override the GET method of the head request api options
-        },
-      },
-    },
-    // the follow-up request retrieving question-answer pair contents
-    answers: {
-      api: {
-        group: API.GROUP.ASK,
-        name: API.NAME.ANSWERS,
-        // same content formatting options as the answer-based workflows, so
-        // citation links and sources render the same way
-        payload: CONVERSATION_CONTENT_PAYLOAD,
-        options: {
-          method: 'POST', // override the GET method of the head request api options
-        },
+        method: 'POST',
       },
     },
   },
 
   'message': {
-    // an item subworkflow of the conversation workflow: the parent pushes
-    // the message record in via updateData(), so the data actor is off and
-    // this workflow makes no requests of its own
+    // a live message posts its own question, like the ask workflow does:
+    // the answer-based content formatting options, with source_fl extended
+    // with the source fields the compact source cards render (as in
+    // hybrid-search). A message that is not live receives its record from
+    // the conversation workflow instead, its data actor turned off per
+    // instance (useApi(false), applied by the Messages context)
     api: {
-      actor: false,
+      group: API.GROUP.ASK,
+      name: API.NAME.QUESTIONS,
+      payload: {
+        ...ANSWER_BASED_API_OPTIONS.payload,
+        source_fl: [...ANSWER_BASED_API_OPTIONS.payload.source_fl, 'title', 'authors'],
+      },
     },
     // the answer-based trackings, deduplicated at the message level: each
     // message workflow keeps its own tracker states

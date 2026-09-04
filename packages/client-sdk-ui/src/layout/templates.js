@@ -74,7 +74,7 @@ export function message(layout, state, data) {
 export function messageBody({ className }) {
   return `<miso-question class="${className}__question" hidden></miso-question>` +
     `<miso-answer class="${className}__answer"></miso-answer>` +
-    // `<miso-feedback class="${className}__feedback"></miso-feedback>` +
+    `<miso-feedback class="${className}__feedback"></miso-feedback>` +
     `<miso-sources class="${className}__sources"></miso-sources>`;
 }
 

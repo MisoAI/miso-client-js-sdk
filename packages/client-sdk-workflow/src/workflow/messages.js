@@ -35,6 +35,12 @@ export default class Messages extends WorkflowContext {
     let workflow = (question_id && this._byQid.get(question_id)) || (placeholder_id && this._byPid.get(placeholder_id)) || undefined;
     if (!workflow && autoCreate && (question_id || placeholder_id)) {
       workflow = new Message(this, question_id);
+      if (!message.live) {
+        // only a live message delivers its own data (posting the question,
+        // ask-style); any other receives its record from the conversation
+        // workflow, so the data actor has nothing to do
+        workflow.useApi(false);
+      }
       question_id && this._byQid.set(question_id, workflow);
       placeholder_id && this._byPid.set(placeholder_id, workflow);
       this._client._events.emit('postworkflow', workflow);

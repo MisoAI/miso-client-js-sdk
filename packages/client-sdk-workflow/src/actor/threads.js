@@ -1,4 +1,5 @@
 import { asArray, EventEmitter } from '@miso.ai/commons';
+import { fallbackThreadFields } from '../source.js';
 
 /**
  * The shared model of thread operations, one per client, shared by the two
@@ -22,6 +23,17 @@ export default class ThreadsModel {
 
   on(name, callback) {
     return this._events.on(name, callback);
+  }
+
+  // reads //
+  /**
+   * The thread detail: the thread record — carrying the same properties as
+   * the thread list API — and its turns. Serves the conversation workflow's
+   * head request in place of its data actor.
+   */
+  async getThread(threadId) {
+    // fill the canonical thread fields, as the api boundary does
+    return fallbackThreadFields(await this._api.getThread(threadId));
   }
 
   // mutations //

@@ -15,7 +15,7 @@ export function makeConfigurable(prototype, features = DEFAULT_FEATURES) {
 }
 
 function injectConfigurableFeature(prototype, feature) {
-  if (feature === 'api') {
+  if (feature === WORKFLOW_CONFIGURABLE.API) {
     Object.assign(prototype, {
       useApi(...args) {
         this._options.api.merge(args);

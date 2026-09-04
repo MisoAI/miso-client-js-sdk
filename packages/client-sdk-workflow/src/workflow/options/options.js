@@ -8,7 +8,6 @@ import { normalizeInteractionsOptions, mergeInteractionsOptions } from './intera
 import { normalizeFiltersOptions, mergeFiltersOptions } from './filters.js';
 import { normalizePaginationOptions, mergePaginationOptions } from './pagination.js';
 import { normalizeTemplatesOptions, mergeTemplatesOptions } from './templates.js';
-import { normalizeAnswersOptions, mergeAnswersOptions } from './answers.js';
 
 const FEATURES = [
   {
@@ -50,16 +49,6 @@ const FEATURES = [
     key: WORKFLOW_CONFIGURABLE.TEMPLATES,
     normalize: normalizeTemplatesOptions,
     merge: mergeTemplatesOptions,
-  },
-  {
-    key: WORKFLOW_CONFIGURABLE.ANSWERS,
-    normalize: normalizeAnswersOptions,
-    merge: mergeAnswersOptions,
-  },
-  {
-    key: WORKFLOW_CONFIGURABLE.QUERY,
-    normalize: normalizeAnswersOptions,
-    merge: mergeAnswersOptions,
   },
 ];
 

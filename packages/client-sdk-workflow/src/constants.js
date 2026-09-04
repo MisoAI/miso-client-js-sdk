@@ -154,8 +154,6 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
   FILTERS: 'filters',
   PAGINATION: 'pagination',
   TEMPLATES: 'templates',
-  ANSWERS: 'answers',
-  QUERY: 'query',
 });
 
 export const REQUEST_TYPE = Object.freeze({

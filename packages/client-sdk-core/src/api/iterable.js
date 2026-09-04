@@ -20,11 +20,7 @@ export class IterableApiStub {
   }
 
   [Symbol.asyncIterator]() {
-    const fetch = async ({ signal } = {}) => {
-      // TODO: pass signal
-      const response = await this.get();
-      return [response, isFinished(response), revisionOf(response)];
-    };
+    const fetch = this._fetch();
 
     if (typeof this._options.customIterator === 'function') {
       return this._options.customIterator.call(this, fetch);
@@ -47,12 +43,31 @@ export class IterableApiStub {
     const onResponse = (response, finished) => {
       if (finished) {
         stac.clear();
-      } else if (isUpdated(prevResponse, response)) {
+      } else if (this._isUpdated(prevResponse, response)) {
         stac.touch();
       }
       prevResponse = response;
     };
     return polling(fetch, { interval, signal, onResponse, ...options })[Symbol.asyncIterator]();
+  }
+
+  /**
+   * Compose the polling fetch: () => [response, finished, revision].
+   * Overridable by a subclass with its own finish or revision semantics
+   * (e.g. Answers, whose question ids may run dry).
+   */
+  _fetch() {
+    return async ({ signal } = {}) => {
+      // TODO: pass signal
+      const response = await this.get();
+      return [response, isFinished(response), revisionOf(response)];
+    };
+  }
+
+  // whether the new response carries progress, keeping the stall timeout at
+  // bay; overridable by a subclass with its own response shape
+  _isUpdated(previousResponse, newResponse) {
+    return isUpdated(previousResponse, newResponse);
   }
 
 }

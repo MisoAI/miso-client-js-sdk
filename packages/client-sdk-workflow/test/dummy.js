@@ -1,4 +1,4 @@
-import { EventEmitter } from '@miso.ai/commons';
+import { EventEmitter, polling } from '@miso.ai/commons';
 import { WorkflowPlugin, Workflows } from '../src/index.js';
 
 /**
@@ -39,6 +39,13 @@ export function createClient({
     async getThreads() {
       calls.push('GET threads');
       return { threads: threads.map(thread => ({ ...thread })) };
+    },
+    async getThread(threadId) {
+      calls.push(`GET threads/${threadId}`);
+      if (threadDetailError) {
+        throw threadDetailError;
+      }
+      return createdThreads.get(threadId) || threadDetail(threadId);
     },
     async _run(name, payload, options = {}) {
       calls.push(`${options.method || 'POST'} ${name}`);
@@ -104,7 +111,33 @@ export function createClient({
             sources: [],
           };
         },
-        // the answers endpoint (and useAnswers overrides) via the generic source path
+        // the answers endpoint: a polling iterable like the real api's —
+        // the id set is mutable between polls: question_ids may be a
+        // function resolved per poll, and a fixed array settles out record
+        // by record
+        async answers(payload, options = {}) {
+          const { pollingInterval = 1000, signal } = options;
+          const pending = typeof payload.question_ids === 'function' ? undefined : new Set(payload.question_ids || []);
+          let index = 0;
+          return polling(async () => {
+            const i = ++index;
+            const question_ids = pending ? [...pending] : payload.question_ids();
+            if (!question_ids.length) {
+              return [undefined, true, i];
+            }
+            calls.push(`POST ask/answers ${JSON.stringify({ ...payload, question_ids })}`);
+            const response = await answers(question_ids);
+            if (pending) {
+              for (const record of response) {
+                if (record.answer !== undefined && record.finished !== false) {
+                  pending.delete(record.question_id);
+                }
+              }
+            }
+            return [response, false, i];
+          }, { interval: pollingInterval, immediate: true, signal });
+        },
+        // custom endpoint overrides via the generic source path
         async _run(name, payload) {
           calls.push(`POST ask/${name} ${JSON.stringify(payload)}`);
           return answers(payload.question_ids);

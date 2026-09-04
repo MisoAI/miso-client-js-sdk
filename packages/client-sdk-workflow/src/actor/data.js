@@ -7,7 +7,8 @@ export default class DataActor {
     this._hub = hub;
     this._source = source;
     this._options = options;
-    this._polling = polling;
+    this._pollingEnabled = polling;
+    this._servingCount = 0;
     this._unsubscribes = [
       hub.on(fields.session(), session => this._handleSession(session)),
       hub.on(fields.request(), event => this._handleRequest(event)),
@@ -16,6 +17,16 @@ export default class DataActor {
 
   get active() {
     return this._options.resolved.api.actor !== false;
+  }
+
+  /**
+   * Whether a request is being served right now: fetched, or its response
+   * stream (e.g. a polling iterable) still being consumed. Lets a workflow
+   * tell an ongoing poll from a settled one — the conversation's answers
+   * polling issues one request only while none is running.
+   */
+  get polling() {
+    return this._servingCount > 0;
   }
 
   get source() {
@@ -42,12 +53,15 @@ export default class DataActor {
   }
 
   async _handleRequest(event) {
-    // protocol: inactive -> no reaction
-    if (!this.active) {
+    // protocol: inactive -> no reaction; a request whose api entry declares
+    // actor: false is served by other means (e.g. the conversation's thread
+    // request, served by the ThreadsModel)
+    if (!this.active || event.actor === false) {
       return;
     }
     const { session, ...request } = event;
 
+    this._servingCount++;
     try {
       const { signal } = this._ac || {};
       const options = { ...event.options, signal };
@@ -58,9 +72,12 @@ export default class DataActor {
         if (response._response) {
           this._emitResponseWithSessionCheck({ session, request, value: response._response });
         }
-        if (this._polling) {
+        if (this._pollingEnabled) {
           let value;
           for await (value of response) {
+            if (value === undefined) {
+              continue; // e.g. a polling stream ending with nothing left to fetch
+            }
             // A new session invalidates ongoing data fetch for the old session, terminating the loop
             if (!isCurrentSession(this._hub, session)) {
               this._emitExpiredResponse({ session, request, value });
@@ -75,6 +92,8 @@ export default class DataActor {
     } catch(error) {
       this._error(error);
       this._emitResponseWithSessionCheck({ session, request, error });
+    } finally {
+      this._servingCount--;
     }
   }
 

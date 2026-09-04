@@ -80,15 +80,18 @@ export function isUpdateMessage(message) {
  * Question ids of messages whose answers are not settled: absent or still
  * being generated (finished: false) — driving the answers polling. Live
  * messages are excluded: their content streams in from the posting request.
+ * The ids are deduplicated.
  */
 export function getUnsettledQuestionIds(value) {
   if (!value || !value.messages) {
     return [];
   }
-  return value.messages
-    .filter(message => !message.live && (message.answer === undefined || message.finished === false))
-    .map(message => message.question_id)
-    .filter(Boolean);
+  return [...new Set(
+    value.messages
+      .filter(message => !message.live && (message.answer === undefined || message.finished === false))
+      .map(message => message.question_id)
+      .filter(Boolean)
+  )];
 }
 
 /**

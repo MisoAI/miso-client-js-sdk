@@ -31,4 +31,20 @@ test('polling: yields fetched values until finished', async () => {
   assert.equal(values, ['value-1', 'value-2']);
 });
 
+test('polling: immediate fires the first fetch right away', async () => {
+  let fetchedAt;
+  const start = Date.now();
+  const result = polling(() => {
+    fetchedAt = fetchedAt === undefined ? Date.now() : fetchedAt;
+    return ['value', true];
+  }, { interval: 1000, immediate: true });
+
+  const values = [];
+  for await (const value of result) {
+    values.push(value);
+  }
+  assert.equal(values, ['value']);
+  assert.ok(fetchedAt - start < 1000); // not one interval in
+});
+
 test.run();

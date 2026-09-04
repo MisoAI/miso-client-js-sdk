@@ -32,7 +32,8 @@ export default class Explore extends UnitWorkflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._views.on(ROLE.RELATED_QUESTIONS, 'click', event => this._handleRelatedQuestionClick(event)),
+      this._views.on(ROLE.RELATED_QUESTIONS, 'click', event => this._onRelatedQuestionsClick(event)),
+      this._views.on(ROLE.QUERY, 'submit', event => this._onQuerySubmit(event)),
       this._hub.on(fields.query(), args => this._query(args)),
     ];
   }
@@ -113,7 +114,7 @@ export default class Explore extends UnitWorkflow {
     };
   }
 
-  _handleRelatedQuestionClick({ value: question, ...event }) {
+  _onRelatedQuestionsClick({ value: question, ...event }) {
     this._events.emit('select', Object.freeze({ ...event, question }));
     const [linkFn, linkOptions = {}] = this._linkFn || [];
     if (!linkFn || !linkOptions.showUrl) {
@@ -122,6 +123,10 @@ export default class Explore extends UnitWorkflow {
     if (linkFn && !linkOptions.showUrl) {
       this._submitToPage({ q: question.text, generated: true });
     }
+  }
+
+  _onQuerySubmit({ value }) {
+    this.query({ q: value });
   }
 
   query(args) {

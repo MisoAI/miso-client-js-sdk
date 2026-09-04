@@ -54,6 +54,7 @@ test('getUnsettledQuestionIds', () => {
       { question_id: 'q2' },
       { question_id: 'q3', answer: 'A3', finished: false },
       { question_id: 'q4', live: true },
+      { question_id: 'q2' }, // a duplicate is reported once
     ],
   };
   assert.equal(getUnsettledQuestionIds(value), ['q2', 'q3']);
