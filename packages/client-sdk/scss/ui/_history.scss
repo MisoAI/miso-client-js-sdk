@@ -193,6 +193,15 @@ miso-new-thread .miso-button {
     &--danger .miso-button {
       color: var(--miso-danger-color);
     }
+    // disabled while the thread is being created (no server identity yet)
+    .miso-button:disabled {
+      opacity: 0.45;
+      cursor: default;
+
+      &:hover {
+        background: none;
+      }
+    }
   }
 }
 
@@ -231,6 +240,46 @@ miso-rename .miso-button {
     width: 0.875rem;
     height: 0.875rem;
     fill: currentColor;
+  }
+}
+
+// the delete button next to the rename button (miso-delete: the generic
+// button layout, a red bin asking through the shared confirm dialog); the
+// thread-list menu's delete reuses the tag, but its two-class menu-item
+// styling outranks this element-scoped rule //
+miso-delete .miso-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.375rem;
+  background: none;
+  color: var(--miso-danger-color);
+  cursor: pointer;
+  transition: background-color var(--miso-transition);
+
+  &:hover {
+    background-color: var(--miso-thread-list-item-hover-background);
+  }
+  .miso-ui-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: currentColor;
+  }
+}
+
+// the header rename/delete buttons disabled while the thread is being
+// created (no server identity yet) //
+miso-rename .miso-button:disabled,
+miso-delete .miso-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+
+  &:hover {
+    background: none;
   }
 }
 

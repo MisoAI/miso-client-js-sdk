@@ -24,6 +24,7 @@ const ICON_NAME = {
   PENCIL: 'pencil',
   BELL: 'bell',
   BELL_FILL: 'bell-fill',
+  TRASH: 'trash',
 };
 
 // CC0 SVGs
@@ -43,8 +44,9 @@ const ICON_PLUS = `<symbol id="${PREFIX}-${ICON_NAME.PLUS}" viewBox="0 0 16 16">
 const ICON_PENCIL = `<symbol id="${PREFIX}-${ICON_NAME.PENCIL}" viewBox="0 0 16 16"><path fill="currentColor" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.325-.175"/></symbol>`;
 const ICON_BELL = `<symbol id="${PREFIX}-${ICON_NAME.BELL}" viewBox="0 0 16 16"><path fill="currentColor" d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></symbol>`;
 const ICON_BELL_FILL = `<symbol id="${PREFIX}-${ICON_NAME.BELL_FILL}" viewBox="0 0 16 16"><path fill="currentColor" d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/></symbol>`;
+const ICON_TRASH = `<symbol id="${PREFIX}-${ICON_NAME.TRASH}" viewBox="0 0 16 16"><path fill="currentColor" d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path fill="currentColor" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></symbol>`;
 
-const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ, ICON_CHEVRON, ICON_CHEVRON_NEGATIVE, ICON_BULB, ICON_DOTS_VERTICAL, ICON_PLUS, ICON_PENCIL, ICON_BELL, ICON_BELL_FILL];
+const ICONS = [ICON_SEND, ICON_SEARCH, ICON_TRIANGLE, ICON_TRIANGLE_EQ, ICON_CHEVRON, ICON_CHEVRON_NEGATIVE, ICON_BULB, ICON_DOTS_VERTICAL, ICON_PLUS, ICON_PENCIL, ICON_BELL, ICON_BELL_FILL, ICON_TRASH];
 
 const SPRITES_SVG = `<svg id="${ID}" style="display:none;">${ICONS.join('')}</svg>`;
 

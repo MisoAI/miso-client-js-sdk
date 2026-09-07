@@ -36,6 +36,27 @@ function totalContent(layout, { value }) {
 
 const { [ROLE.QUERY]: _answerBasedQueryLayout, ...MESSAGE_LAYOUTS } = ANSWER_BASED_LAYOUTS;
 
+// the rename/delete button controls of a thread (the conversation header's,
+// and a thread list item's context menu's): mapped to the thread record —
+// the dialogs work with its title, and the buttons disable while the record
+// has no thread id yet (a thread being created is not addressable until
+// resolved; the workflows guard all the same)
+const THREAD_CONTROL_OPTIONS = Object.freeze({
+  value: thread => thread && thread.title,
+  disabled: thread => !(thread && thread.thread_id),
+});
+const THREAD_RENAME_PROMPT = Object.freeze({
+  title: 'Rename thread',
+  placeholder: 'Thread name',
+  confirmText: 'Rename',
+});
+const THREAD_DELETE_CONFIRM = Object.freeze({
+  title: 'Delete thread',
+  message: title => `Are you sure you want to delete "${title || 'this thread'}"? This cannot be undone.`,
+  confirmText: 'Delete',
+  danger: true,
+});
+
 const SEARCH_BASED_LAYOUTS = {
   ...BASE_LAYOUTS,
   [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX],
@@ -133,8 +154,8 @@ export const defaultLayouts = Object.freeze({
   'thread': Object.freeze({
     [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
-    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { text: 'Rename', prompt: { title: 'Rename thread', placeholder: 'Thread name', confirmText: 'Rename' } }],
-    [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { text: 'Delete', confirm: { title: 'Delete thread', message: title => `Are you sure you want to delete "${title || 'this thread'}"? This cannot be undone.`, confirmText: 'Delete', danger: true } }],
+    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],
+    [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Delete', confirm: THREAD_DELETE_CONFIRM }],
     [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
   }),
 
@@ -143,7 +164,8 @@ export const defaultLayouts = Object.freeze({
     [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message', incremental: true }],
     [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a follow-up question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div' }],
-    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { icon: 'pencil', prompt: { title: 'Rename thread', placeholder: 'Thread name', confirmText: 'Rename' } }],
+    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, icon: 'pencil', prompt: THREAD_RENAME_PROMPT }],
+    [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, icon: 'trash', confirm: THREAD_DELETE_CONFIRM }],
     [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
   }),
 

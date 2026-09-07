@@ -257,8 +257,9 @@ test('conversation: the rename submit renames through the history workflow', asy
   history.select('t2');
   await tick();
 
-  // the rename role maps the current title, pre-filling the dialog
-  assert.is(roles[ROLE.RENAME], 'thread.title');
+  // the rename role maps the thread record; the button layout derives the
+  // dialog pre-fill and the disabled state from it
+  assert.is(roles[ROLE.RENAME], 'thread');
 
   conversation._onViewRenameSubmit({ value: 'Renamed' });
   await tick();
@@ -273,6 +274,67 @@ test('conversation: the rename submit renames through the history workflow', asy
   conversation._onViewRenameSubmit({ value: 'Nope' });
   await tick();
   assert.equal(calls.slice(before), []);
+});
+
+test('conversation: the delete submit deletes the open thread', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+  const roles = conversation._roles.mappings;
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+
+  // the delete role maps the thread record; the button layout derives the
+  // confirm dialog's message and the disabled state from it
+  assert.is(roles[ROLE.DELETE], 'thread');
+
+  conversation._onViewDeleteSubmit();
+  await tick();
+  assert.ok(calls.some(call => call.startsWith('POST threads/_delete')));
+  assert.equal(history.threads.map(t => t.thread_id), ['t1']);
+
+  // the deletion reset the panel to new-thread mode: no thread to delete now
+  const before = calls.length;
+  conversation._onViewDeleteSubmit();
+  await tick();
+  assert.equal(calls.slice(before), []);
+});
+
+test('rename/delete ignore a thread still being created, everywhere', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  conversation.new();
+  conversation.send('A brand new question'); // no tick: unresolved placeholder
+
+  const placeholder = history.threads.find(thread => thread.placeholder_id);
+  const placeholderId = placeholder.placeholder_id;
+  const before = calls.length;
+
+  // the history workflow's id-based mutations ignore the placeholder id —
+  // alone, and filtered out of a batch (the real thread still goes through)
+  history.rename(placeholderId, 'Nope');
+  history.delete(placeholderId);
+  assert.equal(calls.slice(before), []);
+  history.delete([placeholderId, 't1']);
+  assert.equal(calls.slice(before), ['POST threads/_delete {"thread_ids":["t1"]}']);
+
+  // the conversation header's rename/delete view events are ignored too
+  const mid = calls.length;
+  conversation._onViewRenameSubmit({ value: 'Nope' });
+  conversation._onViewDeleteSubmit();
+  assert.equal(calls.slice(mid), []);
+
+  await tick(30); // the thread resolves
+
+  // resolved: the same actions go through now
+  conversation._onViewRenameSubmit({ value: 'Renamed' });
+  await tick();
+  assert.ok(calls.includes(`PUT threads/q-new-1 {"title":"Renamed"}`));
 });
 
 test('conversation: the subscription toggle is a no-op with no thread loaded', async () => {

@@ -6,12 +6,14 @@ import { mergeRolesOptions } from './options/index.js';
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   members: [ROLE.TITLE, ROLE.RENAME, ROLE.DELETE, ROLE.SUBSCRIPTION],
   mappings: {
-    // the roles map (dot-path) into the thread record: the title text, the
-    // rename dialog's pre-fill, the delete confirmation's subject, the
-    // subscription checkbox's checked state
+    // the roles map into the thread record: the title text and the
+    // subscription checkbox's checked state. Rename and delete take the
+    // whole record: their button layouts derive the dialog text from its
+    // title and the disabled state from its thread id's absence (a thread
+    // being created is not addressable until resolved)
     [ROLE.TITLE]: 'title',
-    [ROLE.RENAME]: 'title',
-    [ROLE.DELETE]: 'title',
+    [ROLE.RENAME]: data => data.value,
+    [ROLE.DELETE]: data => data.value,
     [ROLE.SUBSCRIPTION]: 'subscribed',
   },
 });

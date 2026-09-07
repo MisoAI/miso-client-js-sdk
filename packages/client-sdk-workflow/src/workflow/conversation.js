@@ -8,13 +8,17 @@ import { isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswe
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.SUBSCRIPTION],
+  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.DELETE, ROLE.SUBSCRIPTION],
   mappings: {
     // the header roles map (dot-path) into the open thread's record: the
-    // title text, the rename dialog's pre-fill, the checkbox's checked state
+    // title text and the checkbox's checked state. Rename and delete take
+    // the whole record: their button layouts derive the dialog text from
+    // its title and the disabled state from its thread id's absence (a
+    // thread being created is not addressable until resolved)
     [ROLE.MESSAGES]: 'messages',
     [ROLE.TITLE]: 'thread.title',
-    [ROLE.RENAME]: 'thread.title',
+    [ROLE.RENAME]: 'thread',
+    [ROLE.DELETE]: 'thread',
     [ROLE.SUBSCRIPTION]: 'thread.subscribed',
   },
 });
@@ -92,6 +96,7 @@ export default class Conversation extends Workflow {
       this._hub.on(fields.request(), request => this._onRequest(request)),
       this._views.on(ROLE.QUERY, 'submit', event => this._onQuerySubmit(event)),
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
+      this._views.on(ROLE.DELETE, 'submit', () => this._onViewDeleteSubmit()),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
       // thread facts from the shared model
       this._model.on('updated', event => this._onThreadUpdated(event)),
@@ -371,6 +376,13 @@ export default class Conversation extends Workflow {
       return; // a thread being created has no server identity to rename yet
     }
     this.rename(value);
+  }
+
+  _onViewDeleteSubmit() {
+    if (!this.threadId) {
+      return; // a thread being created has no server identity to delete yet
+    }
+    this.delete();
   }
 
   _onViewSubscriptionChange({ checked }) {

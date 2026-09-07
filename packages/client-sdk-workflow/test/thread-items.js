@@ -43,11 +43,13 @@ test('thread roles map into the record; view events mutate through the model', a
   const workflow = history.getThreadWorkflow('t2');
   const roles = workflow._roles.mappings;
 
-  // the roles are dot-paths into the thread record: the title text, the
-  // rename pre-fill, the delete confirmation's subject, the checkbox state
+  // the roles map into the thread record: the title text and the checkbox
+  // state as dot-paths; rename and delete take the whole record, so their
+  // button layouts can derive the dialog text and the disabled state
   assert.is(roles[ROLE.TITLE], 'title');
-  assert.is(roles[ROLE.RENAME], 'title');
-  assert.is(roles[ROLE.DELETE], 'title');
+  const record = { thread_id: 't9', title: 'T' };
+  assert.is(roles[ROLE.RENAME]({ value: record }), record);
+  assert.is(roles[ROLE.DELETE]({ value: record }), record);
   assert.is(roles[ROLE.SUBSCRIPTION], 'subscribed');
 
   history.start();

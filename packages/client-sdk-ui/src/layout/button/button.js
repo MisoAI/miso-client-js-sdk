@@ -11,7 +11,8 @@ const DEFAULT_CLASSNAME = 'miso-button';
 function root(layout, state) {
   const { className, role, templates } = layout;
   const roleAttr = role ? ` data-role="${role}"` : '';
-  return `<button type="button" class="${className}"${roleAttr}>${templates.icon(layout, state)}${templates.text(layout, state)}</button>`;
+  const disabledAttr = layout._isDisabled(state) ? ' disabled' : '';
+  return `<button type="button" class="${className}"${roleAttr}${disabledAttr}>${templates.icon(layout, state)}${templates.text(layout, state)}</button>`;
 }
 
 function icon(layout) {
@@ -51,6 +52,14 @@ const DEFAULT_TEMPLATES = Object.freeze({
  * first, and submits only when confirmed; the option's `message` may be a
  * function of the control's current value. Use it for destructive actions,
  * such as the delete button (role `delete`) of a thread item's context menu.
+ *
+ * The control's current value is the role's mapped data value, put through
+ * the `value` option when given — map the role to a record and let `value`
+ * pick the text the dialogs work with. A `disabled` option (a boolean, or a
+ * function of the mapped value) renders the button's disabled state from
+ * the data, re-evaluated on every commit — e.g. rename/delete disable while
+ * their thread record has no thread id yet (a thread being created is not
+ * addressable), enabling in place when the resolution patches the record.
  */
 export default class ButtonLayout extends TemplateBasedLayout {
 
@@ -126,11 +135,18 @@ export default class ButtonLayout extends TemplateBasedLayout {
 
   /**
    * The current value of the control: the role's mapped data value, as of
-   * the latest render.
+   * the latest render, put through the `value` option when given.
    */
   _currentValue() {
     const state = this._element && this._rendered.get(this._element);
-    return state && state.value;
+    const raw = state && state.value;
+    const { value } = this.options;
+    return typeof value === 'function' ? value(raw) : raw;
+  }
+
+  _isDisabled(state) {
+    const { disabled } = this.options;
+    return typeof disabled === 'function' ? !!disabled(state && state.value) : !!disabled;
   }
 
 }

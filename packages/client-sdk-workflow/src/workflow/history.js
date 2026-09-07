@@ -1,3 +1,4 @@
+import { asArray } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
@@ -129,8 +130,14 @@ export default class History extends Workflow {
   }
 
   // thread mutations, on the shared model — the facts come back through the
-  // model subscriptions
+  // model subscriptions. A thread still being created has no server identity
+  // to operate on: rename and delete ignore its placeholder id until the
+  // resolution brings the thread id
   rename(threadId, title) {
+    const thread = this.get(threadId);
+    if (thread && thread.placeholder_id) {
+      return;
+    }
     this._model.rename(threadId, title);
   }
 
@@ -147,6 +154,13 @@ export default class History extends Workflow {
   }
 
   delete(threadIds) {
+    threadIds = asArray(threadIds).filter(threadId => {
+      const thread = this.get(threadId);
+      return !(thread && thread.placeholder_id);
+    });
+    if (threadIds.length === 0) {
+      return;
+    }
     this._model.delete(threadIds);
   }
 
@@ -176,7 +190,8 @@ export default class History extends Workflow {
   }
 
   _onViewThreadsDelete({ value: thread }) {
-    // TODO: what happens if deleting a placeholder thread?
+    // a placeholder item has no thread id, so a thread being created never
+    // reaches the API from here
     const threadId = thread && thread.thread_id;
     threadId && this.delete(threadId);
   }

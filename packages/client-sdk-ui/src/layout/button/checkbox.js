@@ -11,7 +11,8 @@ function root(layout, state) {
   const checked = isChecked(state);
   const roleAttr = role ? ` data-role="${role}"` : '';
   const checkedAttr = checked ? ' data-checked' : '';
-  return `<button type="button" class="${className}" role="switch" aria-checked="${checked}"${roleAttr}${checkedAttr}>${templates.icon(layout, state)}${templates.text(layout, state)}</button>`;
+  const disabledAttr = layout._isDisabled(state) ? ' disabled' : '';
+  return `<button type="button" class="${className}" role="switch" aria-checked="${checked}"${roleAttr}${checkedAttr}${disabledAttr}>${templates.icon(layout, state)}${templates.text(layout, state)}</button>`;
 }
 
 function icon(layout, state) {

@@ -90,6 +90,9 @@
   .miso-history-demo__header miso-rename {
     flex: none;
   }
+  .miso-history-demo__header miso-delete {
+    flex: none;
+  }
   .miso-history-demo__header miso-subscription {
     flex: none;
     margin-left: auto;
@@ -124,6 +127,7 @@
         <div class="miso-history-demo__header-row">
           <miso-title></miso-title>
           <miso-rename></miso-rename>
+          <miso-delete></miso-delete>
           <miso-subscription></miso-subscription>
         </div>
       </div>
