@@ -21,8 +21,12 @@
   --miso-message-author-color: var(--miso-text-color-gray);
 }
 
-// new chat button (miso-new-thread: the generic button layout) //
-miso-new-thread .miso-button {
+// Styles are bound to roles (the data-role attribute every layout root
+// carries), not to the element tags hosting them — <miso-rename> and
+// <miso-component role="rename"> style alike.
+
+// new chat button (role new_thread: the generic button layout) //
+.miso-button[data-role="new_thread"] {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -167,9 +171,9 @@ miso-new-thread .miso-button {
     background-color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
-  // the menu items (miso-rename / miso-delete: the generic button layout,
-  // through the thread workflow); the two-class specificity outranks the
-  // conversation header's `miso-rename .miso-button` icon-button styling
+  // the menu items (the rename/delete roles: the generic button layout,
+  // through the thread workflow); nested under .miso-threads, these outrank
+  // the conversation header's role-based icon-button defaults below
   .miso-threads__menu-item {
     display: block;
 
@@ -206,9 +210,11 @@ miso-new-thread .miso-button {
 }
 
 // conversation //
+// The thread-list items' controls carry the same roles; their overrides
+// above, nested under .miso-threads, outrank these defaults.
 
 // the thread title of the open thread
-miso-title .miso-text {
+.miso-text[data-role="title"] {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -216,9 +222,9 @@ miso-title .miso-text {
   font-weight: 600;
 }
 
-// the rename button next to the thread title (miso-rename: the
-// rename-button layout, a button asking through the shared prompt dialog) //
-miso-rename .miso-button {
+// the rename button next to the thread title (role rename: the generic
+// button layout, asking through the shared prompt dialog) //
+.miso-button[data-role="rename"] {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,11 +249,9 @@ miso-rename .miso-button {
   }
 }
 
-// the delete button next to the rename button (miso-delete: the generic
-// button layout, a red bin asking through the shared confirm dialog); the
-// thread-list menu's delete reuses the tag, but its two-class menu-item
-// styling outranks this element-scoped rule //
-miso-delete .miso-button {
+// the delete button next to the rename button (role delete: the generic
+// button layout, a red bin asking through the shared confirm dialog) //
+.miso-button[data-role="delete"] {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -273,8 +277,8 @@ miso-delete .miso-button {
 
 // the header rename/delete buttons disabled while the thread is being
 // created (no server identity yet) //
-miso-rename .miso-button:disabled,
-miso-delete .miso-button:disabled {
+.miso-button[data-role="rename"]:disabled,
+.miso-button[data-role="delete"]:disabled {
   opacity: 0.45;
   cursor: default;
 
@@ -283,9 +287,9 @@ miso-delete .miso-button:disabled {
   }
 }
 
-// the subscription toggle (miso-subscription: the checkbox layout, which
+// the subscription toggle (role subscription: the checkbox layout, which
 // looks like a button) //
-miso-subscription .miso-checkbox {
+.miso-checkbox[data-role="subscription"] {
   display: flex;
   align-items: center;
   gap: 0.375rem;

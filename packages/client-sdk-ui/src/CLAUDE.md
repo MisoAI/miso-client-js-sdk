@@ -58,6 +58,8 @@ Rendering strategies. A layout class has a static `type` (e.g. `'list'`, `'typew
 
 Contract: `render(element, data, { notifyUpdate })` is mandatory; `initialize(view)`, `unrender(element)`, `syncSize(element)`, `destroy()` are optional. `notifyUpdate(state)` is how a layout reports its view state back (published to `view:<role>` on the hub) — this drives workflow lifecycle events. A layout submits user actions as **view events**, like the buttons do: `SearchBoxLayout` emits `submit` (`{ session, value }`) on the query role, which each query-hosting workflow subscribes to and routes itself (`_onQuerySubmit` → `query()` in the answer-based, search-based and explore workflows; Conversation routes to `send()`) — layouts never write the query field or call workflow methods directly.
 
+A layout root stamps its view role as a `data-role` attribute — the role name verbatim, snake_case included (`data-role="new_thread"`) — and CSS binds to layout className + role (`.miso-text[data-role="question"]`), never to the host element tag: `<miso-rename>` and `<miso-component role="rename">` style alike; element tags appear only in `_container.scss` for structural rules (display, box-sizing, `visible-when`).
+
 ## Entry Point
 
 ```javascript

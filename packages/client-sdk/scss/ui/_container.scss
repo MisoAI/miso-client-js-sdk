@@ -59,16 +59,17 @@ miso-hybrid-search-combo {
   display: block;
 }
 
+// the generic structural default only — how an element participates in a
+// particular spot (a header row, a context menu) is that location's rule
+// (e.g. the thread menu's .miso-threads__menu-item, a page's header flex row)
 miso-query,
 miso-answer,
 miso-threads,
 miso-new-thread,
 miso-title,
+miso-rename,
+miso-delete,
+miso-subscription,
 miso-messages {
   display: block;
-}
-
-miso-rename,
-miso-subscription {
-  display: inline-flex;
 }
