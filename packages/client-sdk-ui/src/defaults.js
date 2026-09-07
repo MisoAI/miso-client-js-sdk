@@ -1,3 +1,4 @@
+import { escapeHtml } from '@miso.ai/commons';
 import { ROLE, LAYOUT_TYPE } from './constants.js';
 import { compactArticle, compactArticleInfoBlock } from './layout/templates.js';
 
@@ -119,6 +120,22 @@ export const defaultLayouts = Object.freeze({
         }
       }
     ],
+  }),
+
+  // the thread item subworkflow behind <miso-thread>: the item decomposes
+  // into role elements rendered by the generic layouts — the title text
+  // (with a presentation fallback for untitled threads), the context menu's
+  // rename (ask-then-submit through the prompt dialog) and delete
+  // (confirm-then-submit) buttons, and the subscription toggle for custom
+  // item bodies that place one. The context menu markup comes from the item
+  // template (threadMenuBlock); the item-container layout drives its
+  // open/close behavior by the item-menu data-role contract
+  'thread': Object.freeze({
+    [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
+    [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
+    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { text: 'Rename', prompt: { title: 'Rename thread', placeholder: 'Thread name', confirmText: 'Rename' } }],
+    [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { text: 'Delete', confirm: { title: 'Delete thread', message: title => `Are you sure you want to delete "${title || 'this thread'}"? This cannot be undone.`, confirmText: 'Delete', danger: true } }],
+    [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
   }),
 
   'conversation': Object.freeze({

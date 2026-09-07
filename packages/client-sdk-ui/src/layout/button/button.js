@@ -3,6 +3,7 @@ import { LAYOUT_TYPE } from '../../constants.js';
 import TemplateBasedLayout from '../template.js';
 import { getIcon } from '../../asset/svgs.js';
 import prompt from '../../util/prompt.js';
+import confirm from '../../util/confirm.js';
 
 const TYPE = LAYOUT_TYPE.BUTTON;
 const DEFAULT_CLASSNAME = 'miso-button';
@@ -45,6 +46,11 @@ const DEFAULT_TEMPLATES = Object.freeze({
  * dialog submits nothing. Use it for actions that take a text input, such
  * as the rename button (role `rename`) of the conversation header, whose
  * role maps to `'thread.title'`.
+ *
+ * With a `confirm` option, the click asks through the shared confirm dialog
+ * first, and submits only when confirmed; the option's `message` may be a
+ * function of the control's current value. Use it for destructive actions,
+ * such as the delete button (role `delete`) of a thread item's context menu.
  */
 export default class ButtonLayout extends TemplateBasedLayout {
 
@@ -84,7 +90,9 @@ export default class ButtonLayout extends TemplateBasedLayout {
     if (!button || button.disabled) {
       return;
     }
-    this.options.prompt ? this._submitViaPrompt(event) : this._submit(event);
+    this.options.prompt ? this._submitViaPrompt(event) :
+      this.options.confirm ? this._submitViaConfirm(event) :
+      this._submit(event);
   }
 
   _submit(event, payload) {
@@ -102,6 +110,18 @@ export default class ButtonLayout extends TemplateBasedLayout {
       return; // cancelled, cleared, or unchanged
     }
     this._submit(event, { value });
+  }
+
+  async _submitViaConfirm(event) {
+    const { message, ...options } = this.options.confirm;
+    const confirmed = await confirm({
+      ...options,
+      message: typeof message === 'function' ? message(this._currentValue()) : message,
+    });
+    if (!confirmed) {
+      return;
+    }
+    this._submit(event);
   }
 
   /**

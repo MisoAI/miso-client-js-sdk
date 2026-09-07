@@ -31,6 +31,7 @@ export const ROLE = Object.freeze({
   MESSAGES: 'messages',
   TITLE: 'title',
   RENAME: 'rename',
+  DELETE: 'delete',
   SUBSCRIPTION: 'subscription',
 });
 

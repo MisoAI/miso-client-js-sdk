@@ -1,5 +1,6 @@
 export { default as TemplateBasedLayout } from './template.js';
 export { default as ContainerLayout } from './container/container.js';
+export { default as ItemContainerLayout } from './container/item-container.js';
 export { default as ErrorLayout } from './error/error.js';
 export { default as BannerLayout } from './banner/banner.js';
 export { default as CollectionLayout } from './list/collection.js';

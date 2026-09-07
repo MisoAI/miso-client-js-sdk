@@ -2,34 +2,30 @@ import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
 import { LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
-import confirm from '../../util/confirm.js';
-import prompt from '../../util/prompt.js';
 
 const TYPE = LAYOUT_TYPE.THREADS;
 const DEFAULT_CLASSNAME = 'miso-threads';
 
-// the thread template renders the <li> itself (it is the item, carrying the
-// item role and state), so the stock <li> wrapping is skipped
-function item(layout, state, value, index) {
-  const { templates, options } = layout;
-  return templates[options.itemType](layout, state, value, { index });
-}
-
 /**
- * The thread list of the chat history interface: a list of `thread` items.
+ * The thread list of the chat history interface: a shell that renders one
+ * <miso-thread> container element per thread item, incrementally — fresh
+ * items (the list is newest-first) render as prepended items. The content
+ * of an item is not rendered here: each <miso-thread> is assigned its item
+ * subworkflow (workflow.getThreadWorkflow, off the item binding) in the
+ * post-render sync pass, and the role elements inside (the title, and the
+ * context menu's rename/delete buttons) render through that workflow's own
+ * layouts — so a record change re-renders the affected item's roles alone.
  *
- * Selection comes with the data: the history workflow stamps
- * `selectedThreadId` into its value and the role mapping decorates each
- * thread record with a `selected` flag, so any selection change flows down
- * the regular data path and refreshes the view. The list renders
- * incrementally (append-only); in-place state changes on existing items
- * (selected, unread) are applied by `_syncSelection` after each render,
- * reading the fresh values off the item bindings — no item re-render needed.
- *
- * Each item carries a context menu (vertical dots) with thread actions,
- * each asking through a shared modal dialog util, then emitting a view event
- * for the history workflow to act on: `rename` (a prompt dialog pre-filled
- * with the current title) and `delete` (a confirm dialog).
+ * The shell keeps the list-level behaviors. Selection comes with the data:
+ * the history workflow stamps `selectedThreadId` into its value and
+ * decorates each thread record with a `selected` flag, so any selection
+ * change flows down the regular data path; in-place state changes on
+ * existing items (selected, unread, the thread identity of a settled
+ * placeholder) are applied by `_syncItems` after each render, reading the
+ * fresh values off the item bindings — no item re-render needed. Each item
+ * carries a context menu (vertical dots), but that is the thread workflow's
+ * too: its item-container layout inserts and toggles it — the shell only
+ * keeps menu clicks (by their item-menu data-roles) from selecting.
  */
 export default class ThreadsLayout extends CollectionLayout {
 
@@ -41,27 +37,15 @@ export default class ThreadsLayout extends CollectionLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
-    super({
-      className,
-      templates: { item, ...templates },
-      ...options,
-    });
+  constructor({ className = DEFAULT_CLASSNAME, ...options } = {}) {
+    super({ className, ...options });
   }
 
-  initialize(view) {
-    super.initialize(view);
-    // clicking outside the list closes any open context menu
-    if (typeof document !== 'undefined') {
-      const onDocumentClick = (event) => {
-        const element = this._element;
-        if (element && !element.contains(event.target)) {
-          this._closeMenus();
-        }
-      };
-      document.addEventListener('click', onDocumentClick);
-      this._unsubscribes.push(() => document.removeEventListener('click', onDocumentClick));
-    }
+  // item identity: the thread id, or the local placeholder id standing in
+  // for it while a thread is being created — the workflow adopts the thread
+  // id at the settle, so the element and its workflow survive it
+  _getItemKey(thread) {
+    return thread.thread_id || thread.placeholder_id || thread;
   }
 
   // the list is newest-first, so incremental renders PREPEND the fresh items
@@ -90,12 +74,28 @@ export default class ThreadsLayout extends CollectionLayout {
 
   _afterRender(element, state) {
     super._afterRender(element, state); // syncs bindings to the latest values
+    this._syncWorkflows(element);
     this._syncItems(element);
   }
 
-  // sync in-place item changes from the bound values onto the existing item
-  // elements: selection/unread state, and record changes that arrive without
-  // a re-render (rename, a placeholder thread resolving to its real record)
+  // assign each <miso-thread> its item subworkflow, off the item binding
+  _syncWorkflows(element) {
+    const workflow = this._view && this._view.workflow;
+    if (!workflow || typeof workflow.getThreadWorkflow !== 'function') {
+      return;
+    }
+    for (const item of this._getItemElements(element)) {
+      const binding = this._bindings.get(item);
+      if (binding && item.isContainer) {
+        item.workflow = workflow.getThreadWorkflow(binding.value);
+      }
+    }
+  }
+
+  // sync in-place item state changes from the bound values onto the existing
+  // item elements: selection/unread state, and the thread identity of a
+  // placeholder that settled into its real record — the item contents render
+  // through the thread workflows, outside this layout's render cycle
   _syncItems(element) {
     for (const item of this._getItemElements(element)) {
       const binding = this._bindings.get(item);
@@ -106,37 +106,15 @@ export default class ThreadsLayout extends CollectionLayout {
       setOrRemoveAttribute(item, 'data-selected', value.selected ? '' : undefined);
       setOrRemoveAttribute(item, 'data-unread', isThreadUnread(value) ? '' : undefined);
       setOrRemoveAttribute(item, 'data-thread-id', value.thread_id || undefined);
-      const titleElement = item.querySelector(`.${this.className}__title`);
-      const title = value.title || 'Untitled';
-      if (titleElement && titleElement.textContent !== title) {
-        titleElement.textContent = title;
-      }
     }
   }
 
   // a click on a thread item means selection — a navigation action, not a
   // content-engagement click: emit a select view event and skip click tracking
   _onClick(event) {
-    if (event.target.closest(`[data-role="thread-menu-button"]`)) {
-      this._toggleMenu(event.target.closest(`[data-role="item"]`));
-      return;
+    if (event.target.closest(`[data-role="item-menu-button"], [data-role="item-menu"]`)) {
+      return; // the item's own context menu, owned by its container layout
     }
-    if (event.target.closest(`[data-role="thread-rename"]`)) {
-      this._closeMenus();
-      const binding = this._bindings.get(event.target.closest(`[data-role="item"]`));
-      binding && this._requestRename(binding);
-      return;
-    }
-    if (event.target.closest(`[data-role="thread-delete"]`)) {
-      this._closeMenus();
-      const binding = this._bindings.get(event.target.closest(`[data-role="item"]`));
-      binding && this._requestDelete(binding);
-      return;
-    }
-    if (event.target.closest(`[data-role="thread-menu"]`)) {
-      return; // other clicks inside the menu don't select
-    }
-    this._closeMenus();
     const element = event.target.closest(`[data-role="item"]`);
     if (!element) {
       return;
@@ -148,59 +126,6 @@ export default class ThreadsLayout extends CollectionLayout {
     const { session } = this._view._state;
     const { value } = binding;
     this._view._emit('select', { session, value, element: binding.element, domEvent: event });
-  }
-
-  // context menu //
-  _toggleMenu(item) {
-    const menu = item && item.querySelector(`[data-role="thread-menu"]`);
-    if (!menu) {
-      return;
-    }
-    const open = menu.hidden;
-    this._closeMenus();
-    menu.hidden = !open;
-  }
-
-  _closeMenus() {
-    const element = this._element;
-    if (!element) {
-      return;
-    }
-    for (const menu of element.querySelectorAll(`[data-role="thread-menu"]:not([hidden])`)) {
-      menu.hidden = true;
-    }
-  }
-
-  // rename //
-  async _requestRename(binding) {
-    const { value, element } = binding;
-    const title = await prompt({
-      title: 'Rename thread',
-      value: value.title || '',
-      placeholder: 'Thread name',
-      confirmText: 'Rename',
-    });
-    if (!title || title === value.title) {
-      return; // cancelled, cleared, or unchanged
-    }
-    const { session } = this._view._state;
-    this._view._emit('rename', { session, value, element, title });
-  }
-
-  // delete //
-  async _requestDelete(binding) {
-    const { value, element } = binding;
-    const confirmed = await confirm({
-      title: 'Delete thread',
-      message: `Are you sure you want to delete "${value.title || 'this thread'}"? This cannot be undone.`,
-      confirmText: 'Delete',
-      danger: true,
-    });
-    if (!confirmed) {
-      return;
-    }
-    const { session } = this._view._state;
-    this._view._emit('delete', { session, value, element });
   }
 
 }

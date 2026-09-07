@@ -32,24 +32,45 @@ export function question(layout, state, data) {
   return `${openTag}${data.value || data.text || data}${closeTag}`;
 }
 
-// the <li> itself is the item: it carries the item role, the thread identity
-// and the item state — a thread item is not a link, so no anchor body (and
-// the wrapper div around it) is needed
+/**
+ * A thread item is a <miso-thread> container element hosting the thread
+ * item subworkflow — the threads layout is a shell: it assigns the workflow
+ * (and syncs the item-level attributes) in its post-render pass, and the
+ * content renders through the thread workflow's own layouts: the title role
+ * element in the body, plus the context menu (with the rename/delete role
+ * elements) inserted as chrome by the workflow's item-container layout. The
+ * item state renders as attributes right in the template (and stays in
+ * sync thereafter): the thread identity, the selection, and the unread
+ * mark.
+ */
 export function thread(layout, state, data) {
   const { className, templates } = layout;
   const threadId = data.thread_id;
   const threadIdAttr = threadId ? ` data-thread-id="${threadId}"` : '';
   const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
   const selectedAttr = data.selected ? ' data-selected' : '';
-  const title = escapeHtml(data.title || 'Untitled');
-  return `<li class="${className}__item" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}><div class="${className}__title">${title}</div>${(templates.threadMenuBlock || threadMenuBlock)(layout, data)}</li>`;
+  return [
+    `<miso-thread class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}>`,
+    (templates.threadBody || threadBody)(layout, data),
+    `</miso-thread>`,
+  ].join('');
 }
 
+export function threadBody(layout, data) {
+  const { className, templates } = layout;
+  return `<miso-title class="${className}__title"></miso-title>` +
+    (templates.threadMenuBlock || threadMenuBlock)(layout, data);
+}
+
+// the item-menu data-roles are the contract with the thread workflow's
+// item-container layout, which drives the menu's open/close behavior; the
+// menu items are the thread workflow's own controls, rendered by the
+// generic button layout with a prompt (rename) or a confirm (delete) dialog
 export function threadMenuBlock({ className }) {
-  return `<button type="button" class="${className}__menu-button" data-role="thread-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
-    `<div class="${className}__menu" data-role="thread-menu" role="menu" hidden>` +
-    `<button type="button" class="${className}__menu-item" data-role="thread-rename" role="menuitem">Rename</button>` +
-    `<button type="button" class="${className}__menu-item ${className}__menu-item--danger" data-role="thread-delete" role="menuitem">Delete</button>` +
+  return `<button type="button" class="${className}__menu-button" data-role="item-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
+    `<div class="${className}__menu" data-role="item-menu" role="menu" hidden>` +
+    `<miso-rename class="${className}__menu-item"></miso-rename>` +
+    `<miso-delete class="${className}__menu-item ${className}__menu-item--danger"></miso-delete>` +
     `</div>`;
 }
 

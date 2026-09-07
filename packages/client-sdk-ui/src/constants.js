@@ -23,6 +23,7 @@ export const ATTR_DATA_MISO_PRODUCT_ID = `data-miso-product-id`;
 
 export const LAYOUT_TYPE = Object.freeze({
   CONTAINER: 'container',
+  ITEM_CONTAINER: 'item-container',
   ERROR: 'error',
   BANNER: 'banner',
   AFFILIATION: 'affiliation',

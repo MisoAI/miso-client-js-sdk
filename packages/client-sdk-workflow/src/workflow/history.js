@@ -215,6 +215,10 @@ export default class History extends Workflow {
     if (!this.get(placeholderId)) {
       return; // already settled (announced from both the live and the expired path)
     }
+    // the item subworkflow adopts the thread id first, so the settled record
+    // propagates into the same workflow the placeholder was keyed to
+    const context = this._client.workflows._threads;
+    context && context._resolvePlaceholder(placeholderId, threadId);
     this._patchValue({
       threads: this.threads.map(thread =>
         thread.placeholder_id === placeholderId ? settlePlaceholder(thread, threadId) : thread),
@@ -235,12 +239,66 @@ export default class History extends Workflow {
     const selectedThreadId = oldData && oldData.value && oldData.value.selectedThreadId;
     const value = { selectedThreadId, ...normalizeThreadsValue(data.value) };
     // threads are canonically ordered by latest activity, and each record
-    // carries its selection state, so views render it right off the data
-    value.threads = sortThreadsByLatest(value.threads).map(thread => ({
-      ...thread,
-      selected: (thread.thread_id || thread.placeholder_id) === value.selectedThreadId,
-    }));
+    // carries its selection state, so views render it right off the data.
+    // A record whose flag already matches keeps its identity — record
+    // identity tells the item subworkflows (and their views) what actually
+    // changed, so a stamp-only pass must not touch the unaffected records
+    value.threads = sortThreadsByLatest(value.threads).map(thread => {
+      const selected = (thread.thread_id || thread.placeholder_id) === value.selectedThreadId;
+      return !!thread.selected === selected ? thread : { ...thread, selected };
+    });
     return { ...data, value };
+  }
+
+  _updateDataInHub(data, oldData) {
+    super._updateDataInHub(data, oldData);
+    this._updateThreadWorkflows();
+  }
+
+  // threads as item subworkflows //
+  /**
+   * The thread workflow of the given thread: the item subworkflow behind a
+   * <miso-thread> element. Takes the thread record — the threads layout
+   * passes the item binding's value, which also covers a thread being
+   * created that has no thread id yet (keyed by its local placeholder id,
+   * adopting the thread id when the placeholder settles) — or a thread id,
+   * for an explicitly bound element. Created on demand from the threads
+   * context (client.workflows.threads) and seeded with the listed record,
+   * if present; from then on, every data commit propagates the record in
+   * through updateData().
+   */
+  getThreadWorkflow(thread) {
+    const context = this._client.workflows.threads;
+    if (typeof thread === 'string') {
+      thread = this.get(thread) || { thread_id: thread };
+    }
+    let workflow = context.get(thread);
+    if (!workflow) {
+      workflow = context.get(thread, { autoCreate: true, superworkflow: this });
+      workflow && this.threads.includes(thread) && this._updateThreadWorkflow(workflow, thread);
+    }
+    return workflow;
+  }
+
+  // propagate the committed records — only ever into existing thread
+  // workflows: instances are created by elements (getThreadWorkflow), not by
+  // data, so nothing is constructed when <miso-thread> is not in play
+  _updateThreadWorkflows() {
+    const context = this._client.workflows._threads;
+    if (!context) {
+      return;
+    }
+    for (const thread of this.threads) {
+      const workflow = context.get(thread);
+      workflow && this._updateThreadWorkflow(workflow, thread);
+    }
+  }
+
+  _updateThreadWorkflow(workflow, thread) {
+    if (workflow.thread === thread) {
+      return; // the very record on display already, nothing to propagate
+    }
+    workflow.updateData({ session: workflow.session, value: thread });
   }
 
   // patch the committed value — the threads, the selection, or both at once

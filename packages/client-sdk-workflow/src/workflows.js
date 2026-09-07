@@ -1,7 +1,7 @@
 import { defineValues } from '@miso.ai/commons';
 import WorkflowEventBus from './bus.js';
 import { ThreadsModel } from './actor/index.js';
-import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation, Messages } from './workflow/index.js';
+import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation, Messages, Threads } from './workflow/index.js';
 import * as sources from './source.js';
 
 /**
@@ -74,6 +74,13 @@ export default class Workflows {
     // the context of message workflows: the item subworkflows behind
     // <miso-message> elements in the conversation panel
     return this._messages || (this._messages = new Messages(this._plugin, this._client));
+  }
+
+  get threads() {
+    // the context of thread workflows: the item subworkflows behind
+    // <miso-thread> elements in the thread list; mutations go through the
+    // shared threads model
+    return this._threads || (this._threads = new Threads(this._plugin, this._client, this._getThreadsModel()));
   }
 
   get asks() {
