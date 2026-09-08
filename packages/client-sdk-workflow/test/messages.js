@@ -43,7 +43,7 @@ test('message workflows receive records pushed from the conversation', async () 
 
   // the context keeps one instance per question id, and the message
   // workflows make no api calls of their own (data actor off)
-  assert.is(client.workflows.messages.getByQuestionId('q1'), early);
+  assert.is(client.workflows.messageItems.getByQuestionId('q1'), early);
   assert.is(calls.length, apiCallsBefore);
 });
 
@@ -127,7 +127,7 @@ test('a just-posted message gets a workflow before its question id, and adopts i
   const settled = conversation.messages[conversation.messages.length - 1];
   assert.ok(settled.question_id);
   assert.is(conversation.getMessageWorkflow(settled), workflow);
-  assert.is(client.workflows.messages.getByQuestionId(settled.question_id), workflow);
+  assert.is(client.workflows.messageItems.getByQuestionId(settled.question_id), workflow);
   assert.is(workflow.questionId, settled.question_id);
   assert.is(workflow.message.answer, 'Answer of What about miso ramen?');
 });

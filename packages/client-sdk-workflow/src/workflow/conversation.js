@@ -60,7 +60,7 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * (_onConversationNew, _onConversationResolve).
  *
  * The panel's items live as workflows of their own: the messages layout is
- * a shell rendering one <miso-message> element per record, each hosting a
+ * a shell rendering one <miso-message-item> element per record, each hosting a
  * message item subworkflow (getMessageWorkflow) that this workflow feeds
  * through updateData() as data commits (_updateMessageWorkflows). All
  * answer-content rendering and interactions (citation clicks, link clicks,
@@ -482,18 +482,18 @@ export default class Conversation extends Workflow {
   // messages as item subworkflows //
   /**
    * The message workflow of the given message: the item subworkflow behind
-   * a <miso-message> element. Takes the message record — the messages
+   * a <miso-message-item> element. Takes the message record — the messages
    * layout passes the item binding's value, which also covers a just-posted
    * message that has no question id yet (keyed by its local placeholder id,
    * adopting the question id when the response arrives) — or a question id,
    * for an explicitly bound element. Created on demand from the messages
-   * context (client.workflows.messages) and, unless live, seeded with the
+   * context (client.workflows.messageItems) and, unless live, seeded with the
    * record on display, if present; from then on, every data commit
    * propagates the record in through updateData(). A live message's workflow
    * delivers its own data (post()), so it is never fed here.
    */
   getMessageWorkflow(message) {
-    const context = this._client.workflows.messages;
+    const context = this._client.workflows.messageItems;
     if (typeof message === 'string') {
       message = this.messages.find(m => m.question_id === message) || { question_id: message };
     }
@@ -507,9 +507,9 @@ export default class Conversation extends Workflow {
 
   // propagate the committed records — only ever into existing message
   // workflows: instances are created by elements (getMessageWorkflow), not
-  // by data, so nothing is constructed when <miso-message> is not in play
+  // by data, so nothing is constructed when <miso-message-item> is not in play
   _updateMessageWorkflows() {
-    const context = this._client.workflows._messages;
+    const context = this._client.workflows._messageItems;
     if (!context) {
       return;
     }

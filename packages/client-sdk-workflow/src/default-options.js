@@ -174,7 +174,7 @@ export default Object.freeze({
     // endpoint takes no formatting payload, the per-poll payload being the
     // question_ids alone. The head (thread) request is served by the shared
     // ThreadsModel and is not an api option (see Conversation.load); the
-    // question posting belongs to the live message workflow (see 'message')
+    // question posting belongs to the live message workflow (see 'message-item')
     api: {
       group: API.GROUP.ASK,
       name: API.NAME.ANSWERS,
@@ -184,13 +184,13 @@ export default Object.freeze({
     },
   },
 
-  'message': {
+  'message-item': {
     // a live message posts its own question, like the ask workflow does:
     // the answer-based content formatting options, with source_fl extended
     // with the source fields the compact source cards render (as in
     // hybrid-search). A message that is not live receives its record from
     // the conversation workflow instead, its data actor turned off per
-    // instance (useApi(false), applied by the Messages context)
+    // instance (useApi(false), applied by the MessageItems context)
     api: {
       group: API.GROUP.ASK,
       name: API.NAME.QUESTIONS,

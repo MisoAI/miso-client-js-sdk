@@ -20,11 +20,11 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
 
 /**
  * One thread item of the thread list: the item subworkflow behind a
- * <miso-thread> element, keyed by its thread id and managed by the Threads
- * context (client.workflows.threads).
+ * <miso-thread-item> element, keyed by its thread id and managed by the ThreadItems
+ * context (client.workflows.threadItems).
  *
  * A thread item never delivers data of its own: its data actor is off
- * (useApi(false), applied by the Threads context at creation) and the
+ * (useApi(false), applied by the ThreadItems context at creation) and the
  * history workflow propagates its record in through updateData() on every
  * data commit — only when the record actually changed, so an update to one
  * thread re-renders that item's roles alone. Being a workflow of its own
@@ -37,11 +37,11 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * which the history workflow applies to its data — arriving back here down
  * the propagation path.
  */
-export default class Thread extends Workflow {
+export default class ThreadItem extends Workflow {
 
   constructor(context, { threadId, placeholderId, superworkflow } = {}) {
     super({
-      name: 'thread',
+      name: 'thread-item',
       context,
       roles: ROLES_OPTIONS,
       threadId,

@@ -1,7 +1,7 @@
 import MisoContainerElement from './miso-container.js';
 import { getContainer } from '../utils.js';
 
-const TAG_NAME = 'miso-message';
+const TAG_NAME = 'miso-message-item';
 
 const ATTR_QUESTION_ID = 'question-id';
 const OBSERVED_ATTRIBUTES = Object.freeze([
@@ -14,7 +14,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * conversation panel, placed inside <miso-conversation> — a container
  * element inside another container element hosting an item subworkflow (the
  * `message` workflow). Normally bound implicitly: the messages layout
- * renders one <miso-message> per item and assigns the workflow off the item
+ * renders one <miso-message-item> per item and assigns the workflow off the item
  * binding (element.workflow = parent workflow's getMessageWorkflow(record)),
  * which also covers a just-posted message that has no question id yet. A
  * `question-id` attribute binds explicitly instead, through the parent
@@ -22,7 +22,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * ...) bind to the message workflow as usual — getContainer() resolves to
  * the closest container ancestor.
  */
-export default class MisoMessageElement extends MisoContainerElement {
+export default class MisoMessageItemElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;

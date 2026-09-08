@@ -33,7 +33,7 @@ export function question(layout, state, data) {
 }
 
 /**
- * A thread item is a <miso-thread> container element hosting the thread
+ * A thread item is a <miso-thread-item> container element hosting the thread
  * item subworkflow — the threads layout is a shell: it assigns the workflow
  * (and syncs the item-level attributes) in its post-render pass, and the
  * content renders through the thread workflow's own layouts: the title role
@@ -50,9 +50,9 @@ export function thread(layout, state, data) {
   const unreadAttr = isThreadUnread(data) ? ' data-unread' : '';
   const selectedAttr = data.selected ? ' data-selected' : '';
   return [
-    `<miso-thread class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}>`,
+    `<miso-thread-item class="${className}__item-body" data-role="item"${threadIdAttr}${unreadAttr}${selectedAttr}>`,
     (templates.threadBody || threadBody)(layout, data),
-    `</miso-thread>`,
+    `</miso-thread-item>`,
   ].join('');
 }
 
@@ -75,7 +75,7 @@ export function threadMenuBlock({ className }) {
 }
 
 /**
- * A message item is a <miso-message> container element hosting the message
+ * A message item is a <miso-message-item> container element hosting the message
  * item subworkflow — the messages layout is a shell: it assigns the workflow
  * (and the item-level attributes) in its post-render sync pass, and the role
  * elements inside render the actual content through the message workflow's
@@ -86,9 +86,9 @@ export function message(layout, state, data) {
   // miso-circled-citation-index covers both the citation links in the answer
   // and the indexes on the source cards, as the hybrid-search UI scopes it
   return [
-    `<miso-message class="${className}__item-body miso-circled-citation-index" data-role="item">`,
+    `<miso-message-item class="${className}__item-body miso-circled-citation-index" data-role="item">`,
     (templates.messageBody || messageBody)(layout, data),
-    `</miso-message>`,
+    `</miso-message-item>`,
   ].join('');
 }
 

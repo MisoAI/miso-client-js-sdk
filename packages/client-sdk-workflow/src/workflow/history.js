@@ -232,7 +232,7 @@ export default class History extends Workflow {
     }
     // the item subworkflow adopts the thread id first, so the settled record
     // propagates into the same workflow the placeholder was keyed to
-    const context = this._client.workflows._threads;
+    const context = this._client.workflows._threadItems;
     context && context._resolvePlaceholder(placeholderId, threadId);
     this._patchValue({
       threads: this.threads.map(thread =>
@@ -273,17 +273,17 @@ export default class History extends Workflow {
   // threads as item subworkflows //
   /**
    * The thread workflow of the given thread: the item subworkflow behind a
-   * <miso-thread> element. Takes the thread record — the threads layout
+   * <miso-thread-item> element. Takes the thread record — the threads layout
    * passes the item binding's value, which also covers a thread being
    * created that has no thread id yet (keyed by its local placeholder id,
    * adopting the thread id when the placeholder settles) — or a thread id,
    * for an explicitly bound element. Created on demand from the threads
-   * context (client.workflows.threads) and seeded with the listed record,
+   * context (client.workflows.threadItems) and seeded with the listed record,
    * if present; from then on, every data commit propagates the record in
    * through updateData().
    */
   getThreadWorkflow(thread) {
-    const context = this._client.workflows.threads;
+    const context = this._client.workflows.threadItems;
     if (typeof thread === 'string') {
       thread = this.get(thread) || { thread_id: thread };
     }
@@ -297,9 +297,9 @@ export default class History extends Workflow {
 
   // propagate the committed records — only ever into existing thread
   // workflows: instances are created by elements (getThreadWorkflow), not by
-  // data, so nothing is constructed when <miso-thread> is not in play
+  // data, so nothing is constructed when <miso-thread-item> is not in play
   _updateThreadWorkflows() {
-    const context = this._client.workflows._threads;
+    const context = this._client.workflows._threadItems;
     if (!context) {
       return;
     }

@@ -8,9 +8,9 @@ const DEFAULT_CLASSNAME = 'miso-threads';
 
 /**
  * The thread list of the chat history interface: a shell that renders one
- * <miso-thread> container element per thread item, incrementally — fresh
+ * <miso-thread-item> container element per thread item, incrementally — fresh
  * items (the list is newest-first) render as prepended items. The content
- * of an item is not rendered here: each <miso-thread> is assigned its item
+ * of an item is not rendered here: each <miso-thread-item> is assigned its item
  * subworkflow (workflow.getThreadWorkflow, off the item binding) in the
  * post-render sync pass, and the role elements inside (the title, and the
  * context menu's rename/delete buttons) render through that workflow's own
@@ -78,7 +78,7 @@ export default class ThreadsLayout extends CollectionLayout {
     this._syncItems(element);
   }
 
-  // assign each <miso-thread> its item subworkflow, off the item binding
+  // assign each <miso-thread-item> its item subworkflow, off the item binding
   _syncWorkflows(element) {
     const workflow = this._view && this._view.workflow;
     if (!workflow || typeof workflow.getThreadWorkflow !== 'function') {

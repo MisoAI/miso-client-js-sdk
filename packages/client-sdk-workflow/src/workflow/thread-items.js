@@ -1,10 +1,10 @@
 import WorkflowContext from './context.js';
-import Thread from './thread.js';
+import ThreadItem from './thread-item.js';
 
 /**
  * The context managing thread workflows — the item subworkflows behind
- * <miso-thread> elements in the thread list — keyed by thread id, in the
- * manner of the message workflows' context (Messages). Workflows are created
+ * <miso-thread-item> elements in the thread list — keyed by thread id, in the
+ * manner of the message workflows' context (MessageItems). Workflows are created
  * by elements (through the history workflow's getThreadWorkflow), not by
  * data: the history workflow propagates records only into instances that
  * exist.
@@ -15,10 +15,10 @@ import Thread from './thread.js';
  * workflow) — one workflow, one continuous element binding across the
  * settle.
  */
-export default class Threads extends WorkflowContext {
+export default class ThreadItems extends WorkflowContext {
 
   constructor(plugin, client, model) {
-    super('threads', plugin, client);
+    super('thread-items', plugin, client);
     this._model = model;
     this._byTid = new Map();
     this._byPlaceholderId = new Map();
@@ -36,7 +36,7 @@ export default class Threads extends WorkflowContext {
     const { thread_id, placeholder_id } = thread || {};
     let workflow = (thread_id && this._byTid.get(thread_id)) || (placeholder_id && this._byPlaceholderId.get(placeholder_id)) || undefined;
     if (!workflow && autoCreate && (thread_id || placeholder_id)) {
-      workflow = new Thread(this, { threadId: thread_id, placeholderId: placeholder_id, superworkflow });
+      workflow = new ThreadItem(this, { threadId: thread_id, placeholderId: placeholder_id, superworkflow });
       // a thread item never delivers data of its own: the history workflow
       // propagates its record in, so the data actor has nothing to do
       workflow.useApi(false);

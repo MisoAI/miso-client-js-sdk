@@ -1,10 +1,10 @@
 export { default as Asks } from './asks.js';
 export { default as History } from './history.js';
 export { default as Conversation } from './conversation.js';
-export { default as Message } from './message.js';
-export { default as Messages } from './messages.js';
-export { default as Thread } from './thread.js';
-export { default as Threads } from './threads.js';
+export { default as MessageItem } from './message-item.js';
+export { default as MessageItems } from './message-items.js';
+export { default as ThreadItem } from './thread-item.js';
+export { default as ThreadItems } from './thread-items.js';
 export { default as HybridSearch } from './hybrid-search.js';
 export { default as Search } from './search.js';
 export { default as Recommendations } from './recommendations.js';

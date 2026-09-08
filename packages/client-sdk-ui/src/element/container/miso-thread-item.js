@@ -1,7 +1,7 @@
 import MisoContainerElement from './miso-container.js';
 import { getContainer } from '../utils.js';
 
-const TAG_NAME = 'miso-thread';
+const TAG_NAME = 'miso-thread-item';
 
 const ATTR_THREAD_ID = 'thread-id';
 const OBSERVED_ATTRIBUTES = Object.freeze([
@@ -13,7 +13,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * A container element for one thread item of the thread list, placed inside
  * <miso-history> — a container element inside another container element
  * hosting an item subworkflow (the `thread` workflow). Normally bound
- * implicitly: the threads layout renders one <miso-thread> per item and
+ * implicitly: the threads layout renders one <miso-thread-item> per item and
  * assigns the workflow off the item binding (element.workflow = parent
  * workflow's getThreadWorkflow(record)), which also covers a thread being
  * created that has no thread id yet. A `thread-id` attribute binds
@@ -22,7 +22,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * workflow as usual — getContainer() resolves to the closest container
  * ancestor.
  */
-export default class MisoThreadElement extends MisoContainerElement {
+export default class MisoThreadItemElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;

@@ -119,12 +119,12 @@ export const defaultLayouts = Object.freeze({
     [ROLE.NEW_THREAD]: [LAYOUT_TYPE.BUTTON, { icon: 'plus', text: 'New chat' }],
   }),
 
-  // the message item subworkflow behind <miso-message>: the answer-based
+  // the message item subworkflow behind <miso-message-item>: the answer-based
   // layouts, minus the query role — a message has no query flow of its own.
   // The answer types out only while being generated (`instant` renders an
   // already-finished answer in one shot), the sources render as the compact
   // horizontal cards of the hybrid-search UI, and no per-message logo banner
-  'message': Object.freeze({
+  'message-item': Object.freeze({
     ...MESSAGE_LAYOUTS,
     [ROLE.CONTAINER]: [LAYOUT_TYPE.CONTAINER, { logo: false }],
     [ROLE.QUESTION]: LAYOUT_TYPE.QUESTION,
@@ -143,7 +143,7 @@ export const defaultLayouts = Object.freeze({
     ],
   }),
 
-  // the thread item subworkflow behind <miso-thread>: the item decomposes
+  // the thread item subworkflow behind <miso-thread-item>: the item decomposes
   // into role elements rendered by the generic layouts — the title text
   // (with a presentation fallback for untitled threads), the context menu's
   // rename (ask-then-submit through the prompt dialog) and delete
@@ -151,7 +151,7 @@ export const defaultLayouts = Object.freeze({
   // item bodies that place one. The context menu markup comes from the item
   // template (threadMenuBlock); the item-container layout drives its
   // open/close behavior by the item-menu data-role contract
-  'thread': Object.freeze({
+  'thread-item': Object.freeze({
     [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],

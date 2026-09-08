@@ -16,15 +16,15 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
 
 /**
  * One message (question-answer pair) of the conversation panel: the item
- * subworkflow behind a <miso-message> element, keyed by its question id and
- * managed by the Messages context (client.workflows.messages).
+ * subworkflow behind a <miso-message-item> element, keyed by its question id and
+ * managed by the MessageItems context (client.workflows.messageItems).
  *
  * An answer-based workflow that delivers its own data only when live: a
  * *live* message — one just posted in this session — posts its question and
  * streams the answer through its own data actor, exactly like the ask
  * workflow (post()); the conversation folds the stream back into its list.
  * A message that is *not* live has its data actor turned off (useApi(false),
- * applied by the Messages context at creation) and receives its record from
+ * applied by the MessageItems context at creation) and receives its record from
  * the conversation workflow through updateData() as data commits.
  *
  * Being a workflow of its own gives each message its own roles, layout
@@ -32,13 +32,13 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
  * answer link clicks, feedback) run through the standard answer-based
  * machinery and deduplicate at the message level.
  */
-export default class Message extends AnswerBasedWorkflow {
+export default class MessageItem extends AnswerBasedWorkflow {
 
   // the parent question id is part of the message's identity, like the
   // question id: the lineage of a message never changes
   constructor(context, { questionId, parentQuestionId, superworkflow } = {}) {
     super({
-      name: 'message',
+      name: 'message-item',
       context,
       roles: ROLES_OPTIONS,
       questionId,
@@ -190,7 +190,7 @@ function writePostedMessageToData(data) {
 }
 
 // a record whose answer body has not arrived presents as loading — the
-// standard status mark, carried onto the <miso-message> element by the
+// standard status mark, carried onto the <miso-message-item> element by the
 // container layout — while the conversation's answers request fetches the
 // content
 function writeStatusFromAnswer(data) {

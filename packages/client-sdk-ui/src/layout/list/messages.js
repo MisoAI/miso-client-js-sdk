@@ -6,16 +6,16 @@ const DEFAULT_CLASSNAME = 'miso-messages';
 
 /**
  * The conversation panel of the chat history interface: a shell that renders
- * one <miso-message> container element per message item, incrementally —
+ * one <miso-message-item> container element per message item, incrementally —
  * appended messages (e.g. a posted follow-up question) render as new items.
- * The content of a message is not rendered here: each <miso-message> is
+ * The content of a message is not rendered here: each <miso-message-item> is
  * assigned its item subworkflow (workflow.getMessageWorkflow, off the item
  * binding) in the post-render sync pass, and the role elements inside
  * (question, answer, ...) render through that workflow's own layouts.
  *
  * All message-level presentation is the message workflow's own: a record
  * without its answer body presents as status `loading`, stamped on the
- * <miso-message> element by its container layout — there is deliberately no
+ * <miso-message-item> element by its container layout — there is deliberately no
  * per-message loading icon; the answer typewriter's blinking caret is the
  * loading indication — and the question bubble (text, authorship
  * attributes) renders through the `question` layout.
@@ -68,7 +68,7 @@ export default class MessagesLayout extends CollectionLayout {
     this._syncOngoing(state);
   }
 
-  // assign each <miso-message> its item subworkflow, off the item binding
+  // assign each <miso-message-item> its item subworkflow, off the item binding
   _syncWorkflows(element) {
     const workflow = this._view && this._view.workflow;
     if (!workflow || typeof workflow.getMessageWorkflow !== 'function') {

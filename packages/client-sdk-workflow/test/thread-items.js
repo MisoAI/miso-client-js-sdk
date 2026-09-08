@@ -33,7 +33,7 @@ test('thread workflows receive records pushed from the history workflow', async 
 
   // the context keeps one instance per thread id, and the thread workflows
   // make no api calls of their own (data actor off)
-  assert.is(client.workflows.threads.getByThreadId('t1'), early);
+  assert.is(client.workflows.threadItems.getByThreadId('t1'), early);
   assert.is(calls.length, apiCallsBefore);
 });
 
@@ -138,7 +138,7 @@ test('a thread being created gets a workflow before its thread id, and adopts it
   assert.ok(settled);
   assert.is(settled.placeholder_id, undefined);
   assert.is(history.getThreadWorkflow(settled), workflow);
-  assert.is(client.workflows.threads.getByThreadId('q-new-1'), workflow);
+  assert.is(client.workflows.threadItems.getByThreadId('q-new-1'), workflow);
   assert.is(workflow.threadId, 'q-new-1');
   assert.is(workflow.thread.thread_id, 'q-new-1');
 });

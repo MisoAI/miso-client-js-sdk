@@ -468,7 +468,7 @@ test('messages: useApi on the context configures the posting api', async () => {
 
   // the payload-object form of useApi(), cascading into the live message
   // workflow that posts the question — the ask/hybrid-search experience
-  client.workflows.messages.useApi({ custom_flag: 1 });
+  client.workflows.messageItems.useApi({ custom_flag: 1 });
   conversation.load('t1');
   await tick();
   conversation.send('What about miso ramen?');
