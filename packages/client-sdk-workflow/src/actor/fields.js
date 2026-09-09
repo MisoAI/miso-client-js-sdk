@@ -27,6 +27,13 @@ export function expiredResponse() {
   return 'expired-response';
 }
 
+// a thread operation fact (trigger-only, not persisted): triggered off a
+// operation request, on the initiating chat-history panel's hub and its
+// peer's alike
+export function thread() {
+  return 'thread';
+}
+
 export function data() {
   return 'data';
 }

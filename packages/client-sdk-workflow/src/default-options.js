@@ -160,11 +160,8 @@ export default Object.freeze({
 
   'history': {
     api: {
-      group: API.GROUP.ASK_USER_HISTORY,
-      name: API.NAME.THREADS,
-      options: {
-        method: 'GET',
-      },
+      group: API.GROUP.THREADS,
+      name: 'list',
     },
   },
 
@@ -172,9 +169,10 @@ export default Object.freeze({
     // the sole api option: the follow-up request retrieving question-answer
     // pair contents — a polling request served by the data actor; the
     // endpoint takes no formatting payload, the per-poll payload being the
-    // question_ids alone. The head (thread) request is served by the shared
-    // ThreadsModel and is not an api option (see Conversation.load); the
-    // question posting belongs to the live message workflow (see 'message-item')
+    // question_ids alone. The head (thread) request is not an api option —
+    // its identity is spelled out at the call site (see Conversation.load);
+    // the question posting belongs to the live message workflow (see
+    // 'message-item')
     api: {
       group: API.GROUP.ASK,
       name: API.NAME.ANSWERS,

@@ -1,6 +1,7 @@
-import { API, trimObj, uuidv4 } from '@miso.ai/commons';
+import { trimObj, uuidv4 } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
+import { getThreadRequest, ThreadOperations } from './thread-operations.js';
 import { ROLE, REQUEST_TYPE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { writeThreadAsRead } from './processors.js';
@@ -29,18 +30,18 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * session (aborting an in-flight fetch) and fetches the thread detail.
  *
  * The workflow's sole api option is the answers api; the head (thread)
- * request is served by the shared ThreadsModel with its identity spelled
- * out at the call site, and the question posting belongs to the live
- * message workflow. The data flow takes two requests per session, both going down the standard
- * data path — `_request()` → hub `request` → fetch → hub `response` — in
- * the manner of search-based workflows' query/more requests, with the
- * handling split by `request.type` (REQUEST_TYPE) on the way in:
+ * request spells out its identity at the call site (load()), and the
+ * question posting belongs to the live message workflow. The data flow
+ * takes two requests per session, both going down the standard
+ * data path — `_request()` → hub `request` → data actor → source → hub
+ * `response` — in the manner of search-based workflows' query/more
+ * requests, with the handling split by `request.type` (REQUEST_TYPE) on
+ * the way in:
  *
  * 1. THREAD (head): `GET threads/{id}` retrieves the thread
  *    detail: the thread record — assumed to carry the same properties as
  *    the thread list API — and its turns, as question ids (or records
- *    without answer bodies). Fetched through the shared ThreadsModel in
- *    place of the data actor (see _onRequest).
+ *    without answer bodies).
  * 2. ANSWERS (follow-up, the workflow's api option): when the head data
  *    lands with unsettled messages, a polling request is issued — the
  *    answers api returns a polling iterable (question_ids given as a
@@ -52,16 +53,17 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *    `concatItemsFromMoreResponse`).
  *
  * A peer of the History workflow: the two are created independently and
- * coordinate by direct method calls only when both exist. Thread mutations
- * go through the shared ThreadsModel, whose facts both peers subscribe to
- * (_onThreadUpdated, ...). History loads its selection into this panel
+ * coordinate by direct method calls only when both exist. Thread operations
+ * are fire-and-forget requests carrying their facts, triggered off the
+ * request event as `thread` hub events — on both peers' hubs — which each
+ * panel handles off its own hub (_onThreadUpdated, ...). History loads its selection into this panel
  * (_onThreadSelect); Conversation marks loaded threads as read and announces
  * the placeholder lifecycle of a thread being created to the listed side
  * (_onConversationNew, _onConversationResolve).
  *
  * The panel's items live as workflows of their own: the messages layout is
  * a shell rendering one <miso-message-item> element per record, each hosting a
- * message item subworkflow (getMessageWorkflow) that this workflow feeds
+ * message item subworkflow (_getMessageWorkflow) that this workflow feeds
  * through updateData() as data commits (_updateMessageWorkflows). All
  * answer-content rendering and interactions (citation clicks, link clicks,
  * feedback) happen on the message workflows; inline follow-up links submit
@@ -69,19 +71,16 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  */
 export default class Conversation extends Workflow {
 
-  constructor(plugin, client, model) {
+  constructor(plugin, client, events) {
     super({
       name: 'conversation',
       plugin,
       client,
       roles: ROLES_OPTIONS,
-      model,
+      // the thread events channel shared with the history panel's data actor,
+      // carrying the thread operation facts across the two hubs
+      extraOptions: { api: { threadEvents: events } },
     });
-  }
-
-  _initProperties(args) {
-    super._initProperties(args);
-    this._model = args.model;
   }
 
   // the history (thread list) workflow, if constructed
@@ -93,15 +92,14 @@ export default class Conversation extends Workflow {
     super._initSubscriptions(args);
     this._unsubscribes = [
       ...this._unsubscribes,
-      this._hub.on(fields.request(), request => this._onRequest(request)),
       this._views.on(ROLE.QUERY, 'submit', event => this._onQuerySubmit(event)),
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.DELETE, 'submit', () => this._onViewDeleteSubmit()),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
-      // thread facts from the shared model
-      this._model.on('updated', event => this._onThreadUpdated(event)),
-      this._model.on('deleted', event => this._onThreadDeleted(event)),
-      this._model.on('all-deleted', () => this._onAllThreadsDeleted()),
+      // an operation's fact rides its request: the
+      // data actor publishes it on the shared channel and every subscribed
+      // actor — this panel's and its peer's — triggers it on its own hub
+      this._hub.on(fields.thread(), fact => this._onThreadEvent(fact)),
     ];
   }
 
@@ -159,14 +157,11 @@ export default class Conversation extends Workflow {
     // the red dot
     this._markAsReadIfNecessary(threadId);
     // the request carries the thread identity, so the data layer holds all
-    // the state of the load. The head request is not an api option — it is
-    // served by the shared ThreadsModel (actor: false bypasses the data
-    // actor) — so its identity is spelled out here
+    // the state of the load. The head request is not an api option — the
+    // workflow's own is the answers api — so its identity is spelled out
+    // here; the data actor serves it through the data source like any other
     this._request({
-      actor: false,
-      group: API.GROUP.ASK_USER_HISTORY,
-      name: `${API.NAME.THREADS}/${threadId}`,
-      options: { method: 'GET' },
+      ...getThreadRequest(threadId),
       type: REQUEST_TYPE.THREAD,
       threadId,
     });
@@ -223,7 +218,7 @@ export default class Conversation extends Workflow {
         messages: [...messages, message],
       },
     });
-    const workflow = this.getMessageWorkflow(message);
+    const workflow = this._getMessageWorkflow(message);
     this._followLiveMessage(workflow, message, placeholder);
     workflow.post(message);
     return this;
@@ -272,25 +267,26 @@ export default class Conversation extends Workflow {
 
   // thread operations //
   /**
-   * Thread-level operations on the thread on display, on the shared
-   * ThreadsModel — the facts come back through the model subscriptions, to
-   * both panels. They require a loaded thread: a thread being created (or
-   * none at all) has no server identity to operate on.
+   * Thread-level operations on the thread on display: fire-and-forget
+   * requests carrying their facts, which come back through the thread
+   * events subscriptions, to both panels. They require a loaded thread: a
+   * thread being created (or none at all) has no server identity to
+   * operate on.
    */
   rename(title) {
-    this._model.rename(this._requireThreadId('rename'), title);
+    ThreadOperations.prototype.rename.call(this, this._requireThreadId('rename'), title);
   }
 
   subscribe() {
-    this._model.subscribe(this._requireThreadId('subscribe'));
+    ThreadOperations.prototype.subscribe.call(this, this._requireThreadId('subscribe'));
   }
 
   unsubscribe() {
-    this._model.unsubscribe(this._requireThreadId('unsubscribe'));
+    ThreadOperations.prototype.unsubscribe.call(this, this._requireThreadId('unsubscribe'));
   }
 
   delete() {
-    this._model.delete(this._requireThreadId('delete'));
+    ThreadOperations.prototype.delete.call(this, this._requireThreadId('delete'));
   }
 
   _requireThreadId(method) {
@@ -330,12 +326,27 @@ export default class Conversation extends Workflow {
     this.updateData({ session, value: { thread: { placeholder: true }, messages: [] } });
   }
 
-  // called by the history workflow //
+  // thread events //
+  // called by the history workflow
   _onThreadSelect(threadId) {
     if (threadId === (this.thread && this.thread.placeholder_id)) {
       return; // the thread being created is on display already
     }
     this.load(threadId);
+  }
+
+  _onThreadEvent(fact) {
+    switch (fact.event) {
+      case 'updated':
+        this._onThreadUpdated(fact);
+        break;
+      case 'deleted':
+        this._onThreadDeleted(fact);
+        break;
+      case 'all-deleted':
+        this._onAllThreadsDeleted();
+        break;
+    }
   }
 
   _onThreadUpdated({ threadId, changes }) {
@@ -416,31 +427,23 @@ export default class Conversation extends Workflow {
     super._writeRequestTimeToSession(timestamp, options);
   }
 
-  /**
-   * The thread (head) request is served by the shared ThreadsModel in place
-   * of the data actor — its api entry declares `actor: false`, so the actor
-   * bypasses it. The request still goes down the standard path: `_request()`
-   * publishes the request event, this wiring fetches through the model, and
-   * the response enters the hub response field like any other (a stale one
-   * is dropped by the session check in updateData).
-   */
-  _onRequest({ session, ...request }) {
-    if (request.type !== REQUEST_TYPE.THREAD) {
-      return; // the data actor serves the rest
-    }
-    this._requestThreadFromModel(session, request);
-  }
-
-  async _requestThreadFromModel(session, request) {
-    try {
-      const value = await this._model.getThread(request.threadId);
-      this._hub.update(fields.response(), { session, request, value });
-    } catch (error) {
-      this._hub.update(fields.response(), { session, request, error });
-    }
+  // the operation methods, called on this workflow via the prototype, fire
+  // their requests through this
+  _requestForThreadOperation(request) {
+    ThreadOperations.prototype._requestForThreadOperation.call(this, request);
   }
 
   // data //
+  // a `threads`-typed (operation) response carries no data: the operation
+  // is optimistic, its fact having ridden the request already
+  _onResponse(response) {
+    const { request } = response;
+    if (request && request.type === REQUEST_TYPE.THREADS) {
+      return;
+    }
+    super._onResponse(response);
+  }
+
   /**
    * Homogenize the value to the canonical { thread, messages } shape, by
    * request type — but merge nothing: merging into the current data happens
@@ -492,7 +495,7 @@ export default class Conversation extends Workflow {
    * propagates the record in through updateData(). A live message's workflow
    * delivers its own data (post()), so it is never fed here.
    */
-  getMessageWorkflow(message) {
+  _getMessageWorkflow(message) {
     const context = this._client.workflows.messageItems;
     if (typeof message === 'string') {
       message = this.messages.find(m => m.question_id === message) || { question_id: message };
@@ -506,7 +509,7 @@ export default class Conversation extends Workflow {
   }
 
   // propagate the committed records — only ever into existing message
-  // workflows: instances are created by elements (getMessageWorkflow), not
+  // workflows: instances are created by elements (_getMessageWorkflow), not
   // by data, so nothing is constructed when <miso-message-item> is not in play
   _updateMessageWorkflows() {
     const context = this._client.workflows._messageItems;
@@ -542,7 +545,7 @@ export default class Conversation extends Workflow {
       return;
     }
     */
-    this._model.markAsRead(threadId);
+    ThreadOperations.prototype.markAsRead.call(this, threadId);
   }
 
   /**
@@ -574,13 +577,14 @@ export default class Conversation extends Workflow {
    * polls and new ones (e.g. further pages, later) are picked up — an
    * unfinished answer is re-polled regardless of how the panel got here
    * (posted in this session, or reloaded mid-generation) — until nothing is
-   * left, ending the stream; the actor's `polling` state tells a running
-   * poll from a settled one, so a later unsettled batch starts a new one.
+   * left, ending the stream; asking the actor whether an answers request of
+   * this session is still being served tells a running poll from a settled
+   * one, so a later unsettled batch starts a new one.
    * The actor supplies the abort on new session; the api-layer polling
    * drops a late, outdated response.
    */
   _requestAnswersIfNecessary(data) {
-    if (this._data.polling) {
+    if (this._data.isServing(request => request.type === REQUEST_TYPE.ANSWERS && request.session === this.session)) {
       return; // the running poll picks up new unsettled messages by itself
     }
     if (!getUnsettledQuestionIds(data.value).length) {

@@ -1,6 +1,5 @@
 import { defineValues } from '@miso.ai/commons';
-import WorkflowEventBus from './bus.js';
-import { ThreadsModel } from './actor/index.js';
+import { ThreadEvents } from './actor/index.js';
 import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation, MessageItems, ThreadItems } from './workflow/index.js';
 import * as sources from './source.js';
 
@@ -14,20 +13,12 @@ export default class Workflows {
   constructor(plugin, client) {
     this._plugin = plugin;
     this._client = client;
-    this._bus = new WorkflowEventBus();
 
     defineValues(this, {
       sources: {
         api: sources.api(client),
       },
     });
-  }
-
-  /**
-   * The event bus shared by all workflow instances of this client.
-   */
-  get bus() {
-    return this._bus;
   }
 
   get search() {
@@ -46,25 +37,20 @@ export default class Workflows {
     return this._hybridSearch;
   }
 
-  // the model of thread operations shared by the history/conversation peers
-  _getThreadsModel() {
-    return this._threadsModel || (this._threadsModel = new ThreadsModel(this._client));
-  }
-
   get history() {
     if (!this._history) {
-      this._history = new History(this._plugin, this._client, this._getThreadsModel());
+      this._history = new History(this._plugin, this._client, this._getThreadEvents());
       this._client._events.emit('postworkflow', this._history);
     }
     return this._history;
   }
 
   get conversation() {
-    // a peer of the history workflow, created independently: the two share
-    // the threads model, look each other up here (without constructing) and
-    // coordinate only when both exist, so either panel works standalone
+    // a peer of the history workflow, created independently: the two look
+    // each other up here (without constructing) and coordinate only when
+    // both exist, so either panel works standalone
     if (!this._conversation) {
-      this._conversation = new Conversation(this._plugin, this._client, this._getThreadsModel());
+      this._conversation = new Conversation(this._plugin, this._client, this._getThreadEvents());
       this._client._events.emit('postworkflow', this._conversation);
     }
     return this._conversation;
@@ -78,9 +64,9 @@ export default class Workflows {
 
   get threadItems() {
     // the context of thread workflows: the item subworkflows behind
-    // <miso-thread-item> elements in the thread list; mutations go through the
+    // <miso-thread-item> elements in the thread list; operations go through the
     // shared threads model
-    return this._threadItems || (this._threadItems = new ThreadItems(this._plugin, this._client, this._getThreadsModel()));
+    return this._threadItems || (this._threadItems = new ThreadItems(this._plugin, this._client));
   }
 
   get asks() {
@@ -105,6 +91,13 @@ export default class Workflows {
 
   get recommendation() {
     return this.recommendations.get(); // get default recommendation unit
+  }
+
+  // the thread events channel shared by the chat-history panels' data actors,
+  // carrying the thread operation facts across the two hubs; lazily created
+  // with the first panel
+  _getThreadEvents() {
+    return this._threadEvents || (this._threadEvents = new ThreadEvents());
   }
 
 }

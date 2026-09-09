@@ -6,7 +6,7 @@ import { createClient, tick } from './dummy.js';
 
 /**
  * The message item subworkflows behind <miso-message> elements: created via
- * the conversation workflow (getMessageWorkflow), fed by it through
+ * the conversation workflow (_getMessageWorkflow), fed by it through
  * updateData() — they make no requests of their own.
  */
 
@@ -25,7 +25,7 @@ test('message workflows receive records pushed from the conversation', async () 
   const { conversation } = client.workflows;
 
   // created before any data: seeded once the thread loads
-  const early = conversation.getMessageWorkflow('q1');
+  const early = conversation._getMessageWorkflow('q1');
   assert.is(early.states.data.value, undefined);
 
   conversation.load('t1');
@@ -37,7 +37,7 @@ test('message workflows receive records pushed from the conversation', async () 
 
   // created after the data landed: seeded with the record right away
   const apiCallsBefore = calls.length;
-  const late = conversation.getMessageWorkflow('q2');
+  const late = conversation._getMessageWorkflow('q2');
   assert.is(late.status, STATUS.READY);
   assert.is(late.message.answer, 'Answer of q2');
 
@@ -53,7 +53,7 @@ test('message interactions carry the question lineage and dedupe per message', a
 
   conversation.load('t2');
   await tick();
-  const message = conversation.getMessageWorkflow('q2');
+  const message = conversation._getMessageWorkflow('q2');
 
   message._onAnswerCitationClick({ index: 1, event: { button: 0 } });
   assert.is(interactions.length, 1);
@@ -73,7 +73,7 @@ test('message interactions carry the question lineage and dedupe per message', a
   assert.is(interactions.length, 1);
 
   // ...while another message keeps its own tracker states
-  const sibling = conversation.getMessageWorkflow('q1');
+  const sibling = conversation._getMessageWorkflow('q1');
   sibling._onAnswerCitationClick({ index: 1, event: { button: 0 } });
   assert.is(interactions.length, 2);
   assert.is(interactions[1].context.custom_context.question_id, 'q1');
@@ -86,7 +86,7 @@ test('message feedback goes out with the question lineage', async () => {
 
   conversation.load('t1');
   await tick();
-  const message = conversation.getMessageWorkflow('q2');
+  const message = conversation._getMessageWorkflow('q2');
 
   // the feedback layout submits into the workflow's feedback hub field
   message._hub.update('feedback', { value: 'helpful' });
@@ -117,7 +117,7 @@ test('a just-posted message gets a workflow before its question id, and adopts i
   assert.is(live.question_id, undefined);
 
   // the workflow binds by the record — no question id needed — and is seeded
-  const workflow = conversation.getMessageWorkflow(live);
+  const workflow = conversation._getMessageWorkflow(live);
   assert.is(workflow.questionId, undefined);
   assert.is(workflow.message.question, 'What about miso ramen?');
 
@@ -126,7 +126,7 @@ test('a just-posted message gets a workflow before its question id, and adopts i
   // the same workflow adopted the question id and received the answer
   const settled = conversation.messages[conversation.messages.length - 1];
   assert.ok(settled.question_id);
-  assert.is(conversation.getMessageWorkflow(settled), workflow);
+  assert.is(conversation._getMessageWorkflow(settled), workflow);
   assert.is(client.workflows.messageItems.getByQuestionId(settled.question_id), workflow);
   assert.is(workflow.questionId, settled.question_id);
   assert.is(workflow.message.answer, 'Answer of What about miso ramen?');
@@ -149,7 +149,7 @@ test('a live message keeps its question through a stream of answer-only values',
   await tick();
   conversation.send('What about miso ramen?');
 
-  const workflow = conversation.getMessageWorkflow(conversation.messages[conversation.messages.length - 1]);
+  const workflow = conversation._getMessageWorkflow(conversation.messages[conversation.messages.length - 1]);
   const commits = [];
   workflow._hub.on('data', data => commits.push(data));
 
@@ -176,7 +176,7 @@ test('an answerless record presents as loading; an unfinished one as ongoing', a
   const { client } = createClient();
   const { conversation } = client.workflows;
 
-  const message = conversation.getMessageWorkflow('q9');
+  const message = conversation._getMessageWorkflow('q9');
 
   // the answer body is still being fetched: the standard loading status,
   // which the container layout stamps on the <miso-message> element

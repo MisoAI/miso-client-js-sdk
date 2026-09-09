@@ -1,8 +1,5 @@
 import { API } from '@miso.ai/commons';
 
-// `threads/${id}`, excluding the action paths (threads/_delete, .../read)
-const THREAD_DETAIL_NAME_PATTERN = /^threads\/(?!_)[^/]+$/;
-
 export function api(client) {
   return async (request) => {
     const response = await sendApi(client, request);
@@ -21,21 +18,46 @@ function sendApi(client, { group, name, payload, options }) {
         return client.api.ask.search(payload, options);
     }
   }
-  if (group === API.GROUP.ASK_USER_HISTORY) {
-    // the group is not a direct property of client.api, and name may carry a path (e.g. `threads/${id}`)
-    return client.api.ask.userHistory._run(name, payload, options);
+  if (group === API.GROUP.THREADS) {
+    return sendThreadsApi(client.api.ask.userHistory, name, payload, options);
   }
   // because name is in snake case
   return client.api[group]._run(name, payload, options);
 }
 
-function processResponse({ group, name, payload, options }, response) {
-  if (group === API.GROUP.ASK_USER_HISTORY) {
+// the thread requests of the chat-history workflows: simple names, the
+// thread id in the payload, interpreted onto the user history API
+function sendThreadsApi(api, name, payload = {}, options) {
+  switch (name) {
+    case 'list':
+      return api.getThreads(options);
+    case 'get':
+      return api.getThread(payload.thread_id, options);
+    case 'update': {
+      const { thread_id, ...changes } = payload;
+      return api.updateThread(thread_id, changes, options);
+    }
+    case 'mark_as_read':
+      return api.markThreadAsRead(payload.thread_id, options);
+    case 'subscribe':
+      return api.subscribeThread(payload.thread_id, options);
+    case 'unsubscribe':
+      return api.unsubscribeThread(payload.thread_id, options);
+    case 'delete':
+      return api.deleteThreads(payload, options);
+    case 'delete_all':
+      return api.deleteAllThreads(options);
+  }
+  throw new Error(`Unknown threads API: ${name}`);
+}
+
+function processResponse({ group, name }, response) {
+  if (group === API.GROUP.THREADS) {
     // thread records may identify themselves by root question id only
-    if (name === API.NAME.THREADS) {
+    if (name === 'list') {
       return fallbackThreadsFields(response);
     }
-    if (THREAD_DETAIL_NAME_PATTERN.test(name)) {
+    if (name === 'get') {
       return fallbackThreadFields(response);
     }
   }

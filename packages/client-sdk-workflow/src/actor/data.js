@@ -3,16 +3,23 @@ import { isCurrentSession } from './utils.js';
 
 export default class DataActor {
 
-  constructor(hub, { source, options, polling = true }) {
+  constructor(hub, { source, options, polling = true, threadEvents }) {
     this._hub = hub;
     this._source = source;
     this._options = options;
     this._pollingEnabled = polling;
-    this._servingCount = 0;
+    this._threadEvents = threadEvents;
+    this._serving = new Set();
     this._unsubscribes = [
       hub.on(fields.session(), session => this._handleSession(session)),
       hub.on(fields.request(), event => this._handleRequest(event)),
     ];
+    if (threadEvents) {
+      // the shared thread events channel: facts published by any actor on
+      // the channel (this actor's own included) are triggered on this
+      // actor's own hub `thread` field
+      this._unsubscribes.push(threadEvents.subscribe(fact => this._hub.trigger(fields.thread(), fact)));
+    }
   }
 
   get active() {
@@ -20,13 +27,19 @@ export default class DataActor {
   }
 
   /**
-   * Whether a request is being served right now: fetched, or its response
-   * stream (e.g. a polling iterable) still being consumed. Lets a workflow
-   * tell an ongoing poll from a settled one — the conversation's answers
-   * polling issues one request only while none is running.
+   * Whether a request matching the predicate is being served right now:
+   * fetched, or its response stream (e.g. a polling iterable) still being
+   * consumed. The predicate receives the request event; e.g. the
+   * conversation asks about its own session's answers requests, to issue
+   * one poll only while none is running.
    */
-  get polling() {
-    return this._servingCount > 0;
+  isServing(predicate) {
+    for (const request of this._serving) {
+      if (predicate(request)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   get source() {
@@ -53,15 +66,19 @@ export default class DataActor {
   }
 
   async _handleRequest(event) {
-    // protocol: inactive -> no reaction; a request whose api entry declares
-    // actor: false is served by other means (e.g. the conversation's thread
-    // request, served by the ThreadsModel)
-    if (!this.active || event.actor === false) {
+    // inactive -> no reaction: the workflow makes no requests of its own
+    // (useApi(false) -> actor: false)
+    if (!this.active) {
       return;
+    }
+    // a thread operation request carries its fact: published on the shared
+    // thread events channel, reaching both chat-history panels' hubs
+    if (event.fact && this._threadEvents) {
+      this._threadEvents.emit(event.fact);
     }
     const { session, ...request } = event;
 
-    this._servingCount++;
+    this._serving.add(event);
     try {
       const { signal } = this._ac || {};
       const options = { ...event.options, signal };
@@ -93,7 +110,7 @@ export default class DataActor {
       this._error(error);
       this._emitResponseWithSessionCheck({ session, request, error });
     } finally {
-      this._servingCount--;
+      this._serving.delete(event);
     }
   }
 

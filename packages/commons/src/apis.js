@@ -4,6 +4,9 @@ export const GROUP = Object.freeze({
   RECOMMENDATION: 'recommendation',
   INTERACTIONS: 'interactions',
   ASK_USER_HISTORY: 'ask/user_history',
+  // the thread requests of the chat-history workflows, with simple names
+  // (list, get, update, mark_as_read, ...) interpreted by the data source
+  THREADS: 'threads',
 });
 
 export const NAME = Object.freeze({

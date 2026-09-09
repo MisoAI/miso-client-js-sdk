@@ -15,7 +15,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * element inside another container element hosting an item subworkflow (the
  * `message` workflow). Normally bound implicitly: the messages layout
  * renders one <miso-message-item> per item and assigns the workflow off the item
- * binding (element.workflow = parent workflow's getMessageWorkflow(record)),
+ * binding (element.workflow = parent workflow's _getMessageWorkflow(record)),
  * which also covers a just-posted message that has no question id yet. A
  * `question-id` attribute binds explicitly instead, through the parent
  * container's workflow. Role elements inside (question, answer, sources,
@@ -61,7 +61,7 @@ export default class MisoMessageItemElement extends MisoContainerElement {
     // the parent workflow hands out the item subworkflow; the parent binds
     // its own workflow first (its connectedCallback resolves earlier), so
     // it is normally present by now
-    return workflow && typeof workflow.getMessageWorkflow === 'function' ? workflow.getMessageWorkflow(questionId) : undefined;
+    return workflow && typeof workflow._getMessageWorkflow === 'function' ? workflow._getMessageWorkflow(questionId) : undefined;
   }
 
   _getParentContainer() {

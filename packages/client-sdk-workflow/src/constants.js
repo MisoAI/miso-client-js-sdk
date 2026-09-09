@@ -163,4 +163,5 @@ export const REQUEST_TYPE = Object.freeze({
   MORE: 'more',
   THREAD: 'thread',
   ANSWERS: 'answers',
+  THREADS: 'threads',
 });

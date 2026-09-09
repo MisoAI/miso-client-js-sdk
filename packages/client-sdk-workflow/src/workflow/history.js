@@ -1,8 +1,9 @@
 import { asArray } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE } from '../constants.js';
+import { ROLE, REQUEST_TYPE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
+import { mixinThreadOperations, ThreadOperations } from './thread-operations.js';
 import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
@@ -21,24 +22,27 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *
  * A peer of the Conversation workflow: the two are created independently,
  * and every call to the peer is guarded by its presence, so the thread list
- * works standalone. Thread mutations go through the shared ThreadsModel,
- * whose facts both peers subscribe to (_onThreadUpdated, ...).
+ * works standalone. Thread operations are fire-and-forget requests carrying
+ * their facts, triggered off the request event as `thread` hub events — on
+ * both peers' hubs — which each panel handles off its own hub
+ * (_onThreadUpdated, ...).
  */
 export default class History extends Workflow {
 
-  constructor(plugin, client, model) {
+  constructor(plugin, client, events) {
     super({
       name: 'history',
       plugin,
       client,
       roles: ROLES_OPTIONS,
-      model,
+      // the thread events channel shared with the conversation panel's data
+      // actor, carrying the thread operation facts across the two hubs
+      extraOptions: { api: { threadEvents: events } },
     });
   }
 
   _initProperties(args) {
     super._initProperties(args);
-    this._model = args.model;
     this._started = false;
   }
 
@@ -55,10 +59,10 @@ export default class History extends Workflow {
       this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadsRename(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadsDelete(event)),
       this._views.on(ROLE.NEW_THREAD, 'submit', () => this._onViewNewThreadSubmit()),
-      // thread facts from the shared model
-      this._model.on('updated', event => this._onThreadUpdated(event)),
-      this._model.on('deleted', event => this._onThreadDeleted(event)),
-      this._model.on('all-deleted', () => this._onAllThreadsDeleted()),
+      // an operation's fact rides its request: the
+      // data actor publishes it on the shared channel and every subscribed
+      // actor — this panel's and its peer's — triggers it on its own hub
+      this._hub.on(fields.thread(), fact => this._onThreadEvent(fact)),
     ];
   }
 
@@ -129,28 +133,17 @@ export default class History extends Workflow {
     return this;
   }
 
-  // thread mutations, on the shared model — the facts come back through the
-  // model subscriptions. A thread still being created has no server identity
-  // to operate on: rename and delete ignore its placeholder id until the
-  // resolution brings the thread id
+  // thread operations: the id-based methods mixed in from ThreadOperations
+  // (markAsRead, subscribe, unsubscribe, deleteAll), except rename and
+  // delete, specialized here with a guard — a thread still being created
+  // has no server identity to operate on, so its placeholder id is ignored
+  // until the resolution brings the thread id
   rename(threadId, title) {
     const thread = this.get(threadId);
     if (thread && thread.placeholder_id) {
       return;
     }
-    this._model.rename(threadId, title);
-  }
-
-  markAsRead(threadId) {
-    this._model.markAsRead(threadId);
-  }
-
-  subscribe(threadId) {
-    this._model.subscribe(threadId);
-  }
-
-  unsubscribe(threadId) {
-    this._model.unsubscribe(threadId);
+    ThreadOperations.prototype.rename.call(this, threadId, title);
   }
 
   delete(threadIds) {
@@ -161,11 +154,7 @@ export default class History extends Workflow {
     if (threadIds.length === 0) {
       return;
     }
-    this._model.delete(threadIds);
-  }
-
-  deleteAll() {
-    this._model.deleteAll();
+    ThreadOperations.prototype.delete.call(this, threadIds);
   }
 
   // view actions //
@@ -196,7 +185,32 @@ export default class History extends Workflow {
     threadId && this.delete(threadId);
   }
 
-  // fact handlers //
+  // data //
+  // a `threads`-typed (operation) response carries no data: the operation
+  // is optimistic, its fact having ridden the request already
+  _onResponse(response) {
+    const { request } = response;
+    if (request && request.type === REQUEST_TYPE.THREADS) {
+      return;
+    }
+    super._onResponse(response);
+  }
+
+  // thread events //
+  _onThreadEvent(fact) {
+    switch (fact.event) {
+      case 'updated':
+        this._onThreadUpdated(fact);
+        break;
+      case 'deleted':
+        this._onThreadDeleted(fact);
+        break;
+      case 'all-deleted':
+        this._onAllThreadsDeleted();
+        break;
+    }
+  }
+
   _onThreadUpdated({ threadId, changes }) {
     this._patchValue({ threads: this.threads.map(thread => thread.thread_id === threadId ? { ...thread, ...changes } : thread) });
   }
@@ -282,7 +296,7 @@ export default class History extends Workflow {
    * if present; from then on, every data commit propagates the record in
    * through updateData().
    */
-  getThreadWorkflow(thread) {
+  _getThreadWorkflow(thread) {
     const context = this._client.workflows.threadItems;
     if (typeof thread === 'string') {
       thread = this.get(thread) || { thread_id: thread };
@@ -296,7 +310,7 @@ export default class History extends Workflow {
   }
 
   // propagate the committed records — only ever into existing thread
-  // workflows: instances are created by elements (getThreadWorkflow), not by
+  // workflows: instances are created by elements (_getThreadWorkflow), not by
   // data, so nothing is constructed when <miso-thread-item> is not in play
   _updateThreadWorkflows() {
     const context = this._client.workflows._threadItems;
@@ -326,3 +340,5 @@ export default class History extends Workflow {
   }
 
 }
+
+mixinThreadOperations(History.prototype);

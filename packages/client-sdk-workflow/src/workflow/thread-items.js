@@ -5,7 +5,7 @@ import ThreadItem from './thread-item.js';
  * The context managing thread workflows — the item subworkflows behind
  * <miso-thread-item> elements in the thread list — keyed by thread id, in the
  * manner of the message workflows' context (MessageItems). Workflows are created
- * by elements (through the history workflow's getThreadWorkflow), not by
+ * by elements (through the history workflow's _getThreadWorkflow), not by
  * data: the history workflow propagates records only into instances that
  * exist.
  *
@@ -17,9 +17,8 @@ import ThreadItem from './thread-item.js';
  */
 export default class ThreadItems extends WorkflowContext {
 
-  constructor(plugin, client, model) {
+  constructor(plugin, client) {
     super('thread-items', plugin, client);
-    this._model = model;
     this._byTid = new Map();
     this._byPlaceholderId = new Map();
   }

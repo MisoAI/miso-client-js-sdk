@@ -6,7 +6,7 @@ import { createClient, tick } from './dummy.js';
 
 /**
  * The thread item subworkflows behind <miso-thread> elements: created via
- * the history workflow (getThreadWorkflow), fed by it through updateData()
+ * the history workflow (_getThreadWorkflow), fed by it through updateData()
  * — they make no requests of their own.
  */
 
@@ -15,7 +15,7 @@ test('thread workflows receive records pushed from the history workflow', async 
   const { history } = client.workflows;
 
   // created before any data: seeded once the list loads
-  const early = history.getThreadWorkflow('t1');
+  const early = history._getThreadWorkflow('t1');
   assert.is(early.states.data.value, undefined);
 
   history.start();
@@ -27,7 +27,7 @@ test('thread workflows receive records pushed from the history workflow', async 
 
   // created after the data landed: seeded with the record right away
   const apiCallsBefore = calls.length;
-  const late = history.getThreadWorkflow('t2');
+  const late = history._getThreadWorkflow('t2');
   assert.is(late.status, STATUS.READY);
   assert.is(late.thread.title, 'Second thread');
 
@@ -37,10 +37,10 @@ test('thread workflows receive records pushed from the history workflow', async 
   assert.is(calls.length, apiCallsBefore);
 });
 
-test('thread roles map into the record; view events mutate through the model', async () => {
+test('thread roles map into the record; view events operate through the superworkflow', async () => {
   const { client, calls } = createClient();
   const { history } = client.workflows;
-  const workflow = history.getThreadWorkflow('t2');
+  const workflow = history._getThreadWorkflow('t2');
   const roles = workflow._roles.mappings;
 
   // the roles map into the thread record: the title text and the checkbox
@@ -81,8 +81,8 @@ test('thread roles map into the record; view events mutate through the model', a
 test('only the changed record propagates: unaffected items see no commit', async () => {
   const { client } = createClient();
   const { history } = client.workflows;
-  const t1 = history.getThreadWorkflow('t1');
-  const t2 = history.getThreadWorkflow('t2');
+  const t1 = history._getThreadWorkflow('t1');
+  const t2 = history._getThreadWorkflow('t2');
 
   history.start();
   await tick();
@@ -120,7 +120,7 @@ test('a thread being created gets a workflow before its thread id, and adopts it
   assert.ok(placeholder);
 
   // the workflow binds by the record — no thread id needed
-  const workflow = history.getThreadWorkflow(placeholder);
+  const workflow = history._getThreadWorkflow(placeholder);
   assert.is(workflow.threadId, undefined);
   assert.is(workflow.thread.placeholder_id, placeholder.placeholder_id);
 
@@ -137,7 +137,7 @@ test('a thread being created gets a workflow before its thread id, and adopts it
   const settled = history.get('q-new-1');
   assert.ok(settled);
   assert.is(settled.placeholder_id, undefined);
-  assert.is(history.getThreadWorkflow(settled), workflow);
+  assert.is(history._getThreadWorkflow(settled), workflow);
   assert.is(client.workflows.threadItems.getByThreadId('q-new-1'), workflow);
   assert.is(workflow.threadId, 'q-new-1');
   assert.is(workflow.thread.thread_id, 'q-new-1');
@@ -149,7 +149,7 @@ test('thread workflows work standalone, with no conversation panel constructed',
 
   history.start();
   await tick();
-  const workflow = history.getThreadWorkflow('t1');
+  const workflow = history._getThreadWorkflow('t1');
   assert.is(workflow.thread.title, 'First thread');
   assert.is(client.workflows._conversation, undefined); // the peer stays unconstructed
 });

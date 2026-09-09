@@ -9,7 +9,7 @@ const DEFAULT_CLASSNAME = 'miso-messages';
  * one <miso-message-item> container element per message item, incrementally —
  * appended messages (e.g. a posted follow-up question) render as new items.
  * The content of a message is not rendered here: each <miso-message-item> is
- * assigned its item subworkflow (workflow.getMessageWorkflow, off the item
+ * assigned its item subworkflow (workflow._getMessageWorkflow, off the item
  * binding) in the post-render sync pass, and the role elements inside
  * (question, answer, ...) render through that workflow's own layouts.
  *
@@ -71,13 +71,13 @@ export default class MessagesLayout extends CollectionLayout {
   // assign each <miso-message-item> its item subworkflow, off the item binding
   _syncWorkflows(element) {
     const workflow = this._view && this._view.workflow;
-    if (!workflow || typeof workflow.getMessageWorkflow !== 'function') {
+    if (!workflow || typeof workflow._getMessageWorkflow !== 'function') {
       return;
     }
     for (const item of this._getItemElements(element)) {
       const binding = this._bindings.get(item);
       if (binding && item.isContainer) {
-        item.workflow = workflow.getMessageWorkflow(binding.value);
+        item.workflow = workflow._getMessageWorkflow(binding.value);
       }
     }
   }

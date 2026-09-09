@@ -47,20 +47,6 @@ export function createClient({
       }
       return createdThreads.get(threadId) || threadDetail(threadId);
     },
-    async _run(name, payload, options = {}) {
-      calls.push(`${options.method || 'POST'} ${name}`);
-      if (name === 'threads') {
-        return { threads: threads.map(thread => ({ ...thread })) };
-      }
-      if (name.startsWith('threads/')) {
-        if (threadDetailError) {
-          throw threadDetailError;
-        }
-        const id = name.split('/')[1];
-        return createdThreads.get(id) || threadDetail(id);
-      }
-      throw new Error(`unexpected api call: ${name}`);
-    },
     async updateThread(threadId, payload) {
       calls.push(`PUT threads/${threadId} ${JSON.stringify(payload)}`);
     },

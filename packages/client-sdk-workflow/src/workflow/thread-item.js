@@ -32,10 +32,11 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * subscription — the generic text/button/checkbox layouts), so the item
  * presentation decomposes into role elements like the conversation panel's.
  *
- * Thread mutations go through the shared ThreadsModel, like the history and
- * conversation workflows' own: the model calls the API and emits the fact,
- * which the history workflow applies to its data — arriving back here down
- * the propagation path.
+ * The item is presentation only: its view events delegate to the
+ * superworkflow's id-based operations (history.rename/delete/subscribe),
+ * whose requests fire on the history workflow's hub — the facts go out as
+ * `thread` hub events on both panels' hubs and come back here down the
+ * propagation path.
  */
 export default class ThreadItem extends Workflow {
 
@@ -76,12 +77,6 @@ export default class ThreadItem extends Workflow {
     return data && data.value;
   }
 
-  // the shared model of thread operations — mutations go through it, and the
-  // facts come back through the history workflow's data feed
-  get _model() {
-    return this._context._model;
-  }
-
   // a workflow created for a thread being created has no thread id yet: it
   // adopts the id when the placeholder settles, registering at the context so
   // lookups by thread id find it from then on
@@ -94,24 +89,25 @@ export default class ThreadItem extends Workflow {
   }
 
   // view actions //
-  // a thread being created has no server identity to operate on: the guards
-  // below keep its placeholder from ever addressing the API
+  // delegated to the superworkflow's id-based operations; a thread being
+  // created has no server identity to operate on — the thread id guards
+  // (re-guarded there) keep its placeholder from ever addressing the API
   _onViewRenameSubmit({ value }) {
-    const { threadId } = this;
-    threadId && value && this._model.rename(threadId, value);
+    const { threadId, _superworkflow: history } = this;
+    threadId && value && history && history.rename(threadId, value);
   }
 
   _onViewDeleteSubmit() {
-    const { threadId } = this;
-    threadId && this._model.delete(threadId);
+    const { threadId, _superworkflow: history } = this;
+    threadId && history && history.delete(threadId);
   }
 
   _onViewSubscriptionChange({ checked }) {
-    const { threadId } = this;
-    if (!threadId) {
+    const { threadId, _superworkflow: history } = this;
+    if (!threadId || !history) {
       return;
     }
-    checked ? this._model.subscribe(threadId) : this._model.unsubscribe(threadId);
+    checked ? history.subscribe(threadId) : history.unsubscribe(threadId);
   }
 
 }

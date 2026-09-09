@@ -5,7 +5,7 @@ import MessageItem from './message-item.js';
  * The context managing message workflows — the item subworkflows behind
  * <miso-message-item> elements in the conversation panel — keyed by question id,
  * in the manner of the ask workflows' context (Asks). Workflows are created
- * by elements (through the conversation workflow's getMessageWorkflow), not
+ * by elements (through the conversation workflow's _getMessageWorkflow), not
  * by data: the conversation propagates records only into instances that
  * exist.
  *

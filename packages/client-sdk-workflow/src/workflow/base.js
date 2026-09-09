@@ -48,7 +48,6 @@ export default class Workflow extends Component {
     this._pluginContext = {
       processInteractionPasses: [],
     };
-    this._bus = client.workflows.bus.createView(this);
 
     client._events.emit('workflow', this);
 
@@ -80,8 +79,7 @@ export default class Workflow extends Component {
 
   _initSubscriptions({ roles }) {
     this._unsubscribes = [
-      this._hub.on(fields.session(), session => this._onSession(session)),
-      this._hub.on(fields.response(), data => this.updateData(data)),
+      this._hub.on(fields.response(), response => this._onResponse(response)),
       this._hub.on(fields.tracker(), args => this._onTracker(args)),
       this._hub.on('*', (state, meta) => this._emitAsWorkflowEvent(state, meta)),
     ];
@@ -144,6 +142,13 @@ export default class Workflow extends Component {
   restart() {
     this._emitInterruptEventIfNecessary();
     this._sessions.restart();
+    // the session-reset commit clears the previous session's data, ordered
+    // by the call stack — it always lands before anything the caller
+    // commits for the new session, even when the restart happens inside a
+    // hub dispatch (e.g. a thread-deleted fact resetting the panel), where
+    // a subscription to the session field would have its dispatch queued
+    // past those commits
+    this.updateData({ session: this.session });
     return this;
   }
 
@@ -158,10 +163,6 @@ export default class Workflow extends Component {
       this._emitLifecycleEvent('interrupt', state);
       this._emitLifecycleEvent('finally', state);
     }
-  }
-
-  _onSession(session) {
-    this.updateData({ session });
   }
 
   _onMainViewUpdate(state) {
@@ -208,6 +209,13 @@ export default class Workflow extends Component {
   }
 
   // data //
+  // the response subscription hook: a workflow whose requests include
+  // non-data ones (e.g. the chat-history thread operations) overrides this
+  // to know when not to call updateData()
+  _onResponse(response) {
+    this.updateData(response);
+  }
+
   updateData(data) {
     if (!data) {
       throw new Error(`Data is required.`);

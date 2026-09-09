@@ -15,7 +15,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * hosting an item subworkflow (the `thread` workflow). Normally bound
  * implicitly: the threads layout renders one <miso-thread-item> per item and
  * assigns the workflow off the item binding (element.workflow = parent
- * workflow's getThreadWorkflow(record)), which also covers a thread being
+ * workflow's _getThreadWorkflow(record)), which also covers a thread being
  * created that has no thread id yet. A `thread-id` attribute binds
  * explicitly instead, through the parent container's workflow. Role
  * elements inside (title, rename, delete, subscription) bind to the thread
@@ -61,7 +61,7 @@ export default class MisoThreadItemElement extends MisoContainerElement {
     // the parent workflow hands out the item subworkflow; the parent binds
     // its own workflow first (its connectedCallback resolves earlier), so
     // it is normally present by now
-    return workflow && typeof workflow.getThreadWorkflow === 'function' ? workflow.getThreadWorkflow(threadId) : undefined;
+    return workflow && typeof workflow._getThreadWorkflow === 'function' ? workflow._getThreadWorkflow(threadId) : undefined;
   }
 
   _getParentContainer() {

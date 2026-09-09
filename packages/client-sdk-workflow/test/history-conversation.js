@@ -28,7 +28,7 @@ test('conversation: works standalone, with no history workflow constructed', asy
   assert.is(conversation.threadId, 't1');
   assert.equal(conversation.messages, answersOf(['q1', 'q2']));
 
-  // the shared mutations call the API without a history workflow around
+  // the shared operations call the API without a history workflow around
   conversation.rename('Renamed');
   assert.ok(calls.includes('PUT threads/t1 {"title":"Renamed"}'));
   assert.is(conversation.thread.title, 'Renamed');
@@ -117,7 +117,8 @@ test('conversation: data keeps the head request; answers request stays internal'
   await tick();
 
   const { request } = conversation.states.data;
-  assert.is(request.name, 'threads/t1');
+  assert.is(request.name, 'get');
+  assert.is(request.payload.thread_id, 't1');
   assert.is(request.type, REQUEST_TYPE.THREAD);
 });
 
@@ -302,6 +303,52 @@ test('conversation: the delete submit deletes the open thread', async () => {
   assert.equal(calls.slice(before), []);
 });
 
+test('operations ride the request event, leaving the data flow untouched', async () => {
+  const { client, calls } = createClient();
+  const { history } = client.workflows;
+  history.start();
+  await tick();
+
+  const requests = [];
+  history._hub.on('request', request => requests.push(request));
+  const commits = [];
+  history._hub.on('data', data => commits.push(data));
+
+  history.rename('t2', 'Renamed');
+  await tick();
+
+  // the api call went out, triggered by a request event on the hub — so it
+  // is observable and interceptable like any fetch
+  assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
+  assert.equal(requests.map(r => r.type), ['threads']);
+  // the data flow saw only the optimistic fact patch: no loading commit,
+  // and the operation response never entered it
+  assert.equal(commits.map(data => data.status), ['ready']);
+  assert.is(history.get('t2').title, 'Renamed');
+});
+
+test('a slow operation does not present as a running answers poll', async () => {
+  const { client, calls } = createClient({
+    threads: [{ thread_id: 't2', title: 'Second thread', subscribed: true, has_new: true }],
+  });
+  // the mark-as-read call hangs: loading an unread thread fires it right
+  // before the head request, so the two are in flight together — the poll
+  // decision on the head commit must not mistake it for a running poll
+  client.api.ask.userHistory.markThreadAsRead = async (threadId) => {
+    calls.push(`POST threads/${threadId}/read`);
+    await new Promise(() => {}); // never settles
+  };
+  const { history, conversation } = client.workflows;
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick(30);
+
+  assert.ok(calls.includes('POST threads/t2/read'));
+  assert.ok(calls.some(call => call.startsWith('POST ask/answers')));
+  assert.equal(conversation.messages, answersOf(['q1', 'q2']));
+});
+
 test('rename/delete ignore a thread still being created, everywhere', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
@@ -315,7 +362,7 @@ test('rename/delete ignore a thread still being created, everywhere', async () =
   const placeholderId = placeholder.placeholder_id;
   const before = calls.length;
 
-  // the history workflow's id-based mutations ignore the placeholder id —
+  // the history workflow's id-based operations ignore the placeholder id —
   // alone, and filtered out of a batch (the real thread still goes through)
   history.rename(placeholderId, 'Nope');
   history.delete(placeholderId);
@@ -458,8 +505,6 @@ test('useApi overrides the api options through the cascade', () => {
   assert.is(api.group, 'custom_group');
   assert.is(api.name, 'custom_name');
   assert.is(api.payload.rows, 5);
-  // the built-in defaults stay beneath the override
-  assert.is(api.options.method, 'GET');
 });
 
 test('messages: useApi on the context configures the posting api', async () => {
