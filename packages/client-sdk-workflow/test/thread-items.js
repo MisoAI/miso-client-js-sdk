@@ -143,6 +143,38 @@ test('a thread being created gets a workflow before its thread id, and adopts it
   assert.is(workflow.thread.thread_id, 'q-new-1');
 });
 
+test('a deleted thread\'s item workflow is destroyed', async () => {
+  const { client } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+  const t1 = history._getThreadWorkflow('t1');
+  const t2 = history._getThreadWorkflow('t2');
+
+  history.delete('t1');
+  assert.ok(t1.destroyed);
+  assert.is(client.workflows.threadItems.getByThreadId('t1'), undefined); // deregistered
+  assert.is(t2.destroyed, false); // the others live on
+
+  history.deleteAll();
+  assert.ok(t2.destroyed);
+  assert.is(client.workflows.threadItems.workflows.length, 0);
+});
+
+test('destroying the history workflow destroys its thread item workflows', async () => {
+  const { client } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+  const t1 = history._getThreadWorkflow('t1');
+
+  history.destroy();
+  assert.ok(t1.destroyed);
+  assert.is(client.workflows.threadItems.workflows.length, 0);
+});
+
 test('thread workflows work standalone, with no conversation panel constructed', async () => {
   const { client } = createClient();
   const { history } = client.workflows;

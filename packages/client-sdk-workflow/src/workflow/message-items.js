@@ -31,10 +31,16 @@ export default class MessageItems extends WorkflowContext {
    * the local placeholder id.
    */
   get(message, { autoCreate = false, superworkflow } = {}) {
-    const { question_id, placeholder_id, parent_question_id } = message || {};
+    const { question_id, placeholder_id, thread_placeholder_id, parent_question_id } = message || {};
     let workflow = (question_id && this._byQid.get(question_id)) || (placeholder_id && this._byPlaceholderId.get(placeholder_id)) || undefined;
     if (!workflow && autoCreate && (question_id || placeholder_id)) {
-      workflow = new MessageItem(this, { questionId: question_id, parentQuestionId: parent_question_id, superworkflow });
+      workflow = new MessageItem(this, {
+        questionId: question_id,
+        placeholderId: placeholder_id,
+        threadPlaceholderId: thread_placeholder_id,
+        parentQuestionId: parent_question_id,
+        superworkflow,
+      });
       if (!message.live) {
         // only a live message delivers its own data (posting the question,
         // ask-style); any other receives its record from the conversation

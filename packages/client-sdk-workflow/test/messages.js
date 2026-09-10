@@ -103,6 +103,44 @@ test('message feedback goes out with the question lineage', async () => {
   assert.is(context.question_source, '_organic');
 });
 
+test('message workflows are destroyed when the panel leaves the thread', async () => {
+  const { client } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+  const q1 = conversation._getMessageWorkflow('q1');
+  const q2 = conversation._getMessageWorkflow('q2');
+
+  history.select('t2'); // depart: the displayed thread's items are torn down
+  assert.ok(q1.destroyed);
+  assert.ok(q2.destroyed);
+  assert.is(client.workflows.messageItems.getByQuestionId('q1'), undefined); // deregistered
+
+  // a return recreates them afresh
+  history.select('t1');
+  await tick();
+  const fresh = conversation._getMessageWorkflow('q1');
+  assert.is.not(fresh, q1);
+  assert.is(fresh.destroyed, false);
+  assert.is(fresh.message.answer, 'Answer of q1');
+});
+
+test('destroying the conversation destroys its message workflows', async () => {
+  const { client } = createClient();
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  const q1 = conversation._getMessageWorkflow('q1');
+
+  conversation.destroy();
+  assert.ok(q1.destroyed);
+  assert.is(client.workflows.messageItems.getByQuestionId('q1'), undefined);
+});
+
 test('a just-posted message gets a workflow before its question id, and adopts it', async () => {
   const { client } = createClient();
   const { conversation } = client.workflows;
@@ -170,6 +208,80 @@ test('a live message keeps its question through a stream of answer-only values',
   assert.is(record.question, 'What about miso ramen?');
   assert.is(record.question_id, 'q-live');
   assert.is(record.answer, 'A bowl of ramen.');
+});
+
+// an endless answer stream: yields a chunk every few ms until aborted
+const endlessQuestions = (counter) => async (payload, { signal } = {}) => ({
+  _response: { question_id: 'q-live', question: payload.question, answer: '', finished: false, revision: 1 },
+  async *[Symbol.asyncIterator]() {
+    for (let revision = 2; ; revision++) {
+      await tick(5);
+      if (signal && signal.aborted) {
+        return;
+      }
+      counter.polls++;
+      yield { question_id: 'q-live', question: payload.question, answer: `chunk ${revision}`, finished: false, revision };
+    }
+  },
+});
+
+test('a live stream stops when the panel departs', async () => {
+  const { client } = createClient();
+  const counter = { polls: 0 };
+  client.api.ask.questions = endlessQuestions(counter);
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+  conversation.send('What about miso ramen?');
+  await tick(20);
+  assert.ok(counter.polls > 0); // streaming
+
+  const live = conversation.messages[conversation.messages.length - 1];
+  const workflow = conversation._getMessageWorkflow(live);
+
+  history.select('t2'); // depart: the follow-up's workflow is destroyed right away
+  assert.ok(workflow.destroyed);
+  assert.is(client.workflows.messageItems.get(live), undefined); // deregistered
+  await tick(15); // an in-flight chunk may still land
+  const at = counter.polls;
+  await tick(40);
+  assert.is(counter.polls, at);
+});
+
+test('a creating thread departs: the pending post settles as an expired response and resolves', async () => {
+  const { client } = createClient();
+  const counter = { polls: 0 };
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  client.api.ask.questions = async (payload, options) => {
+    await gate; // the response holds until released: nothing resolved yet
+    return endlessQuestions(counter)(payload, options);
+  };
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  conversation.new();
+  conversation.send('A brand new question');
+  const placeholderId = history.threads.find(thread => thread.placeholder_id).placeholder_id;
+
+  history.select('t1'); // depart before the thread id is known: destroyed like any item
+  await tick();
+  assert.ok(history.get(placeholderId)); // still a placeholder: the post is pending
+
+  release();
+  await tick(20);
+  // the resolution landed on the listed side, and the workflow is destroyed
+  const settled = history.get('q-live');
+  assert.ok(settled);
+  assert.is(settled.placeholder_id, undefined);
+  assert.is(client.workflows.messageItems.getByQuestionId('q-live'), undefined); // deregistered
+  const at = counter.polls;
+  await tick(40);
+  assert.is(counter.polls, at);
 });
 
 test('an answerless record presents as loading; an unfinished one as ongoing', async () => {

@@ -83,6 +83,17 @@ export default class DataActor {
       const { signal } = this._ac || {};
       const options = { ...event.options, signal };
       const response = await this._source({ session, ...request, options });
+      // the actor died while the fetch was out: the response — settled, not
+      // aborted — is announced on the expired-response salvage channel (the
+      // workflow's hub outlives it), and any stream is dropped unconsumed
+      if (this._destroyed) {
+        const value = response && response[Symbol.asyncIterator] ? response._response : response;
+        if (value !== undefined) {
+          this._emitExpiredResponse({ session, request, value });
+        }
+        this._abort();
+        return;
+      }
       // takes an iterable, either sync or async
       if (response && response[Symbol.asyncIterator]) {
         // also emit reponse of the head request, if available
@@ -95,9 +106,11 @@ export default class DataActor {
             if (value === undefined) {
               continue; // e.g. a polling stream ending with nothing left to fetch
             }
-            // A new session invalidates ongoing data fetch for the old session, terminating the loop
-            if (!isCurrentSession(this._hub, session)) {
+            // destruction or a new session invalidates the ongoing fetch,
+            // terminating the loop
+            if (this._destroyed || !isCurrentSession(this._hub, session)) {
               this._emitExpiredResponse({ session, request, value });
+              this._destroyed && this._abort();
               break;
             }
             this._emitResponse({ session, request, value });
@@ -107,6 +120,9 @@ export default class DataActor {
         this._emitResponseWithSessionCheck({ session, request, value: response });
       }
     } catch(error) {
+      if (this._destroyed) {
+        return; // e.g. the deferred abort settling the fetch's rejection
+      }
       this._error(error);
       this._emitResponseWithSessionCheck({ session, request, error });
     } finally {
@@ -140,15 +156,26 @@ export default class DataActor {
   }
 
   _destroy() {
-    // abort ongoing data fetch if any
-    this._ac && this._ac.abort({
-      type: 'data-actor-destroy',
-      message: 'Data actor is destroyed.',
-    });
+    this._destroyed = true;
+    // an in-flight serving is not aborted outright: its pending fetch
+    // settles first and lands on the expired-response salvage channel —
+    // e.g. the id of a thread whose creating workflow was destroyed — then
+    // the serving aborts itself (see _handleRequest); with nothing in
+    // flight, abort right away
+    if (this._serving.size === 0) {
+      this._abort();
+    }
     for (const unsubscribe of this._unsubscribes) {
       unsubscribe();
     }
     this._unsubscribes = [];
+  }
+
+  _abort() {
+    this._ac && this._ac.abort({
+      type: 'data-actor-destroy',
+      message: 'Data actor is destroyed.',
+    });
   }
 
 }

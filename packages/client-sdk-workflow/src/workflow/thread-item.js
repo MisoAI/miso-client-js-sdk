@@ -110,4 +110,12 @@ export default class ThreadItem extends Workflow {
     checked ? history.subscribe(threadId) : history.unsubscribe(threadId);
   }
 
+  // destroy //
+  _destroy(options) {
+    const { _threadId: threadId, _placeholderId: placeholderId } = this;
+    threadId && this._context._byTid.delete(threadId);
+    placeholderId && this._context._byPlaceholderId.delete(placeholderId);
+    super._destroy(options);
+  }
+
 }

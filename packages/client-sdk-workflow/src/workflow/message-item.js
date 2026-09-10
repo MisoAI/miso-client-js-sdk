@@ -36,12 +36,14 @@ export default class MessageItem extends AnswerBasedWorkflow {
 
   // the parent question id is part of the message's identity, like the
   // question id: the lineage of a message never changes
-  constructor(context, { questionId, parentQuestionId, superworkflow } = {}) {
+  constructor(context, { questionId, placeholderId, threadPlaceholderId, parentQuestionId, superworkflow } = {}) {
     super({
       name: 'message-item',
       context,
       roles: ROLES_OPTIONS,
       questionId,
+      placeholderId,
+      threadPlaceholderId,
       parentQuestionId,
       superworkflow,
     });
@@ -50,6 +52,9 @@ export default class MessageItem extends AnswerBasedWorkflow {
   _initProperties(args) {
     super._initProperties(args);
     this._questionId = args.questionId;
+    this._placeholderId = args.placeholderId;
+    // the thread placeholder this message's root question creates, if any
+    this._threadPlaceholderId = args.threadPlaceholderId;
     defineValues(this, { parentQuestionId: args.parentQuestionId });
   }
 
@@ -73,6 +78,15 @@ export default class MessageItem extends AnswerBasedWorkflow {
     }
     this._questionId = questionId;
     this._context._byQid.set(questionId, this);
+    // adopting the id of a root question that created a thread IS the
+    // thread's resolution — the question id is the thread id, by contract —
+    // announced to the conversation workflow, if constructed (in the manner
+    // of _onFollowUpClick). Being root is a matter of lineage, not of the
+    // placeholder link: only a parentless question's id names the thread
+    if (this._threadPlaceholderId && !this.parentQuestionId) {
+      const conversation = this._client.workflows._conversation;
+      conversation && conversation._resolveLiveMessage(this._threadPlaceholderId, questionId);
+    }
   }
 
   // properties //
@@ -170,6 +184,34 @@ export default class MessageItem extends AnswerBasedWorkflow {
   _onFollowUpClick(event) {
     const conversation = this._client.workflows._conversation;
     conversation && conversation._onFollowUpClick(event);
+  }
+
+  // destroy //
+  _destroy(options) {
+    const { _questionId: questionId, _placeholderId: placeholderId } = this;
+    questionId && this._context._byQid.delete(questionId);
+    placeholderId && this._context._byPlaceholderId.delete(placeholderId);
+    this._salvageThreadResolution();
+    super._destroy(options);
+  }
+
+  // destroyed while its root question's post was still out: the thread is
+  // created server-side all the same, so its id — arriving on the
+  // expired-response salvage channel; the hub outlives the workflow — still
+  // resolves the placeholder
+  _salvageThreadResolution() {
+    if (!this._threadPlaceholderId || this.parentQuestionId || this._questionId) {
+      return; // no unresolved creation to salvage
+    }
+    const unsubscribe = this._hub.on(fields.expiredResponse(), ({ value }) => {
+      const questionId = value && value.question_id;
+      if (!questionId) {
+        return;
+      }
+      unsubscribe();
+      const conversation = this._client.workflows._conversation;
+      conversation && conversation._resolveLiveMessage(this._threadPlaceholderId, questionId);
+    });
   }
 
 }

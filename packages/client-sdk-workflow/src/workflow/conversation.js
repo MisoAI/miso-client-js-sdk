@@ -104,6 +104,9 @@ export default class Conversation extends Workflow {
   }
 
   restart() {
+    // leaving the session tears the displayed thread's message item
+    // workflows down
+    this._destroyMessageWorkflows();
     super.restart();
     // presenting a placeholder thread is a direct side effect of a new
     // session: every fresh session starts in new-thread mode, not an empty
@@ -181,10 +184,10 @@ export default class Conversation extends Workflow {
    *
    * A new thread additionally starts from a placeholder record announced to
    * the history workflow (which lists and selects it), settled once the
-   * stream brings the question id (_resolvePlaceholder). The thread has no
+   * stream brings the question id (the adoption announcement). The thread has no
    * identity yet — the placeholder record is keyed by a local
    * `placeholder_id` instead of a thread id, so nothing addresses it as a
-   * thread server-side. The message workflow outlives this panel's session,
+   * thread server-side. The follow survives this panel's session for the resolution alone,
    * so the resolution lands even if the user leaves the panel before the
    * response arrives.
    */
@@ -206,6 +209,10 @@ export default class Conversation extends Workflow {
     // carries its lineage from the start, like a server record does
     const message = trimObj({
       placeholder_id: uuidv4(),
+      // a root question of a new thread carries the thread placeholder it
+      // creates: the resolution (question id -> thread id) derives from
+      // the record, wherever its workflow ends up
+      thread_placeholder_id: placeholder && placeholder.placeholder_id,
       question,
       parent_question_id: last && last.question_id,
       live: true,
@@ -219,37 +226,35 @@ export default class Conversation extends Workflow {
       },
     });
     const workflow = this._getMessageWorkflow(message);
-    this._followLiveMessage(workflow, message, placeholder);
+    this._followLiveMessage(workflow, message);
     workflow.post(message);
     return this;
   }
 
   /**
    * Follow a live message's own data stream, folding it back into this
-   * panel's record (keyed by the local placeholder id) and settling the
-   * placeholder thread as soon as the question id shows up. The message
-   * workflow outlives this panel's session: after a switch away, the fold
-   * simply misses (the panel is on other data by now) while the placeholder
-   * resolution still lands on the listed side.
+   * panel's record (keyed by the local placeholder id) while this session
+   * displays it. The follow is display-only: the resolution of a creating
+   * thread is the message workflow's own announcement (its question id,
+   * adopted or salvaged off an expired response -> _resolveLiveMessage),
+   * not the follow's business. It ends with the stream — or on the first
+   * commit after the panel has moved on, when there is nothing left to
+   * fold into.
    */
-  _followLiveMessage(workflow, message, placeholder) {
+  _followLiveMessage(workflow, message) {
     const { placeholder_id } = message;
     const session = this.session;
-    let resolved = false, done = false;
     const unsubscribe = workflow._hub.on(fields.data(), data => {
       const value = data && data.value;
-      if (done || !value) {
+      if (!value) {
         return;
       }
-      if (placeholder && !resolved && value.question_id) {
-        resolved = true;
-        this._resolvePlaceholder(placeholder, value.question_id);
+      if (this.session !== session) {
+        unsubscribe();
+        return;
       }
-      if (this.session === session) {
-        this._patchLiveMessage(placeholder_id, value);
-      }
+      this._patchLiveMessage(placeholder_id, value);
       if (value.finished) {
-        done = true;
         unsubscribe();
       }
     });
@@ -508,6 +513,22 @@ export default class Conversation extends Workflow {
     return workflow;
   }
 
+  // the item subworkflows serve the displayed thread: leaving it (restart)
+  // destroys them — aborted and deregistered, like Ask's follow-up chain on
+  // a root restart; a return to the thread recreates them afresh. A held
+  // live follow's workflow (a thread still resolving) survives until its
+  // resolution lands
+  _destroyMessageWorkflows() {
+    const context = this._client.workflows._messageItems;
+    if (!context) {
+      return;
+    }
+    for (const message of this.messages) {
+      const workflow = context.get(message);
+      workflow && workflow.destroy();
+    }
+  }
+
   // propagate the committed records — only ever into existing message
   // workflows: instances are created by elements (_getMessageWorkflow), not
   // by data, so nothing is constructed when <miso-message-item> is not in play
@@ -557,12 +578,17 @@ export default class Conversation extends Workflow {
    * display — the user may have moved on, and the listed side settles all
    * the same.
    */
-  _resolvePlaceholder(placeholder, questionId) {
+  // a live message adopted (or salvaged) its question id — for a root
+  // question that IS the new thread's id, by contract: settle the
+  // placeholder on the listed side and, if still displayed, on this panel.
+  // A departed workflow needs nothing more here: the sweep destroyed it
+  // uniformly, its resolution arriving off the expired-response salvage
+  _resolveLiveMessage(placeholderId, questionId) {
     const peer = this._peer;
-    peer && peer._onConversationResolve(placeholder.placeholder_id, questionId);
+    peer && peer._onConversationResolve(placeholderId, questionId);
     const data = this._hub.states[fields.data()];
     const thread = data && data.value && data.value.thread;
-    if (thread && thread.placeholder_id === placeholder.placeholder_id) {
+    if (!this.destroyed && thread && thread.placeholder_id === placeholderId) {
       this.updateData({ ...data, value: { ...data.value, thread: settlePlaceholder(thread, questionId) } });
     }
   }
@@ -599,6 +625,15 @@ export default class Conversation extends Workflow {
         },
       },
     });
+  }
+
+
+  // destroy //
+  // the panel's teardown ends the displayed thread's items the same way a
+  // departure does
+  _destroy(options) {
+    this._destroyMessageWorkflows();
+    super._destroy(options);
   }
 
 }

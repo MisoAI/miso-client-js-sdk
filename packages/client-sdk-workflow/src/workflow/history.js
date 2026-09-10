@@ -221,10 +221,20 @@ export default class History extends Workflow {
       threads: this.threads.filter(thread => !removed.has(thread.thread_id)),
       ...(threadIds && threadIds.includes(this.selectedId) ? { selectedThreadId: undefined } : {}),
     });
+    // a deleted thread's item subworkflow has nothing left to present
+    const context = this._client.workflows._threadItems;
+    if (context) {
+      for (const threadId of threadIds) {
+        const workflow = context.get({ thread_id: threadId });
+        workflow && workflow.destroy();
+      }
+    }
   }
 
   _onAllThreadsDeleted() {
     this._patchValue({ threads: [], selectedThreadId: undefined });
+    const context = this._client.workflows._threadItems;
+    context && context.reset();
   }
 
   // called by the conversation workflow //
@@ -337,6 +347,15 @@ export default class History extends Workflow {
       return; // the list is not loaded yet, nothing to patch
     }
     this.updateData({ ...data, value: { ...data.value, ...patch } });
+  }
+
+
+  // destroy //
+  // the list's teardown takes its item subworkflows with it
+  _destroy(options) {
+    const context = this._client.workflows._threadItems;
+    context && context.reset(options);
+    super._destroy(options);
   }
 
 }
