@@ -1,11 +1,11 @@
-import { trimObj, uuidv4 } from '@miso.ai/commons';
+import { trimObj, uuidv4, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { getThreadRequest, ThreadOperations } from './thread-operations.js';
-import { ROLE, REQUEST_TYPE } from '../constants.js';
+import { ROLE, REQUEST_TYPE, QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
-import { writeThreadAsRead } from './processors.js';
-import { isThreadUnread, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse } from '../util/threads.js';
+import { writeThreadAsRead, writeAnswerInfoToInteraction } from './processors.js';
+import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -421,6 +421,45 @@ export default class Conversation extends Workflow {
     }
     q = q ? q.trim() : '';
     q && this.send(q);
+  }
+
+  // interactions //
+  // tracker events of the message item subworkflows forward here, stamped
+  // with the item's data, and this workflow translates the answer-content
+  // interactions: the answer info and the message's lineage read off the
+  // forwarded data
+  _defaultProcessInteraction(payload, args) {
+    payload = super._defaultProcessInteraction(payload, args);
+    if (args.workflow._name === 'message-item') {
+      payload = writeAnswerInfoToInteraction(payload, args);
+      payload = this._writeMessageInfoToInteraction(payload, args);
+    }
+    return payload;
+  }
+
+  /**
+   * The message's question lineage: the record supplies its own parent
+   * question id (the question chain may fork, so message order implies no
+   * lineage) and its miso_id, when it carries one; the thread id — the id
+   * of the thread's first question, by contract — is the root question id.
+   * The question source tells an update message (written by the
+   * answer-updates monitor) from an organic (typed) one.
+   */
+  _writeMessageInfoToInteraction(payload, { data }) {
+    const message = data && data.value;
+    if (!message) {
+      return payload;
+    }
+    return mergeInteractions(payload, trimObj({
+      miso_id: message.miso_id,
+      context: {
+        custom_context: trimObj({
+          root_question_id: this.threadId,
+          parent_question_id: message.parent_question_id,
+          question_source: isUpdateMessage(message) ? QUESTION_SOURCE.UPDATE : QUESTION_SOURCE.ORGANIC,
+        }),
+      },
+    }));
   }
 
   // request //

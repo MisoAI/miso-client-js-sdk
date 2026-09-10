@@ -284,9 +284,11 @@ export default class Workflow extends Component {
   }
 
   _onTracker(args) {
-    const workflow = this;
-    const data = this._hub.states[fields.data()];
-    const payload = this._buildInteraction({ ...args, data, workflow });
+    // the originating workflow and its data may already ride in the args: a
+    // subworkflow forwarding its tracker events here stamps its own in, so
+    // the interaction processors work off the data the event happened on
+    args = { data: this._hub.states[fields.data()], workflow: this, ...args };
+    const payload = this._buildInteraction(args);
     this._sendInteraction(payload);
   }
 
@@ -314,9 +316,10 @@ export default class Workflow extends Component {
     return payload;
   }
 
-  // a subworkflow's interactions present as its superworkflow's
+  // the handling workflow names the interaction: a subworkflow's tracker
+  // events propagate here, so they present as this workflow's
   _writeWorkflowInfoToInteraction(payload) {
-    const { _name: workflow } = this._superworkflow || this;
+    const { _name: workflow } = this;
     return mergeInteractions(payload, {
       context: {
         custom_context: {
@@ -326,8 +329,10 @@ export default class Workflow extends Component {
     });
   }
 
-  _writeApiInfoToInteraction(payload) {
-    const { group, name } = this._options.resolved.api;
+  // a forwarded event carries the originating workflow's api identity in
+  // the args, which wins over this workflow's own api option
+  _writeApiInfoToInteraction(payload, args) {
+    const { group, name } = args.api || this._options.resolved.api;
     return mergeInteractions(payload, {
       context: {
         custom_context: {

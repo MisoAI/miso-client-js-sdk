@@ -61,6 +61,11 @@ export default class HybridSearchAnswer extends AnswerBasedWorkflow {
   }
 
   // interactions //
+  // forwarded raw, without stamping this workflow into the args (unlike the
+  // message/thread item forwards): the parent stamps its own data and runs
+  // its own default passes, so the answer section's events present entirely
+  // as the hybrid search's — its data, session, and search-based
+  // interaction info
   _onTracker(args) {
     this._superworkflow._onTracker(args);
   }

@@ -88,6 +88,17 @@ export default class ThreadItem extends Workflow {
     this._context._byTid.set(threadId, this);
   }
 
+  // interactions //
+  // tracker events forward to the superworkflow, stamped with this
+  // workflow's data and api identity: the history workflow translates them
+  // into interactions, its processors working off the item's record
+  _onTracker(args) {
+    const workflow = this;
+    const data = this._hub.states[fields.data()];
+    const api = this._options.resolved.api;
+    this._superworkflow._onTracker({ ...args, data, workflow, api });
+  }
+
   // view actions //
   // delegated to the superworkflow's id-based operations; a thread being
   // created has no server identity to operate on — the thread id guards

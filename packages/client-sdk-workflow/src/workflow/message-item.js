@@ -1,10 +1,9 @@
-import { defineValues, trimObj, mergeInteractions } from '@miso.ai/commons';
+import { defineValues, trimObj } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
-import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
+import { ROLE, STATUS } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
 import { writeQuestionSourceToPayload } from './processors.js';
-import { isUpdateMessage } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   mappings: {
@@ -145,37 +144,15 @@ export default class MessageItem extends AnswerBasedWorkflow {
   }
 
   // interactions //
-  _defaultProcessInteraction(payload, args) {
-    payload = super._defaultProcessInteraction(payload, args);
-    payload = this._writeMessageInfoToInteraction(payload, args);
-    return payload;
-  }
-
-  /**
-   * The message's question lineage: the record supplies its own parent
-   * question id (the question chain may fork, so message order implies no
-   * lineage) and its miso_id, when it carries one; the thread id — the id of
-   * the thread's first question, by contract — is the root question id, read
-   * off the conversation workflow, if constructed. The question source tells
-   * an update message (written by the answer-updates monitor) from an
-   * organic (typed) one.
-   */
-  _writeMessageInfoToInteraction(payload) {
-    const message = this.message;
-    if (!message) {
-      return payload;
-    }
-    const conversation = this._client.workflows._conversation;
-    return mergeInteractions(payload, trimObj({
-      miso_id: message.miso_id,
-      context: {
-        custom_context: trimObj({
-          root_question_id: conversation && conversation.threadId,
-          parent_question_id: message.parent_question_id,
-          question_source: isUpdateMessage(message) ? QUESTION_SOURCE.UPDATE : QUESTION_SOURCE.ORGANIC,
-        }),
-      },
-    }));
+  // tracker events forward to the superworkflow, stamped with this
+  // workflow's data and api identity: the conversation translates them into
+  // interactions — the answer info and the message's lineage read off the
+  // forwarded data
+  _onTracker(args) {
+    const workflow = this;
+    const data = this._hub.states[fields.data()];
+    const api = this._options.resolved.api;
+    this._superworkflow._onTracker({ ...args, data, workflow, api });
   }
 
   // handlers //
