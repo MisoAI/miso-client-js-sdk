@@ -476,6 +476,17 @@ export default class Conversation extends Workflow {
   }
 
   // request //
+  // every request of this workflow is fully described at its call site
+  // (the head thread request, the answers follow-up), so the api option —
+  // which belongs to the message items' question posting (see the
+  // 'conversation' defaults entry) — is not merged in
+  _request(options = {}) {
+    this._writeRequestTimeToSession(Date.now(), options);
+    const { session } = this;
+    this.updateData({ session, request: options });
+    this._hub.update(fields.request(), { ...options, session });
+  }
+
   _writeRequestTimeToSession(timestamp, options = {}) {
     // only the head request marks the session request time
     if (options.type !== REQUEST_TYPE.THREAD) {

@@ -113,18 +113,39 @@ export const defaultLayouts = Object.freeze({
     [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question' }],
   }),
 
+  // the thread list's own roles plus its thread item subworkflows' — the
+  // items share the history workflow's options, so one bag serves both.
+  // The item roles: the item-container layout (the standard container
+  // duties plus the items' context menus, driven by the item-menu
+  // data-role contract — it only ever drives its own item's menu, so
+  // hosting it on the panel is inert, and the panel never triggers the
+  // auto logo either, having no main-role component), the title text
+  // (with a presentation fallback for untitled threads), the context
+  // menu's rename (ask-then-submit through the prompt dialog) and delete
+  // (confirm-then-submit) buttons, and the subscription toggle for custom
+  // item bodies that place one
   'history': Object.freeze({
     ...BASE_LAYOUTS,
+    [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
     [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true }],
     [ROLE.NEW_THREAD]: [LAYOUT_TYPE.BUTTON, { icon: 'plus', text: 'New chat' }],
+    [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
+    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],
+    [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Delete', confirm: THREAD_DELETE_CONFIRM }],
+    [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
   }),
 
-  // the message item subworkflow behind <miso-message-item>: the answer-based
-  // layouts, minus the query role — a message has no query flow of its own.
-  // The answer types out only while being generated (`instant` renders an
-  // already-finished answer in one shot), the sources render as the compact
-  // horizontal cards of the hybrid-search UI, and no per-message logo banner
-  'message-item': Object.freeze({
+  // the conversation panel's own roles plus its message item subworkflows'
+  // — the items share the conversation workflow's options, so one bag
+  // serves both. The message roles: the answer-based layouts minus the
+  // query role (a message has no query flow of its own; the query entry
+  // below is the panel's composer), with the question layout (text plus
+  // authorship attributes, off the whole record), the answer typewriter
+  // with `instant: true` (an already-finished answer renders in one shot),
+  // and the sources as the compact horizontal cards of the hybrid-search
+  // UI. logo: false turns the per-message banner off; the panel never
+  // triggers the auto logo anyway, having no main-role component
+  'conversation': Object.freeze({
     ...MESSAGE_LAYOUTS,
     [ROLE.CONTAINER]: [LAYOUT_TYPE.CONTAINER, { logo: false }],
     [ROLE.QUESTION]: LAYOUT_TYPE.QUESTION,
@@ -141,26 +162,6 @@ export const defaultLayouts = Object.freeze({
         }
       }
     ],
-  }),
-
-  // the thread item subworkflow behind <miso-thread-item>: the item decomposes
-  // into role elements rendered by the generic layouts — the title text
-  // (with a presentation fallback for untitled threads), the context menu's
-  // rename (ask-then-submit through the prompt dialog) and delete
-  // (confirm-then-submit) buttons, and the subscription toggle for custom
-  // item bodies that place one. The context menu markup comes from the item
-  // template (threadMenuBlock); the item-container layout drives its
-  // open/close behavior by the item-menu data-role contract
-  'thread-item': Object.freeze({
-    [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
-    [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
-    [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],
-    [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Delete', confirm: THREAD_DELETE_CONFIRM }],
-    [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
-  }),
-
-  'conversation': Object.freeze({
-    ...BASE_LAYOUTS,
     [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message', incremental: true }],
     [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a follow-up question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div' }],

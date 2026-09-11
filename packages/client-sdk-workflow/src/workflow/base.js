@@ -329,10 +329,10 @@ export default class Workflow extends Component {
     });
   }
 
-  // a forwarded event carries the originating workflow's api identity in
-  // the args, which wins over this workflow's own api option
-  _writeApiInfoToInteraction(payload, args) {
-    const { group, name } = args.api || this._options.resolved.api;
+  // an item subworkflow's forwarded events resolve the same api identity:
+  // the item shares this workflow's options
+  _writeApiInfoToInteraction(payload) {
+    const { group, name } = this._options.resolved.api;
     return mergeInteractions(payload, {
       context: {
         custom_context: {

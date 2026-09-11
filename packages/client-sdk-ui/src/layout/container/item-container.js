@@ -21,7 +21,10 @@ const TYPE = LAYOUT_TYPE.ITEM_CONTAINER;
  * workflow's own controls. Collection shells treat clicks carrying the
  * menu data-roles as item-internal (e.g. the threads layout does not
  * select); an item template without menu markup simply has nothing to
- * drive.
+ * drive. Ownership is guarded: the layout only ever drives its own item's
+ * menu — a menu or click inside a nested container element is that
+ * container's own layout's — so the layout is inert on the list panel
+ * itself, whose options bag it shares with the items.
  */
 export default class ItemContainerLayout extends ContainerLayout {
 
@@ -49,6 +52,12 @@ export default class ItemContainerLayout extends ContainerLayout {
     if (event.button !== 0) {
       return;
     }
+    // a click inside a nested container element belongs to that
+    // container's own layout (this layout may also host the list panel,
+    // whose subtree holds the items)
+    if (!this._owns(event.target)) {
+      return;
+    }
     if (event.target.closest(`[data-role="item-menu-button"]`)) {
       this._toggleMenu();
       return;
@@ -58,7 +67,19 @@ export default class ItemContainerLayout extends ContainerLayout {
   }
 
   _getMenu() {
-    return this._element && this._element.querySelector(`[data-role="item-menu"]`);
+    const menu = this._element && this._element.querySelector(`[data-role="item-menu"]`);
+    // only its own item's menu: one found inside a nested container
+    // element is that container's own layout's to drive
+    return menu && this._owns(menu) ? menu : undefined;
+  }
+
+  _owns(node) {
+    for (let el = node; el && el !== this._element; el = el.parentElement) {
+      if (el.isContainer) {
+        return false;
+      }
+    }
+    return true;
   }
 
   _toggleMenu() {

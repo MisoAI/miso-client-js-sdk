@@ -158,19 +158,20 @@ export default Object.freeze({
     },
   },
 
-  // the chat-history workflows (history, conversation) have no api option:
-  // their requests (the thread list, the head thread request, the answers
-  // follow-up) spell out their identity at the call site — fixed endpoints
-  // with nothing for useApi() to customize — and the question posting
-  // belongs to the live message workflow (see 'message-item')
+  // the chat-history workflows' own endpoints (the thread list, the head
+  // thread request, the answers follow-up) are fixed, spelled out at their
+  // call sites — nothing for useApi() to customize — so the 'conversation'
+  // api option below belongs to the question posting instead. The history
+  // workflow needs no entry; its thread item subworkflows share its
+  // options and defaults, as the message items share the conversation's
 
-  'message-item': {
-    // a live message posts its own question, like the ask workflow does:
-    // the answer-based content formatting options, with source_fl extended
-    // with the source fields the compact source cards render (as in
-    // hybrid-search). A message that is not live receives its record from
-    // the conversation workflow instead, its data actor turned off per
-    // instance (useApi(false), applied by the MessageItems context)
+  'conversation': {
+    // the question posting of the message item subworkflows, which share
+    // this workflow's options: a live message posts its own question, like
+    // the ask workflow does — the answer-based content formatting options,
+    // with source_fl extended with the source fields the compact source
+    // cards render (as in hybrid-search). The conversation's own requests
+    // bypass this option (their identities are fixed at the call sites)
     api: {
       group: API.GROUP.ASK,
       name: API.NAME.QUESTIONS,
@@ -179,8 +180,8 @@ export default Object.freeze({
         source_fl: [...ANSWER_BASED_API_OPTIONS.payload.source_fl, 'title', 'authors'],
       },
     },
-    // the answer-based trackings, deduplicated at the message level: each
-    // message workflow keeps its own tracker states
+    // the answer-based trackings of the message items, deduplicated at the
+    // message level: each message workflow keeps its own tracker states
     trackers: {
       ...ANSWER_BASED_TRACKERS,
     },

@@ -40,13 +40,11 @@ export default class MessageItems extends WorkflowContext {
         threadPlaceholderId: thread_placeholder_id,
         parentQuestionId: parent_question_id,
         superworkflow,
+        // only a live message delivers its own data; liveness is settled at
+        // creation — an instance property, since the item shares its
+        // options object with the conversation workflow
+        live: !!message.live,
       });
-      if (!message.live) {
-        // only a live message delivers its own data (posting the question,
-        // ask-style); any other receives its record from the conversation
-        // workflow, so the data actor has nothing to do
-        workflow.useApi(false);
-      }
       question_id && this._byQid.set(question_id, workflow);
       placeholder_id && this._byPlaceholderId.set(placeholder_id, workflow);
       this._client._events.emit('postworkflow', workflow);

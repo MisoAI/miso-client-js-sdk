@@ -3,11 +3,16 @@ import { isCurrentSession } from './utils.js';
 
 export default class DataActor {
 
-  constructor(hub, { source, options, polling = true, threadEvents }) {
+  // `active: false` turns the actor off at construction: an item
+  // subworkflow fed by its superworkflow makes no requests of its own — an
+  // instance property, since the item shares its options object with the
+  // parent
+  constructor(hub, { source, options, polling = true, active = true, threadEvents }) {
     this._hub = hub;
     this._source = source;
     this._options = options;
     this._pollingEnabled = polling;
+    this._active = active;
     this._threadEvents = threadEvents;
     this._serving = new Set();
     this._unsubscribes = [
@@ -23,7 +28,7 @@ export default class DataActor {
   }
 
   get active() {
-    return this._options.resolved.api.actor !== false;
+    return this._active && this._options.resolved.api.actor !== false;
   }
 
   /**
@@ -67,7 +72,7 @@ export default class DataActor {
 
   async _handleRequest(event) {
     // inactive -> no reaction: the workflow makes no requests of its own
-    // (useApi(false) -> actor: false)
+    // (the construction-time active flag, or useApi(false) -> actor: false)
     if (!this.active) {
       return;
     }

@@ -22,9 +22,9 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
  * *live* message — one just posted in this session — posts its question and
  * streams the answer through its own data actor, exactly like the ask
  * workflow (post()); the conversation folds the stream back into its list.
- * A message that is *not* live has its data actor turned off (useApi(false),
- * applied by the MessageItems context at creation) and receives its record from
- * the conversation workflow through updateData() as data commits.
+ * A message that is *not* live has its data actor turned off (the `live`
+ * flag at creation) and receives its record from the conversation workflow
+ * through updateData() as data commits.
  *
  * Being a workflow of its own gives each message its own roles, layout
  * options, and trackers — so answer-content interactions (citation clicks,
@@ -35,11 +35,21 @@ export default class MessageItem extends AnswerBasedWorkflow {
 
   // the parent question id is part of the message's identity, like the
   // question id: the lineage of a message never changes
-  constructor(context, { questionId, placeholderId, threadPlaceholderId, parentQuestionId, superworkflow } = {}) {
+  constructor(context, { questionId, placeholderId, threadPlaceholderId, parentQuestionId, superworkflow, live } = {}) {
     super({
       name: 'message-item',
       context,
+      // the item shares the conversation workflow's options and defaults,
+      // like the hybrid search's answer section: the message roles are
+      // seeded under 'conversation', and configuring the conversation
+      // (useApi for the question posting, useLayouts, ...) covers its items
+      options: superworkflow._options,
+      defaults: superworkflow._defaults,
       roles: ROLES_OPTIONS,
+      // only a live message delivers its own data (posting the question,
+      // ask-style); any other receives its record from the conversation
+      // workflow, so the data actor has nothing to do
+      extraOptions: { api: { active: !!live } },
       questionId,
       placeholderId,
       threadPlaceholderId,
@@ -145,14 +155,12 @@ export default class MessageItem extends AnswerBasedWorkflow {
 
   // interactions //
   // tracker events forward to the superworkflow, stamped with this
-  // workflow's data and api identity: the conversation translates them into
-  // interactions — the answer info and the message's lineage read off the
-  // forwarded data
+  // workflow's data: the conversation translates them into interactions —
+  // the answer info and the message's lineage read off the forwarded data
   _onTracker(args) {
     const workflow = this;
     const data = this._hub.states[fields.data()];
-    const api = this._options.resolved.api;
-    this._superworkflow._onTracker({ ...args, data, workflow, api });
+    this._superworkflow._onTracker({ ...args, data, workflow });
   }
 
   // handlers //

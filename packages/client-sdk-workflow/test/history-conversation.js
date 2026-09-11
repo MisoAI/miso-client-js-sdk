@@ -507,13 +507,15 @@ test('useApi overrides the api options through the cascade', () => {
   assert.is(api.payload.rows, 5);
 });
 
-test('messages: useApi on the context configures the posting api', async () => {
+test('messages: useApi on the conversation configures the posting api', async () => {
   const { client, calls } = createClient();
   const { conversation } = client.workflows;
 
-  // the payload-object form of useApi(), cascading into the live message
-  // workflow that posts the question — the ask/hybrid-search experience
-  client.workflows.messageItems.useApi({ custom_flag: 1 });
+  // the payload-object form of useApi(): the message item workflows share
+  // the conversation's options, so configuring the conversation covers the
+  // live message workflow that posts the question — the ask/hybrid-search
+  // experience
+  conversation.useApi({ custom_flag: 1 });
   conversation.load('t1');
   await tick();
   conversation.send('What about miso ramen?');
@@ -522,9 +524,12 @@ test('messages: useApi on the context configures the posting api', async () => {
   const call = calls.find(c => c.startsWith('POST questions'));
   assert.ok(call);
   assert.ok(call.includes('"custom_flag":1'));
-  // the conversation's own requests ran as usual
+  // the conversation's own requests bypass the api option — their
+  // identities (and payloads) are fixed at the call sites
   assert.ok(calls.includes('GET threads/t1'));
-  assert.ok(calls.some(c => c.startsWith('POST ask/answers')));
+  const answersCall = calls.find(c => c.startsWith('POST ask/answers'));
+  assert.ok(answersCall);
+  assert.not.ok(answersCall.includes('custom_flag'));
 });
 
 test('conversation: starts in new-thread mode with a placeholder thread', async () => {

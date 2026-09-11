@@ -23,8 +23,8 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * <miso-thread-item> element, keyed by its thread id and managed by the ThreadItems
  * context (client.workflows.threadItems).
  *
- * A thread item never delivers data of its own: its data actor is off
- * (useApi(false), applied by the ThreadItems context at creation) and the
+ * A thread item never delivers data of its own: its data actor is off (the
+ * construction-time active flag) and the
  * history workflow propagates its record in through updateData() on every
  * data commit — only when the record actually changed, so an update to one
  * thread re-renders that item's roles alone. Being a workflow of its own
@@ -44,7 +44,16 @@ export default class ThreadItem extends Workflow {
     super({
       name: 'thread-item',
       context,
+      // the item shares the history workflow's options and defaults, like
+      // the hybrid search's answer section: the thread item roles are
+      // seeded under 'history', and configuring the history workflow
+      // covers its items
+      options: superworkflow._options,
+      defaults: superworkflow._defaults,
       roles: ROLES_OPTIONS,
+      // a thread item never delivers data of its own: the history workflow
+      // propagates its record in, so the data actor has nothing to do
+      extraOptions: { api: { active: false } },
       threadId,
       placeholderId,
       superworkflow,
@@ -90,13 +99,12 @@ export default class ThreadItem extends Workflow {
 
   // interactions //
   // tracker events forward to the superworkflow, stamped with this
-  // workflow's data and api identity: the history workflow translates them
-  // into interactions, its processors working off the item's record
+  // workflow's data: the history workflow translates them into
+  // interactions, its processors working off the item's record
   _onTracker(args) {
     const workflow = this;
     const data = this._hub.states[fields.data()];
-    const api = this._options.resolved.api;
-    this._superworkflow._onTracker({ ...args, data, workflow, api });
+    this._superworkflow._onTracker({ ...args, data, workflow });
   }
 
   // view actions //

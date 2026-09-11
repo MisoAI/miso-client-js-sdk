@@ -36,9 +36,6 @@ export default class ThreadItems extends WorkflowContext {
     let workflow = (thread_id && this._byTid.get(thread_id)) || (placeholder_id && this._byPlaceholderId.get(placeholder_id)) || undefined;
     if (!workflow && autoCreate && (thread_id || placeholder_id)) {
       workflow = new ThreadItem(this, { threadId: thread_id, placeholderId: placeholder_id, superworkflow });
-      // a thread item never delivers data of its own: the history workflow
-      // propagates its record in, so the data actor has nothing to do
-      workflow.useApi(false);
       thread_id && this._byTid.set(thread_id, workflow);
       placeholder_id && this._byPlaceholderId.set(placeholder_id, workflow);
       this._client._events.emit('postworkflow', workflow);
