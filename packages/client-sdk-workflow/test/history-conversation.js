@@ -746,7 +746,10 @@ test('history: the new chat action with nothing selected leaves both panels alon
 
 test('conversation: unfinished answers are polled until finished', async () => {
   let answersCalls = 0;
+  // the answers endpoint is hardcoded — no api option to configure — so
+  // the poll pace is the api layer's own default, shortened at the stub
   const { client } = createClient({
+    pollingInterval: 10,
     answers: question_ids => {
       answersCalls++;
       const finished = answersCalls >= 3;
@@ -757,12 +760,6 @@ test('conversation: unfinished answers are polled until finished', async () => {
         finished,
       }));
     },
-  });
-  // api call options (e.g. the polling interval) are not part of the
-  // useApi() surface; they are configured through the defaults store,
-  // before the workflow is created
-  client.workflows._plugin.defaults.set('conversation', {
-    api: { group: 'ask', name: 'answers', options: { method: 'POST', pollingInterval: 10 } },
   });
   const { conversation } = client.workflows;
 
@@ -787,6 +784,7 @@ test('conversation: unfinished answers are polled until finished', async () => {
 test('conversation: a new unsettled message is picked up by the running poll', async () => {
   const polledIds = [];
   const { client } = createClient({
+    pollingInterval: 10,
     answers: question_ids => {
       polledIds.push(question_ids);
       // never finishing, so the loop keeps polling
@@ -797,9 +795,6 @@ test('conversation: a new unsettled message is picked up by the running poll', a
         finished: false,
       }));
     },
-  });
-  client.workflows._plugin.defaults.set('conversation', {
-    api: { group: 'ask', name: 'answers', options: { method: 'POST', pollingInterval: 10 } },
   });
   const { conversation } = client.workflows;
 
@@ -826,6 +821,7 @@ test('conversation: an outdated answers response is dropped', async () => {
   // delivered out of order
   const deferred = [];
   const { client } = createClient({
+    pollingInterval: 10,
     answers: question_ids => new Promise(resolve => {
       deferred.push(answer => resolve(question_ids.map(question_id => ({
         question_id,
@@ -834,9 +830,6 @@ test('conversation: an outdated answers response is dropped', async () => {
         finished: false,
       }))));
     }),
-  });
-  client.workflows._plugin.defaults.set('conversation', {
-    api: { group: 'ask', name: 'answers', options: { method: 'POST', pollingInterval: 10 } },
   });
   const { conversation } = client.workflows;
 

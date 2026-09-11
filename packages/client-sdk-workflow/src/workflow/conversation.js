@@ -1,4 +1,4 @@
-import { trimObj, uuidv4, mergeInteractions } from '@miso.ai/commons';
+import { trimObj, uuidv4, mergeInteractions, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { getThreadRequest, ThreadOperations } from './thread-operations.js';
@@ -24,14 +24,27 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   },
 });
 
+// the answers (follow-up) request's identity, spelled out at the call site
+// like the head thread request's (getThreadRequest): the endpoint is fixed
+// and takes no formatting payload — the per-poll payload is the question
+// ids alone, so there is nothing for useApi() to customize — hence not an
+// api option
+const ANSWERS_REQUEST = Object.freeze({
+  group: API.GROUP.ASK,
+  name: API.NAME.ANSWERS,
+  options: Object.freeze({ method: 'POST' }),
+});
+
 /**
  * The conversation panel of the chat history interface, backed by the user
  * history API. Displays one thread at a time: load(threadId) starts a new
  * session (aborting an in-flight fetch) and fetches the thread detail.
  *
- * The workflow's sole api option is the answers api; the head (thread)
- * request spells out its identity at the call site (load()), and the
- * question posting belongs to the live message workflow. The data flow
+ * The workflow carries no api option at all: both of its requests spell
+ * out their identity at the call site (the head thread request in load(),
+ * the answers request in _requestAnswersIfNecessary — a fixed endpoint
+ * with nothing for useApi() to customize), and the question posting
+ * belongs to the live message workflow. The data flow
  * takes two requests per session, both going down the standard
  * data path — `_request()` → hub `request` → data actor → source → hub
  * `response` — in the manner of search-based workflows' query/more
@@ -42,7 +55,7 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *    detail: the thread record — assumed to carry the same properties as
  *    the thread list API — and its turns, as question ids (or records
  *    without answer bodies).
- * 2. ANSWERS (follow-up, the workflow's api option): when the head data
+ * 2. ANSWERS (follow-up): when the head data
  *    lands with unsettled messages, a polling request is issued — the
  *    answers api returns a polling iterable (question_ids given as a
  *    function, resolved per poll; _requestAnswersIfNecessary) that the data
@@ -160,9 +173,9 @@ export default class Conversation extends Workflow {
     // the red dot
     this._markAsReadIfNecessary(threadId);
     // the request carries the thread identity, so the data layer holds all
-    // the state of the load. The head request is not an api option — the
-    // workflow's own is the answers api — so its identity is spelled out
-    // here; the data actor serves it through the data source like any other
+    // the state of the load. Its identity is spelled out here, like the
+    // answers request's — the workflow has no api option — and the data
+    // actor serves it through the data source like any other
     this._request({
       ...getThreadRequest(threadId),
       type: REQUEST_TYPE.THREAD,
@@ -656,6 +669,7 @@ export default class Conversation extends Workflow {
       return;
     }
     this._request({
+      ...ANSWERS_REQUEST,
       type: REQUEST_TYPE.ANSWERS,
       payload: {
         question_ids: () => {

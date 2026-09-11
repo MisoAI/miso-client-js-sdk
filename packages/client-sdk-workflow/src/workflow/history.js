@@ -3,7 +3,7 @@ import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE, REQUEST_TYPE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { mixinThreadOperations, ThreadOperations } from './thread-operations.js';
+import { mixinThreadOperations, ThreadOperations, getThreadListRequest } from './thread-operations.js';
 import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
@@ -104,12 +104,13 @@ export default class History extends Workflow {
 
   /**
    * Reload the thread list. Starts a new session, aborting an in-flight
-   * fetch if any.
+   * fetch if any. The request's identity is spelled out here, like the
+   * conversation panel's — the workflow has no api option.
    */
   refresh() {
     this._started = true;
     this.restart();
-    this._request();
+    this._request(getThreadListRequest());
     return this;
   }
 

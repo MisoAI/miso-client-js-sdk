@@ -29,6 +29,7 @@ export function createClient({
   threadDetail = defaultThreadDetail,
   threadDetailError, // when set, thread detail requests fail with it
   answers = question_ids => answersOf(question_ids), // the response is a bare array
+  pollingInterval: defaultPollingInterval = 1000, // the answers endpoint's own default poll pace, shortened by polling tests
 } = {}) {
   threads = threads.map(thread => ({ ...thread })); // a mutable local copy
   const createdThreads = new Map(); // thread_id -> detail, for threads created by questions
@@ -102,7 +103,7 @@ export function createClient({
         // function resolved per poll, and a fixed array settles out record
         // by record
         async answers(payload, options = {}) {
-          const { pollingInterval = 1000, signal } = options;
+          const { pollingInterval = defaultPollingInterval, signal } = options;
           const pending = typeof payload.question_ids === 'function' ? undefined : new Set(payload.question_ids || []);
           let index = 0;
           return polling(async () => {

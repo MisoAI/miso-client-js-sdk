@@ -158,29 +158,11 @@ export default Object.freeze({
     },
   },
 
-  'history': {
-    api: {
-      group: API.GROUP.THREADS,
-      name: 'list',
-    },
-  },
-
-  'conversation': {
-    // the sole api option: the follow-up request retrieving question-answer
-    // pair contents — a polling request served by the data actor; the
-    // endpoint takes no formatting payload, the per-poll payload being the
-    // question_ids alone. The head (thread) request is not an api option —
-    // its identity is spelled out at the call site (see Conversation.load);
-    // the question posting belongs to the live message workflow (see
-    // 'message-item')
-    api: {
-      group: API.GROUP.ASK,
-      name: API.NAME.ANSWERS,
-      options: {
-        method: 'POST',
-      },
-    },
-  },
+  // the chat-history workflows (history, conversation) have no api option:
+  // their requests (the thread list, the head thread request, the answers
+  // follow-up) spell out their identity at the call site — fixed endpoints
+  // with nothing for useApi() to customize — and the question posting
+  // belongs to the live message workflow (see 'message-item')
 
   'message-item': {
     // a live message posts its own question, like the ask workflow does:
