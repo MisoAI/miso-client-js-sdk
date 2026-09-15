@@ -114,7 +114,7 @@ const misocmd = window.misocmd || (window.misocmd = []);
 misocmd.push(async () => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient(window.DEFAULT_HISTORY_API_KEY);
-  client.context.auth = window.DEFAULT_AUTH;
+  client.context.auth = `Bearer ${window.JWT_TOKEN}`;
   client.workflows.history.start();
 });
 </script>

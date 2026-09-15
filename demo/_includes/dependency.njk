@@ -21,6 +21,9 @@
         window.{{ entry[0] }} = '{{ entry[1] }}';
       {% endfor %}
       window.DEFAULT_PRODUCT_ID = '{{ DEFAULT_PRODUCT_ID }}';
+      {% if JWT_TOKEN %}
+        window.JWT_TOKEN = '{{ JWT_TOKEN }}';
+      {% endif %}
     </script>
     <script src="{{ '/js/ui.js' | url }}"></script>
   {% case 'code' %}

@@ -43,7 +43,6 @@ function _config(name, env = 'prod') {
       __DEFAULT_WHITEPAPER_ASK_API_KEY__: JSON.stringify(process.env.DEFAULT_WHITEPAPER_ASK_API_KEY),
       __DEFAULT_HISTORY_API_KEY__: JSON.stringify(process.env.DEFAULT_HISTORY_API_KEY),
       __DEFAULT_USER_ID__: JSON.stringify(process.env.DEFAULT_USER_ID),
-      __DEFAULT_AUTH__: JSON.stringify(process.env.DEFAULT_AUTH),
     }),
     styles(),
   ];

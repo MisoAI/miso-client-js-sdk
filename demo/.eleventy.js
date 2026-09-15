@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { createHmac } from 'node:crypto';
 import { EleventyRenderPlugin } from "@11ty/eleventy";
 import markdownIt from 'markdown-it';
 import markdownItAnchor from 'markdown-it-anchor';
@@ -43,12 +44,16 @@ export default function(config) {
 
   const API_KEYS = [];
   for (const [key, value] of Object.entries(process.env)) {
-    if (key.endsWith('_API_KEY')) {
+    // secret keys must not be exposed to the browser
+    if (key.endsWith('_API_KEY') && !key.includes('SECRET')) {
       config.addGlobalData(key, value);
       API_KEYS.push([key, value]);
     }
   }
   config.addGlobalData('API_KEYS', API_KEYS);
+  if (process.env.DEFAULT_HISTORY_SECRET_API_KEY) {
+    config.addGlobalData('JWT_TOKEN', () => generateJwt(process.env.DEFAULT_HISTORY_SECRET_API_KEY));
+  }
   config.addGlobalData('DEFAULT_PRODUCT_ID', process.env.DEFAULT_PRODUCT_ID);
 
   const data = new Data();
@@ -79,6 +84,14 @@ class Helpers {
     // TODO: we need this to watch for codegen package changes
     return codegen({ ...options, dryRun: true, apiKey }).concat();
   }
+}
+
+function generateJwt(secret) {
+  const b64 = data => Buffer.from(data).toString('base64url');
+  const header = b64(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = b64(JSON.stringify({ user_id: 'sdk_demo_user', exp: Math.floor(Date.now() / 1000) + 3600 }));
+  const signature = createHmac('sha256', secret).update(`${header}.${payload}`).digest('base64url');
+  return `${header}.${payload}.${signature}`;
 }
 
 function resolveApiKey(options) {
