@@ -127,7 +127,7 @@ export const defaultLayouts = Object.freeze({
   'history': Object.freeze({
     ...BASE_LAYOUTS,
     [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
-    [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true }],
+    [ROLE.THREADS]: [LAYOUT_TYPE.THREADS, { itemType: 'thread', incremental: true, infiniteScroll: true }],
     [ROLE.NEW_THREAD]: [LAYOUT_TYPE.BUTTON, { icon: 'plus', text: 'New chat' }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],

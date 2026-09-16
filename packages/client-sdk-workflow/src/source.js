@@ -30,7 +30,7 @@ function sendApi(client, { group, name, payload, options }) {
 function sendThreadsApi(api, name, payload = {}, options) {
   switch (name) {
     case 'list':
-      return api.getThreads(options);
+      return api.getThreads(payload, options);
     case 'get':
       return api.getThread(payload.thread_id, options);
     case 'update': {

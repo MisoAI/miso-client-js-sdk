@@ -286,6 +286,25 @@ export function writeExhaustionToData(data, { role = ROLE.PRODUCTS } = {}) {
   };
 }
 
+/**
+ * Track the exhaustion state off the response's own word: a paged response
+ * that carries `has_more` states its exhaustion as a fact, unlike the
+ * items-fewer-than-rows inference of writeExhaustionToData.
+ */
+export function writeHasMoreExhaustionToData(data) {
+  const { status, value } = data;
+  if (status !== STATUS.READY || !value || value.has_more !== false) {
+    return data;
+  }
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      exhausted: true,
+    },
+  };
+}
+
 export function carryOverQuestionIdToData(data, oldData) {
   const { question_id } = (oldData && oldData.value) || {};
   if (!question_id) {

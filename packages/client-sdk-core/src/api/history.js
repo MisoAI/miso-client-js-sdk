@@ -9,8 +9,8 @@ export default class UserHistory extends ApiBase {
     super(api, GROUP.ASK_USER_HISTORY);
   }
 
-  async getThreads(options) {
-    return this._run('threads', undefined, { ...options, method: 'GET' });
+  async getThreads(payload, options) {
+    return this._run('threads', payload, { ...options, method: 'GET' });
   }
 
   async getThread(threadId, options) {

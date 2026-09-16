@@ -88,6 +88,62 @@ test('history: refresh() reloads', async () => {
   assert.is(history.status, STATUS.READY);
 });
 
+const PAGED_THREADS = [
+  { thread_id: 't1', title: 'T1', updated_at: '2026-07-30T00:00:00' },
+  { thread_id: 't2', title: 'T2', updated_at: '2026-07-29T00:00:00' },
+  { thread_id: 't3', title: 'T3', updated_at: '2026-07-28T00:00:00' },
+  { thread_id: 't4', title: 'T4', updated_at: '2026-07-27T00:00:00' },
+];
+
+test('history: the list pages through the more flow, until exhausted', async () => {
+  const { client, calls } = createClient({ threads: PAGED_THREADS });
+  const { history } = client.workflows;
+  // the page size is the api option's payload
+  history.useApi('threads/list', { rows: 3 });
+
+  history.start();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2', 't3']);
+  assert.is(history.exhausted, false);
+  assert.ok(calls.includes('GET threads {"rows":3}'));
+
+  // the next page is appended, in the same session, with the offset derived
+  // from the listed records; has_more: false marks the exhaustion
+  history._more();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2', 't3', 't4']);
+  assert.is(history.exhausted, true);
+  assert.ok(calls.includes('GET threads {"rows":3,"start":3}'));
+
+  // exhausted: a further more is ignored
+  history._more();
+  await tick();
+  assert.is(calls.filter(c => c.startsWith('GET threads')).length, 2);
+});
+
+test('history: selection survives a more page; refresh() starts over', async () => {
+  const { client, calls } = createClient({ threads: PAGED_THREADS });
+  const { history } = client.workflows;
+  history.useApi('threads/list', { rows: 3 });
+
+  history.start();
+  await tick();
+  history.select('t2');
+  history._more();
+  await tick();
+  assert.is(history.selectedId, 't2');
+  assert.ok(history.get('t2').selected);
+  assert.ok(!history.get('t4').selected);
+
+  // a reload starts over from the first page, clearing the exhaustion
+  history.refresh();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2', 't3']);
+  assert.is(history.exhausted, false);
+  assert.is(history.selectedId, 't2'); // the selection is carried over
+  assert.is(calls.filter(c => c === 'GET threads {"rows":3}').length, 2);
+});
+
 test('select: conversation workflow loads the thread and merges answers', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;

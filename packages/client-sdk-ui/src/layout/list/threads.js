@@ -8,8 +8,13 @@ const DEFAULT_CLASSNAME = 'miso-threads';
 
 /**
  * The thread list of the chat history interface: a shell that renders one
- * <miso-thread-item> container element per thread item, incrementally — fresh
- * items (the list is newest-first) render as prepended items. The content
+ * <miso-thread-item> container element per thread item, incrementally —
+ * fresh items land at either end of the list: a newly created thread
+ * renders as a prepended item (the list is newest-first), while an older
+ * page fetched by the more flow (infinite scroll: the collection layout's
+ * stock trigger, viewable at the list's bottom, fires the `more` hub
+ * field) renders as appended items — told apart by which boundary the
+ * already-rendered records line up with. The content
  * of an item is not rendered here: each <miso-thread-item> is assigned its item
  * subworkflow (workflow._getThreadWorkflow, off the item binding) in the
  * post-render sync pass, and the role elements inside (the title, and the
@@ -48,22 +53,52 @@ export default class ThreadsLayout extends CollectionLayout {
     return thread.thread_id || thread.placeholder_id || thread;
   }
 
-  // the list is newest-first, so incremental renders PREPEND the fresh items
-  // (the collection layout's stock incremental mode is append-only)
-  _html(state, rendered, incremental) {
-    if (incremental) {
-      const values = this._getItems(state) || [];
-      const fresh = values.slice(0, values.length - rendered.value.length);
-      return fresh.length > 0 ? this.templates.items(this, state, fresh, { offset: 0 }) : '';
+  // incremental renders cover a pure prepend (a created thread) or a pure
+  // append (an older page) — anything else re-renders in full
+  _shallRenderIncrementally(state, rendered) {
+    if (!super._shallRenderIncrementally(state, rendered)) {
+      return false;
     }
-    return this.templates.root(this, state);
+    const values = this._getItems(state) || [];
+    const renderedValues = rendered.value;
+    const count = values.length - renderedValues.length;
+    return count === 0 || // in-place changes only
+      this._getItemKey(values[0]) === this._getItemKey(renderedValues[0]) || // appended
+      this._getItemKey(values[count]) === this._getItemKey(renderedValues[0]); // prepended
+  }
+
+  // the fresh items land at the head (a newly created thread — the list is
+  // newest-first) or at the tail (an older page fetched by the more flow):
+  // told apart by which boundary the already-rendered records line up with
+  _html(state, rendered, incremental) {
+    if (!incremental) {
+      return this.templates.root(this, state);
+    }
+    const values = this._getItems(state) || [];
+    const renderedValues = rendered.value;
+    const count = values.length - renderedValues.length;
+    if (count === 0) {
+      return '';
+    }
+    if (this._getItemKey(values[0]) === this._getItemKey(renderedValues[0])) {
+      const fresh = values.slice(renderedValues.length);
+      return {
+        position: 'beforeend',
+        items: this.templates.items(this, state, fresh, { offset: renderedValues.length }),
+      };
+    }
+    const fresh = values.slice(0, count);
+    return {
+      position: 'afterbegin',
+      items: this.templates.items(this, state, fresh, { offset: 0 }),
+    };
   }
 
   _render(element, { state }, { notifyUpdate }) {
     const { incremental, html } = state;
     if (incremental) {
       if (html) {
-        this._getListElement(element).insertAdjacentHTML('afterbegin', html);
+        this._getListElement(element).insertAdjacentHTML(html.position, html.items);
       } else {
         notifyUpdate(false);
       }

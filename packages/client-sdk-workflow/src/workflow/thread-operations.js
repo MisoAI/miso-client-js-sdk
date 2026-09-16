@@ -73,18 +73,16 @@ export class ThreadOperations {
 }
 
 /**
- * The thread reads, in the same request scheme as the operations: a simple
- * name on the `threads` group, interpreted by the data source. The detail
- * read (the thread id in the payload) serves as the conversation panel's
- * head request, the list read as the history workflow's; both spell their
- * identity out at the call site — fixed endpoints, not api options.
+ * The thread detail read, in the same request scheme as the operations: a
+ * simple name on the `threads` group, the thread id in the payload,
+ * interpreted by the data source. It serves as the conversation panel's
+ * head request, its identity spelled out at the call site — a fixed
+ * endpoint, not an api option. (The list read is the history workflow's
+ * api option instead: same fixed endpoint, but its paging window — and
+ * filters, later — ride the payload, so it is configurable.)
  */
 export function getThreadRequest(threadId) {
   return threadRequest('get', { thread_id: threadId });
-}
-
-export function getThreadListRequest() {
-  return threadRequest('list');
 }
 
 function threadRequest(name, payload, fact) {

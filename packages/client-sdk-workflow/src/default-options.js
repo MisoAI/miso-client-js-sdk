@@ -158,12 +158,31 @@ export default Object.freeze({
     },
   },
 
-  // the chat-history workflows' own endpoints (the thread list, the head
-  // thread request, the answers follow-up) are fixed, spelled out at their
-  // call sites — nothing for useApi() to customize — so the 'conversation'
-  // api option below belongs to the question posting instead. The history
-  // workflow needs no entry; its thread item subworkflows share its
-  // options and defaults, as the message items share the conversation's
+  // the chat-history workflows' fixed endpoints (the head thread request,
+  // the answers follow-up, the thread operations) are spelled out at their
+  // call sites — nothing for useApi() to customize there — so the two api
+  // options below cover what actually is configurable: the history thread
+  // list's paging window, and the conversation's question posting. The
+  // item subworkflows share their parent's options and defaults (the
+  // thread items history's, the message items the conversation's)
+
+  'history': {
+    // the thread list is the workflow's main api: the endpoint is fixed,
+    // but the paging window rides the payload — useApi('threads/list',
+    // { rows: N }) sets the page size (the server default applies when
+    // absent), and list filters will ride the same payload later
+    api: {
+      group: API.GROUP.THREADS,
+      name: 'list',
+    },
+    // the thread list's infinite scroll: the threads layout triggers the
+    // `more` hub field as its trigger scrolls into view, and the next page
+    // is appended below; exhaustion comes from the response's own has_more
+    pagination: {
+      active: true,
+      mode: 'infiniteScroll',
+    },
+  },
 
   'conversation': {
     // the question posting of the message item subworkflows, which share

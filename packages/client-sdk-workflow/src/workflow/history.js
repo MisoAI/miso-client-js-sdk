@@ -1,9 +1,10 @@
 import { asArray } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { ROLE, REQUEST_TYPE } from '../constants.js';
-import { mergeRolesOptions } from './options/index.js';
-import { mixinThreadOperations, ThreadOperations, getThreadListRequest } from './thread-operations.js';
+import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { mergeRolesOptions, makeConfigurable } from './options/index.js';
+import { mixinThreadOperations, ThreadOperations } from './thread-operations.js';
+import { writeHasMoreExhaustionToData } from './processors.js';
 import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
@@ -19,6 +20,14 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * The thread-list panel of the chat history interface, backed by the user
  * history API. Loads the list of threads and manages thread-level operations
  * (select, rename, delete, mark as read).
+ *
+ * The list is the workflow's main api option: the endpoint is fixed, but
+ * the paging window rides the payload (useApi('threads/list', { rows: N })),
+ * and the list loads page by page — the more flow appends the next page
+ * (`start` derived from the listed records) in the same session, triggered
+ * by the threads layout's infinite scroll, until the response says
+ * `has_more: false` (the exhaustion is the response's own word, not a
+ * row-count inference).
  *
  * A peer of the Conversation workflow: the two are created independently,
  * and every call to the peer is guarded by its presence, so the thread list
@@ -59,6 +68,9 @@ export default class History extends Workflow {
       this._views.on(ROLE.THREADS, 'rename', event => this._onViewThreadsRename(event)),
       this._views.on(ROLE.THREADS, 'delete', event => this._onViewThreadsDelete(event)),
       this._views.on(ROLE.NEW_THREAD, 'submit', () => this._onViewNewThreadSubmit()),
+      // the threads layout's infinite scroll trigger, as in the
+      // search-based workflows' more flow
+      this._hub.on(fields.more(), () => this._more()),
       // an operation's fact rides its request: the
       // data actor publishes it on the shared channel and every subscribed
       // actor — this panel's and its peer's — triggers it on its own hub
@@ -73,12 +85,22 @@ export default class History extends Workflow {
   }
 
   /**
+   * Whether the thread list is known to be complete: the latest page's
+   * response said `has_more: false`. Cleared with the session on refresh().
+   */
+  get exhausted() {
+    const data = this._hub.states[fields.data()];
+    return !!(data && data.meta && data.meta.exhausted);
+  }
+
+  /**
    * The id of the selected thread item. The selection lives in the data
-   * layer, as part of the committed value.
+   * layer, as part of the committed value — or, on the valueless commits
+   * of a reload, as the top-level field bridging it to the fresh response.
    */
   get selectedId() {
     const data = this._hub.states[fields.data()];
-    return (data && data.value && data.value.selectedThreadId) || undefined;
+    return (data && (data.value ? data.value.selectedThreadId : data.selectedThreadId)) || undefined;
   }
 
   /**
@@ -104,14 +126,49 @@ export default class History extends Workflow {
 
   /**
    * Reload the thread list. Starts a new session, aborting an in-flight
-   * fetch if any. The request's identity is spelled out here, like the
-   * conversation panel's — the workflow has no api option.
+   * fetch if any, and starts over from the first page. The request's
+   * identity and paging window come from the workflow's api option.
    */
   refresh() {
     this._started = true;
     this.restart();
-    this._request(getThreadListRequest());
+    this._request();
     return this;
+  }
+
+  /**
+   * Load the next page of the thread list, appended below the listed
+   * threads — same session, down the standard data path. Triggered by the
+   * threads layout as its infinite scroll trigger comes into view (the
+   * `more` hub field), like the search-based workflows' more flow.
+   */
+  _more() {
+    if (this.status !== STATUS.READY) {
+      throw new Error(`Can not call more() while loading.`);
+    }
+    // no more pages, ignore
+    if (this.exhausted) {
+      return;
+    }
+    // a more request keeps the current data — and status — on display, so
+    // the trigger can re-arm while the page is being served: one at a time
+    if (this._data.isServing(request => request.type === REQUEST_TYPE.MORE && request.session === this.session)) {
+      return;
+    }
+    // the next offset: the listed records with a server identity — a
+    // thread still being created is local, its placeholder record never
+    // counts toward the server's offsets
+    const start = this.threads.filter(thread => thread.thread_id).length;
+    this._request({ payload: { start }, type: REQUEST_TYPE.MORE });
+  }
+
+  // a more request must not disturb the session's request time, as in the
+  // search-based workflows
+  _writeRequestTimeToSession(timestamp, options = {}) {
+    if (options.type === REQUEST_TYPE.MORE) {
+      return;
+    }
+    super._writeRequestTimeToSession(timestamp, options);
   }
 
   /**
@@ -269,14 +326,16 @@ export default class History extends Workflow {
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
-    if (!data.value) {
-      return data;
-    }
     // the selection is part of the value: local patches carry their own
     // (including an explicit undefined to clear it), while a fresh server
     // response carries none — the current selection is carried over, so it
-    // survives a refresh
-    const selectedThreadId = oldData && oldData.value && oldData.value.selectedThreadId;
+    // survives a refresh. The valueless commits in between (the session
+    // reset, the loading commit) carry it as a top-level field, bridging
+    // it from the wiped value over to the fresh response
+    const selectedThreadId = oldData && (oldData.value ? oldData.value.selectedThreadId : oldData.selectedThreadId);
+    if (!data.value) {
+      return selectedThreadId === undefined ? data : { ...data, selectedThreadId };
+    }
     const value = { selectedThreadId, ...normalizeThreadsValue(data.value) };
     // threads are canonically ordered by latest activity, and each record
     // carries its selection state, so views render it right off the data.
@@ -287,12 +346,42 @@ export default class History extends Workflow {
       const selected = (thread.thread_id || thread.placeholder_id) === value.selectedThreadId;
       return !!thread.selected === selected ? thread : { ...thread, selected };
     });
-    return { ...data, value };
+    // the paged responses carry `has_more`, which rides the value into
+    // every commit, so re-processing (a local patch) restamps consistently
+    return writeHasMoreExhaustionToData({ ...data, value });
   }
 
   _updateDataInHub(data, oldData) {
+    data = this._appendThreadsFromMoreResponse(data);
     super._updateDataInHub(data, oldData);
     this._updateThreadWorkflows();
+  }
+
+  // merge a more page into the current data past the data processor passes,
+  // like the search-based more flow: each page runs the pipeline once, alone
+  _appendThreadsFromMoreResponse(data) {
+    const { request } = data;
+    if (!request || request.type !== REQUEST_TYPE.MORE) {
+      return data;
+    }
+    const current = this._hub.states[fields.data()];
+    if (!data.value) {
+      // the more request's loading commit: keep the current list on display
+      return current || data;
+    }
+    const threads = (current && current.value && current.value.threads) || [];
+    // a record listed already is dropped from the page: a thread created
+    // since the first page shifts the server's offsets, so a page may
+    // overlap what is on display
+    const listed = new Set(threads.map(thread => thread.thread_id));
+    const fresh = data.value.threads.filter(thread => !listed.has(thread.thread_id));
+    return {
+      ...data,
+      value: {
+        ...data.value,
+        threads: [...threads, ...fresh],
+      },
+    };
   }
 
   // threads as item subworkflows //
@@ -362,3 +451,5 @@ export default class History extends Workflow {
 }
 
 mixinThreadOperations(History.prototype);
+
+makeConfigurable(History.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION]);

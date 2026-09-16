@@ -152,6 +152,7 @@ misocmd.push(async () => {
     userHistory.touchThread(thread.thread_id, { generate: true }, { seed: 100 + i });
   });
   const client = new MisoClient('...');
+  //client.workflows.history.useApi({ rows: 5 });
   client.workflows.history.start();
   // simulate server-side activity: touch a random thread, generating a fresh
   // answer in it, so the update indicators can be exercised on demand

@@ -37,9 +37,14 @@ export function createClient({
   const interactions = []; // interaction payloads uploaded by the workflows
 
   const userHistory = {
-    async getThreads() {
-      calls.push('GET threads');
-      return { threads: threads.map(thread => ({ ...thread })) };
+    // pages like the real list API: start/rows in, has_more out
+    async getThreads(payload) {
+      const paged = payload && Object.keys(payload).length > 0;
+      calls.push(paged ? `GET threads ${JSON.stringify(payload)}` : 'GET threads');
+      const all = threads.map(thread => ({ ...thread }));
+      const { start = 0, rows = all.length } = payload || {};
+      const page = all.slice(start, start + rows);
+      return { threads: page, has_more: start + page.length < all.length };
     },
     async getThread(threadId) {
       calls.push(`GET threads/${threadId}`);
