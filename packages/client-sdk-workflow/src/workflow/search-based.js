@@ -8,6 +8,11 @@ import { enableUseLink } from './use-link.js';
 
 const DEFAULT_PAGE_LIMIT = 10;
 
+// the more request is an idempotent read, so transient failures (network,
+// timeout, 5xx) are retried at the fetch layer; the initial query is not —
+// it fails fast into the error state, with the user's own retry at hand
+const MORE_REQUEST_OPTIONS = Object.freeze({ retry: 2 });
+
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.PRODUCTS,
   members: [ROLE.QUERY, ROLE.PRODUCTS, ROLE.KEYWORDS, ROLE.TOTAL, ROLE.FACETS, ROLE.SORT, ROLE.MORE],
@@ -123,7 +128,7 @@ export default class SearchBasedWorkflow extends Workflow {
     const query = this._getQuery();
     const payload = this._buildPayload(query, type);
 
-    this._request({ payload, type });
+    this._request({ payload, type, options: MORE_REQUEST_OPTIONS });
   }
 
   _getQuery() {
@@ -236,8 +241,30 @@ export default class SearchBasedWorkflow extends Workflow {
     if (!metadata || !metadata.page) {
       return writeMisoIdAsRootMisoId(data); // not from "more" request
     }
-    // concat records if it's from "more" request
     const currentData = this._hub.states[fields.data()];
+    if (data.error) {
+      // a failed page (retries spent — see MORE_REQUEST_OPTIONS): keep the
+      // current results on display — back at ready status, since the more
+      // request's loading commit holds the results but stamps `loading` —
+      // parked as exhausted so paging stops cleanly. Left alone, the
+      // erroneous status would stick for the rest of the session: the
+      // container flipped into its error state and the infinite scroll
+      // disarmed, with the results only accidentally still in the DOM.
+      // The next query or refine starts a fresh session anyway
+      if (currentData && currentData.value) {
+        return {
+          ...currentData,
+          status: STATUS.READY,
+          meta: {
+            ...currentData.meta,
+            exhausted: true,
+          },
+        };
+      }
+      return currentData || data;
+    }
+    // concat records if it's from "more" request (the loading commit merges
+    // here too: the products stay in the value through the loading status)
     return concatItemsFromMoreResponse(currentData, data, { role: this._roles.main });
   }
 

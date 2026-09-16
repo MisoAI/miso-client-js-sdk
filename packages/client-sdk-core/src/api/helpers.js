@@ -13,14 +13,36 @@ export default class ApiHelpers {
     method = 'POST',
     headers,
     timeout,
+    retry,
     ...options
   } = {}) {
-    const { apiKey, request = {} } = this._client.options;
+    const { request = {} } = this._client.options;
     timeout = timeout || request.timeout;
+    // retries on top of the first attempt, for failures that may be
+    // transient — network errors, timeouts, and server (5xx) errors;
+    // client (4xx) and application errors are deterministic, not retried.
+    // Off by default: a retried POST is not safe for non-idempotent calls
+    // (e.g. posting a question), so it is opted in per request via the
+    // request options, or client-wide via `options.request.retry`
+    retry = retry !== undefined ? retry : (request.retry || 0);
 
     // TODO: organize arguments
     const body = method !== 'GET' && payload != undefined ? JSON.stringify(payload) : undefined;
 
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this._fetch(url, { method, headers, timeout, body, ...options });
+      } catch (error) {
+        if (attempt >= retry || !isRetryableFetchError(error)) {
+          throw error;
+        }
+      }
+    }
+  }
+
+  // one attempt; the timeout signal is created per attempt, so a retried
+  // attempt gets a full window of its own
+  async _fetch(url, { method, headers, timeout, body, ...options }) {
     // TODO: merge signal from options if any
     const signal = timeout ? AbortSignal.timeout(timeout) : undefined;
 
@@ -142,4 +164,11 @@ export default class ApiHelpers {
     return headers;
   }
 
+}
+
+// no status: a network failure, a timeout, or an unparsable body — all
+// transport-level; 5xx: the server's own failure. A 4xx or an
+// application-level error (2xx with `errors`) is deterministic
+function isRetryableFetchError(error) {
+  return error.status === undefined || error.status >= 500;
 }

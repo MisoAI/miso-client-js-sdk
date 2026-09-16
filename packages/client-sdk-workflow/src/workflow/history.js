@@ -7,6 +7,11 @@ import { mixinThreadOperations, ThreadOperations } from './thread-operations.js'
 import { writeHasMoreExhaustionToData } from './processors.js';
 import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
 
+// the list requests are idempotent reads, so transient failures (network,
+// timeout, 5xx) are worth another try or two at the fetch layer — a failed
+// more page otherwise parks the list as exhausted right away
+const LIST_REQUEST_OPTIONS = Object.freeze({ retry: 2 });
+
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.THREADS,
   members: [ROLE.THREADS, ROLE.NEW_THREAD],
@@ -87,8 +92,10 @@ export default class History extends Workflow {
   }
 
   /**
-   * Whether the thread list is known to be complete: the latest page's
-   * response said `has_more: false`. A restart() wipes it with the data.
+   * Whether the paging has stopped: the latest page's response said
+   * `has_more: false` (the list is complete) — or a page failed with its
+   * retries spent, parking the list (see _appendThreadsFromMoreResponse).
+   * A restart() wipes it with the data.
    */
   get exhausted() {
     const data = this._hub.states[fields.data()];
@@ -129,7 +136,7 @@ export default class History extends Workflow {
    */
   start() {
     if (this.status === STATUS.INITIAL) {
-      this._request();
+      this._request({ options: LIST_REQUEST_OPTIONS });
     }
     return this;
   }
@@ -159,7 +166,7 @@ export default class History extends Workflow {
     // thread still being created is local, its placeholder record never
     // counts toward the server's offsets
     const start = this.threads.filter(thread => thread.thread_id).length;
-    this._request({ payload: { start }, type: REQUEST_TYPE.MORE });
+    this._request({ payload: { start }, type: REQUEST_TYPE.MORE, options: LIST_REQUEST_OPTIONS });
   }
 
   // a more request must not disturb the session's request time, as in the
@@ -364,9 +371,23 @@ export default class History extends Workflow {
     }
     const current = this._hub.states[fields.data()];
     if (!value) {
-      // the more request's loading (or erroneous) commit: keep the current
-      // list — and its ready status — on display
-      return current || data;
+      // the more request's loading commit: keep the current list — and its
+      // ready status — on display
+      if (!data.error || !current || !current.value) {
+        return current || data;
+      }
+      // a failed page (retries spent — see LIST_REQUEST_OPTIONS): with the
+      // ready status retained, the trigger would re-arm and refire into
+      // the same failure, looping with no backoff — so the failure parks
+      // the list as exhausted, breaking the loop; paging resumes only
+      // with a hard reset (restart() + start())
+      return {
+        ...current,
+        meta: {
+          ...current.meta,
+          exhausted: true,
+        },
+      };
     }
     const threads = (current && current.value && current.value.threads) || [];
     // the page was requested against the list on display: if the list has

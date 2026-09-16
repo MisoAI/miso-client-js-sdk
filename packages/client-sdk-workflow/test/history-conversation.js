@@ -154,6 +154,42 @@ test('history: the workflow never restarts itself — one session for life', asy
   assert.is(history.session, session); // still the construction-time session
 });
 
+test('history: a failed more page parks the list, breaking the retrigger loop', async () => {
+  const { client, calls } = createClient({ threads: PAGED_THREADS });
+  const { history } = client.workflows;
+  history.useApi('threads/list', { rows: 2 });
+
+  history.start();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2']);
+
+  // the next page fails for good (past the fetch-layer retries)
+  const userHistory = client.api.ask.userHistory;
+  const getThreads = userHistory.getThreads;
+  userHistory.getThreads = async payload => {
+    calls.push(`GET threads ${JSON.stringify(payload)} -> error`);
+    throw new Error('boom');
+  };
+  history._more();
+  await tick();
+  // the list — and its ready status — stay on display, parked as exhausted
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2']);
+  assert.is(history.status, STATUS.READY);
+  assert.is(history.exhausted, true);
+
+  // no further page is requested: the trigger refiring is a no-op
+  history._more();
+  await tick();
+  assert.is(calls.filter(c => c.endsWith('-> error')).length, 1);
+
+  // the hard reset starts over
+  userHistory.getThreads = getThreads;
+  history.restart().start();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2']);
+  assert.is(history.exhausted, false);
+});
+
 test('history: a more page landing after the list changed under it is dropped', async () => {
   const { client, calls } = createClient({ threads: PAGED_THREADS });
   const { history } = client.workflows;
