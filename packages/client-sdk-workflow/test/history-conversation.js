@@ -76,16 +76,19 @@ test('history: thread items fall back to question_id / time', async () => {
   ]);
 });
 
-test('history: refresh() reloads', async () => {
+test('history: restart() + start() is the hard reset', async () => {
   const { client, calls } = createClient();
   const { history } = client.workflows;
+  const session = history.session;
 
   history.start();
   await tick();
-  history.refresh();
+  history.restart(); // wipes the data, so start() takes off again
+  history.start();
   await tick();
   assert.is(calls.filter(c => c === 'GET threads').length, 2);
   assert.is(history.status, STATUS.READY);
+  assert.is.not(history.session, session);
 });
 
 const PAGED_THREADS = [
@@ -121,8 +124,8 @@ test('history: the list pages through the more flow, until exhausted', async () 
   assert.is(calls.filter(c => c.startsWith('GET threads')).length, 2);
 });
 
-test('history: selection survives a more page; refresh() starts over', async () => {
-  const { client, calls } = createClient({ threads: PAGED_THREADS });
+test('history: selection survives a more page', async () => {
+  const { client } = createClient({ threads: PAGED_THREADS });
   const { history } = client.workflows;
   history.useApi('threads/list', { rows: 3 });
 
@@ -134,14 +137,46 @@ test('history: selection survives a more page; refresh() starts over', async () 
   assert.is(history.selectedId, 't2');
   assert.ok(history.get('t2').selected);
   assert.ok(!history.get('t4').selected);
+});
 
-  // a reload starts over from the first page, clearing the exhaustion
-  history.refresh();
+test('history: the workflow never restarts itself — one session for life', async () => {
+  const { client, calls } = createClient({ threads: PAGED_THREADS });
+  const { history } = client.workflows;
+  history.useApi('threads/list', { rows: 3 });
+  const session = history.session; // created with the workflow
+
+  history.start();
+  history.start(); // idempotent: the status is no longer initial
   await tick();
-  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2', 't3']);
-  assert.is(history.exhausted, false);
-  assert.is(history.selectedId, 't2'); // the selection is carried over
-  assert.is(calls.filter(c => c === 'GET threads {"rows":3}').length, 2);
+  history._more();
+  await tick();
+  assert.is(calls.filter(c => c.startsWith('GET threads')).length, 2);
+  assert.is(history.session, session); // still the construction-time session
+});
+
+test('history: a more page landing after the list changed under it is dropped', async () => {
+  const { client, calls } = createClient({ threads: PAGED_THREADS });
+  const { history } = client.workflows;
+  history.useApi('threads/list', { rows: 2 });
+
+  history.start();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t1', 't2']);
+
+  // the page is requested against ['t1', 't2'] (start: 2), but a deletion
+  // shifts the offsets while it is in flight: the stale page is dropped
+  history._more();
+  history.delete('t1');
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t2']);
+
+  // the next more refetches from the fresh offset, overlapping records
+  // deduped
+  history._more();
+  await tick();
+  assert.equal(history.threads.map(t => t.thread_id), ['t2', 't3']);
+  assert.ok(calls.includes('GET threads {"rows":2,"start":2}'));
+  assert.ok(calls.includes('GET threads {"rows":2,"start":1}'));
 });
 
 test('select: conversation workflow loads the thread and merges answers', async () => {

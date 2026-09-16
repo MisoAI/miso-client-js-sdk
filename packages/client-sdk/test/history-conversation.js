@@ -98,7 +98,7 @@ test('lorem: rename syncs the list and the open panel', async () => {
   assert.is(history.get(threadId).title, 'Soup talk');
   assert.is(conversation.thread.title, 'Soup talk');
   // the rename is persisted on the (lorem) server
-  history.refresh();
+  history.restart().start(); // the hard-reset reload
   await tick();
   assert.is(history.threads[0].title, 'Soup talk');
 });
@@ -124,7 +124,7 @@ test('lorem: deleting the open thread resets the panel', async () => {
   assert.is(conversation.thread.placeholder, true);
   assert.equal(conversation.messages, []);
   // the deletion is persisted on the (lorem) server
-  history.refresh();
+  history.restart().start(); // the hard-reset reload
   await tick();
   assert.is(history.threads.length, 1);
 });
@@ -148,7 +148,7 @@ test('lorem: opening an unread thread marks it as read', async () => {
   assert.ok(conversation.messages.length > 0);
   assert.is(history.get(threadId).has_new, false);
   // persisted on the (lorem) server
-  history.refresh();
+  history.restart().start(); // the hard-reset reload
   await tick();
   assert.is(history.get(threadId).has_new, false);
 });
@@ -239,7 +239,7 @@ test('lorem: deleteAll clears the history', async () => {
   await tick();
 
   assert.equal(history.threads, []);
-  history.refresh();
+  history.restart().start(); // the hard-reset reload
   await tick();
   assert.equal(history.threads, []);
 });

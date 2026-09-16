@@ -24,10 +24,17 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * The list is the workflow's main api option: the endpoint is fixed, but
  * the paging window rides the payload (useApi('threads/list', { rows: N })),
  * and the list loads page by page — the more flow appends the next page
- * (`start` derived from the listed records) in the same session, triggered
- * by the threads layout's infinite scroll, until the response says
- * `has_more: false` (the exhaustion is the response's own word, not a
- * row-count inference).
+ * (`start` derived from the listed records), triggered by the threads
+ * layout's infinite scroll, until the response says `has_more: false`
+ * (the exhaustion is the response's own word, not a row-count inference).
+ *
+ * The workflow never restarts itself, and there is no soft reload: its
+ * construction-time session serves for life, the list keeps itself in
+ * sync through the operation facts and the new-thread announcements, and
+ * staleness is guarded by the data (one list request at a time, and a
+ * more page must still line up with the listed records' offset), not by
+ * session bumps. The hard reset is the generic workflow idiom: restart()
+ * — a new session, in-flight requests discarded — then start().
  *
  * A peer of the Conversation workflow: the two are created independently,
  * and every call to the peer is guarded by its presence, so the thread list
@@ -48,11 +55,6 @@ export default class History extends Workflow {
       // actor, carrying the thread operation facts across the two hubs
       extraOptions: { api: { threadEvents: events } },
     });
-  }
-
-  _initProperties(args) {
-    super._initProperties(args);
-    this._started = false;
   }
 
   // the conversation panel workflow, if constructed
@@ -86,7 +88,7 @@ export default class History extends Workflow {
 
   /**
    * Whether the thread list is known to be complete: the latest page's
-   * response said `has_more: false`. Cleared with the session on refresh().
+   * response said `has_more: false`. A restart() wipes it with the data.
    */
   get exhausted() {
     const data = this._hub.states[fields.data()];
@@ -95,12 +97,11 @@ export default class History extends Workflow {
 
   /**
    * The id of the selected thread item. The selection lives in the data
-   * layer, as part of the committed value — or, on the valueless commits
-   * of a reload, as the top-level field bridging it to the fresh response.
+   * layer, as part of the committed value.
    */
   get selectedId() {
     const data = this._hub.states[fields.data()];
-    return (data && (data.value ? data.value.selectedThreadId : data.selectedThreadId)) || undefined;
+    return (data && data.value && data.value.selectedThreadId) || undefined;
   }
 
   /**
@@ -112,35 +113,32 @@ export default class History extends Workflow {
   }
 
   // lifecycle //
+  // The workflow never restarts itself: the one session — created with the
+  // workflow, like every workflow's — serves for its whole life. The
+  // list requests stale-guard on data instead of session bumps, and being
+  // started is a matter of the data status, not a flag. There is no soft
+  // reload either: the list keeps itself in sync through the operation
+  // facts and the new-thread announcements, and the hard reset is the
+  // generic workflow idiom — restart() (a new session, in-flight requests
+  // discarded) then start()
+
   /**
-   * Load the thread list. Idempotent: only the first call takes effect; use
-   * refresh() to reload.
+   * Load the thread list. Idempotent: only a workflow that has not
+   * requested anything yet (status `initial`) takes off. To reload from
+   * scratch, restart() and start().
    */
   start() {
-    if (!this._started) {
-      this._started = true;
-      this.refresh();
+    if (this.status === STATUS.INITIAL) {
+      this._request();
     }
     return this;
   }
 
   /**
-   * Reload the thread list. Starts a new session, aborting an in-flight
-   * fetch if any, and starts over from the first page. The request's
-   * identity and paging window come from the workflow's api option.
-   */
-  refresh() {
-    this._started = true;
-    this.restart();
-    this._request();
-    return this;
-  }
-
-  /**
    * Load the next page of the thread list, appended below the listed
-   * threads — same session, down the standard data path. Triggered by the
-   * threads layout as its infinite scroll trigger comes into view (the
-   * `more` hub field), like the search-based workflows' more flow.
+   * threads — down the standard data path. Triggered by the threads layout
+   * as its infinite scroll trigger comes into view (the `more` hub field),
+   * like the search-based workflows' more flow.
    */
   _more() {
     if (this.status !== STATUS.READY) {
@@ -150,9 +148,11 @@ export default class History extends Workflow {
     if (this.exhausted) {
       return;
     }
-    // a more request keeps the current data — and status — on display, so
-    // the trigger can re-arm while the page is being served: one at a time
-    if (this._data.isServing(request => request.type === REQUEST_TYPE.MORE && request.session === this.session)) {
+    // the list requests keep the current data — and status — on display
+    // while being served, so the trigger can re-arm mid-flight: one list
+    // request at a time (the thread operations are exempt — independent,
+    // fire-and-forget)
+    if (this._data.isServing(request => request.type !== REQUEST_TYPE.THREADS)) {
       return;
     }
     // the next offset: the listed records with a server identity — a
@@ -326,16 +326,14 @@ export default class History extends Workflow {
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
+    if (!data.value) {
+      return data;
+    }
     // the selection is part of the value: local patches carry their own
     // (including an explicit undefined to clear it), while a fresh server
-    // response carries none — the current selection is carried over, so it
-    // survives a refresh. The valueless commits in between (the session
-    // reset, the loading commit) carry it as a top-level field, bridging
-    // it from the wiped value over to the fresh response
-    const selectedThreadId = oldData && (oldData.value ? oldData.value.selectedThreadId : oldData.selectedThreadId);
-    if (!data.value) {
-      return selectedThreadId === undefined ? data : { ...data, selectedThreadId };
-    }
+    // response — a more page brings no selection of its own — has the
+    // current selection carried over
+    const selectedThreadId = oldData && oldData.value && oldData.value.selectedThreadId;
     const value = { selectedThreadId, ...normalizeThreadsValue(data.value) };
     // threads are canonically ordered by latest activity, and each record
     // carries its selection state, so views render it right off the data.
@@ -360,25 +358,34 @@ export default class History extends Workflow {
   // merge a more page into the current data past the data processor passes,
   // like the search-based more flow: each page runs the pipeline once, alone
   _appendThreadsFromMoreResponse(data) {
-    const { request } = data;
+    const { request, value } = data;
     if (!request || request.type !== REQUEST_TYPE.MORE) {
       return data;
     }
     const current = this._hub.states[fields.data()];
-    if (!data.value) {
-      // the more request's loading commit: keep the current list on display
+    if (!value) {
+      // the more request's loading (or erroneous) commit: keep the current
+      // list — and its ready status — on display
       return current || data;
     }
     const threads = (current && current.value && current.value.threads) || [];
+    // the page was requested against the list on display: if the list has
+    // changed while the page was in flight — a deletion removed a record,
+    // a created thread settled — the offsets no longer line up, so the
+    // stale page is dropped (the trigger re-arms and refetches from the
+    // fresh offset)
+    if (request.payload.start !== threads.filter(thread => thread.thread_id).length) {
+      return current || data;
+    }
     // a record listed already is dropped from the page: a thread created
-    // since the first page shifts the server's offsets, so a page may
-    // overlap what is on display
+    // server-side since the first page shifts the server's offsets, so a
+    // page may overlap what is on display
     const listed = new Set(threads.map(thread => thread.thread_id));
-    const fresh = data.value.threads.filter(thread => !listed.has(thread.thread_id));
+    const fresh = value.threads.filter(thread => !listed.has(thread.thread_id));
     return {
       ...data,
       value: {
-        ...data.value,
+        ...value,
         threads: [...threads, ...fresh],
       },
     };
