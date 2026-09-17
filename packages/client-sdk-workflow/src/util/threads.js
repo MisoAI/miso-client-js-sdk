@@ -56,15 +56,18 @@ export function sortThreadsByLatest(threads = []) {
  * `{ thread, messages }`: the entire response — the thread metadata and its
  * `questions_ids`, with no message content — becomes the thread record, and
  * the messages start as `{ question_id }` records, to be filled in by the
- * answers follow-up request.
+ * answers follow-up request. A page fetched newest-first (order: desc)
+ * passes `descending`, so the messages come out in display (ascending)
+ * order either way.
  */
-export function normalizeThreadValue(value) {
+export function normalizeThreadValue(value, { descending = false } = {}) {
   // messages already present -> already normalized (and possibly merged with
   // answers); leave them alone so re-processing (e.g. a local patch) is safe
   if (!value || value.messages) {
     return value;
   }
-  const messages = (value.questions_ids || []).map(question_id => ({ question_id }));
+  const ids = value.questions_ids || [];
+  const messages = (descending ? [...ids].reverse() : ids).map(question_id => ({ question_id }));
   return { thread: value, messages };
 }
 
@@ -74,6 +77,15 @@ export function normalizeThreadValue(value) {
  */
 export function isUpdateMessage(message) {
   return !!(message && message.metadata && message.metadata.miso_generated_by === 'answer_update_monitor');
+}
+
+/**
+ * Whether the message's answer content is still to be fetched: absent or
+ * unfinished — excluding a live message (its content streams in from the
+ * posting request) and one settled by a fetch error (the `error` mark).
+ */
+export function isMessageUnsettled(message) {
+  return !message.live && !message.error && (message.answer === undefined || message.finished === false);
 }
 
 /**
@@ -88,10 +100,28 @@ export function getUnsettledQuestionIds(value) {
   }
   return [...new Set(
     value.messages
-      .filter(message => !message.live && (message.answer === undefined || message.finished === false))
+      .filter(isMessageUnsettled)
       .map(message => message.question_id)
       .filter(Boolean)
   )];
+}
+
+/**
+ * Settle the messages still waiting for their contents with a fetch error:
+ * the answers stream ended erroneously — its polling already tolerates
+ * transient failures, so by now the pending contents are not arriving —
+ * and every unsettled message takes the `error` mark: excluded from
+ * further polling (so the paging unblocks too), presented as erroneous by
+ * its item. A reload of the thread starts over. Settled records keep their
+ * identity, so only the errored items see a change.
+ */
+export function writeAnswersErrorToMessages(data) {
+  const value = data && data.value;
+  if (!value || !value.messages) {
+    return data;
+  }
+  const messages = value.messages.map(message => isMessageUnsettled(message) ? { ...message, error: true } : message);
+  return { ...data, value: { ...value, messages } };
 }
 
 /**
@@ -123,7 +153,52 @@ export function mergeAnswersDataFromResponse(oldData, newData) {
   return {
     ...newData,
     request: (oldData && oldData.request) || newData.request,
+    // the current meta rides along, like the head request: it carries e.g.
+    // the paging exhaustion, which an answers batch knows nothing about
+    meta: { ...(oldData && oldData.meta), ...newData.meta },
     value: { ...oldValue, messages },
+  };
+}
+
+/**
+ * Merge an older messages page (a more-typed thread detail response, its
+ * value homogenized to `{ thread, messages }` in display order) into the
+ * current data: the page's messages are prepended above the displayed
+ * ones — the displayed thread record stays (the page's copy is redundant),
+ * and the head request is restored, so the paging stays an internal detail
+ * of the data flow, like the answers merge. A valueless update (the more
+ * request's loading commit) keeps the current data on display. The page
+ * was requested against the messages on display (`after` = the oldest
+ * displayed question id): if the display has moved on and the cursor no
+ * longer lines up, the stale page is dropped.
+ */
+export function mergeOlderMessagesFromResponse(oldData, newData) {
+  if (!newData.value) {
+    // the more request's loading commit keeps the current data on display;
+    // a failed page (retries spent) additionally parks the paging as
+    // exhausted — with the ready status retained, the trigger would re-arm
+    // and refire into the same failure — recovered by reloading the thread
+    if (newData.error && oldData && oldData.value) {
+      return { ...oldData, meta: { ...oldData.meta, exhausted: true } };
+    }
+    return oldData;
+  }
+  const oldValue = (oldData && oldData.value) || {};
+  const oldMessages = oldValue.messages || [];
+  const first = oldMessages[0];
+  const { after } = (newData.request && newData.request.payload) || {};
+  if (!first || first.question_id !== after) {
+    return oldData;
+  }
+  // a record displayed already is dropped from the page, just in case
+  const displayed = new Set(oldMessages.map(message => message.question_id));
+  const fresh = (newData.value.messages || []).filter(message => !displayed.has(message.question_id));
+  return {
+    ...newData,
+    request: (oldData && oldData.request) || newData.request,
+    // the page's meta may carry the exhaustion (has_more: false)
+    meta: { ...(oldData && oldData.meta), ...newData.meta },
+    value: { ...oldValue, messages: [...fresh, ...oldMessages] },
   };
 }
 
@@ -151,6 +226,9 @@ export function mergeFollowUpDataFromResponse(oldData, newData) {
   return {
     ...newData,
     request: (oldData && oldData.request) || typelessRequest,
+    // the current meta rides along, like the head request (e.g. the paging
+    // exhaustion)
+    meta: { ...(oldData && oldData.meta), ...newData.meta },
     value: { ...oldValue, messages },
   };
 }

@@ -337,6 +337,41 @@
     flex-direction: column;
     gap: 0.75rem;
     color: var(--miso-text-color);
+
+    // a message still loading its content reserves a plausible height, so a
+    // freshly paged-in batch of shells does not collapse the list and pull
+    // the infinite scroll trigger (above the list) into view; the arriving
+    // content replaces the reservation — a settled short message keeps its
+    // natural height
+    &[status~='loading'] {
+      min-height: var(--miso-message-loading-height, 6rem);
+    }
+    // the erroneous presentation swaps the content out wholesale: the
+    // error notice shows (visible-when) and the packed content hides
+    &[status~='erroneous'] .miso-messages__content {
+      display: none;
+    }
+  }
+  // the regular content of a message, packed so the erroneous presentation
+  // can swap it out as one piece
+  .miso-messages__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  // the sources heading, sized as the hybrid-search UI's h3 phrase
+  .miso-messages__sources-phrase {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  // a message whose content fetch failed for good (visible-when its item's
+  // status is erroneous): a muted notice in place of the content
+  .miso-messages__error {
+    color: var(--miso-text-color-gray);
+    font-style: italic;
+    text-align: center;
+    padding: 0.5rem 0;
   }
   .miso-messages__question {
     display: block;

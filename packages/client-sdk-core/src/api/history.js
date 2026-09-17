@@ -13,8 +13,8 @@ export default class UserHistory extends ApiBase {
     return this._run('threads', payload, { ...options, method: 'GET' });
   }
 
-  async getThread(threadId, options) {
-    return this._run(`threads/${threadId}`, undefined, { ...options, method: 'GET' });
+  async getThread(threadId, payload, options) {
+    return this._run(`threads/${threadId}`, payload, { ...options, method: 'GET' });
   }
 
   async updateThread(threadId, payload, options) {

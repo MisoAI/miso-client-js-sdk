@@ -232,7 +232,7 @@ test('select: conversation workflow loads the thread and merges answers', async 
   assert.equal(conversation.messages, answersOf(['q1', 'q2']));
   // the head request is served by the threads model alone: the data actor
   // bypasses it (actor: false), so it is fetched exactly once
-  assert.is(calls.filter(c => c === 'GET threads/t2').length, 1);
+  assert.is(calls.filter(c => c.startsWith('GET threads/t2')).length, 1);
   assert.ok(calls.some(c => c.startsWith('POST ask/answers') && c.includes('"question_ids":["q1","q2"]')));
 });
 
@@ -586,7 +586,7 @@ test('deleteAll: clears the list and resets the panel', async () => {
 test('conversation: loading the current thread again is a no-op unless forced', async () => {
   const { client, calls } = createClient();
   const { conversation } = client.workflows;
-  const heads = () => calls.filter(c => c === 'GET threads/t1').length;
+  const heads = () => calls.filter(c => c.startsWith('GET threads/t1')).length;
 
   conversation.load('t1');
   await tick();
@@ -653,7 +653,7 @@ test('messages: useApi on the conversation configures the posting api', async ()
   assert.ok(call.includes('"custom_flag":1'));
   // the conversation's own requests bypass the api option — their
   // identities (and payloads) are fixed at the call sites
-  assert.ok(calls.includes('GET threads/t1'));
+  assert.ok(calls.some(c => c.startsWith('GET threads/t1')));
   const answersCall = calls.find(c => c.startsWith('POST ask/answers'));
   assert.ok(answersCall);
   assert.not.ok(answersCall.includes('custom_flag'));

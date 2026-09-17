@@ -147,6 +147,9 @@ misocmd.push(async () => {
   // seed the user history with server-side threads, some unread
   const { userHistory } = MisoClient.lorem.api.ask;
   userHistory.generateThreads({ rows: 12 }, { seed: 42 });
+  // one long thread, to exercise the message paging (infinite scroll up:
+  // 40 questions page in 30 + 10, their contents in batches of 10)
+  userHistory.generateThreads({ rows: 1, questionRows: 40 }, { seed: 43 });
   // touch a few threads up front, so update indicators show right away
   userHistory.threads().threads.filter(t => t.subscribed).slice(0, 3).forEach((thread, i) => {
     userHistory.touchThread(thread.thread_id, { generate: true }, { seed: 100 + i });

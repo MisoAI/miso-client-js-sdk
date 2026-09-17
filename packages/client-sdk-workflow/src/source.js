@@ -31,8 +31,10 @@ function sendThreadsApi(api, name, payload = {}, options) {
   switch (name) {
     case 'list':
       return api.getThreads(payload, options);
-    case 'get':
-      return api.getThread(payload.thread_id, options);
+    case 'get': {
+      const { thread_id, ...rest } = payload;
+      return api.getThread(thread_id, rest, options);
+    }
     case 'update': {
       const { thread_id, ...changes } = payload;
       return api.updateThread(thread_id, changes, options);

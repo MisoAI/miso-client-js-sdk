@@ -46,12 +46,30 @@ export function createClient({
       const page = all.slice(start, start + rows);
       return { threads: page, has_more: start + page.length < all.length };
     },
-    async getThread(threadId) {
-      calls.push(`GET threads/${threadId}`);
+    // pages like the real thread detail API: order/after/rows in (order
+    // applied first, then the after cursor, then the rows cut), has_more out
+    async getThread(threadId, payload) {
+      const paged = payload && Object.keys(payload).length > 0;
+      calls.push(paged ? `GET threads/${threadId} ${JSON.stringify(payload)}` : `GET threads/${threadId}`);
       if (threadDetailError) {
         throw threadDetailError;
       }
-      return createdThreads.get(threadId) || threadDetail(threadId);
+      const detail = createdThreads.get(threadId) || threadDetail(threadId);
+      if (!paged) {
+        return detail;
+      }
+      const { order, after, rows = 30 } = payload;
+      let questions_ids = [...(detail.questions_ids || [])];
+      if (order === 'desc') {
+        questions_ids.reverse();
+      }
+      if (after !== undefined) {
+        const index = questions_ids.indexOf(after);
+        if (index > -1) {
+          questions_ids = questions_ids.slice(index + 1);
+        }
+      }
+      return { ...detail, questions_ids: questions_ids.slice(0, rows), has_more: questions_ids.length > rows };
     },
     async updateThread(threadId, payload) {
       calls.push(`PUT threads/${threadId} ${JSON.stringify(payload)}`);

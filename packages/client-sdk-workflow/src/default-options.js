@@ -204,6 +204,18 @@ export default Object.freeze({
     trackers: {
       ...ANSWER_BASED_TRACKERS,
     },
+    // the messages paging of the panel, chat-style from the bottom: the
+    // head thread request fetches the newest `rows` question ids (order:
+    // desc), the more flow prepends older pages as the messages layout's
+    // trigger (at the top of the list) scrolls into view, and each answers
+    // poll fetches content for at most `answersRows` messages, newest
+    // unsettled first
+    pagination: {
+      active: true,
+      mode: 'infiniteScroll',
+      rows: 30,
+      answersRows: 10,
+    },
   },
 
   'explore': {

@@ -2,10 +2,10 @@ import { trimObj, uuidv4, mergeInteractions, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { getThreadRequest, ThreadOperations } from './thread-operations.js';
-import { ROLE, REQUEST_TYPE, QUESTION_SOURCE } from '../constants.js';
+import { ROLE, STATUS, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
-import { writeThreadAsRead, writeAnswerInfoToInteraction } from './processors.js';
-import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse } from '../util/threads.js';
+import { writeThreadAsRead, writeHasMoreExhaustionToData, writeAnswerInfoToInteraction } from './processors.js';
+import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, writeAnswersErrorToMessages } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -23,6 +23,13 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
     [ROLE.SUBSCRIPTION]: 'thread.subscribed',
   },
 });
+
+// the thread page requests (head and older pages) are idempotent reads, so
+// transient failures (network, timeout, 5xx) are worth another try or two
+// at the fetch layer — like the history list's; the answers polling brings
+// its own tolerance instead (a failed poll is skipped, the stream ending
+// only after consecutive failures pass the polling error limit)
+const THREAD_REQUEST_OPTIONS = Object.freeze({ retry: 2 });
 
 // the answers (follow-up) request's identity, spelled out at the call site
 // like the head thread request's (getThreadRequest): the endpoint is fixed
@@ -54,8 +61,16 @@ const ANSWERS_REQUEST = Object.freeze({
  * 1. THREAD (head): `GET threads/{id}` retrieves the thread
  *    detail: the thread record — assumed to carry the same properties as
  *    the thread list API — and its turns, as question ids (or records
- *    without answer bodies).
- * 2. ANSWERS (follow-up): when the head data
+ *    without answer bodies). The panel pages from the bottom, chat-style:
+ *    the head fetches the newest page only (order: desc, the pagination
+ *    options' `rows`), reversed into display order.
+ * 2. MORE (older page): the messages layout's infinite scroll trigger (at
+ *    the top of the list) fires the `more` hub field as the user scrolls
+ *    up, and _more() fetches the previous page (`after` = the oldest
+ *    displayed question id), prepended above the displayed messages
+ *    (`mergeOlderMessagesFromResponse`) — until a response says
+ *    `has_more: false`, the exhaustion.
+ * 3. ANSWERS (follow-up): when the head (or an older-page) data
  *    lands with unsettled messages, a polling request is issued — the
  *    answers api returns a polling iterable (question_ids given as a
  *    function, resolved per poll; _requestAnswersIfNecessary) that the data
@@ -63,7 +78,10 @@ const ANSWERS_REQUEST = Object.freeze({
  *    into the head data's messages rather than replacing it, and its
  *    loading update keeps the head data on display
  *    (`mergeAnswersDataFromResponse`, in the manner of
- *    `concatItemsFromMoreResponse`).
+ *    `concatItemsFromMoreResponse`). The content loads incrementally too:
+ *    each poll's batch is capped (the pagination options' `answersRows`),
+ *    newest unsettled first — the view is bottom-anchored, so those are
+ *    the messages on (or nearest) the screen.
  *
  * A peer of the History workflow: the two are created independently and
  * coordinate by direct method calls only when both exist. Thread operations
@@ -106,6 +124,9 @@ export default class Conversation extends Workflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._views.on(ROLE.QUERY, 'submit', event => this._onQuerySubmit(event)),
+      // the messages layout's infinite scroll trigger, at the top of the
+      // list: older pages load as the user scrolls up
+      this._hub.on(fields.more(), () => this._more()),
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.DELETE, 'submit', () => this._onViewDeleteSubmit()),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
@@ -154,6 +175,16 @@ export default class Conversation extends Workflow {
     return (data && data.value && data.value.messages) || [];
   }
 
+  /**
+   * Whether the messages paging has stopped: the latest thread page said
+   * `has_more: false` — the displayed messages reach the thread's start.
+   * Wiped with the data on a reload (a new session).
+   */
+  get exhausted() {
+    const data = this._hub.states[fields.data()];
+    return !!(data && data.meta && data.meta.exhausted);
+  }
+
   // lifecycle //
   /**
    * Load a thread into the conversation panel. Loading the current thread
@@ -175,13 +206,64 @@ export default class Conversation extends Workflow {
     // the request carries the thread identity, so the data layer holds all
     // the state of the load. Its identity is spelled out here, like the
     // answers request's — the workflow has no api option — and the data
-    // actor serves it through the data source like any other
+    // actor serves it through the data source like any other. The panel
+    // pages from the bottom: the head fetches the newest page of question
+    // ids only, older pages following through the more flow
+    const { rows } = this._options.resolved.pagination || {};
     this._request({
-      ...getThreadRequest(threadId),
+      ...getThreadRequest(threadId, trimObj({ order: 'desc', rows })),
       type: REQUEST_TYPE.THREAD,
       threadId,
+      options: THREAD_REQUEST_OPTIONS,
     });
     return this;
+  }
+
+  /**
+   * Load the previous (older) page of the thread's messages, prepended
+   * above the displayed ones — same session, down the standard data path.
+   * Triggered by the messages layout as its infinite scroll trigger (at
+   * the top of the list) comes into view, like the thread list's more
+   * flow.
+   */
+  _more() {
+    if (this.status !== STATUS.READY) {
+      throw new Error(`Can not call more() while loading.`);
+    }
+    const threadId = this.threadId;
+    // nothing to page in new-thread mode, or once the start is reached
+    if (!threadId || this.exhausted) {
+      return;
+    }
+    // one page at a time: the trigger can re-arm while a page is being
+    // served, since a more request keeps the current messages — and their
+    // ready status — on display
+    if (this._data.isServing(request => request.type === REQUEST_TYPE.MORE && request.session === this.session)) {
+      return;
+    }
+    // hold while the displayed messages still load their contents: their
+    // near-empty shells understate the list's eventual height, so the
+    // trigger fires prematurely — and would cascade page after page. Once
+    // everything displayed is settled (and the layout at its true height),
+    // a still-visible trigger legitimately means the list fits the screen
+    const data = this._hub.states[fields.data()];
+    if (getUnsettledQuestionIds(data && data.value).length) {
+      return;
+    }
+    // the cursor: the oldest displayed server message — a just-posted live
+    // message has no question id, and sits at the bottom anyway
+    const first = this.messages[0];
+    const after = first && first.question_id;
+    if (!after) {
+      return;
+    }
+    const { rows } = this._options.resolved.pagination || {};
+    this._request({
+      ...getThreadRequest(threadId, trimObj({ order: 'desc', rows, after })),
+      type: REQUEST_TYPE.MORE,
+      threadId,
+      options: THREAD_REQUEST_OPTIONS,
+    });
   }
 
   /**
@@ -528,7 +610,15 @@ export default class Conversation extends Workflow {
         // TODO: we will pull partial data later
         return { ...data, value: { messages: normalizeAnswersValue(data.value) } };
       case REQUEST_TYPE.THREAD:
-        return { ...data, value: writeThreadAsRead(normalizeThreadValue(data.value)) };
+      case REQUEST_TYPE.MORE: {
+        // the exhaustion is the page's own word (has_more), read off the
+        // raw value before it is homogenized away into the thread record;
+        // a desc-fetched page reverses into display (ascending) order
+        data = writeHasMoreExhaustionToData(data);
+        const { payload } = data.request;
+        const value = normalizeThreadValue(data.value, { descending: !!(payload && payload.order === 'desc') });
+        return { ...data, value: data.request.type === REQUEST_TYPE.THREAD ? writeThreadAsRead(value) : value };
+      }
       default:
         return data;
     }
@@ -539,13 +629,22 @@ export default class Conversation extends Workflow {
     // data, and swaps the current data in for a valueless update
     const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.ANSWERS) {
-      data = mergeAnswersDataFromResponse(oldData, data);
+      // an erroneous end of the answers stream — its polling already
+      // tolerated transient failures — settles every message still waiting
+      // with the error mark: the items present it (visible-when), the
+      // paging unblocks, and the poll is not re-issued; a later page's
+      // unsettled messages start a fresh stream of their own
+      data = data.error
+        ? writeAnswersErrorToMessages(oldData)
+        : mergeAnswersDataFromResponse(oldData, data);
+    } else if (type === REQUEST_TYPE.MORE) {
+      data = mergeOlderMessagesFromResponse(oldData, data);
     }
     super._updateDataInHub(data, oldData);
     // propagate the committed records into the message item subworkflows
     this._updateMessageWorkflows();
-    if (type === REQUEST_TYPE.THREAD) {
-      // the head data tells whether there are answer contents to fetch
+    if (type === REQUEST_TYPE.THREAD || type === REQUEST_TYPE.MORE) {
+      // the page data tells whether there are answer contents to fetch
       this._requestAnswersIfNecessary(data);
     }
   }
@@ -685,7 +784,13 @@ export default class Conversation extends Workflow {
       payload: {
         question_ids: () => {
           const current = this._hub.states[fields.data()];
-          return getUnsettledQuestionIds(current && current.value);
+          const ids = getUnsettledQuestionIds(current && current.value);
+          // the content loads incrementally too: each poll's batch is
+          // capped, newest first — the view is bottom-anchored, so the
+          // newest unsettled messages are the ones on (or nearest) the
+          // screen — and the stream walks up batch by batch as they settle
+          const { answersRows } = this._options.resolved.pagination || {};
+          return answersRows ? ids.slice(-answersRows) : ids;
         },
       },
     });
@@ -703,3 +808,5 @@ export default class Conversation extends Workflow {
 }
 
 makeConfigurable(Conversation.prototype);
+
+makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION]);

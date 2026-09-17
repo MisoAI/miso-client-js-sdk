@@ -7,7 +7,10 @@ miso-explore,
 miso-search,
 miso-recommendation,
 miso-history,
-miso-conversation {
+miso-conversation,
+// item container elements carry the status of their item subworkflows, so
+// visible-when works per item too (e.g. a message's failed-content notice)
+miso-message-item {
   display: block;
 
   &, * {

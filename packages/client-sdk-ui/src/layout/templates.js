@@ -92,11 +92,36 @@ export function message(layout, state, data) {
   ].join('');
 }
 
-export function messageBody({ className }) {
-  return `<miso-question class="${className}__question" hidden></miso-question>` +
+// the regular content is packed together, so the erroneous presentation
+// swaps it out wholesale for the error notice (the content wrapper hides by
+// a class rule off the item's status — visible-when suits the notice, but
+// not a wrapper: it forces `display: block !important` and only negates in
+// combination with positive terms)
+export function messageBody(layout) {
+  const { className, templates } = layout;
+  return `<div class="${className}__content">` +
+    `<miso-question class="${className}__question" hidden></miso-question>` +
     `<miso-answer class="${className}__answer"></miso-answer>` +
     `<miso-feedback class="${className}__feedback"></miso-feedback>` +
-    `<miso-sources class="${className}__sources"></miso-sources>`;
+    (templates.messageSourcesBlock || messageSourcesBlock)(layout) +
+    `</div>` +
+    (templates.messageErrorBlock || messageErrorBlock)(layout);
+}
+
+// the sources with their heading, as the hybrid-search UI presents them —
+// shown once the item carries content (visible-when nonempty), so no
+// orphan heading sits over a message still loading
+export function messageSourcesBlock({ className }) {
+  return `<div class="${className}__sources-container" visible-when="nonempty">` +
+    `<h3 class="${className}__sources-phrase">Sources</h3>` +
+    `<miso-sources class="${className}__sources"></miso-sources>` +
+    `</div>`;
+}
+
+// shown by the item's own status (visible-when): a message whose content
+// fetch failed for good presents this in place of its content
+export function messageErrorBlock({ className }) {
+  return `<div class="${className}__error" visible-when="erroneous">This message could not be loaded.</div>`;
 }
 
 

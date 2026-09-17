@@ -79,10 +79,11 @@ export class ThreadOperations {
  * head request, its identity spelled out at the call site — a fixed
  * endpoint, not an api option. (The list read is the history workflow's
  * api option instead: same fixed endpoint, but its paging window — and
- * filters, later — ride the payload, so it is configurable.)
+ * filters, later — ride the payload, so it is configurable.) The payload
+ * carries the message paging window (order, rows, after).
  */
-export function getThreadRequest(threadId) {
-  return threadRequest('get', { thread_id: threadId });
+export function getThreadRequest(threadId, payload) {
+  return threadRequest('get', { thread_id: threadId, ...payload });
 }
 
 function threadRequest(name, payload, fact) {

@@ -219,13 +219,14 @@ function writePostedMessageToData(data) {
 // a record whose answer body has not arrived presents as loading — the
 // standard status mark, carried onto the <miso-message-item> element by the
 // container layout — while the conversation's answers request fetches the
-// content
+// content; a record settled by a failed content fetch (the `error` mark)
+// presents as erroneous instead, showing the item's visible-when notice
 function writeStatusFromAnswer(data) {
   const { value } = data;
   if (!value || value.answer !== undefined) {
     return data;
   }
-  return { ...data, status: STATUS.LOADING };
+  return { ...data, status: value.error ? STATUS.ERRONEOUS : STATUS.LOADING };
 }
 
 // an unfinished answer keeps the ongoing flag on, so views (e.g. a
