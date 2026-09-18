@@ -365,6 +365,14 @@
     font-size: 1.2rem;
     font-weight: 600;
   }
+  // a message whose answer cites no sources at all hides the whole block —
+  // the visible-when nonempty guard covers a still-loading item, this
+  // covers a settled one with zero source cards. (The specificity outguns
+  // the visible-when show rule's `display: block !important`; a browser
+  // without :has() keeps the heading — the hybrid-search parity behavior.)
+  .miso-messages__sources-container:not(:has([data-role='item'])) {
+    display: none !important;
+  }
   // a message whose content fetch failed for good (visible-when its item's
   // status is erroneous): a muted notice in place of the content
   .miso-messages__error {
