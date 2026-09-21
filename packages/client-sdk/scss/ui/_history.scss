@@ -171,13 +171,15 @@
     background-color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
-  // the menu items (the rename/delete roles: the generic button layout,
-  // through the thread workflow); nested under .miso-threads, these outrank
-  // the conversation header's role-based icon-button defaults below
+  // the menu items (the rename/delete roles: the generic button layout; the
+  // subscription role: the checkbox layout — all through the thread
+  // workflow); nested under .miso-threads, these outrank the conversation
+  // header's role-based icon-button and toggle defaults below
   .miso-threads__menu-item {
     display: block;
 
-    .miso-button {
+    .miso-button,
+    .miso-checkbox {
       display: block;
       width: 100%;
       height: auto;
@@ -193,6 +195,10 @@
       &:hover {
         background-color: var(--miso-thread-list-item-hover-background);
       }
+    }
+    // the label tells the state apart here, not the color
+    .miso-checkbox[data-checked] {
+      color: var(--miso-text-color);
     }
     &--danger .miso-button {
       color: var(--miso-danger-color);

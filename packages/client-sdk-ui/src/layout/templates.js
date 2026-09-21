@@ -37,8 +37,8 @@ export function question(layout, state, data) {
  * item subworkflow — the threads layout is a shell: it assigns the workflow
  * (and syncs the item-level attributes) in its post-render pass, and the
  * content renders through the thread workflow's own layouts: the title role
- * element in the body, plus the context menu (with the rename/delete role
- * elements) inserted as chrome by the workflow's item-container layout. The
+ * element in the body, plus the context menu (with the
+ * rename/subscription/delete role elements) inserted as chrome by the workflow's item-container layout. The
  * item state renders as attributes right in the template (and stays in
  * sync thereafter): the thread identity, the selection, and the unread
  * mark.
@@ -65,11 +65,13 @@ export function threadBody(layout, data) {
 // the item-menu data-roles are the contract with the thread workflow's
 // item-container layout, which drives the menu's open/close behavior; the
 // menu items are the thread workflow's own controls, rendered by the
-// generic button layout with a prompt (rename) or a confirm (delete) dialog
+// generic button layout with a prompt (rename) or a confirm (delete) dialog,
+// and by the checkbox layout (the subscription toggle)
 export function threadMenuBlock({ className }) {
   return `<button type="button" class="${className}__menu-button" data-role="item-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
     `<div class="${className}__menu" data-role="item-menu" role="menu" hidden>` +
     `<miso-rename class="${className}__menu-item"></miso-rename>` +
+    `<miso-subscription class="${className}__menu-item"></miso-subscription>` +
     `<miso-delete class="${className}__menu-item ${className}__menu-item--danger"></miso-delete>` +
     `</div>`;
 }

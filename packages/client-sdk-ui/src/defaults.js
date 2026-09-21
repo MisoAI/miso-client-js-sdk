@@ -122,8 +122,9 @@ export const defaultLayouts = Object.freeze({
   // auto logo either, having no main-role component), the title text
   // (with a presentation fallback for untitled threads), the context
   // menu's rename (ask-then-submit through the prompt dialog) and delete
-  // (confirm-then-submit) buttons, and the subscription toggle for custom
-  // item bodies that place one
+  // (confirm-then-submit) buttons, and its subscription toggle — a menu
+  // item like the other two, so text only, labeled by the action a click
+  // takes rather than by the state
   'history': Object.freeze({
     ...BASE_LAYOUTS,
     [ROLE.CONTAINER]: [LAYOUT_TYPE.ITEM_CONTAINER, { logo: false }],
@@ -132,7 +133,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div', templates: { content: (layout, { value }) => escapeHtml(value || 'Untitled') } }],
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],
     [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Delete', confirm: THREAD_DELETE_CONFIRM }],
-    [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
+    [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { text: 'Subscribe', checkedText: 'Unsubscribe' }],
   }),
 
   // the conversation panel's own roles plus its message item subworkflows'
