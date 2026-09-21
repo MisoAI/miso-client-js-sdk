@@ -2,6 +2,12 @@ import { Logs } from './logs.js';
 
 const ID = 'std:debug';
 
+// the item subworkflow contexts emit per item (one workflow per thread of
+// the list, per message of the conversation), which floods the console.
+// Muted paths stay out of the console only: they are still preserved for
+// the log dump. Configurable via the `mute` option (`mute: []` shows all)
+const DEFAULT_MUTE = Object.freeze(['workflow/thread-items', 'workflow/message-items']);
+
 export default class DebugPlugin {
 
   constructor(options = {}) {
@@ -55,6 +61,10 @@ export default class DebugPlugin {
             this._handleApiEvent(name, { ...data, groupName: path[2] });
             return;
         }
+        if (path.length === 1 && (name === 'workflow' || name === 'postworkflow')) {
+          this._handleClientWorkflowEvent(name, data);
+          return;
+        }
         break;
       case 'plugins':
         if (path.length === 1) {
@@ -103,8 +113,16 @@ export default class DebugPlugin {
     this._log('plugins', eventName, `${plugin.id || '(anonymous)'}`, [plugin, ...data]);
   }
 
+  // a workflow's creation events on the client follow its context: the
+  // workflows of a muted context (the item subworkflows) are muted as well
+  _handleClientWorkflowEvent(name, workflow) {
+    const context = workflow && workflow._context;
+    const silent = !!context && this._isMuted(_joinPath(_pluginComponentPath(context.meta.path)));
+    this._logw('client', name, workflow, { silent });
+  }
+
   _handlePluginSpecificEvent(pluginId, path, name, data) {
-    this._logw([pluginId, path.join('.')], name, data);
+    this._logw(_pluginComponentPath([pluginId, ...path]), name, data);
   }
 
   _getPath(component) {
@@ -115,26 +133,44 @@ export default class DebugPlugin {
     return path.reverse();
   }
 
-  _logw(path, name, data) {
+  _logw(path, name, data, options) {
     if (data === undefined) {
-      this._log(path, name);
+      data = [];
     } else if (Array.isArray(data)) {
-      this._log(path, name, ...data.map(_wrapObj));
+      data = data.map(_wrapObj);
     } else {
-      this._log(path, name, _wrapObj(data));
+      data = [_wrapObj(data)];
     }
+    this._logp(path, name, data, options);
   }
 
   _log(path, name, ...data) {
-    this._logr(_path(path), _name(name), ...data);
+    this._logp(path, name, data);
+  }
+
+  _logp(path, name, data, { silent = false } = {}) {
+    path = _joinPath(path);
+    this._write([_path(path), _name(name), ...data], { silent: silent || this._isMuted(path) });
   }
 
   _logr(...data) {
+    this._write(data);
+  }
+
+  _write(data, { silent = false } = {}) {
     const options = this._options.console || {};
     if (this._options.preserveLog) {
       this._logs._logs.push(data);
     }
+    if (silent) {
+      return;
+    }
     console.log(_tag(options), _style(options), ...data);
+  }
+
+  _isMuted(path) {
+    const { mute = DEFAULT_MUTE } = this._options;
+    return mute.includes(path);
   }
 
 }
@@ -149,7 +185,18 @@ function _style({ color = '#fff', background = '#334cbb' } = {}) {
 
 // format path
 function _path(path) {
-  return `<${typeof path === 'string' ? path : path.filter(v => v).join('/')}>`;
+  return `<${path}>`;
+}
+
+// the log path of a component under a plugin, off its meta path — which
+// starts at the plugin ([pluginId, ...rest]): the plugins root reaches the
+// plugins as subtrees, not as parents
+function _pluginComponentPath(path) {
+  return [path[0], path.slice(1).join('.')];
+}
+
+function _joinPath(path) {
+  return typeof path === 'string' ? path : path.filter(v => v).join('/');
 }
 
 // format event name
