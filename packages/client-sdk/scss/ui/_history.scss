@@ -357,6 +357,12 @@
     &[status~='erroneous'] .miso-messages__content {
       display: none;
     }
+    // a message not generated in this session (a reopened thread, an older
+    // page) holds its content back until ready, so it shows in one piece —
+    // a live one shows its question right away as its answer generates
+    &:not([data-live]):not([status~='ready']) .miso-messages__content {
+      display: none;
+    }
   }
   // the regular content of a message, packed so the erroneous presentation
   // can swap it out as one piece

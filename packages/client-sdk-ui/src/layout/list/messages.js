@@ -1,5 +1,6 @@
 import { STATUS, LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
+import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.MESSAGES;
 const DEFAULT_CLASSNAME = 'miso-messages';
@@ -146,6 +147,7 @@ export default class MessagesLayout extends CollectionLayout {
     }
     this._watchGrowth(this._getListElement(element) || element);
     this._syncWorkflows(element);
+    this._syncItems(element);
     this._syncOngoing(state);
   }
 
@@ -165,6 +167,16 @@ export default class MessagesLayout extends CollectionLayout {
       if (binding && item.isContainer) {
         item.workflow = workflow._getMessageWorkflow(binding.value);
       }
+    }
+  }
+
+  // sync in-place item state changes from the bound values onto the existing
+  // item elements: the live mark — the item contents render through the
+  // message workflows, outside this layout's render cycle
+  _syncItems(element) {
+    for (const item of this._getItemElements(element)) {
+      const binding = this._bindings.get(item);
+      binding && setOrRemoveAttribute(item, 'data-live', binding.value.live ? '' : undefined);
     }
   }
 

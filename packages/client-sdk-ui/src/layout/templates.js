@@ -81,14 +81,17 @@ export function threadMenuBlock({ className }) {
  * item subworkflow — the messages layout is a shell: it assigns the workflow
  * (and the item-level attributes) in its post-render sync pass, and the role
  * elements inside render the actual content through the message workflow's
- * own layouts.
+ * own layouts. The item state renders as an attribute right in the template
+ * (and stays in sync thereafter): the live mark, for a message generated in
+ * this session.
  */
 export function message(layout, state, data) {
   const { className, templates } = layout;
+  const liveAttr = data.live ? ' data-live' : '';
   // miso-circled-citation-index covers both the citation links in the answer
   // and the indexes on the source cards, as the hybrid-search UI scopes it
   return [
-    `<miso-message-item class="${className}__item-body miso-circled-citation-index" data-role="item">`,
+    `<miso-message-item class="${className}__item-body miso-circled-citation-index" data-role="item"${liveAttr}>`,
     (templates.messageBody || messageBody)(layout, data),
     `</miso-message-item>`,
   ].join('');
