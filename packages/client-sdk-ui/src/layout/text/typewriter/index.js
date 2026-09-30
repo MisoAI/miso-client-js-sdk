@@ -140,11 +140,12 @@ export default class TypewriterLayout extends ProgressiveLayout {
     } else {
       result = rendered;
     }
-    if (this.options.instant && state.done && !result.cursor) {
-      // instant mode: content that finishes before any of it was typed —
-      // arrived complete (e.g. a loaded conversation message), or completed
-      // while the cursor was still at the start — renders in one shot; only
-      // content streaming in as it is generated types out
+    if (this.options.instant && !result.cursor) {
+      // instant mode: while nothing is typed yet, the cursor starts at the max
+      // available position (the renderer clamps it to the safe right bound) —
+      // content that arrived complete (e.g. a loaded conversation message)
+      // renders in one shot; ongoing content shows what is there so far at
+      // once, and only the part streaming in after that types out
       result = this._renderer.update(container, result, { ...state, cursor: Infinity });
     } else if (!newStreak) {
       const cursor = this._getNextCursor(rendered.cursor, state.doneAt, rendered.timestamp, state.timestamp);

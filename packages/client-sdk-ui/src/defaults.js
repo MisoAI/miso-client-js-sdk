@@ -142,7 +142,8 @@ export const defaultLayouts = Object.freeze({
   // query role (a message has no query flow of its own; the query entry
   // below is the panel's composer), with the question layout (text plus
   // authorship attributes, off the whole record), the answer typewriter
-  // with `instant: true` (an already-finished answer renders in one shot),
+  // with `instant: true` (an answer starts at what is already available: a
+  // finished one renders in one shot, an ongoing one types out only the rest),
   // and the sources as the compact horizontal cards of the hybrid-search
   // UI. logo: false turns the per-message banner off; the panel never
   // triggers the auto logo anyway, having no main-role component
