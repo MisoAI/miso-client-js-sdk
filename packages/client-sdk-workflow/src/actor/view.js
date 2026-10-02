@@ -163,9 +163,12 @@ export default class ViewActor {
 
   _sliceData(data) {
     const { value, error, status, meta, ...rest } = data;
+    // the error rides along, so a layout can present it (e.g. tell an
+    // expired session from other failures)
     const sliced = {
       value: this._mapping(data, this),
       status,
+      error,
       data: value,
       meta,
       ...rest,

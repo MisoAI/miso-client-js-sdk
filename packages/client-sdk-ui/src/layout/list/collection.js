@@ -9,7 +9,13 @@ function root(layout, state) {
   const { status } = state;
   const roleAttr = role ? ` data-role="${role}"` : '';
   const itemTypeAttr = options.itemType ? ` data-item-type="${options.itemType}"` : '';
-  return `<div class="${className} ${status}"${roleAttr}${itemTypeAttr}>${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loading(layout, state)}</div>`;
+  return `<div class="${className} ${status}"${roleAttr}${itemTypeAttr}>${hasStatusTemplate(status) ? templates[status](layout, state) : ''}${templates.trigger(layout, state)}${templates.loading(layout, state)}</div>`;
+}
+
+// the statuses with a content template of their own: the list at ready, the
+// error notice at erroneous
+export function hasStatusTemplate(status) {
+  return status === STATUS.READY || status === STATUS.ERRONEOUS;
 }
 
 function ready(layout, state) {
@@ -74,6 +80,9 @@ const DEFAULT_TEMPLATES = Object.freeze({
   root,
   [STATUS.READY]: ready,
   empty: () => ``,
+  // no notice by default: the ask/search UIs present errors in a section of
+  // their own (<miso-error>); list layouts that stand alone supply one
+  [STATUS.ERRONEOUS]: () => ``,
   body,
   list,
   ordered: false,

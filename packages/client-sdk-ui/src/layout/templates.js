@@ -130,6 +130,21 @@ export function messageErrorBlock({ className }) {
 }
 
 
+// the list-level error notice of the chat history interface, in place of
+// the list when its load failed (the thread list, or the thread on display);
+// the text comes from the layout's errorMessage template, given the failure
+export function listError(layout, state) {
+  const { className, templates } = layout;
+  return `<div class="${className}__list-error" data-role="error">${templates.errorMessage(layout, state.error)}</div>`;
+}
+
+// an expired session (e.g. an expired JWT), to be told apart from other failures
+export function isSessionExpired(error) {
+  return !!error && error.status === 401;
+}
+
+export const SESSION_EXPIRED_MESSAGE = 'Your session has expired. Please sign in again.';
+
 export function article(layout, state, data, meta) {
   const { templates } = layout;
   const [openTag, closeTag] = tagPair(layout, data);

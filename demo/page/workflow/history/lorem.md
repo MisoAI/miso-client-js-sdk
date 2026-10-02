@@ -116,6 +116,7 @@
   <nav class="miso-history-demo__nav">
     <span class="miso-history-demo__brand">Lorem</span>
     <button type="button" class="miso-history-demo__touch btn btn-sm btn-outline-primary">+ Update</button>
+    <button type="button" class="miso-history-demo__expire btn btn-sm btn-outline-danger">Expire JWT</button>
   </nav>
   <div class="miso-history-demo">
     <miso-history>
@@ -155,6 +156,8 @@ misocmd.push(async () => {
     userHistory.touchThread(thread.thread_id, { generate: true }, { seed: 100 + i });
   });
   const client = new MisoClient('...');
+  // sign in with a mocked JWT, so the token expiration can be simulated
+  client.context.auth = `Bearer ${MisoClient.lorem.api.me().jwt}`;
   //client.workflows.history.useApi({ rows: 5 });
   client.workflows.history.start();
   // simulate server-side activity: touch a random thread, generating a fresh
@@ -167,6 +170,16 @@ misocmd.push(async () => {
     }
     const { thread_id } = threads[Math.floor(Math.random() * threads.length)];
     userHistory.touchThread(thread_id, { generate: true });
+  });
+  // simulate the JWT expiring mid-flow: bumping the token generation makes
+  // the mock API reject every token issued so far with 401 — until a fresh
+  // token is signed in, which nothing does yet, so the button stays disabled
+  // once clicked
+  const expireButton = document.querySelector('.miso-history-demo__expire');
+  expireButton.addEventListener('click', () => {
+    MisoClient.lorem.api.bumpGeneration();
+    expireButton.disabled = true;
+    expireButton.textContent = 'JWT expired';
   });
 });
 </script>

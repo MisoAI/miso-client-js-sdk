@@ -54,6 +54,12 @@
 
 // thread list //
 .miso-threads {
+  // the list failed to load: a muted notice in place of the list
+  .miso-threads__list-error {
+    color: var(--miso-text-color-gray);
+    font-size: 0.875rem;
+    padding: 0.5rem 0;
+  }
   .miso-threads__list {
     list-style: none !important;
     padding: 0;
@@ -325,6 +331,13 @@
 }
 
 .miso-messages {
+  // the thread on display failed to load: a muted notice in place of the list
+  .miso-messages__list-error {
+    color: var(--miso-text-color-gray);
+    font-style: italic;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
   .miso-messages__list {
     list-style: none !important;
     padding: 0;

@@ -1,10 +1,25 @@
 import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
-import { LAYOUT_TYPE } from '../../constants.js';
+import { STATUS, LAYOUT_TYPE } from '../../constants.js';
 import CollectionLayout from './collection.js';
+import { listError, isSessionExpired, SESSION_EXPIRED_MESSAGE } from '../templates.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.THREADS;
 const DEFAULT_CLASSNAME = 'miso-threads';
+
+const DEFAULT_TEMPLATES = Object.freeze({
+  [STATUS.ERRONEOUS]: listError,
+  errorMessage,
+});
+
+const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
+  ...CollectionLayout.defaultTemplates,
+  ...DEFAULT_TEMPLATES,
+});
+
+function errorMessage(layout, error) {
+  return isSessionExpired(error) ? SESSION_EXPIRED_MESSAGE : 'Your conversations could not be loaded.';
+}
 
 /**
  * The thread list of the chat history interface: a shell that renders one
@@ -42,8 +57,12 @@ export default class ThreadsLayout extends CollectionLayout {
     return DEFAULT_CLASSNAME;
   }
 
-  constructor({ className = DEFAULT_CLASSNAME, ...options } = {}) {
-    super({ className, ...options });
+  static get defaultTemplates() {
+    return INHERITED_DEFAULT_TEMPLATES;
+  }
+
+  constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
+    super({ className, templates: { ...DEFAULT_TEMPLATES, ...templates }, ...options });
   }
 
   // item identity: the thread id, or the local placeholder id standing in

@@ -1,9 +1,21 @@
 import { STATUS, LAYOUT_TYPE } from '../../constants.js';
-import CollectionLayout from './collection.js';
+import CollectionLayout, { hasStatusTemplate } from './collection.js';
+import { listError, isSessionExpired, SESSION_EXPIRED_MESSAGE } from '../templates.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
 
 const TYPE = LAYOUT_TYPE.MESSAGES;
 const DEFAULT_CLASSNAME = 'miso-messages';
+
+const DEFAULT_TEMPLATES = Object.freeze({
+  root,
+  [STATUS.ERRONEOUS]: listError,
+  errorMessage,
+});
+
+const INHERITED_DEFAULT_TEMPLATES = Object.freeze({
+  ...CollectionLayout.defaultTemplates,
+  ...DEFAULT_TEMPLATES,
+});
 
 // the infinite scroll trigger sits ABOVE the list — older messages load as
 // the user scrolls up, unlike the stock collection root's bottom trigger
@@ -12,7 +24,11 @@ function root(layout, state) {
   const { status } = state;
   const roleAttr = role ? ` data-role="${role}"` : '';
   const itemTypeAttr = options.itemType ? ` data-item-type="${options.itemType}"` : '';
-  return `<div class="${className} ${status}"${roleAttr}${itemTypeAttr}>${templates.trigger(layout, state)}${status === STATUS.READY ? templates[status](layout, state) : ''}${templates.loading(layout, state)}</div>`;
+  return `<div class="${className} ${status}"${roleAttr}${itemTypeAttr}>${templates.trigger(layout, state)}${hasStatusTemplate(status) ? templates[status](layout, state) : ''}${templates.loading(layout, state)}</div>`;
+}
+
+function errorMessage(layout, error) {
+  return isSessionExpired(error) ? SESSION_EXPIRED_MESSAGE : 'This conversation could not be loaded.';
 }
 
 /**
@@ -54,8 +70,12 @@ export default class MessagesLayout extends CollectionLayout {
     return DEFAULT_CLASSNAME;
   }
 
+  static get defaultTemplates() {
+    return INHERITED_DEFAULT_TEMPLATES;
+  }
+
   constructor({ className = DEFAULT_CLASSNAME, templates, ...options } = {}) {
-    super({ className, templates: { root, ...templates }, ...options });
+    super({ className, templates: { ...DEFAULT_TEMPLATES, ...templates }, ...options });
     this._pinned = true; // whether the view sticks to the bottom on updates
     this._anchor = undefined; // the scroll anchor while prepended content settles
     this._ongoing = undefined;
