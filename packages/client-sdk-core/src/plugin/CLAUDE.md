@@ -20,6 +20,7 @@ Exposed to plugins during `install()`, provides hooks into the SDK:
 context.addPayloadPass(fn)    // Modify API request payloads
 context.addHeadersPass(fn)    // Modify request headers
 context.addUrlPass(fn)        // Modify request URLs
+context.addApiMiddleware(fn)  // Wrap API requests: defer, catch failures, resend
 context.setCustomFetch(fn)    // Override fetch implementation
 context.setCustomSendBeacon(fn) // Override sendBeacon
 context.addSubtree(component) // Register as component subtree for event propagation
@@ -77,6 +78,7 @@ export default class MyPlugin {
 | `InteractionsPlugin` | `std:interactions` | Enriches interaction records with SDK version/UUID |
 | `NativeFetchPlugin` | `std:native-fetch` | Uses native fetch, bypassing custom implementations |
 | `ApiPatchPlugin` | `std:api-patch` | Applies patches to API responses |
+| `ApiRecoveryPlugin` | `std:api-recovery` | `client.api.onError`: intercept failed requests, hold and resend |
 | `HeaderApiKeyPlugin` | `std:header-api-key` | Sends API key in header instead of query |
 | `AnalyticsPlugin` | `std:analytics` | User engagement timing and analytics |
 
@@ -95,6 +97,22 @@ function modifyPayload({ client, apiGroup, apiName, payload }) {
 // Headers pass signature
 function modifyHeaders({ client, headers }) {
   return { ...headers, 'X-Custom': 'value' };
+}
+```
+
+## API Middlewares
+
+A middleware wraps a whole API request (passes, send, postprocess). It may defer the request, catch its failure, or run it again — each round re-applies the passes, so it picks up the context as of then:
+
+```javascript
+// request: { client, apiGroup, apiName, payload, options }
+async function middleware(request, next) {
+  try {
+    return await next();
+  } catch (error) {
+    // ...
+    return next();
+  }
 }
 ```
 

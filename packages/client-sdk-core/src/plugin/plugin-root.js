@@ -111,6 +111,13 @@ export default class PluginRoot extends Registry {
     this._root._urlPasses.push(pass);
   }
 
+  addApiMiddleware(middleware) {
+    if (typeof middleware !== 'function') {
+      throw new Error(`Expect parameter to be a function: ${middleware}`);
+    }
+    this._root._apiMiddlewares.push(middleware);
+  }
+
   setCustomFetch(fetch) {
     if (typeof fetch !== 'function') {
       throw new Error(`Expect parameter to be a function: ${fetch}`);
@@ -276,6 +283,7 @@ class PluginContext {
       'addPayloadPass',
       'addHeadersPass',
       'addUrlPass',
+      'addApiMiddleware',
       'setCustomFetch',
       'setCustomSendBeacon',
       'setCustomApiIterator',

@@ -11,6 +11,13 @@ export default class ApiBase extends Component {
   }
 
   async _run(apiName, payload, options = {}) {
+    const apiGroup = this._apiPath;
+    return this.helpers.applyMiddlewares({ apiGroup, apiName, payload, options }, () => this._request(apiName, payload, options));
+  }
+
+  // one round of the request: the passes run per round, so a round run again
+  // by a middleware picks up the context as of then (e.g. a renewed token)
+  async _request(apiName, payload, options) {
     const { bulk } = options;
     const bulkInfo = bulk ? { bulk: this.helpers.bulkInfo } : undefined;
     const apiGroup = this._apiPath;

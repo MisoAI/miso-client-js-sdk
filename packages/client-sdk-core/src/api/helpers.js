@@ -128,6 +128,16 @@ export default class ApiHelpers {
     return apiName === 'interactions' ? eventEndpoint : dataEndpoint;
   }
 
+  // middlewares wrap the whole request — passes, send, and postprocess —
+  // in registration order, the first being the outermost. Each is called
+  // with the request info and a `next` function that runs the rest of the
+  // chain, which it may defer, catch the failure of, or call again
+  async applyMiddlewares({ apiGroup, apiName, payload, options }, run) {
+    const client = this._client;
+    const request = Object.freeze({ client, apiGroup, apiName, payload, options });
+    return this._root._apiMiddlewares.reduceRight((next, middleware) => () => middleware(request, next), run)();
+  }
+
   applyUrlPasses(component, { apiGroup, apiName, url }) {
     const client = this._client;
     for (const pass of this._root._urlPasses) {

@@ -15,6 +15,7 @@ class Root extends Component {
     this._payloadPasses = [];
     this._headersPasses = [];
     this._urlPasses = [];
+    this._apiMiddlewares = [];
     this._customFetch = undefined;
     this._customSendBeacon = undefined;
     this._hubUpdateCallbacks = [];

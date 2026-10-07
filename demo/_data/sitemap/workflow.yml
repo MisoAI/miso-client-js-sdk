@@ -72,6 +72,8 @@ sections:
   pages:
   - title: Lorem
     path: /history/lorem
+  - title: Lorem (token recovery)
+    path: /history/lorem-token-recovery
   - title: Production
     path: /history/production
 - title: Hybrid Search
