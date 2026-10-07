@@ -1,6 +1,6 @@
 import { escapeHtml } from '@miso.ai/commons';
 import { ROLE, LAYOUT_TYPE } from './constants.js';
-import { compactArticle, compactArticleInfoBlock } from './layout/templates.js';
+import { compactArticle, compactArticleInfoBlock, messageErrorMessage } from './layout/templates.js';
 
 /**
  * Default layout options of each workflow, keyed by workflow name. The UI
@@ -144,6 +144,7 @@ export const defaultLayouts = Object.freeze({
   // authorship attributes, off the whole record), the answer typewriter
   // with `instant: true` (an answer starts at what is already available: a
   // finished one renders in one shot, an ongoing one types out only the rest),
+  // the error notice worded for a message (messageErrorMessage),
   // and the sources as the compact horizontal cards of the hybrid-search
   // UI. logo: false turns the per-message banner off; the panel never
   // triggers the auto logo anyway, having no main-role component
@@ -152,6 +153,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.CONTAINER]: [LAYOUT_TYPE.CONTAINER, { logo: false }],
     [ROLE.QUESTION]: LAYOUT_TYPE.QUESTION,
     [ROLE.ANSWER]: [LAYOUT_TYPE.TYPEWRITER, { instant: true }],
+    [ROLE.ERROR]: [LAYOUT_TYPE.ERROR, { templates: { message: messageErrorMessage } }],
     [ROLE.SOURCES]: [
       LAYOUT_TYPE.HORIZONTAL,
       {

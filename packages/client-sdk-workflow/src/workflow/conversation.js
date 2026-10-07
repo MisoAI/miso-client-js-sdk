@@ -349,7 +349,7 @@ export default class Conversation extends Workflow {
         return;
       }
       this._patchLiveMessage(placeholder_id, value);
-      if (value.finished) {
+      if (value.finished || value.error) {
         unsubscribe();
       }
     });
@@ -635,7 +635,7 @@ export default class Conversation extends Workflow {
       // paging unblocks, and the poll is not re-issued; a later page's
       // unsettled messages start a fresh stream of their own
       data = data.error
-        ? writeAnswersErrorToMessages(oldData)
+        ? writeAnswersErrorToMessages(oldData, data.error)
         : mergeAnswersDataFromResponse(oldData, data);
     } else if (type === REQUEST_TYPE.MORE) {
       data = mergeOlderMessagesFromResponse(oldData, data);

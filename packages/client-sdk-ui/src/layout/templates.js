@@ -124,9 +124,18 @@ export function messageSourcesBlock({ className }) {
 }
 
 // shown by the item's own status (visible-when): a message whose content
-// fetch failed for good presents this in place of its content
+// fetch, or (a live one's) posting or answer polling, failed for good
+// presents this in place of its content — the text through the item's own
+// error role element, off the record's error mark (messageErrorMessage)
 export function messageErrorBlock({ className }) {
-  return `<div class="${className}__error" visible-when="erroneous">This message could not be loaded.</div>`;
+  return `<div class="${className}__error" visible-when="erroneous"><miso-error></miso-error></div>`;
+}
+
+// the error layout's message template for a message item (seeded in the
+// 'conversation' layout defaults): an expired session reads apart from other
+// failures
+export function messageErrorMessage(layout, error) {
+  return isSessionExpired(error) ? SESSION_EXPIRED_MESSAGE : 'Something went wrong with this message.';
 }
 
 

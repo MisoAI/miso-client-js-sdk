@@ -110,17 +110,18 @@ export function getUnsettledQuestionIds(value) {
  * Settle the messages still waiting for their contents with a fetch error:
  * the answers stream ended erroneously — its polling already tolerates
  * transient failures, so by now the pending contents are not arriving —
- * and every unsettled message takes the `error` mark: excluded from
+ * and every unsettled message takes the `error` mark — the failure itself,
+ * so its presentation can tell e.g. an expired session apart: excluded from
  * further polling (so the paging unblocks too), presented as erroneous by
  * its item. A reload of the thread starts over. Settled records keep their
  * identity, so only the errored items see a change.
  */
-export function writeAnswersErrorToMessages(data) {
+export function writeAnswersErrorToMessages(data, error = true) {
   const value = data && data.value;
   if (!value || !value.messages) {
     return data;
   }
-  const messages = value.messages.map(message => isMessageUnsettled(message) ? { ...message, error: true } : message);
+  const messages = value.messages.map(message => isMessageUnsettled(message) ? { ...message, error } : message);
   return { ...data, value: { ...value, messages } };
 }
 

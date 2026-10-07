@@ -132,14 +132,14 @@ test('conversation: failed answer contents settle as errors, unblocking the pagi
   await tick(150); // the polling tolerates failures until its error limit
   assert.is(conversation.status, STATUS.READY); // the panel itself stays ready
   assert.equal(questionIds(conversation), ['q5', 'q6', 'q7']);
-  assert.ok(conversation.messages.every(m => m.error === true && m.answer === undefined));
+  assert.ok(conversation.messages.every(m => m.error instanceof Error && m.error.message === 'boom' && m.answer === undefined));
 
   // the errored messages count as settled: paging is not held back, and the
   // prepended page starts an answers stream of its own (failing over too)
   conversation._more();
   await tick(150);
   assert.equal(questionIds(conversation), ['q2', 'q3', 'q4', 'q5', 'q6', 'q7']);
-  assert.ok(conversation.messages.every(m => m.error === true));
+  assert.ok(conversation.messages.every(m => m.error instanceof Error));
 });
 
 test('conversation: a follow-up posts and appends while older pages are on display', async () => {

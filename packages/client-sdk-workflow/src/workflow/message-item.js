@@ -10,6 +10,11 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
     // the question layout takes the whole record: the question text plus
     // the authorship metadata
     [ROLE.QUESTION]: data => data.value,
+    // the record's error mark — set by the conversation's failed answers
+    // request, or by this workflow's own failed posting/polling
+    // (writeErrorToMessage) — so a live message and a loaded one present
+    // their failures alike
+    [ROLE.ERROR]: data => data.value && data.value.error,
   },
 });
 
@@ -148,6 +153,7 @@ export default class MessageItem extends AnswerBasedWorkflow {
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
     data = writePostedMessageToData(data);
+    data = writeErrorToMessage(data);
     data = writeStatusFromAnswer(data);
     data = writeOngoingFromFinished(data);
     return data;
@@ -214,6 +220,20 @@ function writePostedMessageToData(data) {
     return data;
   }
   return { ...data, value: { ...message, ...value } };
+}
+
+// a live message whose posting or answer polling failed for good: the
+// failure becomes the record's `error` mark, as the conversation's failed
+// answers request marks a loaded message — so the item presents as
+// erroneous (writeStatusFromAnswer) rather than loading on, and the
+// conversation's follow folds the mark into its record (releasing the
+// composer, ending the follow)
+function writeErrorToMessage(data) {
+  const { error, value } = data;
+  if (!error || !value) {
+    return data;
+  }
+  return { ...data, value: { ...value, error } };
 }
 
 // a record whose answer body has not arrived presents as loading — the
