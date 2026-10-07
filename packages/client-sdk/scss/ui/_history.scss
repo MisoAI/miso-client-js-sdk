@@ -459,3 +459,75 @@
     align-self: stretch;
   }
 }
+
+// default layouts //
+// Opted in by class — <miso-history class="miso-history">, <miso-conversation
+// class="miso-conversation"> — so a page with a layout of its own strips
+// them off by omitting the class names.
+
+// the thread list panel: scrolls on its own
+.miso-history {
+  display: block;
+  overflow-y: auto;
+}
+
+// the conversation panel: a column of header, messages and composer, in
+// which the messages take the remaining height and scroll
+.miso-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  overflow: hidden;
+
+  miso-messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+  miso-query {
+    flex: none;
+  }
+  // the header: thread title on the left, subscription toggle on the right.
+  // The visible-when mechanism forces `display: block` on the element it
+  // toggles, so the flex row lives in an inner wrapper.
+  .miso-conversation__header {
+    flex: none;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--miso-border-color-light);
+
+    miso-title {
+      flex: 0 1 auto;
+      min-width: 0;
+      font-size: 1.125rem;
+    }
+    miso-rename,
+    miso-delete {
+      flex: none;
+    }
+    miso-subscription {
+      flex: none;
+      margin-left: auto;
+    }
+  }
+  .miso-conversation__header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  // the intro headline of the new-thread (empty) state
+  .miso-conversation__intro {
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--miso-text-color);
+  }
+  // new-thread (empty) state: intro headline + composer centered in the panel
+  &[status~="empty"] {
+    justify-content: center;
+
+    miso-messages {
+      flex: 0 0 auto;
+    }
+  }
+}
