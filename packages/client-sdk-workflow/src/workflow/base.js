@@ -145,7 +145,7 @@ export default class Workflow extends Component {
     // the session-reset commit clears the previous session's data, ordered
     // by the call stack — it always lands before anything the caller
     // commits for the new session, even when the restart happens inside a
-    // hub dispatch (e.g. a thread-deleted fact resetting the panel), where
+    // hub dispatch (e.g. a thread-deleted event resetting the panel), where
     // a subscription to the session field would have its dispatch queued
     // past those commits
     this.updateData({ session: this.session });

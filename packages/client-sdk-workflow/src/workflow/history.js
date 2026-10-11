@@ -5,7 +5,7 @@ import { ROLE, STATUS, REQUEST_TYPE, WORKFLOW_CONFIGURABLE } from '../constants.
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { mixinThreadOperations, ThreadOperations } from './thread-operations.js';
 import { writeHasMoreExhaustionToData } from './processors.js';
-import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest } from '../util/threads.js';
+import { settlePlaceholder, normalizeThreadsValue, sortThreadsByLatest, getThreadChanges } from '../util/threads.js';
 
 // the list requests are idempotent reads, so transient failures (network,
 // timeout, 5xx) are worth another try or two at the fetch layer — a failed
@@ -35,7 +35,7 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *
  * The workflow never restarts itself, and there is no soft reload: its
  * construction-time session serves for life, the list keeps itself in
- * sync through the operation facts and the new-thread announcements, and
+ * sync through the operation events and the new-thread announcements, and
  * staleness is guarded by the data (one list request at a time, and a
  * more page must still line up with the listed records' offset), not by
  * session bumps. The hard reset is the generic workflow idiom: restart()
@@ -44,9 +44,11 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  * A peer of the Conversation workflow: the two are created independently,
  * and every call to the peer is guarded by its presence, so the thread list
  * works standalone. Thread operations are fire-and-forget requests carrying
- * their facts, triggered off the request event as `thread` hub events — on
+ * their events, triggered off the request event as `thread` hub events — on
  * both peers' hubs — which each panel handles off its own hub
- * (_onThreadUpdated, ...).
+ * (_onThreadUpdated, ...). An operation that fails is rolled back the same
+ * way: an `error` event names the operation, and each panel takes it back
+ * on its own data.
  */
 export default class History extends Workflow {
 
@@ -57,7 +59,7 @@ export default class History extends Workflow {
       client,
       roles: ROLES_OPTIONS,
       // the thread events channel shared with the conversation panel's data
-      // actor, carrying the thread operation facts across the two hubs
+      // actor, carrying the thread operation events across the two hubs
       extraOptions: { api: { threadEvents: events } },
     });
   }
@@ -78,10 +80,10 @@ export default class History extends Workflow {
       // the threads layout's infinite scroll trigger, as in the
       // search-based workflows' more flow
       this._hub.on(fields.more(), () => this._more()),
-      // an operation's fact rides its request: the
+      // an operation's event rides its request: the
       // data actor publishes it on the shared channel and every subscribed
       // actor — this panel's and its peer's — triggers it on its own hub
-      this._hub.on(fields.thread(), fact => this._onThreadEvent(fact)),
+      this._hub.on(fields.thread(), event => this._onThreadEvent(event)),
     ];
   }
 
@@ -125,7 +127,7 @@ export default class History extends Workflow {
   // list requests stale-guard on data instead of session bumps, and being
   // started is a matter of the data status, not a flag. There is no soft
   // reload either: the list keeps itself in sync through the operation
-  // facts and the new-thread announcements, and the hard reset is the
+  // events and the new-thread announcements, and the hard reset is the
   // generic workflow idiom — restart() (a new session, in-flight requests
   // discarded) then start()
 
@@ -208,7 +210,7 @@ export default class History extends Workflow {
     if (thread && thread.placeholder_id) {
       return;
     }
-    ThreadOperations.prototype.rename.call(this, threadId, title);
+    ThreadOperations.prototype.rename.call(this, threadId, title, thread && thread.title);
   }
 
   delete(threadIds) {
@@ -252,7 +254,7 @@ export default class History extends Workflow {
 
   // data //
   // a `threads`-typed (operation) response carries no data: the operation
-  // is optimistic, its fact having ridden the request already
+  // is optimistic, its event having ridden the request already
   _onResponse(response) {
     const { request } = response;
     if (request && request.type === REQUEST_TYPE.THREADS) {
@@ -262,24 +264,39 @@ export default class History extends Workflow {
   }
 
   // thread events //
-  _onThreadEvent(fact) {
-    switch (fact.event) {
-      case 'updated':
-        this._onThreadUpdated(fact);
+  // an operation, applied optimistically by its type — or the error taking
+  // a failed one back
+  _onThreadEvent(event) {
+    switch (event.type) {
+      case 'rename':
+      case 'markAsRead':
+      case 'subscribe':
+      case 'unsubscribe':
+        this._onThreadUpdated(event);
         break;
-      case 'deleted':
-        this._onThreadDeleted(fact);
+      case 'delete':
+        this._onThreadDeleted(event);
         break;
-      case 'all-deleted':
+      case 'deleteAll':
         this._onAllThreadsDeleted();
+        break;
+      case 'error':
+        this._onThreadOperationError(event);
         break;
     }
   }
 
-  _onThreadUpdated({ threadId, changes }) {
-    this._patchValue({ threads: this.threads.map(thread => thread.thread_id === threadId ? { ...thread, ...changes } : thread) });
+  _onThreadUpdated(operation) {
+    const changes = getThreadChanges(operation);
+    this._patchThread(operation.threadId, thread => ({ ...thread, ...changes }));
   }
 
+  _patchThread(threadId, fn) {
+    this._patchValue({ threads: this.threads.map(thread => thread.thread_id === threadId ? fn(thread) : thread) });
+  }
+
+  // a deletion is not rolled back if it fails: the records stay off the
+  // list until a hard reset (restart() + start()) brings the server's word
   _onThreadDeleted({ threadIds }) {
     const removed = new Set(threadIds);
     this._patchValue({

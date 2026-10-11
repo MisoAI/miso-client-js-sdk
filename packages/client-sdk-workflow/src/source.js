@@ -35,7 +35,7 @@ function sendThreadsApi(api, name, payload = {}, options) {
       const { thread_id, ...rest } = payload;
       return api.getThread(thread_id, rest, options);
     }
-    case 'update': {
+    case 'rename': {
       const { thread_id, ...changes } = payload;
       return api.updateThread(thread_id, changes, options);
     }

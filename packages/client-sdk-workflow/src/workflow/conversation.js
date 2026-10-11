@@ -1,11 +1,11 @@
 import { trimObj, uuidv4, mergeInteractions, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
-import { getThreadRequest, ThreadOperations } from './thread-operations.js';
+import { getThreadRequest, ThreadOperations, mixinThreadOperationSupport } from './thread-operations.js';
 import { ROLE, STATUS, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { writeThreadAsRead, writeHasMoreExhaustionToData, writeAnswerInfoToInteraction } from './processors.js';
-import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, writeAnswersErrorToMessages } from '../util/threads.js';
+import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, writeAnswersErrorToMessages, getThreadChanges } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -85,7 +85,7 @@ const ANSWERS_REQUEST = Object.freeze({
  *
  * A peer of the History workflow: the two are created independently and
  * coordinate by direct method calls only when both exist. Thread operations
- * are fire-and-forget requests carrying their facts, triggered off the
+ * are fire-and-forget requests carrying their events, triggered off the
  * request event as `thread` hub events — on both peers' hubs — which each
  * panel handles off its own hub (_onThreadUpdated, ...). History loads its selection into this panel
  * (_onThreadSelect); Conversation marks loaded threads as read and announces
@@ -109,7 +109,7 @@ export default class Conversation extends Workflow {
       client,
       roles: ROLES_OPTIONS,
       // the thread events channel shared with the history panel's data actor,
-      // carrying the thread operation facts across the two hubs
+      // carrying the thread operation events across the two hubs
       extraOptions: { api: { threadEvents: events } },
     });
   }
@@ -130,10 +130,10 @@ export default class Conversation extends Workflow {
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.DELETE, 'submit', () => this._onViewDeleteSubmit()),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
-      // an operation's fact rides its request: the
+      // an operation's event rides its request: the
       // data actor publishes it on the shared channel and every subscribed
       // actor — this panel's and its peer's — triggers it on its own hub
-      this._hub.on(fields.thread(), fact => this._onThreadEvent(fact)),
+      this._hub.on(fields.thread(), event => this._onThreadEvent(event)),
     ];
   }
 
@@ -368,13 +368,13 @@ export default class Conversation extends Workflow {
   // thread operations //
   /**
    * Thread-level operations on the thread on display: fire-and-forget
-   * requests carrying their facts, which come back through the thread
+   * requests carrying their events, which come back through the thread
    * events subscriptions, to both panels. They require a loaded thread: a
    * thread being created (or none at all) has no server identity to
    * operate on.
    */
   rename(title) {
-    ThreadOperations.prototype.rename.call(this, this._requireThreadId('rename'), title);
+    ThreadOperations.prototype.rename.call(this, this._requireThreadId('rename'), title, this.thread.title);
   }
 
   subscribe() {
@@ -435,32 +435,47 @@ export default class Conversation extends Workflow {
     this.load(threadId);
   }
 
-  _onThreadEvent(fact) {
-    switch (fact.event) {
-      case 'updated':
-        this._onThreadUpdated(fact);
+  // an operation, applied optimistically by its type — or the error taking
+  // a failed one back
+  _onThreadEvent(event) {
+    switch (event.type) {
+      case 'rename':
+      case 'markAsRead':
+      case 'subscribe':
+      case 'unsubscribe':
+        this._onThreadUpdated(event);
         break;
-      case 'deleted':
-        this._onThreadDeleted(fact);
+      case 'delete':
+        this._onThreadDeleted(event);
         break;
-      case 'all-deleted':
+      case 'deleteAll':
         this._onAllThreadsDeleted();
         break;
+      case 'error':
+        this._onThreadOperationError(event);
+        break;
     }
   }
 
-  _onThreadUpdated({ threadId, changes }) {
-    if (threadId !== this.threadId) {
-      return;
-    }
+  _onThreadUpdated(operation) {
+    const changes = getThreadChanges(operation);
+    this._patchThread(operation.threadId, thread => ({ ...thread, ...changes }));
+  }
+
+  // patch the record of the thread on display, if it is the given one
+  _patchThread(threadId, fn) {
     const data = this._hub.states[fields.data()];
-    if (!data || !data.value || !data.value.thread) {
+    if (threadId !== this.threadId || !data || !data.value || !data.value.thread) {
       return;
     }
-    const thread = { ...data.value.thread, ...changes };
-    this.updateData({ ...data, value: { ...data.value, thread } });
+    const thread = fn(data.value.thread);
+    if (thread !== data.value.thread) {
+      this.updateData({ ...data, value: { ...data.value, thread } });
+    }
   }
 
+  // the thread on display is deleted: the panel resets to new-thread mode
+  // (a deletion is not rolled back if it fails)
   _onThreadDeleted({ threadIds }) {
     const threadId = this.threadId;
     if (threadId && threadIds && threadIds.includes(threadId)) {
@@ -577,15 +592,9 @@ export default class Conversation extends Workflow {
     super._writeRequestTimeToSession(timestamp, options);
   }
 
-  // the operation methods, called on this workflow via the prototype, fire
-  // their requests through this
-  _requestForThreadOperation(request) {
-    ThreadOperations.prototype._requestForThreadOperation.call(this, request);
-  }
-
   // data //
   // a `threads`-typed (operation) response carries no data: the operation
-  // is optimistic, its fact having ridden the request already
+  // is optimistic, its event having ridden the request already
   _onResponse(response) {
     const { request } = response;
     if (request && request.type === REQUEST_TYPE.THREADS) {
@@ -806,6 +815,8 @@ export default class Conversation extends Workflow {
   }
 
 }
+
+mixinThreadOperationSupport(Conversation.prototype);
 
 makeConfigurable(Conversation.prototype);
 

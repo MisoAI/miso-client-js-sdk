@@ -35,6 +35,14 @@ export function createClient({
   const createdThreads = new Map(); // thread_id -> detail, for threads created by questions
   const calls = [];
   const interactions = []; // interaction payloads uploaded by the workflows
+  // thread operations to fail, by api method name -> the error to reject
+  // with (e.g. failures.updateThread = new Error()); mutable between calls
+  const failures = {};
+  const failIfScripted = (method) => {
+    if (failures[method]) {
+      throw failures[method];
+    }
+  };
 
   const userHistory = {
     // pages like the real list API: start/rows in, has_more out
@@ -73,21 +81,27 @@ export function createClient({
     },
     async updateThread(threadId, payload) {
       calls.push(`PUT threads/${threadId} ${JSON.stringify(payload)}`);
+      failIfScripted('updateThread');
     },
     async deleteThreads(payload) {
       calls.push(`POST threads/_delete ${JSON.stringify(payload)}`);
+      failIfScripted('deleteThreads');
     },
     async deleteAllThreads() {
       calls.push(`POST threads/_delete_all`);
+      failIfScripted('deleteAllThreads');
     },
     async markThreadAsRead(threadId) {
       calls.push(`POST threads/${threadId}/read`);
+      failIfScripted('markThreadAsRead');
     },
     async subscribeThread(threadId) {
       calls.push(`POST threads/${threadId}/subscribe`);
+      failIfScripted('subscribeThread');
     },
     async unsubscribeThread(threadId) {
       calls.push(`POST threads/${threadId}/unsubscribe`);
+      failIfScripted('unsubscribeThread');
     },
   };
 
@@ -162,5 +176,5 @@ export function createClient({
   };
   client.workflows = new Workflows(new WorkflowPlugin(), client);
 
-  return { client, calls, interactions };
+  return { client, calls, interactions, failures };
 }

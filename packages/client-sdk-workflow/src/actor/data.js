@@ -20,10 +20,10 @@ export default class DataActor {
       hub.on(fields.request(), event => this._handleRequest(event)),
     ];
     if (threadEvents) {
-      // the shared thread events channel: facts published by any actor on
+      // the shared thread events channel: events published by any actor on
       // the channel (this actor's own included) are triggered on this
       // actor's own hub `thread` field
-      this._unsubscribes.push(threadEvents.subscribe(fact => this._hub.trigger(fields.thread(), fact)));
+      this._unsubscribes.push(threadEvents.subscribe(event => this._hub.trigger(fields.thread(), event)));
     }
   }
 
@@ -76,10 +76,10 @@ export default class DataActor {
     if (!this.active) {
       return;
     }
-    // a thread operation request carries its fact: published on the shared
-    // thread events channel, reaching both chat-history panels' hubs
-    if (event.fact && this._threadEvents) {
-      this._threadEvents.emit(event.fact);
+    // a thread operation request carries its operation: published on the
+    // shared thread events channel, reaching both chat-history panels' hubs
+    if (event.operation && this._threadEvents) {
+      this._threadEvents.emit(event.operation);
     }
     const { session, ...request } = event;
 
@@ -125,6 +125,12 @@ export default class DataActor {
         this._emitResponseWithSessionCheck({ session, request, value: response });
       }
     } catch(error) {
+      // a thread operation failed: published up front, it is taken back on
+      // the same channel, so every panel that applied it undoes it — even
+      // if this actor's own workflow is gone by now
+      if (event.operation && this._threadEvents) {
+        this._threadEvents.emit(Object.freeze({ type: 'error', operation: event.operation, error }));
+      }
       if (this._destroyed) {
         return; // e.g. the deferred abort settling the fetch's rejection
       }

@@ -94,7 +94,7 @@ export default class Workflows {
   }
 
   // the thread events channel shared by the chat-history panels' data actors,
-  // carrying the thread operation facts across the two hubs; lazily created
+  // carrying the thread operation events across the two hubs; lazily created
   // with the first panel
   _getThreadEvents() {
     return this._threadEvents || (this._threadEvents = new ThreadEvents());

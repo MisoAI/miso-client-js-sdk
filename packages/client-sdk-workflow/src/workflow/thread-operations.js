@@ -1,44 +1,66 @@
-import { API, asArray, mixin } from '@miso.ai/commons';
+import { API, asArray, mixin, lowerCamelToSnake, trimObj } from '@miso.ai/commons';
 import { fields } from '../actor/index.js';
 import { REQUEST_TYPE } from '../constants.js';
+import { undoThreadOperation } from '../util/threads.js';
 
 /**
- * The id-based thread operations of the chat-history workflows: each builds
- * its request — a simple name on the `threads` group, the thread id in the
- * payload, paired with the fact it establishes — and fires it on the
- * workflow's own hub as a `threads`-typed request: fire-and-forget, with no
- * loading commit and no api option merging. The response carries no data —
- * each workflow's own _onResponse override knows to skip `threads`-typed
- * responses (its response handling is its own; a mixin cannot know what
- * else there is to cover).
+ * The id-based thread operations of the chat-history workflows. Each method
+ * describes its operation — `{ type, ... }`: the type is the method's own
+ * name, the rest its arguments (the thread id(s), the new title) — builds
+ * its request payload, and issues the two (_applyThreadOperation). What an
+ * operation does to a thread record is the panels' reading of its type
+ * (getThreadChanges).
  *
- * History mixes the methods in with makeThreadOperations() — methods the
+ * The request fires on the workflow's own hub as a `threads`-typed request
+ * named after the operation (the snake case of its type): fire-and-forget,
+ * with no loading commit and no api option merging. The response carries
+ * no data — each workflow's own _onResponse override knows to skip
+ * `threads`-typed responses (its response handling is its own; a mixin
+ * cannot know what else there is to cover).
+ *
+ * An operation is optimistic: riding its request, it is published on the
+ * thread events channel and applied by the panels right away. If the
+ * request fails, an `error` event naming the operation follows on the same
+ * channel, and the panels take it back. The rollback is deliberately
+ * modest — operations depend on one another, so no rule set gets it
+ * perfect: an operation carries what its own undo needs (a rename its
+ * `oldTitle`), and only rename and the subscription toggles are undone
+ * (getThreadUndoChanges). Nothing presents the failure to the user yet.
+ *
+ * History mixes the methods in with mixinThreadOperations() — methods the
  * class defines itself win, so it specializes rename/delete with a
  * placeholder guard, calling back into the prototype methods here.
- * Conversation does not mix them in: it exposes the operations against the
- * thread on display, each calling the prototype method with its own thread
- * id passed in — supplying _requestForThreadOperation by delegation,
- * since the operation methods fire through it.
+ * Conversation mixes in the support methods only
+ * (mixinThreadOperationSupport): it exposes the operations against the
+ * thread on display, each calling the prototype method here with its own
+ * thread id passed in.
  */
 export function mixinThreadOperations(prototype) {
   mixin(prototype, ThreadOperations.prototype);
+  mixinThreadOperationSupport(prototype);
+}
+
+export function mixinThreadOperationSupport(prototype) {
+  mixin(prototype, ThreadOperationSupport.prototype);
 }
 
 export class ThreadOperations {
 
-  rename(threadId, title) {
-    this._requestForThreadOperation(threadRequest('update', { thread_id: threadId, title }, updated(threadId, { title })));
+  // the title being replaced rides along, so the operation can be taken
+  // back if it fails
+  rename(threadId, title, oldTitle) {
+    this._applyThreadOperation({ type: 'rename', threadId, title, oldTitle });
   }
 
   markAsRead(threadId) {
-    this._requestForThreadOperation(threadRequest('mark_as_read', { thread_id: threadId }, updated(threadId, { has_new: false })));
+    this._applyThreadOperation({ type: 'markAsRead', threadId });
   }
 
   /**
    * Subscribe the thread to answer updates.
    */
   subscribe(threadId) {
-    this._requestForThreadOperation(threadRequest('subscribe', { thread_id: threadId }, updated(threadId, { subscribed: true })));
+    this._applyThreadOperation({ type: 'subscribe', threadId });
   }
 
   /**
@@ -48,7 +70,7 @@ export class ThreadOperations {
    * all the same.
    */
   unsubscribe(threadId) {
-    this._requestForThreadOperation(threadRequest('unsubscribe', { thread_id: threadId }, updated(threadId, { subscribed: false })));
+    this._applyThreadOperation({ type: 'unsubscribe', threadId });
   }
 
   /**
@@ -56,18 +78,40 @@ export class ThreadOperations {
    */
   delete(threadIds) {
     threadIds = Object.freeze(asArray(threadIds));
-    this._requestForThreadOperation(threadRequest('delete', { thread_ids: threadIds }, Object.freeze({ event: 'deleted', threadIds })));
+    this._applyThreadOperation({ type: 'delete', threadIds });
   }
 
   deleteAll() {
-    this._requestForThreadOperation(threadRequest('delete_all', undefined, Object.freeze({ event: 'all-deleted' })));
+    this._applyThreadOperation({ type: 'deleteAll' });
   }
 
-  // fire the operation on the workflow's own hub: a request event only —
-  // no loading commit, no api option merging; the response carries no data
-  // (_onResponse), the fact rides the request
-  _requestForThreadOperation(request) {
-    this._hub.update(fields.request(), { ...request, type: REQUEST_TYPE.THREADS, session: this.session });
+}
+
+/**
+ * What a workflow needs to issue thread operations and to take part in
+ * their rollback.
+ */
+export class ThreadOperationSupport {
+
+  _applyThreadOperation(operation) {
+    Object.freeze(operation); // shared across both panels from here on
+    // fire the operation on the workflow's own hub: a request event only —
+    // no loading commit, no api option merging; the response carries no data
+    // (_onResponse), the operation rides the request
+    const payload = toPayload(operation);
+    this._hub.update(fields.request(), {
+      ...threadRequest(lowerCamelToSnake(operation.type), payload),
+      operation,
+      type: REQUEST_TYPE.THREADS,
+      session: this.session,
+    });
+  }
+
+  // an operation failed: take it back here — the operation itself says
+  // how (undoThreadOperation), applied through the workflow's own
+  // _patchThread
+  _onThreadOperationError({ operation }) {
+    this._patchThread(operation.threadId, thread => undoThreadOperation(thread, operation));
   }
 
 }
@@ -86,10 +130,16 @@ export function getThreadRequest(threadId, payload) {
   return threadRequest('get', { thread_id: threadId, ...payload });
 }
 
-function threadRequest(name, payload, fact) {
-  return { group: API.GROUP.THREADS, name, payload, fact };
+function threadRequest(name, payload) {
+  return { group: API.GROUP.THREADS, name, payload };
 }
 
-function updated(threadId, changes) {
-  return Object.freeze({ event: 'updated', threadId, changes: Object.freeze(changes) });
+// the request payload of an operation: its arguments in the API's naming —
+// the type is the request's name, and what serves the undo stays local
+function toPayload({ type: _type, oldTitle: _oldTitle, threadId: thread_id, threadIds: thread_ids, ...props }) {
+  return trimObj({
+    thread_id,
+    thread_ids,
+    ...props,
+  });
 }

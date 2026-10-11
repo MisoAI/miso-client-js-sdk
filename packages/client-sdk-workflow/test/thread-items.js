@@ -58,7 +58,7 @@ test('thread roles map into the record; view events operate through the superwor
   workflow._onViewRenameSubmit({ value: 'Renamed' });
   await tick();
   assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
-  // the fact came back through the history feed
+  // the event came back through the history feed
   assert.is(history.get('t2').title, 'Renamed');
   assert.is(workflow.thread.title, 'Renamed');
 

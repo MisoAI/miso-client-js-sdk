@@ -34,7 +34,7 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
  *
  * The item is presentation only: its view events delegate to the
  * superworkflow's id-based operations (history.rename/delete/subscribe),
- * whose requests fire on the history workflow's hub — the facts go out as
+ * whose requests fire on the history workflow's hub — the events go out as
  * `thread` hub events on both panels' hubs and come back here down the
  * propagation path.
  */

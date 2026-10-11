@@ -448,7 +448,7 @@ test('operations ride the request event, leaving the data flow untouched', async
   // is observable and interceptable like any fetch
   assert.ok(calls.includes('PUT threads/t2 {"title":"Renamed"}'));
   assert.equal(requests.map(r => r.type), ['threads']);
-  // the data flow saw only the optimistic fact patch: no loading commit,
+  // the data flow saw only the optimistic operation patch: no loading commit,
   // and the operation response never entered it
   assert.equal(commits.map(data => data.status), ['ready']);
   assert.is(history.get('t2').title, 'Renamed');
@@ -582,6 +582,154 @@ test('deleteAll: clears the list and resets the panel', async () => {
   assert.equal(history.threads, []);
   assert.is(conversation.threadId, undefined);
 });
+
+// a failed operation: the data actor logs the failure to the console
+async function quietly(fn) {
+  const { error } = console;
+  console.error = () => {};
+  try {
+    return await fn();
+  } finally {
+    console.error = error;
+  }
+}
+
+test('a failed rename rolls back in both panels', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { history, conversation } = client.workflows;
+  // the failure reaches both panels' hubs as an `error` thread event
+  const errors = [];
+  history._events.on('thread', event => event.type === 'error' && errors.push(['history', event]));
+  conversation._events.on('thread', event => event.type === 'error' && errors.push(['conversation', event]));
+
+  history.start();
+  await tick();
+  history.select('t2');
+  await tick();
+
+  const error = failures.updateThread = Object.assign(new Error('Token expired'), { status: 401 });
+  history.rename('t2', 'Renamed');
+  // optimistic, as ever
+  assert.is(history.get('t2').title, 'Renamed');
+  assert.is(conversation.thread.title, 'Renamed');
+  await tick();
+
+  assert.is(history.get('t2').title, 'Second thread');
+  assert.is(conversation.thread.title, 'Second thread');
+  assert.equal(conversation.messages, answersOf(['q1', 'q2'])); // not reset by the rollback
+  assert.equal(errors.map(([name]) => name).sort(), ['conversation', 'history']);
+  for (const [, event] of errors) {
+    assert.equal(event.operation, { type: 'rename', threadId: 't2', title: 'Renamed', oldTitle: 'Second thread' });
+    assert.is(event.error, error);
+  }
+
+  // issued from the conversation panel: rolled back all the same
+  conversation.rename('Renamed again');
+  await tick();
+  assert.is(history.get('t2').title, 'Second thread');
+  assert.is(conversation.thread.title, 'Second thread');
+}));
+
+test('a failed operation leaves a later change alone', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+
+  failures.updateThread = new Error('Nope');
+  history.rename('t1', 'Failing');
+  delete failures.updateThread;
+  history.rename('t1', 'Succeeding');
+  await tick();
+
+  // the failed rename no longer owns the title: nothing to roll back
+  assert.is(history.get('t1').title, 'Succeeding');
+}));
+
+test('a failed subscription toggle rolls back', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+
+  failures.unsubscribeThread = new Error('Nope');
+  history.unsubscribe('t2');
+  assert.is(history.get('t2').subscribed, false);
+  await tick();
+  assert.is(history.get('t2').subscribed, true);
+
+  delete failures.unsubscribeThread;
+  history.unsubscribe('t2');
+  await tick();
+  assert.is(history.get('t2').subscribed, false);
+
+  failures.subscribeThread = new Error('Nope');
+  history.subscribe('t2');
+  assert.is(history.get('t2').subscribed, true);
+  await tick();
+  assert.is(history.get('t2').subscribed, false);
+}));
+
+test('a failed delete is not rolled back', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+
+  failures.deleteThreads = new Error('Nope');
+  history.delete('t1');
+  await tick();
+
+  // the list and the panel stay as the deletion left them
+  assert.equal(history.threads.map(t => t.thread_id), ['t2']);
+  assert.is(history.selectedId, undefined);
+  assert.is(conversation.threadId, undefined);
+
+  failures.deleteAllThreads = new Error('Nope');
+  history.deleteAll();
+  await tick();
+  assert.equal(history.threads, []);
+}));
+
+test('a failed mark-as-read is not rolled back', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  failures.markThreadAsRead = new Error('Nope');
+  history.select('t2');
+  await tick();
+
+  // the operation does not know whether the thread was unread to begin with
+  assert.is(history.get('t2').has_new, false);
+  assert.is(conversation.threadId, 't2'); // the load itself is unaffected
+}));
+
+test('conversation: a failed operation rolls back standalone', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  failures.updateThread = new Error('Nope');
+  conversation.rename('Renamed');
+  assert.is(conversation.thread.title, 'Renamed');
+  await tick();
+  assert.is(conversation.thread.title, 'First thread');
+
+  // a failed delete leaves the panel on the new thread
+  failures.deleteThreads = new Error('Nope');
+  conversation.delete();
+  assert.is(conversation.threadId, undefined);
+  await tick();
+  assert.is(conversation.threadId, undefined);
+}));
 
 test('conversation: loading the current thread again is a no-op unless forced', async () => {
   const { client, calls } = createClient();

@@ -20,6 +20,64 @@ export function settlePlaceholder(placeholder, threadId) {
 }
 
 /**
+ * The changes a thread operation makes to its thread's record, by its
+ * type — undefined for an operation that changes no record (a deletion).
+ */
+export function getThreadChanges({ type, title }) {
+  switch (type) {
+    case 'rename':
+      return { title };
+    case 'markAsRead':
+      return { has_new: false };
+    case 'subscribe':
+      return { subscribed: true };
+    case 'unsubscribe':
+      return { subscribed: false };
+  }
+  return undefined;
+}
+
+/**
+ * The changes that take a failed thread operation back, read off the
+ * operation alone — a rename carries the title it replaced (`oldTitle`), a
+ * subscription toggle flips back. Undefined for an operation that is not
+ * rolled back: a deletion, and markAsRead — the operation does not know
+ * whether the thread was unread to begin with.
+ */
+export function getThreadUndoChanges({ type, oldTitle }) {
+  switch (type) {
+    case 'rename':
+      return { title: oldTitle };
+    case 'subscribe':
+      return { subscribed: false };
+    case 'unsubscribe':
+      return { subscribed: true };
+  }
+  return undefined;
+}
+
+/**
+ * Take a failed thread operation back on a thread record: each field it
+ * changed goes back (getThreadUndoChanges) — unless the field has moved on
+ * since (a later change owns it now). The record keeps its identity if
+ * nothing is left to revert.
+ */
+export function undoThreadOperation(thread, operation) {
+  const changes = getThreadChanges(operation);
+  const previous = getThreadUndoChanges(operation);
+  if (!changes || !previous) {
+    return thread;
+  }
+  const patch = {};
+  for (const key of Object.keys(changes)) {
+    if (thread[key] === changes[key] && thread[key] !== previous[key]) {
+      patch[key] = previous[key];
+    }
+  }
+  return Object.keys(patch).length > 0 ? { ...thread, ...patch } : thread;
+}
+
+/**
  * Whether the thread presents as unread — the UI red dot: it carries new
  * updates AND the user subscribes to its updates. The two fields are
  * independent facts; they combine only at presentation.
