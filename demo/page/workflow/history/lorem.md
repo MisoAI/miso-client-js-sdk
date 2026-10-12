@@ -110,7 +110,9 @@ misocmd.push(async () => {
   // client.ui, shown here as notices
   client.ui.on('error', ({ threadEvent, operation, error }) => {
     if (threadEvent) {
-      MisoClient.ui.notify({ type: 'error', message: `Thread operation failed (${operation.type}): ${error.message}` });
+      // 401: the JWT has expired — worded as the SDK's own error messages are
+      const message = error.status === 401 ? 'Your session has expired. Please sign in again.' : `Thread operation failed (${operation.type}): ${error.message}`;
+      MisoClient.ui.notify({ type: 'error', message });
     }
   });
   //client.ui.history.useApi({ rows: 5 });

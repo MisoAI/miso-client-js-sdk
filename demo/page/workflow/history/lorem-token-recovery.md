@@ -115,7 +115,9 @@ misocmd.push(async () => {
   // client.workflows, shown here as notices
   client.workflows.on('error', ({ threadEvent, operation, error }) => {
     if (threadEvent) {
-      MisoClient.ui.notify({ type: 'error', message: `Thread operation failed (${operation.type}): ${error.message}` });
+      // 401: the JWT has expired — worded as the SDK's own error messages are
+      const message = error.status === 401 ? 'Your session has expired. Please sign in again.' : `Thread operation failed (${operation.type}): ${error.message}`;
+      MisoClient.ui.notify({ type: 'error', message });
     }
   });
   // simulate server-side activity: touch a random thread, generating a fresh
