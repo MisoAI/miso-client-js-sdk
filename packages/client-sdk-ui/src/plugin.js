@@ -11,6 +11,7 @@ import * as traits from './trait/index.js';
 import { loadStylesIfNecessary } from './styles.js';
 import confirm from './util/confirm.js';
 import prompt from './util/prompt.js';
+import notify from './util/notify.js';
 
 import MisoContainerElement from './element/container/miso-container.js';
 import MisoContextElement from './element/context/miso-context.js';
@@ -44,7 +45,7 @@ export default class UiPlugin extends Component {
     MisoClient.on('create', this._injectClient.bind(this));
 
     // the UI interface for MisoClient
-    const ui = { defaults, traits, confirm, prompt };
+    const ui = { defaults, traits, confirm, prompt, notify };
     delegateGetters(ui, this, ['layouts', 'ready']);
     defineValues(this, { MisoClient });
     defineValues(MisoClient, { ui });
@@ -131,7 +132,7 @@ function createUiPluginContext(plugin, ui, MisoClient) {
 }
 
 // workflow accessors delegated to client.workflows for backward compatibility
-const WORKFLOW_ACCESSORS = ['search', 'hybridSearch', 'asks', 'ask', 'explores', 'explore', 'recommendations', 'recommendation', 'sources'];
+const WORKFLOW_ACCESSORS = ['search', 'hybridSearch', 'asks', 'ask', 'explores', 'explore', 'recommendations', 'recommendation', 'history', 'conversation', 'sources', 'on'];
 
 /**
  * The UI interface for the client.

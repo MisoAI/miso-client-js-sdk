@@ -1,4 +1,4 @@
-import { defineValues } from '@miso.ai/commons';
+import { Component, defineValues } from '@miso.ai/commons';
 import { ThreadEvents } from './actor/index.js';
 import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation, MessageItems, ThreadItems } from './workflow/index.js';
 import * as sources from './source.js';
@@ -7,10 +7,18 @@ import * as sources from './source.js';
  * The per-client workflow interface, exposed as `client.workflows`. Lazily
  * creates and caches the workflow singletons (search, hybridSearch) and
  * workflow contexts (asks, explores, recommendations) of the client.
+ *
+ * A component under the client, it also gathers what goes on across the
+ * workflows in one place: the `error` events of every workflow, and the
+ * thread events of the chat-history panels — `thread` for an operation,
+ * `error` for one that failed. Either way the payload names the source
+ * `workflow`, and a thread event is marked as such: `{ workflow,
+ * threadEvent: true, ...event }`.
  */
-export default class Workflows {
+export default class Workflows extends Component {
 
   constructor(plugin, client) {
+    super('workflows', client);
     this._plugin = plugin;
     this._client = client;
 
@@ -97,7 +105,11 @@ export default class Workflows {
   // carrying the thread operation events across the two hubs; lazily created
   // with the first panel
   _getThreadEvents() {
-    return this._threadEvents || (this._threadEvents = new ThreadEvents());
+    if (!this._threadEvents) {
+      this._threadEvents = new ThreadEvents();
+      this._threadEvents.subscribe((event, workflow) => this._events.emit(event.type === 'error' ? 'error' : 'thread', { workflow, threadEvent: true, ...event }));
+    }
+    return this._threadEvents;
   }
 
 }

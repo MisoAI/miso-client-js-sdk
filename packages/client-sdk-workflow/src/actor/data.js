@@ -7,12 +7,13 @@ export default class DataActor {
   // subworkflow fed by its superworkflow makes no requests of its own — an
   // instance property, since the item shares its options object with the
   // parent
-  constructor(hub, { source, options, polling = true, active = true, threadEvents }) {
+  constructor(hub, { source, options, polling = true, active = true, workflow, threadEvents }) {
     this._hub = hub;
     this._source = source;
     this._options = options;
     this._pollingEnabled = polling;
     this._active = active;
+    this._workflow = workflow;
     this._threadEvents = threadEvents;
     this._serving = new Set();
     this._unsubscribes = [
@@ -79,7 +80,7 @@ export default class DataActor {
     // a thread operation request carries its operation: published on the
     // shared thread events channel, reaching both chat-history panels' hubs
     if (event.operation && this._threadEvents) {
-      this._threadEvents.emit(event.operation);
+      this._threadEvents.emit(event.operation, this._workflow);
     }
     const { session, ...request } = event;
 
@@ -129,7 +130,7 @@ export default class DataActor {
       // the same channel, so every panel that applied it undoes it — even
       // if this actor's own workflow is gone by now
       if (event.operation && this._threadEvents) {
-        this._threadEvents.emit(Object.freeze({ type: 'error', operation: event.operation, error }));
+        this._threadEvents.emit(Object.freeze({ type: 'error', operation: event.operation, error }), this._workflow);
       }
       if (this._destroyed) {
         return; // e.g. the deferred abort settling the fetch's rejection

@@ -150,14 +150,14 @@ export default class DebugPlugin {
 
   _logp(path, name, data, { silent = false } = {}) {
     path = _joinPath(path);
-    this._write([_path(path), _name(name), ...data], { silent: silent || this._isMuted(path) });
+    this._write([_path(path), _name(name), ...data], { silent: silent || this._isMuted(path), error: name === 'error' });
   }
 
   _logr(...data) {
     this._write(data);
   }
 
-  _write(data, { silent = false } = {}) {
+  _write(data, { silent = false, error = false } = {}) {
     const options = this._options.console || {};
     if (this._options.preserveLog) {
       this._logs._logs.push(data);
@@ -165,7 +165,7 @@ export default class DebugPlugin {
     if (silent) {
       return;
     }
-    console.log(_tag(options), _style(options), ...data);
+    console.log(_tag(options), _style(options, error), ...data);
   }
 
   _isMuted(path) {
@@ -179,7 +179,9 @@ function _tag({ text = 'Miso' } = {}) {
   return `%c${text}`;
 }
 
-function _style({ color = '#fff', background = '#334cbb' } = {}) {
+// an error event stands out with a red tag
+function _style({ color = '#fff', background = '#334cbb', errorBackground = '#c0392b' } = {}, error = false) {
+  background = error ? errorBackground : background;
   return `color: ${color}; background-color: ${background}; padding: 2px 2px 1px 4px;`;
 }
 

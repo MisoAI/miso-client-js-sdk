@@ -630,6 +630,33 @@ test('a failed rename rolls back in both panels', () => quietly(async () => {
   assert.is(conversation.thread.title, 'Second thread');
 }));
 
+test('thread events and errors are gathered at client.workflows', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { workflows } = client;
+  const { history } = workflows;
+  const events = [];
+  workflows.on('thread', event => events.push(['thread', event]));
+  workflows.on('error', event => events.push(['error', event]));
+
+  history.start();
+  await tick();
+
+  const error = failures.updateThread = new Error('Nope');
+  history.rename('t1', 'Renamed');
+  await tick();
+
+  // once each, however many panels are listening
+  const operation = { type: 'rename', threadId: 't1', title: 'Renamed', oldTitle: history.get('t1').title };
+  assert.equal(events.map(([name]) => name), ['thread', 'error']);
+  assert.equal(events[0][1], { workflow: history, threadEvent: true, ...operation });
+  assert.equal(events[1][1].operation, operation);
+  assert.is(events[1][1].error, error);
+  assert.is(events[1][1].threadEvent, true);
+  // from the panel that issued the operation
+  assert.is(events[0][1].workflow, history);
+  assert.is(events[1][1].workflow, history);
+}));
+
 test('a failed operation leaves a later change alone', () => quietly(async () => {
   const { client, failures } = createClient();
   const { history } = client.workflows;

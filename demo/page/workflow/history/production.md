@@ -62,6 +62,14 @@ misocmd.push(async () => {
   MisoClient.plugins.use('std:ui');
   const client = new MisoClient(window.DEFAULT_HISTORY_API_KEY);
   client.context.auth = `Bearer ${window.JWT_TOKEN}`;
+  // a failed thread operation is rolled back by the SDK, but presenting the
+  // failure is up to the page: the thread event errors are gathered at
+  // client.workflows, shown here as notices
+  client.workflows.on('error', ({ threadEvent, operation, error }) => {
+    if (threadEvent) {
+      MisoClient.ui.notify({ type: 'error', message: `Thread operation failed (${operation.type}): ${error.message}` });
+    }
+  });
   client.workflows.history.start();
 });
 </script>

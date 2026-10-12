@@ -1,12 +1,12 @@
-import { API, asArray, mixin, lowerCamelToSnake, trimObj } from '@miso.ai/commons';
+import { API, asArray, mixin, kebabToSnake, trimObj } from '@miso.ai/commons';
 import { fields } from '../actor/index.js';
 import { REQUEST_TYPE } from '../constants.js';
 import { undoThreadOperation } from '../util/threads.js';
 
 /**
  * The id-based thread operations of the chat-history workflows. Each method
- * describes its operation — `{ type, ... }`: the type is the method's own
- * name, the rest its arguments (the thread id(s), the new title) — builds
+ * describes its operation — `{ type, ... }`: the type is the method's name
+ * in kebab case (`mark-as-read`, `delete-all`), the rest its arguments (the thread id(s), the new title) — builds
  * its request payload, and issues the two (_applyThreadOperation). What an
  * operation does to a thread record is the panels' reading of its type
  * (getThreadChanges).
@@ -53,7 +53,7 @@ export class ThreadOperations {
   }
 
   markAsRead(threadId) {
-    this._applyThreadOperation({ type: 'markAsRead', threadId });
+    this._applyThreadOperation({ type: 'mark-as-read', threadId });
   }
 
   /**
@@ -82,7 +82,7 @@ export class ThreadOperations {
   }
 
   deleteAll() {
-    this._applyThreadOperation({ type: 'deleteAll' });
+    this._applyThreadOperation({ type: 'delete-all' });
   }
 
 }
@@ -100,7 +100,7 @@ export class ThreadOperationSupport {
     // (_onResponse), the operation rides the request
     const payload = toPayload(operation);
     this._hub.update(fields.request(), {
-      ...threadRequest(lowerCamelToSnake(operation.type), payload),
+      ...threadRequest(kebabToSnake(operation.type), payload),
       operation,
       type: REQUEST_TYPE.THREADS,
       session: this.session,

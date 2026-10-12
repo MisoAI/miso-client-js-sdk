@@ -1,7 +1,8 @@
 /**
  * The thread events channel: a minimal emitter shared by the chat-history
  * panels' data actors — subscribe() takes every event, emit() delivers one
- * to all subscribers. It carries thread operations, and the errors of
+ * to all subscribers, along with its source: the workflow whose data actor
+ * published it. It carries thread operations, and the errors of
  * those that failed.
  *
  * An operation is optimistic (see workflow/thread-operations.js): the
@@ -32,9 +33,9 @@ export default class ThreadEvents {
     return () => this._subscribers.delete(callback);
   }
 
-  emit(event) {
+  emit(event, source) {
     for (const callback of [...this._subscribers]) {
-      callback(event);
+      callback(event, source);
     }
   }
 

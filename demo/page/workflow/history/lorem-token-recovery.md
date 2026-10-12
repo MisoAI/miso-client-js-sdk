@@ -110,6 +110,14 @@ misocmd.push(async () => {
   const client = new MisoClient('...');
   // sign in with a mocked JWT, so the token expiration can be simulated
   client.context.auth = `Bearer ${MisoClient.lorem.api.me().jwt}`;
+  // a failed thread operation is rolled back by the SDK, but presenting the
+  // failure is up to the page: the thread event errors are gathered at
+  // client.workflows, shown here as notices
+  client.workflows.on('error', ({ threadEvent, operation, error }) => {
+    if (threadEvent) {
+      MisoClient.ui.notify({ type: 'error', message: `Thread operation failed (${operation.type}): ${error.message}` });
+    }
+  });
   // simulate server-side activity: touch a random thread, generating a fresh
   // answer in it, so the update indicators can be exercised on demand
   document.querySelector('.miso-history-demo__touch').addEventListener('click', () => {

@@ -440,7 +440,7 @@ export default class Conversation extends Workflow {
   _onThreadEvent(event) {
     switch (event.type) {
       case 'rename':
-      case 'markAsRead':
+      case 'mark-as-read':
       case 'subscribe':
       case 'unsubscribe':
         this._onThreadUpdated(event);
@@ -448,7 +448,7 @@ export default class Conversation extends Workflow {
       case 'delete':
         this._onThreadDeleted(event);
         break;
-      case 'deleteAll':
+      case 'delete-all':
         this._onAllThreadsDeleted();
         break;
       case 'error':

@@ -27,7 +27,7 @@ export function getThreadChanges({ type, title }) {
   switch (type) {
     case 'rename':
       return { title };
-    case 'markAsRead':
+    case 'mark-as-read':
       return { has_new: false };
     case 'subscribe':
       return { subscribed: true };
@@ -41,7 +41,7 @@ export function getThreadChanges({ type, title }) {
  * The changes that take a failed thread operation back, read off the
  * operation alone — a rename carries the title it replaced (`oldTitle`), a
  * subscription toggle flips back. Undefined for an operation that is not
- * rolled back: a deletion, and markAsRead — the operation does not know
+ * rolled back: a deletion, and mark-as-read — the operation does not know
  * whether the thread was unread to begin with.
  */
 export function getThreadUndoChanges({ type, oldTitle }) {

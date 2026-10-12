@@ -72,7 +72,7 @@ export default class Workflow extends Component {
     this._sessions = new SessionMaker(hub);
     this._trackers = new TrackersActor(hub, { roles, options });
     this._proxyTrackers = proxyTrackers(this._trackers);
-    this._data = new DataActor(hub, { source: sources.api(client), options, ...this._extraOptions.api });
+    this._data = new DataActor(hub, { source: sources.api(client), options, workflow: this, ...this._extraOptions.api });
     this._views = new ViewsActor(hub, { layouts, roles, options, workflow: this });
     this._interactions = new InteractionsActor(hub, { client, options });
   }
@@ -395,6 +395,11 @@ export default class Workflow extends Component {
     this._events.emit(name, { _event: name, ...data });
     if (this._context) {
       this._context._events.emit(name, { workflow: this, _event: name, ...data });
+    }
+    // errors are forwarded to the client's workflows interface as well
+    const workflows = this._client.workflows;
+    if (name === 'error' && workflows && workflows._events) {
+      workflows._events.emit(name, { workflow: this, _event: name, ...data });
     }
   }
 
