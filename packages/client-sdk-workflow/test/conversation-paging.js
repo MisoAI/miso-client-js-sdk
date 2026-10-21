@@ -158,4 +158,31 @@ test('conversation: a follow-up posts and appends while older pages are on displ
   assert.equal(ids.slice(0, 6), ['q2', 'q3', 'q4', 'q5', 'q6', 'q7']);
 });
 
+test('conversation: a new thread keeps taking updates after paging up', async () => {
+  const { conversation } = setup();
+
+  // a thread started in the page has no head request to restore
+  conversation.send('A brand new question');
+  await tick(50);
+  assert.is(conversation.threadId, 'q-new-1');
+
+  // the trigger pages up past the first answer: the page is empty, and
+  // must not leave its request on the data, lest later commits re-enter
+  // the older-page merge (and get dropped)
+  conversation._more();
+  await tick(50);
+  assert.is(conversation.exhausted, true);
+  assert.is(conversation._hub.states['data'].request, undefined);
+
+  // a follow-up appends and finishes
+  conversation.send('A follow-up');
+  await tick(50);
+  assert.equal(questionIds(conversation), ['q-new-1', 'q-new-2']);
+  assert.ok(conversation.messages.every(m => m.finished));
+
+  // the thread record takes patches
+  conversation.subscribe();
+  assert.is(conversation.thread.subscribed, true);
+});
+
 test.run();

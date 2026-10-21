@@ -195,6 +195,19 @@ export function normalizeAnswersValue(value) {
 }
 
 /**
+ * The request a merged page of the conversation data carries: the head
+ * request, restored, so the page's own request (answers, older messages)
+ * stays an internal detail of the data flow. A thread started in the page
+ * has no head request, and the merged data carries none either: were the
+ * page's request kept, every later commit (live message patches, thread
+ * patches, follow-ups) would carry its type, re-entering the page's merge
+ * and getting dropped.
+ */
+function headRequestOf(oldData) {
+  return oldData ? oldData.request : undefined;
+}
+
+/**
  * Merge an answers response data — its value normalized to `{ messages }` by
  * the workflow's default data pass — into the current (head) data, in the
  * manner of concatItemsFromMoreResponse: a valueless update (the loading
@@ -211,7 +224,7 @@ export function mergeAnswersDataFromResponse(oldData, newData) {
   const messages = mergeAnswersIntoMessages(oldValue.messages || [], newData.value.messages || []);
   return {
     ...newData,
-    request: (oldData && oldData.request) || newData.request,
+    request: headRequestOf(oldData),
     // the current meta rides along, like the head request: it carries e.g.
     // the paging exhaustion, which an answers batch knows nothing about
     meta: { ...(oldData && oldData.meta), ...newData.meta },
@@ -254,41 +267,10 @@ export function mergeOlderMessagesFromResponse(oldData, newData) {
   const fresh = (newData.value.messages || []).filter(message => !displayed.has(message.question_id));
   return {
     ...newData,
-    request: (oldData && oldData.request) || newData.request,
+    request: headRequestOf(oldData),
     // the page's meta may carry the exhaustion (has_more: false)
     meta: { ...(oldData && oldData.meta), ...newData.meta },
     value: { ...oldValue, messages: [...fresh, ...oldMessages] },
-  };
-}
-
-/**
- * Merge a posted question (ask questions API) response data — its value
- * normalized to `{ messages }` by the workflow's default data pass, carrying
- * the last message of the conversation — into the current data. A valueless
- * update (the loading update of the posting request) keeps the current data;
- * the head request is restored on the merged data.
- */
-export function mergeFollowUpDataFromResponse(oldData, newData) {
-  if (!newData.value) {
-    return oldData;
-  }
-  const newMessages = newData.value.messages || [];
-  const patch = newMessages[newMessages.length - 1] || {};
-  const oldValue = (oldData && oldData.value) || {};
-  const messages = [...(oldValue.messages || [])];
-  const last = messages.length ? messages[messages.length - 1] : {};
-  messages[Math.max(messages.length - 1, 0)] = { ...last, ...patch };
-  // restore the head request; in new-thread mode there is none, so strip the
-  // request type marker (and the carried placeholder record), lest local
-  // patches re-enter this merge
-  const { type: _type, placeholder: _placeholder, ...typelessRequest } = newData.request || {};
-  return {
-    ...newData,
-    request: (oldData && oldData.request) || typelessRequest,
-    // the current meta rides along, like the head request (e.g. the paging
-    // exhaustion)
-    meta: { ...(oldData && oldData.meta), ...newData.meta },
-    value: { ...oldValue, messages },
   };
 }
 

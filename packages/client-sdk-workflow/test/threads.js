@@ -9,6 +9,7 @@ import {
   normalizeAnswersValue,
   mergeAnswersIntoMessages,
   mergeAnswersDataFromResponse,
+  mergeOlderMessagesFromResponse,
 } from '../src/util/threads.js';
 
 test('isThreadUnread: derives from subscribed && has_new', () => {
@@ -100,6 +101,29 @@ test('mergeAnswersDataFromResponse: merges and restores the head request', () =>
   assert.is(merged.status, 'ready');
   assert.equal(merged.value.thread, { thread_id: 't1' });
   assert.equal(merged.value.messages, [{ question_id: 'q1', answer: 'A1' }]);
+});
+
+test('mergeAnswersDataFromResponse: a new thread carries no request', () => {
+  // a thread started in the page has no head request
+  const oldData = { value: { thread: { thread_id: 'q1' }, messages: [{ question_id: 'q1' }] } };
+  const newData = {
+    request: { name: 'answers', type: 'answers' },
+    value: { messages: [{ question_id: 'q1', answer: 'A1' }] },
+  };
+  assert.is(mergeAnswersDataFromResponse(oldData, newData).request, undefined);
+});
+
+test('mergeOlderMessagesFromResponse: a new thread carries no request', () => {
+  const oldData = { value: { thread: { thread_id: 'q2' }, messages: [{ question_id: 'q2' }] } };
+  const newData = {
+    request: { type: 'more', payload: { after: 'q2' } },
+    meta: { exhausted: true },
+    value: { messages: [{ question_id: 'q1' }] },
+  };
+  const merged = mergeOlderMessagesFromResponse(oldData, newData);
+  assert.is(merged.request, undefined);
+  assert.is(merged.meta.exhausted, true);
+  assert.equal(merged.value.messages, [{ question_id: 'q1' }, { question_id: 'q2' }]);
 });
 
 test.run();
