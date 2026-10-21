@@ -10,8 +10,13 @@ misocmd.push(async () => {
     apiKey: '...',
     apiHost: 'http://localhost:9901/api',
   });
-  function onCitationLink({ addClass, setAttribute, setTooltipHtml, escapeHtml }, { source, index }) {
+  function onCitationLink({ addClass, setAttribute, setHref, setTooltipHtml, escapeHtml }, { source, index }) {
     addClass('my-custom-class');
+    setHref((href) => {
+      const url = new URL(href, window.location.href);
+      url.searchParams.set('utm_source', 'miso');
+      return url.href;
+    });
     if (source) {
       setAttribute('data-title', source.title);
       const date = new Date(source.published_at).toLocaleDateString();

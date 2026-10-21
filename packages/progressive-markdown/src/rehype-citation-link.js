@@ -94,6 +94,17 @@ function createMethods(node) {
     }
     delete properties[key];
   }
+  function setHref(href) {
+    const properties = node.properties || (node.properties = {});
+    if (typeof href === 'function') {
+      href = href(properties.href);
+    }
+    if (typeof href !== 'string') {
+      throw new Error(`Href must be a string or a function returning a string: ${href}`);
+    }
+    // hast-util-to-html escapes attribute values on serialization
+    properties.href = href;
+  }
   function getOrCreateTooltipNode() {
     const children = node.children || (node.children = []);
     let tooltip = children[0];
@@ -118,6 +129,7 @@ function createMethods(node) {
     removeClass,
     setAttribute,
     removeAttribute,
+    setHref,
     setTooltipHtml,
     setTooltipText,
   });
