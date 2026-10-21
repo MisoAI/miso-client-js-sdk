@@ -3,10 +3,13 @@ import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { writeQuestionSourceToPayload } from './processors.js';
+import { writeQuestionSourceToPayload, mappingFollowUpQuestionsData } from './processors.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
+  members: [ROLE.FOLLOW_UP_QUESTIONS],
   mappings: {
+    // the suggested follow-up questions of the message's answer, as in ask
+    [ROLE.FOLLOW_UP_QUESTIONS]: mappingFollowUpQuestionsData,
     // the question layout takes the whole record: the question text plus
     // the authorship metadata
     [ROLE.QUESTION]: data => data.value,
@@ -77,6 +80,7 @@ export default class MessageItem extends AnswerBasedWorkflow {
     this._unsubscribes = [
       ...this._unsubscribes,
       this._views.on(ROLE.ANSWER, 'follow-up-click', event => this._onFollowUpClick(event)),
+      this._views.on(ROLE.FOLLOW_UP_QUESTIONS, 'select', event => this._onFollowUpQuestionSelect(event)),
     ];
   }
 
@@ -121,8 +125,8 @@ export default class MessageItem extends AnswerBasedWorkflow {
    * from the request's loading commit on.
    */
   // TODO: bad name, use query()
-  post(message) {
-    this.query({ q: message.question, message });
+  post(message, { qs } = {}) {
+    this.query({ q: message.question, qs, message });
   }
 
   // the session is started by query(), like in the base class
@@ -175,6 +179,13 @@ export default class MessageItem extends AnswerBasedWorkflow {
   _onFollowUpClick(event) {
     const conversation = this._client.workflows._conversation;
     conversation && conversation._onFollowUpClick(event);
+  }
+
+  // a suggested follow-up question submits through the conversation
+  // workflow likewise
+  _onFollowUpQuestionSelect(event) {
+    const conversation = this._client.workflows._conversation;
+    conversation && conversation._onFollowUpQuestionSelect(event);
   }
 
   // destroy //

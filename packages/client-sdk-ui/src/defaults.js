@@ -166,6 +166,7 @@ export const defaultLayouts = Object.freeze({
         }
       }
     ],
+    [ROLE.FOLLOW_UP_QUESTIONS]: LAYOUT_TYPE.OPTION_LIST,
     [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message', incremental: true, infiniteScroll: true }],
     [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a follow-up question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div' }],

@@ -35,6 +35,16 @@ const ANSWER_BASED_TRACKERS = {
   products: DEFAULT_TRACKER_OPTIONS,
 };
 
+// the suggested follow-up questions (ask, the conversation's message items),
+// which are option items identified by their text
+const SUGGESTED_QUESTIONS_TRACKER = {
+  ...DEFAULT_TRACKER_OPTIONS,
+  click: {
+    ...DEFAULT_TRACKER_OPTIONS.click,
+    validate: event => event.button === 0, // loosen criteria, for it's not a hyperlink
+  },
+};
+
 // search-based (search, hybrid-search) //
 const SEARCH_BASED_API_OPTIONS = {
   group: API.GROUP.SEARCH,
@@ -68,13 +78,10 @@ export default Object.freeze({
     trackers: {
       ...ANSWER_BASED_TRACKERS,
       related_resources: DEFAULT_TRACKER_OPTIONS,
-      query_suggestions: {
-        ...DEFAULT_TRACKER_OPTIONS,
-        click: {
-          ...DEFAULT_TRACKER_OPTIONS.click,
-          validate: event => event.button === 0, // loosen criteria, for it's not a hyperlink
-        },
-      },
+      follow_up_questions: SUGGESTED_QUESTIONS_TRACKER,
+      // deprecated role, superseded by follow_up_questions: kept for the
+      // pages still placing <miso-query-suggestions>
+      query_suggestions: SUGGESTED_QUESTIONS_TRACKER,
     },
     autocomplete: {
       api: {
@@ -203,6 +210,7 @@ export default Object.freeze({
     // message level: each message workflow keeps its own tracker states
     trackers: {
       ...ANSWER_BASED_TRACKERS,
+      follow_up_questions: SUGGESTED_QUESTIONS_TRACKER,
     },
     // the messages paging of the panel, chat-style from the bottom: the
     // head thread request fetches the newest `rows` question ids (order:

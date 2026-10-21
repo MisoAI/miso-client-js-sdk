@@ -210,6 +210,50 @@ test('a live message keeps its question through a stream of answer-only values',
   assert.is(record.answer, 'A bowl of ramen.');
 });
 
+test('a suggested follow-up question posts through the conversation', async () => {
+  const { client, calls } = createClient();
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  const message = conversation._getMessageWorkflow('q2');
+
+  // the follow-up questions role's select view event, as the option list emits it
+  message._onFollowUpQuestionSelect({ value: 'More on q2?' });
+  await tick();
+
+  const post = calls.find(call => call.startsWith('POST questions'));
+  assert.ok(post);
+  const payload = JSON.parse(post.slice('POST questions '.length));
+  assert.is(payload.question, 'More on q2?');
+  assert.is(payload.parent_question_id, 'q2');
+  assert.is(payload.metadata.question_source, '_suggested_questions');
+  assert.is(conversation.messages[conversation.messages.length - 1].question, 'More on q2?');
+});
+
+test('suggested follow-up question clicks are tracked with the question lineage', async () => {
+  const { client, interactions } = createClient({ answers: answersWithSources });
+  const { conversation } = client.workflows;
+
+  conversation.load('t1');
+  await tick();
+  const message = conversation._getMessageWorkflow('q2');
+
+  // the option items, as mapped from the record: identified by their text,
+  // reported as custom context items rather than product ids
+  message._views.trackers.follow_up_questions.click([{ text: 'More on q2?' }]);
+  assert.is(interactions.length, 1);
+  const interaction = interactions[0];
+  assert.is(interaction.type, 'click');
+  assert.equal(interaction.product_ids, []);
+  const context = interaction.context.custom_context;
+  assert.equal(context.items, ['More on q2?']);
+  assert.is(context.property, 'suggested_followup_questions');
+  assert.is(context.question_id, 'q2');
+  assert.is(context.parent_question_id, 'q1');
+  assert.is(context.root_question_id, 't1');
+});
+
 // an endless answer stream: yields a chunk every few ms until aborted
 const endlessQuestions = (counter) => async (payload, { signal } = {}) => ({
   _response: { question_id: 'q-live', question: payload.question, answer: '', finished: false, revision: 1 },

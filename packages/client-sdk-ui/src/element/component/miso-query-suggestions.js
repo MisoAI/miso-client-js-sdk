@@ -2,7 +2,7 @@ import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
 /**
- * The suggested questions to ask.
+ * @deprecated Use `<miso-follow-up-questions>` (MisoFollowUpQuestionsElement) instead.
  */
 export default class MisoQuerySuggestionsElement extends MisoComponentElement {
 

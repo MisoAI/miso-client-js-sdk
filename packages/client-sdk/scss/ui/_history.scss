@@ -384,8 +384,10 @@
     flex-direction: column;
     gap: 0.75rem;
   }
-  // the sources heading, sized as the hybrid-search UI's h3 phrase
-  .miso-messages__sources-phrase {
+  // the sources and follow-up questions headings, sized as the
+  // hybrid-search UI's h3 phrase
+  .miso-messages__sources-phrase,
+  .miso-messages__follow-up-questions-phrase {
     margin: 0 0 0.5rem;
     font-size: 1.2rem;
     font-weight: 600;
@@ -396,6 +398,10 @@
   // the visible-when show rule's `display: block !important`; a browser
   // without :has() keeps the heading — the hybrid-search parity behavior.)
   .miso-messages__sources-container:not(:has([data-role='item'])) {
+    display: none !important;
+  }
+  // likewise, an answer with no suggested follow-up questions
+  .miso-messages__follow-up-questions-container:not(:has([data-role='option'])) {
     display: none !important;
   }
   // a message whose content fetch failed for good (visible-when its item's
@@ -451,10 +457,11 @@
     align-self: stretch;
     overflow-wrap: break-word;
   }
-  // the message's sources (compact horizontal cards, as in hybrid-search)
-  // and feedback buttons
+  // the message's sources (compact horizontal cards, as in hybrid-search),
+  // feedback buttons and suggested follow-up questions
   .miso-messages__sources,
-  .miso-messages__feedback {
+  .miso-messages__feedback,
+  .miso-messages__follow-up-questions {
     display: block;
     align-self: stretch;
   }

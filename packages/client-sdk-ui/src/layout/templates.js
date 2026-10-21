@@ -109,6 +109,7 @@ export function messageBody(layout) {
     `<miso-answer class="${className}__answer"></miso-answer>` +
     `<miso-feedback class="${className}__feedback"></miso-feedback>` +
     (templates.messageSourcesBlock || messageSourcesBlock)(layout) +
+    (templates.messageFollowUpQuestionsBlock || messageFollowUpQuestionsBlock)(layout) +
     `</div>` +
     (templates.messageErrorBlock || messageErrorBlock)(layout);
 }
@@ -120,6 +121,17 @@ export function messageSourcesBlock({ className }) {
   return `<div class="${className}__sources-container" visible-when="nonempty">` +
     `<h3 class="${className}__sources-phrase">Sources</h3>` +
     `<miso-sources class="${className}__sources"></miso-sources>` +
+    `</div>`;
+}
+
+// the suggested follow-up questions of the message's answer, with their
+// heading — shown only once the answer is done (visible-when): the
+// composer holds the next question until then, so a suggestion offered
+// earlier could not be submitted anyway
+export function messageFollowUpQuestionsBlock({ className }) {
+  return `<div class="${className}__follow-up-questions-container" visible-when="done">` +
+    `<h3 class="${className}__follow-up-questions-phrase">Related questions you can explore</h3>` +
+    `<miso-follow-up-questions class="${className}__follow-up-questions"></miso-follow-up-questions>` +
     `</div>`;
 }
 

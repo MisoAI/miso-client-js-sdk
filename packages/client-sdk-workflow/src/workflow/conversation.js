@@ -287,7 +287,7 @@ export default class Conversation extends Workflow {
    * response arrives.
    */
   // TODO: bad name, use query()
-  send(question) {
+  send(question, { qs } = {}) {
     if (!question) {
       throw new Error(`question is required in send() call`);
     }
@@ -322,7 +322,7 @@ export default class Conversation extends Workflow {
     });
     const workflow = this._getMessageWorkflow(message);
     this._followLiveMessage(workflow, message);
-    workflow.post(message);
+    workflow.post(message, { qs });
     return this;
   }
 
@@ -525,12 +525,22 @@ export default class Conversation extends Workflow {
     if (event.button !== 0) {
       return; // only left click
     }
+    this._submitFollowUpQuestion({ q, qs: QUESTION_SOURCE.INLINE_QUESTION_LINK });
+  }
+
+  // a suggested follow-up question of a message, delegated here by the
+  // message workflow likewise
+  _onFollowUpQuestionSelect({ value: q } = {}) {
+    this._submitFollowUpQuestion({ q, qs: QUESTION_SOURCE.SUGGESTED_QUESTIONS });
+  }
+
+  _submitFollowUpQuestion({ q, qs } = {}) {
     const { ongoing } = this._hub.states[fields.view(ROLE.MESSAGES)] || {};
     if (ongoing) {
       return; // an answer is still being displayed; hold, as the search box does
     }
     q = q ? q.trim() : '';
-    q && this.send(q);
+    q && this.send(q, { qs });
   }
 
   // interactions //
@@ -555,7 +565,7 @@ export default class Conversation extends Workflow {
    * The question source tells an update message (written by the
    * answer-updates monitor) from an organic (typed) one.
    */
-  _writeMessageInfoToInteraction(payload, { data }) {
+  _writeMessageInfoToInteraction(payload, { data, role }) {
     const message = data && data.value;
     if (!message) {
       return payload;
@@ -564,6 +574,7 @@ export default class Conversation extends Workflow {
       miso_id: message.miso_id,
       context: {
         custom_context: trimObj({
+          property: role === ROLE.FOLLOW_UP_QUESTIONS ? 'suggested_followup_questions' : undefined,
           root_question_id: this.threadId,
           parent_question_id: message.parent_question_id,
           question_source: isUpdateMessage(message) ? QUESTION_SOURCE.UPDATE : QUESTION_SOURCE.ORGANIC,
