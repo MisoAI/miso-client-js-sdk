@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoNewThreadElement extends MisoComponentElement {
+/**
+ * The product results.
+ */
+export default class MisoProductsElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.NEW_THREAD,
+      role: ROLE.PRODUCTS,
     });
   }
 
   static get tagName() {
-    return 'miso-new-thread';
+    return 'miso-products';
   }
 
 }

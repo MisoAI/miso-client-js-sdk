@@ -6,6 +6,9 @@ const ATTR_ROLE = 'role';
 
 const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_ROLE]);
 
+/**
+ * The base of the component elements, and a generic component whose role is set by the `role` attribute.
+ */
 export default class MisoComponentElement extends HTMLElement {
 
   static get tagName() {

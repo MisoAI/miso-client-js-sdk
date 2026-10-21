@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoAnswerElement extends MisoComponentElement {
+/**
+ * The buttons that rate the answer.
+ */
+export default class MisoFeedbackElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.ANSWER,
+      role: ROLE.FEEDBACK,
     });
   }
 
   static get tagName() {
-    return 'miso-answer';
+    return 'miso-feedback';
   }
 
 }

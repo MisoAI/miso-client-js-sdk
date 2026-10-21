@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoTitleElement extends MisoComponentElement {
+/**
+ * The query box.
+ */
+export default class MisoQueryElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.TITLE,
+      role: ROLE.QUERY,
     });
   }
 
   static get tagName() {
-    return 'miso-title';
+    return 'miso-query';
   }
 
 }

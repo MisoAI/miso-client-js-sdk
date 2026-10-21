@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoImagesElement extends MisoComponentElement {
+/**
+ * The facet filters of the search results.
+ */
+export default class MisoFacetsElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.IMAGES,
+      role: ROLE.FACETS,
     });
   }
 
   static get tagName() {
-    return 'miso-images';
+    return 'miso-facets';
   }
 
 }

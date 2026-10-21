@@ -7,12 +7,8 @@
 
 {% raw %}
 <script>
-const client = new MisoClient({
-  request: {
-    sendApiKeyByHeader: true,
-  },
-});
-
+MisoClient.plugins.use("std:header-api-key");
+const client = new MisoClient({});
 show(
   'header',
   () => client.api.search.search({ q: 'shiba' })

@@ -66,12 +66,12 @@ export default class UiPlugin extends Component {
     for (const ElementClass of ElementSuperClasses) {
       ElementClass.MisoClient = MisoClient; // TODO: find better way
     }
-    const { containers, roles, contexts, combos:_, ...others } = elements;
+    const { containers, components, contexts, combos:_, ...others } = elements;
     // containers must go first, so their APIs will be ready before children are defined
     const ElementClasses = [
       ...Object.values(contexts),
       ...Object.values(containers),
-      ...Object.values(roles),
+      ...Object.values(components),
       ...Object.values(others),
     ];
     addElementClasses(...ElementClasses);

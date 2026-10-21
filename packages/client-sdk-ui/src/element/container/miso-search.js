@@ -2,6 +2,9 @@ import MisoContainerElement from './miso-container.js';
 
 const TAG_NAME = 'miso-search';
 
+/**
+ * The container of the Search workflow.
+ */
 export default class MisoSearchElement extends MisoContainerElement {
 
   static get tagName() {

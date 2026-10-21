@@ -3,6 +3,9 @@ const TAG_NAME = 'miso-stub';
 const ATTR_TRAIT = 'trait';
 const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_TRAIT]);
 
+/**
+ * The base of the container and context elements, attaching the UI traits named in its `trait` attribute.
+ */
 export default class MisoStubElement extends HTMLElement {
 
   static get tagName() {

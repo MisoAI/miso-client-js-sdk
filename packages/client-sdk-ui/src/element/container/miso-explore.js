@@ -2,6 +2,9 @@ import MisoUnitElement from './miso-unit.js';
 
 const TAG_NAME = 'miso-explore';
 
+/**
+ * The container of the Explore workflow of a unit.
+ */
 export default class MisoExploreElement extends MisoUnitElement {
 
   static get tagName() {

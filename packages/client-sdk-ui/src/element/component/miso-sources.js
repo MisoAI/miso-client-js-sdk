@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoSortElement extends MisoComponentElement {
+/**
+ * The articles cited by the answer.
+ */
+export default class MisoSourcesElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.SORT,
+      role: ROLE.SOURCES,
     });
   }
 
   static get tagName() {
-    return 'miso-sort';
+    return 'miso-sources';
   }
 
 }

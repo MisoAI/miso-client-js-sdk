@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoAffiliationElement extends MisoComponentElement {
+/**
+ * The button that deletes a thread.
+ */
+export default class MisoDeleteElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.AFFILIATION,
+      role: ROLE.DELETE,
     });
   }
 
   static get tagName() {
-    return 'miso-affiliation';
+    return 'miso-delete';
   }
 
 }

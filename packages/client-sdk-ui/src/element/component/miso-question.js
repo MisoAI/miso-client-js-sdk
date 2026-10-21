@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoSubscriptionElement extends MisoComponentElement {
+/**
+ * The question being answered.
+ */
+export default class MisoQuestionElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.SUBSCRIPTION,
+      role: ROLE.QUESTION,
     });
   }
 
   static get tagName() {
-    return 'miso-subscription';
+    return 'miso-question';
   }
 
 }

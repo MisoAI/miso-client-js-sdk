@@ -1,6 +1,9 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
+/**
+ * The questions and answers of the open thread.
+ */
 export default class MisoMessagesElement extends MisoComponentElement {
 
   constructor() {

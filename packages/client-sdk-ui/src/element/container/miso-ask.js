@@ -10,6 +10,9 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
   ATTR_PARENT_QUESTION_ID,
 ]);
 
+/**
+ * The container of an Ask workflow.
+ */
 export default class MisoAskElement extends MisoContainerElement {
 
   static get tagName() {

@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoDeleteElement extends MisoComponentElement {
+/**
+ * The sort order selector of the search results.
+ */
+export default class MisoSortElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.DELETE,
+      role: ROLE.SORT,
     });
   }
 
   static get tagName() {
-    return 'miso-delete';
+    return 'miso-sort';
   }
 
 }

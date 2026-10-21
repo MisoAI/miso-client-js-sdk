@@ -1,6 +1,9 @@
 import MisoStubElement from '../util/miso-stub.js';
 import { getClient } from '../utils.js';
 
+/**
+ * The base of the context elements, which bind to a group of workflows rather than to one.
+ */
 export default class MisoContextElement extends MisoStubElement {
 
   static get observedAttributes() {

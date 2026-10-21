@@ -1,6 +1,9 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
+/**
+ * The suggested questions to ask.
+ */
 export default class MisoQuerySuggestionsElement extends MisoComponentElement {
 
   constructor() {

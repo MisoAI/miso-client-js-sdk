@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoQueryElement extends MisoComponentElement {
+/**
+ * The button that renames a thread.
+ */
+export default class MisoRenameElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.QUERY,
+      role: ROLE.RENAME,
     });
   }
 
   static get tagName() {
-    return 'miso-query';
+    return 'miso-rename';
   }
 
 }

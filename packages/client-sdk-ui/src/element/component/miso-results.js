@@ -1,6 +1,9 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
+/**
+ * @deprecated Use `<miso-products>` (MisoProductsElement) instead.
+ */
 export default class MisoResultsElement extends MisoComponentElement {
 
   constructor() {

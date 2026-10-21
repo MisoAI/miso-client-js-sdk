@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoMoreElement extends MisoComponentElement {
+/**
+ * The generated answer.
+ */
+export default class MisoAnswerElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.MORE,
+      role: ROLE.ANSWER,
     });
   }
 
   static get tagName() {
-    return 'miso-more';
+    return 'miso-answer';
   }
 
 }

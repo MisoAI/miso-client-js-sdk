@@ -1,16 +1,19 @@
 import MisoComponentElement from './miso-component.js';
 import { ROLE } from '../../constants.js';
 
-export default class MisoFollowUpQuestionsElement extends MisoComponentElement {
+/**
+ * The title of a thread.
+ */
+export default class MisoTitleElement extends MisoComponentElement {
 
   constructor() {
     super({
-      role: ROLE.FOLLOW_UP_QUESTIONS,
+      role: ROLE.TITLE,
     });
   }
 
   static get tagName() {
-    return 'miso-follow-up-questions';
+    return 'miso-title';
   }
 
 }
