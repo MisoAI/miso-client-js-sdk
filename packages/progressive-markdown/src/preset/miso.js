@@ -1,6 +1,5 @@
 import remarkGfm from 'remark-gfm';
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace';
-//import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeLinkAttrs from '../rehype-link-attrs.js';
 import rehypeCitationLink from '../rehype-citation-link.js';
 import rehypeFollowUpLink from '../rehype-follow-up-link.js';
@@ -8,20 +7,7 @@ import rehypeAtomic from '../rehype-atomic.js';
 import { mergeRendererOptions } from '../utils.js';
 import { applyOperationWithSlot } from './slot.js';
 import { removeMarkdownIncompleteTableRow, escapeTildes } from './helpers.js';
-
-/*
-// https://github.com/syntax-tree/hast-util-sanitize#schema
-export const presetMisoSanitizeSchema = {
-  ...defaultSchema,
-  attributes: {
-    ...defaultSchema.attributes,
-    a: [
-      ...(defaultSchema.attributes?.a || []),
-      'data*',
-    ],
-  },
-};
-*/
+import { resolveSanitizeSchema } from './sanitize.js';
 
 export function presetMisoProcessMarkdown(markdown, options) {
   markdown = removeMarkdownIncompleteTableRow(markdown, options);
@@ -37,7 +23,7 @@ export function presetMiso({
   cursorClass,
   getSource,
   processMarkdown = presetMisoProcessMarkdown,
-  //sanitizeSchema = presetMisoSanitizeSchema,
+  sanitize,
   atomicTags,
   variant,
   ...options
@@ -55,6 +41,7 @@ export function presetMiso({
   onDebug = runSafely(onDebug);
   getSource = runSafely(getSource);
   variant = normalizeVariantOptions(variant);
+  sanitize = resolveSanitizeSchema(sanitize);
 
   if (onCitationLink) {
     const originalOnCitationLink = onCitationLink;
@@ -85,7 +72,9 @@ export function presetMiso({
         rehypeFollowUpLink,
         () => rehypeAtomic(atomicTags),
       ],
-      allowDangerousHtml: true, // TODO: shall we merge from input options?
+      // raw HTML is safe to keep as long as it gets sanitized
+      allowDangerousHtml: true,
+      sanitize,
     },
     onCitationLink,
     onRefChange: (oldRef, newRef) => {

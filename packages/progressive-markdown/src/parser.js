@@ -3,12 +3,13 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from './rehype-sanitize.js';
 import rehypeHast from './rehype-hast.js';
 
 export default class Parser {
 
   constructor(options = {}) {
-    const { remark = [], rehype = [], allowDangerousHtml = false } = options;
+    const { remark = [], rehype = [], allowDangerousHtml = false, sanitize } = options;
     let processer = unified().use(remarkParse);
     for (const plugin of remark) {
       processer = processer.use(...asArray(plugin));
@@ -16,6 +17,10 @@ export default class Parser {
     processer = processer.use(remarkRehype, { allowDangerousHtml });
     if (allowDangerousHtml) {
       processer = processer.use(rehypeRaw);
+    }
+    // sanitize right after HTML is materialized, before any custom plugin decorates the tree with trusted attributes
+    if (sanitize) {
+      processer = processer.use(rehypeSanitize, sanitize === true ? undefined : sanitize);
     }
     for (const plugin of rehype) {
       processer = processer.use(...asArray(plugin));

@@ -2,6 +2,7 @@ import { mergeRendererOptions } from '../utils.js';
 
 export * from './helpers.js';
 export * from './miso.js';
+export * from './sanitize.js';
 
 // backward compatibility
 function normalizeOptions(options) {

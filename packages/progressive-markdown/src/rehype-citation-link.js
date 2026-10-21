@@ -2,6 +2,18 @@ import { visit } from 'unist-util-visit';
 import { fromHtml } from 'hast-util-from-html';
 import { removeItem, escapeHtml } from '@miso.ai/commons';
 
+// these methods run after sanitization, so URL-bearing values (often taken from API data) are checked here
+const URL_ATTRIBUTES = new Set(['href', 'src']);
+const SAFE_PROTOCOLS = new Set(['http', 'https', 'mailto']);
+
+function assertSafeUrl(url) {
+  // ignore characters browsers strip when parsing a URL scheme
+  const match = String(url).replace(/[\u0000-\u0020]/g, '').match(/^([a-z][a-z0-9+.-]*):/i);
+  if (match && !SAFE_PROTOCOLS.has(match[1].toLowerCase())) {
+    throw new Error(`Unsafe URL protocol: ${url}`);
+  }
+}
+
 export default function rehypeCitationLink(handler) {
   return tree => {
     visit(tree, 'element', node => visitor(node, handler));
@@ -78,6 +90,9 @@ function createMethods(node) {
     if (key === 'className') {
       return;
     }
+    if (URL_ATTRIBUTES.has(key.toLowerCase())) {
+      assertSafeUrl(value);
+    }
     const properties = node.properties || (node.properties = {});
     properties[escapeHtml(key)] = escapeValue ? escapeHtml(value) : value;
   }
@@ -102,6 +117,7 @@ function createMethods(node) {
     if (typeof href !== 'string') {
       throw new Error(`Href must be a string or a function returning a string: ${href}`);
     }
+    assertSafeUrl(href);
     // hast-util-to-html escapes attribute values on serialization
     properties.href = href;
   }

@@ -46,6 +46,7 @@ src/
 ├── preset/
 │   ├── index.js          # Preset resolution system
 │   ├── miso.js           # Default Miso preset with citation/follow-up/atomic support
+│   ├── sanitize.js       # Miso sanitize schema + `sanitize` option resolution
 │   ├── slot.js           # Slot-based DOM manipulation variant
 │   └── helpers.js        # Preset helper functions
 ├── rehype-*.js           # Markdown processing plugins (incl. rehype-atomic)
@@ -141,7 +142,22 @@ reports the first divergence index. Key rules:
 - Plugins: `remark-gfm`, `rehype-minify-whitespace`, `rehype-link-attrs`,
   citation/follow-up link handlers, `rehype-atomic`
 - Options: `onCitationLink`, `onRefChange`, `onDone`, `getSource`, `processMarkdown`,
-  `atomicTags`, `variant`
+  `atomicTags`, `variant`, `sanitize`
+
+### Sanitization
+
+The miso preset keeps raw HTML (`allowDangerousHtml: true`) and sanitizes the HAST
+with `hast-util-sanitize` (via `rehype-sanitize.js`). The `Parser` option `sanitize`
+(schema or falsy; off by default at the Parser level) runs the sanitizer right after
+`rehype-raw` and **before** any `parser.rehype` plugin, so plugins can add trusted
+attributes (`data-*`, `miso-*` classes, `target`) and set `_atomic` without being
+stripped, and overriding `parser.rehype` can't drop sanitization.
+
+`presetMiso({ sanitize })`: `true`/omitted → `presetMisoSanitizeSchema` (GitHub-style
+`defaultSchema` + presentational SVG/MathML, `style` stripped), `false` → off, object →
+replaces the schema, function → `base => schema` to extend the built-in one.
+Citation-link methods run after sanitization, so `setHref` / `setAttribute('href'|'src')`
+reject non-http(s)/mailto protocols themselves. `setTooltipHtml` is **not** sanitized.
 
 ## Testing
 
