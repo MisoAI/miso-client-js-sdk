@@ -75,14 +75,17 @@ export default class TypewriterLayout extends ProgressiveLayout {
     }
     const context = plugin.getContext(client);
     const cursorClass = cursorClassName(this.className);
-    const { onDebug, onCitationLink, variant } = this.options;
-    // TODO: options
+    const { onDebug, onCitationLink, variant, renderer: rendererOptions = {} } = this.options;
+    // layout-level options take precedence over the generic renderer options
     this._renderer = context.createRenderer({
-      cursorClass,
-      getSource: index => this._getSource(index),
-      onCitationLink,
-      onDebug: normalizeOnDebug(onDebug),
-      variant,
+      ...rendererOptions,
+      ...trimObj({
+        cursorClass,
+        getSource: index => this._getSource(index),
+        onCitationLink,
+        onDebug: normalizeOnDebug(onDebug),
+        variant,
+      }),
     });
     // capture citation link click if necessary
     this._unsubscribes.push(this._view.proxyElement.on('click', (e) => this._onClick(e)));
