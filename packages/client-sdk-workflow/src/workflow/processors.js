@@ -439,7 +439,10 @@ export function writeRequestInfoToInteraction(payload, args) {
   if (!requestPayload) {
     return payload;
   }
-  const { question, q, fq } = requestPayload;
+  const { q, fq } = requestPayload;
+  const existing = payload.context && payload.context.custom_context;
+  // the question may have been written from the response (see writeQuestionInfoToInteraction), which takes precedence
+  const question = (existing && existing.question) || requestPayload.question;
   return mergeInteractions(payload, {
     context: {
       custom_context: {
@@ -481,13 +484,14 @@ export function writeQuestionInfoToInteraction(payload = {}, { data } = {}) {
   }
   const { request = {}, value = {} } = data;
   const { question_source } = request.payload && request.payload.metadata || {};
-  const { question_id } = value;
+  const { question_id, question } = value;
   return mergeInteractions(payload, {
     context: {
-      custom_context: {
+      custom_context: trimObj({
         question_source,
         question_id,
-      },
+        question, // the response may update the question, taking precedence over the one in request payload
+      }),
     },
   });
 }
