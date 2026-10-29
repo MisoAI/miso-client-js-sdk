@@ -4,6 +4,7 @@ const TAG_NAME = 'miso-ask';
 
 const ATTR_WORKFLOW = 'workflow';
 const ATTR_PARENT_QUESTION_ID = 'parent-question-id';
+const ATTR_VALUE_ACTIVE = 'active';
 const OBSERVED_ATTRIBUTES = Object.freeze([
   ...MisoContainerElement.observedAttributes,
   ATTR_WORKFLOW,
@@ -52,7 +53,7 @@ export default class MisoAskElement extends MisoContainerElement {
   }
 
   get boundToActiveWorkflow() {
-    return this.getAttribute(ATTR_WORKFLOW) === 'active';
+    return this.getAttribute(ATTR_WORKFLOW) === ATTR_VALUE_ACTIVE;
   }
 
   _setWorkflow(workflow) {
@@ -96,14 +97,14 @@ export default class MisoAskElement extends MisoContainerElement {
         this._handleParentQuestionIdUpdate(oldValue, newValue);
         break;
       case ATTR_WORKFLOW:
-        this._handleQuestionUpdate(oldValue, newValue);
+        this._handleWorkflowUpdate(oldValue, newValue);
         break;
       default:
         super.attributeChangedCallback(attr, oldValue, newValue);
     }
   }
 
-  _handleQuestionUpdate(oldValue, newValue) {
+  _handleWorkflowUpdate(oldValue, newValue) {
     oldValue = oldValue || undefined; // null -> undefined
     newValue = newValue || undefined;
     if (oldValue === newValue || !this._client) {
