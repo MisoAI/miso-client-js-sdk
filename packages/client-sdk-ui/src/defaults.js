@@ -72,7 +72,7 @@ export const defaultLayouts = Object.freeze({
 
   'ask': Object.freeze({
     ...ANSWER_BASED_LAYOUTS,
-    [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { templates: { buttonIcon: 'send' } }],
+    [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question', templates: { buttonIcon: 'send' } }],
     [ROLE.REASONING]: LAYOUT_TYPE.TYPEWRITER,
     [ROLE.RELATED_RESOURCES]: [LAYOUT_TYPE.LIST, { incremental: true, itemType: 'article' }],
     [ROLE.QUERY_SUGGESTIONS]: LAYOUT_TYPE.OPTION_LIST,
@@ -168,7 +168,7 @@ export const defaultLayouts = Object.freeze({
     ],
     [ROLE.FOLLOW_UP_QUESTIONS]: LAYOUT_TYPE.OPTION_LIST,
     [ROLE.MESSAGES]: [LAYOUT_TYPE.MESSAGES, { itemType: 'message', incremental: true, infiniteScroll: true }],
-    [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a follow-up question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
+    [ROLE.QUERY]: [LAYOUT_TYPE.SEARCH_BOX, { placeholder: 'Ask a question', clearOnSubmit: true, blurOnSubmit: false, disableWhenOngoing: true, templates: { buttonIcon: 'send' } }],
     [ROLE.TITLE]: [LAYOUT_TYPE.TEXT, { tag: 'div' }],
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, icon: 'pencil', prompt: THREAD_RENAME_PROMPT }],
     [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, icon: 'trash', confirm: THREAD_DELETE_CONFIRM }],
