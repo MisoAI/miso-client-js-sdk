@@ -7,21 +7,6 @@ import * as helpers from './utils.js';
 const currentScript = isInBrowser ? document.currentScript : undefined;
 
 /**
- * @typedef {Object} MisoClientOptions
- * @property {string} apiKey - Your Miso publishable API key. Required.
- * @property {string} [apiHost] - Shorthand to set both `dataEndpoint` and `eventEndpoint`.
- * @property {string} [dataEndpoint] - Base URL for data APIs (Ask, Search, Recommendation).
- *   Defaults to `https://api-edge.askmiso.com/v1`.
- * @property {string} [eventEndpoint] - Base URL for the Interactions API.
- *   Defaults to `https://api.askmiso.com/v1`.
- * @property {Object} [request] - Default settings applied to every API request.
- * @property {number} [request.timeout] - Request timeout in milliseconds.
- * @property {number} [request.retry=0] - Number of retries on network errors, timeouts,
- *   and 5xx responses. Off by default, as retrying a non-idempotent call (such as posting
- *   a question) may not be safe. Can also be set per request.
- */
-
-/**
  * The entry point of Miso SDK. Create an instance with your API key to access Miso APIs.
  *
  * When loaded from the CDN, the class is available as `window.MisoClient`. To run code
@@ -77,7 +62,94 @@ class MisoClient extends Component {
   static debug() {}
 
   /**
-   * @param {MisoClientOptions|string} options - Client options, or just the API key.
+   * The SDK version.
+   *
+   * @type {string}
+   */
+  static get version() {
+    return root.version;
+  }
+
+  /**
+   * All client instances created so far.
+   *
+   * @type {MisoClient[]}
+   */
+  static get instances() {
+    return root.instances;
+  }
+
+  /**
+   * Get the first client instance, waiting for one to be created if there is none yet.
+   *
+   * @returns {Promise<MisoClient>}
+   */
+  static any() {
+    return root.any();
+  }
+
+  /**
+   * Listen to SDK-level events. For example, `'create'` fires with each new client
+   * instance, including the ones created before you started listening.
+   *
+   * @param {string} name - Event name.
+   * @param {Function} callback
+   * @returns {Function} A function to remove the listener.
+   */
+  static on(name, callback) {
+    return root.on(name, callback);
+  }
+
+  /**
+   * Wait for the next occurrence of an SDK-level event.
+   *
+   * @param {string} name - Event name.
+   * @returns {Promise<*>}
+   */
+  static once(name) {
+    return root.once(name);
+  }
+
+  /**
+   * Resolves after all functions pushed to `window.misocmd` before the SDK loaded have run.
+   *
+   * @type {Promise<void>}
+   */
+  static get cmdDone() {
+    return root.cmdDone;
+  }
+
+  /**
+   * Manage plugins, which add optional features to the SDK.
+   *
+   * - `use(id, options)` activates a plugin, or reconfigures it if already active.
+   * - `install(id, options)` is like `use()`, but loads standard (`std:`) plugins from
+   *   the CDN if needed, and returns a promise of the installed plugin.
+   * - `register(PluginClass)` makes a custom plugin class available by its `id`.
+   * - `whenInstalled(id)` returns a promise that resolves when the plugin is installed.
+   *
+   * @type {Object}
+   * @example
+   * MisoClient.plugins.use('std:debug');
+   * await MisoClient.plugins.install('std:analytics');
+   */
+  static get plugins() {
+    return root._pluginRoot.plugins;
+  }
+
+  /**
+   * @param {Object|string} options - Client options, or just the API key as a string.
+   * @param {string} options.apiKey - Your Miso publishable API key. Required.
+   * @param {string} [options.apiHost] - Shorthand to set both `dataEndpoint` and `eventEndpoint`.
+   * @param {string} [options.dataEndpoint] - Base URL for data APIs (Ask, Search, Recommendation).
+   *   Defaults to `https://api-edge.askmiso.com/v1`.
+   * @param {string} [options.eventEndpoint] - Base URL for the Interactions API.
+   *   Defaults to `https://api.askmiso.com/v1`.
+   * @param {Object} [options.request] - Default settings applied to every API request.
+   * @param {number} [options.request.timeout] - Request timeout in milliseconds.
+   * @param {number} [options.request.retry=0] - Number of retries on network errors, timeouts,
+   *   and 5xx responses. Off by default, as retrying a non-idempotent call (such as posting
+   *   a question) may not be safe. Can also be set per request.
    * @throws {Error} If no API key is given.
    */
   constructor(options) {
@@ -105,13 +177,6 @@ class MisoClient extends Component {
   }
 
   /**
-   * The options this client was created with, after normalization. Read-only.
-   *
-   * @member {Readonly<MisoClientOptions>} options
-   * @memberof MisoClient#
-   */
-
-  /**
    * The SDK version.
    *
    * @type {string}
@@ -120,14 +185,22 @@ class MisoClient extends Component {
     return MisoClient.version;
   }
 
+  /**
+   * The options passed to the constructor, after normalization. Read-only.
+   *
+   * @type {Readonly<Object>}
+   */
+  get options() {
+    return this._options;
+  }
+
   _config(options) {
-    this.options = Object.freeze(this._normalizeOptions(options));
+    this._options = Object.freeze(this._normalizeOptions(options));
   }
 
   _normalizeOptions(options = {}) {
-    if (typeof options === 'string') {
-      options = { apiKey: options };
-    }
+    // copy, so the caller's own object is left untouched
+    options = typeof options === 'string' ? { apiKey: options } : { ...options };
     if (options.readConfigFromScriptUrl) {
       options = {
         ...this._readConfigFromScriptUrl(),
@@ -137,8 +210,12 @@ class MisoClient extends Component {
     if (!options.apiKey) {
       throw new Error('Require API key to initialize miso client.');
     }
-    if (options.request && options.request.sendApiKeyByHeader) {
-      console.warn('`sendApiKeyByHeader` option is deprecated. Please call `MisoClient.plugins.use("std:header-api-key");` instead.');
+    if (options.request) {
+      if (options.request.sendApiKeyByHeader) {
+        console.warn('`sendApiKeyByHeader` option is deprecated. Please call `MisoClient.plugins.use("std:header-api-key");` instead.');
+      }
+      // copy before freezing, so the caller's own object stays mutable
+      options.request = Object.freeze({ ...options.request });
     }
 
     options.dataEndpoint = options.dataEndpoint || options.apiHost;
@@ -160,71 +237,6 @@ class MisoClient extends Component {
   }
 
 }
-
-/**
- * The SDK version.
- *
- * @member {string} version
- * @memberof MisoClient
- */
-
-/**
- * All client instances created so far.
- *
- * @member {MisoClient[]} instances
- * @memberof MisoClient
- */
-
-/**
- * Get the first client instance, waiting for one to be created if there is none yet.
- *
- * @function any
- * @memberof MisoClient
- * @returns {Promise<MisoClient>}
- */
-
-/**
- * Listen to SDK-level events. For example, `'create'` fires with each new client
- * instance, including the ones created before you started listening.
- *
- * @function on
- * @memberof MisoClient
- * @param {string} name - Event name.
- * @param {Function} callback
- * @returns {Function} A function to remove the listener.
- */
-
-/**
- * Wait for the next occurrence of an SDK-level event.
- *
- * @function once
- * @memberof MisoClient
- * @param {string} name - Event name.
- * @returns {Promise<*>}
- */
-
-/**
- * Resolves after all functions pushed to `window.misocmd` before the SDK loaded have run.
- *
- * @member {Promise<void>} cmdDone
- * @memberof MisoClient
- */
-
-/**
- * Manage plugins, which add optional features to the SDK.
- *
- * - `use(id, options)` activates a plugin, or reconfigures it if already active.
- * - `install(id, options)` is like `use()`, but loads standard (`std:`) plugins from
- *   the CDN if needed, and returns a promise of the installed plugin.
- * - `register(PluginClass)` makes a custom plugin class available by its `id`.
- * - `whenInstalled(id)` returns a promise that resolves when the plugin is installed.
- *
- * @member {Object} plugins
- * @memberof MisoClient
- * @example
- * MisoClient.plugins.use('std:debug');
- * await MisoClient.plugins.install('std:analytics');
- */
 
 /**
  * Utility functions.

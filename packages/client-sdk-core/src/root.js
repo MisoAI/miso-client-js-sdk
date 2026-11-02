@@ -43,8 +43,7 @@ export const root = new Root();
 export function init(MisoClient) {
   const pluginRoot = root._pluginRoot;
   root.MisoClient = pluginRoot.MisoClient = MisoClient;
-  delegateGetters(MisoClient, root, ['version', 'instances', 'any', 'meta', 'on', 'once', 'cmdDone']);
-  delegateGetters(MisoClient, pluginRoot, ['plugins']);
+  delegateGetters(MisoClient, root, ['meta']);
   return MisoClient;
 }
 
