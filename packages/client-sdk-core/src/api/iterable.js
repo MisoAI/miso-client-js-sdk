@@ -1,5 +1,40 @@
 import { polling, signals, StallTimeoutAbortController } from '@miso.ai/commons';
 
+/**
+ * A handle on an answer that the server generates over time, returned by APIs
+ * such as `client.api.ask.questions()`, `client.api.ask.search()`, and
+ * `client.api.ask.answers()`.
+ *
+ * Iterate it with `for await` to receive the response as it progresses. The
+ * stub polls the server in the background, and each iteration yields the
+ * latest full response, not a delta. When the consumer is slower than the
+ * polling, intermediate responses are skipped. The iteration ends once the
+ * response is finished (`finished: true`).
+ *
+ * To read the response just once without polling, call `get()`.
+ *
+ * Polling can be tuned by the request options passed to the API method:
+ *
+ * - `pollingInterval` - Milliseconds between polls. Defaults to 1000.
+ * - `stallTimeout` - Milliseconds without progress before polling gives up
+ *   with an error. Defaults to 120000.
+ * - `signal` - An `AbortSignal` to stop the polling.
+ *
+ * Polling also stops when `abort()` is called. If the abort reason is an
+ * `Error` (including the default `AbortError` when no reason is given), the
+ * iteration throws it; with any other reason, the iteration just ends. The
+ * iteration also throws when polling fails more than 10 times in a row.
+ *
+ * @example
+ * const answer = await client.api.ask.questions({ question: 'What is Miso?' });
+ * for await (const response of answer) {
+ *   render(response.answer);
+ * }
+ *
+ * @example
+ * // stop polling, e.g. when the user navigates away
+ * answer.abort();
+ */
 export class IterableApiStub {
 
   constructor(options = {}) {
@@ -7,6 +42,12 @@ export class IterableApiStub {
     this._options = options;
   }
 
+  /**
+   * Fetch the current response once, without polling.
+   *
+   * @param {Object} [options] - Request options, merged over the ones given to the API method.
+   * @returns {Promise<Object>}
+   */
   async get(options) {
     return this._get({ ...this._options, ...options });
   }
@@ -15,10 +56,21 @@ export class IterableApiStub {
     throw new Error('Not implemented');
   }
 
+  /**
+   * Stop polling. An ongoing iteration throws `reason` if it is an `Error`, or
+   * an `AbortError` if no reason is given; otherwise the iteration just ends.
+   *
+   * @param {*} [reason]
+   */
   abort(reason) {
     this._ac.abort(reason);
   }
 
+  /**
+   * Start polling, yielding the latest response until it is finished.
+   *
+   * @returns {AsyncIterator<Object>}
+   */
   [Symbol.asyncIterator]() {
     const fetch = this._fetch();
 

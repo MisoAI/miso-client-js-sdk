@@ -5,15 +5,38 @@ import { IterableApiStub, IdBasedIterableApiStub } from './iterable.js';
 
 const { GROUP, NAME } = API;
 
+/**
+ * Ask APIs, available as `client.api.ask`.
+ */
 export default class Ask extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.ASK);
     // the deployed (v0) user history API; switch back to UserHistory
     // (history.js) when the resource-style API ships
+    /**
+     * User history APIs, for the user's past conversation threads.
+     *
+     * @type {UserHistory}
+     */
     this.userHistory = new UserHistoryV0(api);
   }
 
+  /**
+   * Ask a question, and get the answer as it is generated.
+   *
+   * Pass a question ID instead of a payload to follow an existing question,
+   * without asking again.
+   *
+   * @param {Object|string} payload - Request payload, or a question ID.
+   * @param {Object} [options] - Request options, including the polling options of {@link IterableApiStub}.
+   * @returns {Promise<IterableApiStub>} The answer, which has a `questionId` property.
+   * @example
+   * const answer = await client.api.ask.questions({ question: 'What is Miso?' });
+   * for await (const response of answer) {
+   *   console.log(response.answer);
+   * }
+   */
   async questions(payload, options = {}) {
     if (isId(payload)) {
       payload = { question_id: payload };
@@ -34,27 +57,62 @@ export default class Ask extends ApiBase {
   }
 
   /**
-   * Retrieve multiple question-answer pairs at once: an iterable that polls
-   * the answers endpoint, like questions(). The id set is mutable between
-   * polls: `question_ids` may be a function returning the id array, resolved
-   * for every poll, and a fixed initial array settles out record by record
-   * (see Answers).
+   * Get the answers of multiple questions at once, as they are generated.
+   * Each iteration yields an array of the answers that were still unfinished,
+   * so a finished answer is not polled again. Once all are finished, the
+   * iteration yields `undefined` and ends.
+   *
+   * Pass an array of question IDs as a shortcut of `{ question_ids }`.
+   *
+   * @param {Object|string[]} payload - Request payload, or an array of question IDs.
+   * @param {Object} [options] - Request options, including the polling options of {@link IterableApiStub}.
+   * @returns {Promise<IterableApiStub>}
    */
   async answers(payload, options = {}) {
+    // `question_ids` may also be a function returning the id array, resolved
+    // for every poll, so the id set can change between polls (see Answers)
     if (Array.isArray(payload)) {
       payload = { question_ids: payload };
     }
     return new Answers(this, payload, { immediate: true, ...options });
   }
 
+  /**
+   * Get questions related to a given question.
+   *
+   * @param {Object} payload
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>}
+   */
   async relatedQuestions(payload, options = {}) {
     return this._run(NAME.RELATED_QUESTIONS, payload, options);
   }
 
+  /**
+   * Get trending questions.
+   *
+   * @param {Object} payload
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>}
+   */
   async trendingQuestions(payload, options = {}) {
     return this._run(NAME.TRENDING_QUESTIONS, payload, options);
   }
 
+  /**
+   * Search with a query, with an answer generated over time.
+   *
+   * If the response comes with a question ID, it is returned as an
+   * {@link IterableApiStub} with the response fields (such as the search
+   * results) on it, to follow the answer. Otherwise the response is returned
+   * as is.
+   *
+   * Pass a question ID instead of a payload to follow an existing search.
+   *
+   * @param {Object|string} payload - Request payload, or a question ID.
+   * @param {Object} [options] - Request options, including the polling options of {@link IterableApiStub}.
+   * @returns {Promise<IterableApiStub|Object>}
+   */
   async search(payload, options = {}) {
     if (isId(payload)) {
       payload = { question_id: payload };
@@ -70,14 +128,35 @@ export default class Ask extends ApiBase {
     return this._run(`${NAME.QUESTIONS}/${questionId}/answer`, undefined, { ...options, method: 'GET' });
   }
 
+  /**
+   * Get autocomplete suggestions for a partial question.
+   *
+   * @param {Object} payload
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>}
+   */
   async autocomplete(payload, options) {
     return this._run(NAME.AUTOCOMPLETE, payload, options);
   }
 
+  /**
+   * Get autocomplete suggestions for a partial search query.
+   *
+   * @param {Object} payload
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>}
+   */
   async searchAutocomplete(payload, options) {
     return this._run(NAME.SEARCH_AUTOCOMPLETE, payload, options);
   }
 
+  /**
+   * Get query suggestions.
+   *
+   * @param {Object} payload
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>}
+   */
   async querySuggestion(payload, options) {
     return this._run(NAME.QUERY_SUGGESTION, payload, options);
   }
@@ -91,6 +170,11 @@ class Answer extends IdBasedIterableApiStub {
     this._response = response;
   }
 
+  /**
+   * The question ID.
+   *
+   * @type {string}
+   */
   get questionId() {
     return this._id;
   }
@@ -170,6 +254,11 @@ class SearchResult extends IdBasedIterableApiStub {
     this._response = response;
   }
 
+  /**
+   * The question ID.
+   *
+   * @type {string}
+   */
   get questionId() {
     return this._id;
   }

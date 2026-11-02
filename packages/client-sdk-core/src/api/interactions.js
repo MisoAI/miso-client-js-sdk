@@ -3,12 +3,27 @@ import ApiBase from './base.js';
 
 const { GROUP, NAME } = API;
 
+/**
+ * Interactions APIs, available as `client.api.interactions`.
+ */
 export default class Interactions extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.INTERACTIONS);
   }
 
+  /**
+   * Upload interaction events, such as clicks and add-to-carts.
+   *
+   * Pass an interaction object, or an array of them. By default the request is
+   * sent with `navigator.sendBeacon()`, so it survives page navigation but its
+   * response is not available. Set `useBeacon: false` in the request options to
+   * send it with `fetch()` instead.
+   *
+   * @param {Object|Object[]} payload - An interaction, or an array of interactions.
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>}
+   */
   async upload(payload, options) {
     try {
       return await this._run(NAME.UPLOAD, payload, options);
