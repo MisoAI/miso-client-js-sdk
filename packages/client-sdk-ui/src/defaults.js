@@ -45,6 +45,16 @@ const THREAD_CONTROL_OPTIONS = Object.freeze({
   value: thread => thread && thread.title,
   disabled: thread => !(thread && thread.thread_id),
 });
+// the favorite star: checked off the whole thread record, disabled until
+// the thread has a server identity, like the rename/delete controls
+const THREAD_FAVORITE_OPTIONS = Object.freeze({
+  value: thread => !!(thread && thread.favorite),
+  disabled: thread => !(thread && thread.thread_id),
+  icon: 'star',
+  checkedIcon: 'star-fill',
+  ariaLabel: 'Add to favorites',
+  checkedAriaLabel: 'Remove from favorites',
+});
 const THREAD_RENAME_PROMPT = Object.freeze({
   title: 'Rename thread',
   placeholder: 'Thread name',
@@ -134,6 +144,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],
     [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Delete', confirm: THREAD_DELETE_CONFIRM }],
     [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { text: 'Subscribe', checkedText: 'Unsubscribe' }],
+    [ROLE.FAVORITE]: [LAYOUT_TYPE.CHECKBOX, THREAD_FAVORITE_OPTIONS],
   }),
 
   // the conversation panel's own roles plus its message item subworkflows'
@@ -173,6 +184,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, icon: 'pencil', prompt: THREAD_RENAME_PROMPT }],
     [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, icon: 'trash', confirm: THREAD_DELETE_CONFIRM }],
     [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { icon: 'bell', text: 'Subscribe', checkedIcon: 'bell-fill', checkedText: 'Subscribed' }],
+    [ROLE.FAVORITE]: [LAYOUT_TYPE.CHECKBOX, THREAD_FAVORITE_OPTIONS],
   }),
 
 });

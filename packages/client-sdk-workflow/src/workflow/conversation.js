@@ -9,18 +9,20 @@ import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValu
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
-  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.DELETE, ROLE.SUBSCRIPTION],
+  members: [ROLE.MESSAGES, ROLE.QUERY, ROLE.TITLE, ROLE.RENAME, ROLE.DELETE, ROLE.SUBSCRIPTION, ROLE.FAVORITE],
   mappings: {
     // the header roles map (dot-path) into the open thread's record: the
-    // title text and the checkbox's checked state. Rename and delete take
-    // the whole record: their button layouts derive the dialog text from
-    // its title and the disabled state from its thread id's absence (a
-    // thread being created is not addressable until resolved)
+    // title text and the checkbox's checked state. Rename, delete and
+    // favorite take the whole record: their layouts derive the dialog text
+    // from its title (the star its checked state from its favorite flag)
+    // and the disabled state from its thread id's absence (a thread being
+    // created is not addressable until resolved)
     [ROLE.MESSAGES]: 'messages',
     [ROLE.TITLE]: 'thread.title',
     [ROLE.RENAME]: 'thread',
     [ROLE.DELETE]: 'thread',
     [ROLE.SUBSCRIPTION]: 'thread.subscribed',
+    [ROLE.FAVORITE]: 'thread',
   },
 });
 
@@ -130,6 +132,7 @@ export default class Conversation extends Workflow {
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.DELETE, 'submit', () => this._onViewDeleteSubmit()),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
+      this._views.on(ROLE.FAVORITE, 'change', event => this._onViewFavoriteChange(event)),
       // an operation's event rides its request: the
       // data actor publishes it on the shared channel and every subscribed
       // actor — this panel's and its peer's — triggers it on its own hub
@@ -377,6 +380,10 @@ export default class Conversation extends Workflow {
     ThreadOperations.prototype.rename.call(this, this._requireThreadId('rename'), title, this.thread.title);
   }
 
+  favorite(value = true) {
+    ThreadOperations.prototype.favorite.call(this, this._requireThreadId('favorite'), value);
+  }
+
   subscribe() {
     ThreadOperations.prototype.subscribe.call(this, this._requireThreadId('subscribe'));
   }
@@ -441,6 +448,7 @@ export default class Conversation extends Workflow {
     switch (event.type) {
       case 'rename':
       case 'mark-as-read':
+      case 'favorite':
       case 'subscribe':
       case 'unsubscribe':
         this._onThreadUpdated(event);
@@ -516,6 +524,13 @@ export default class Conversation extends Workflow {
       return; // a thread being created has no subscription to toggle yet
     }
     checked ? this.subscribe() : this.unsubscribe();
+  }
+
+  _onViewFavoriteChange({ checked }) {
+    if (!this.threadId) {
+      return; // a thread being created has no server identity to star yet
+    }
+    this.favorite(checked);
   }
 
   // an inline follow-up link inside a message answer, delegated here by the

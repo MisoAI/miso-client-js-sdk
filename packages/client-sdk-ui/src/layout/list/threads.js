@@ -1,5 +1,5 @@
 import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
-import { STATUS, LAYOUT_TYPE } from '../../constants.js';
+import { STATUS, LAYOUT_TYPE, ROLE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { listError, isSessionExpired, SESSION_EXPIRED_MESSAGE } from '../templates.js';
 import { setOrRemoveAttribute } from '../../util/dom.js';
@@ -168,6 +168,9 @@ export default class ThreadsLayout extends CollectionLayout {
   _onClick(event) {
     if (event.target.closest(`[data-role="item-menu-button"], [data-role="item-menu"]`)) {
       return; // the item's own context menu, owned by its container layout
+    }
+    if (event.target.closest(`[data-role="${ROLE.FAVORITE}"]`)) {
+      return; // the item's favorite star, owned by the thread workflow
     }
     const element = event.target.closest(`[data-role="item"]`);
     if (!element) {

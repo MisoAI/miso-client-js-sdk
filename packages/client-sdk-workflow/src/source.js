@@ -39,6 +39,10 @@ function sendThreadsApi(api, name, payload = {}, options) {
       const { thread_id, ...changes } = payload;
       return api.updateThread(thread_id, changes, options);
     }
+    case 'favorite': {
+      const { thread_id, ...rest } = payload;
+      return api.favoriteThread(thread_id, rest, options);
+    }
     case 'mark_as_read':
       return api.markThreadAsRead(payload.thread_id, options);
     case 'subscribe':

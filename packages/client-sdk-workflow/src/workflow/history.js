@@ -201,7 +201,7 @@ export default class History extends Workflow {
   }
 
   // thread operations: the id-based methods mixed in from ThreadOperations
-  // (markAsRead, subscribe, unsubscribe, deleteAll), except rename and
+  // (markAsRead, favorite, subscribe, unsubscribe, deleteAll), except rename and
   // delete, specialized here with a guard — a thread still being created
   // has no server identity to operate on, so its placeholder id is ignored
   // until the resolution brings the thread id
@@ -270,6 +270,7 @@ export default class History extends Workflow {
     switch (event.type) {
       case 'rename':
       case 'mark-as-read':
+      case 'favorite':
       case 'subscribe':
       case 'unsubscribe':
         this._onThreadUpdated(event);

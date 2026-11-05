@@ -7,8 +7,8 @@
   --miso-thread-list-item-hover-background: rgba(0, 0, 0, 0.05);
   // the background of the selected thread list item
   --miso-thread-list-item-selected-background: rgba(0, 0, 0, 0.09);
-  // the color of the unread marker dot
-  --miso-thread-list-unread-marker-color: #e8677a;
+  // the color of the favorite star in its checked (starred) state
+  --miso-favorite-checked-color: #f2b01e;
   // the accent of the subscription toggle in its checked (subscribed) state
   --miso-subscription-checked-color: #1a4ce3;
   // the gap between messages in the conversation
@@ -85,16 +85,6 @@
     user-select: none;
     transition: background-color var(--miso-transition);
 
-    // the unread marker; always keeps its space, so item texts align
-    &::before {
-      content: '';
-      flex: none;
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 50%;
-      background-color: transparent;
-    }
-
     &:hover {
       background-color: var(--miso-thread-list-item-hover-background);
     }
@@ -105,10 +95,14 @@
       .miso-threads__title {
         font-weight: 600;
       }
-      &::before {
-        background-color: var(--miso-thread-list-unread-marker-color);
-      }
     }
+  }
+  // the favorite star in front of the title (miso-favorite: the checkbox
+  // layout, through the thread workflow; its default styles are below)
+  .miso-threads__favorite {
+    flex: none;
+    display: flex;
+    margin: -0.25rem 0 -0.25rem -0.25rem;
   }
   // the title (miso-title: the generic text layout, through the thread
   // workflow); the single-line ellipsis lives on the inner text node
@@ -296,6 +290,49 @@
 
   &:hover {
     background: none;
+  }
+}
+
+// the favorite star (role favorite: the checkbox layout, an icon-only
+// toggle) — in front of the thread list item titles and the conversation
+// title alike //
+.miso-checkbox[data-role="favorite"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: none;
+  color: var(--miso-text-color-gray);
+  cursor: pointer;
+  transition: color var(--miso-transition), background-color var(--miso-transition);
+
+  &:hover {
+    color: var(--miso-text-color);
+    background-color: var(--miso-thread-list-item-hover-background);
+  }
+  // checked: the thread is starred
+  &[data-checked],
+  &[data-checked]:hover {
+    color: var(--miso-favorite-checked-color);
+  }
+  // disabled while the thread is being created (no server identity yet)
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+
+    &:hover {
+      color: var(--miso-text-color-gray);
+      background: none;
+    }
+  }
+  .miso-ui-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: currentColor;
   }
 }
 
@@ -494,7 +531,8 @@
   miso-query {
     flex: none;
   }
-  // the header: thread title on the left, subscription toggle on the right.
+  // the header: favorite star and thread title on the left, subscription
+  // toggle on the right.
   // The visible-when mechanism forces `display: block` on the element it
   // toggles, so the flex row lives in an inner wrapper.
   .miso-conversation__header {
@@ -502,6 +540,9 @@
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--miso-border-color-light);
 
+    miso-favorite {
+      flex: none;
+    }
     miso-title {
       flex: 0 1 auto;
       min-width: 0;

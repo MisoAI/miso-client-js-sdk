@@ -23,10 +23,12 @@ export function settlePlaceholder(placeholder, threadId) {
  * The changes a thread operation makes to its thread's record, by its
  * type — undefined for an operation that changes no record (a deletion).
  */
-export function getThreadChanges({ type, title }) {
+export function getThreadChanges({ type, title, favorite }) {
   switch (type) {
     case 'rename':
       return { title };
+    case 'favorite':
+      return { favorite };
     case 'mark-as-read':
       return { has_new: false };
     case 'subscribe':
@@ -40,14 +42,16 @@ export function getThreadChanges({ type, title }) {
 /**
  * The changes that take a failed thread operation back, read off the
  * operation alone — a rename carries the title it replaced (`oldTitle`), a
- * subscription toggle flips back. Undefined for an operation that is not
+ * favorite or subscription toggle flips back. Undefined for an operation that is not
  * rolled back: a deletion, and mark-as-read — the operation does not know
  * whether the thread was unread to begin with.
  */
-export function getThreadUndoChanges({ type, oldTitle }) {
+export function getThreadUndoChanges({ type, oldTitle, favorite }) {
   switch (type) {
     case 'rename':
       return { title: oldTitle };
+    case 'favorite':
+      return { favorite: !favorite };
     case 'subscribe':
       return { subscribed: false };
     case 'unsubscribe':

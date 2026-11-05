@@ -24,7 +24,7 @@ import { undoThreadOperation } from '../util/threads.js';
  * channel, and the panels take it back. The rollback is deliberately
  * modest — operations depend on one another, so no rule set gets it
  * perfect: an operation carries what its own undo needs (a rename its
- * `oldTitle`), and only rename and the subscription toggles are undone
+ * `oldTitle`), and only rename, favorite and the subscription toggles are undone
  * (getThreadUndoChanges). Nothing presents the failure to the user yet.
  *
  * History mixes the methods in with mixinThreadOperations() — methods the
@@ -71,6 +71,14 @@ export class ThreadOperations {
    */
   unsubscribe(threadId) {
     this._applyThreadOperation({ type: 'unsubscribe', threadId });
+  }
+
+  /**
+   * Star (`true`, the default) or unstar (`false`) the thread. The operation
+   * sets the state rather than toggling it, like the API.
+   */
+  favorite(threadId, value = true) {
+    this._applyThreadOperation({ type: 'favorite', threadId, favorite: !!value });
   }
 
   /**

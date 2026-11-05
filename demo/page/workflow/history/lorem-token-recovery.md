@@ -78,6 +78,7 @@
     <miso-conversation class="miso-conversation">
       <div class="miso-conversation__header" visible-when="nonempty">
         <div class="miso-conversation__header-row">
+          <miso-favorite></miso-favorite>
           <miso-title></miso-title>
           <miso-rename></miso-rename>
           <miso-delete></miso-delete>

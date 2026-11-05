@@ -51,6 +51,7 @@ test('thread roles map into the record; view events operate through the superwor
   assert.is(roles[ROLE.RENAME]({ value: record }), record);
   assert.is(roles[ROLE.DELETE]({ value: record }), record);
   assert.is(roles[ROLE.SUBSCRIPTION], 'subscribed');
+  assert.is(roles[ROLE.FAVORITE]({ value: record }), record);
 
   history.start();
   await tick();
@@ -71,6 +72,16 @@ test('thread roles map into the record; view events operate through the superwor
   await tick();
   assert.ok(calls.includes('POST threads/t2/subscribe'));
   assert.is(workflow.thread.subscribed, true);
+
+  workflow._onViewFavoriteChange({ checked: false });
+  await tick();
+  assert.ok(calls.includes('POST threads/t2/favorite {"favorite":false}'));
+  assert.is(workflow.thread.favorite, false);
+
+  workflow._onViewFavoriteChange({ checked: true });
+  await tick();
+  assert.ok(calls.includes('POST threads/t2/favorite {"favorite":true}'));
+  assert.is(workflow.thread.favorite, true);
 
   workflow._onViewDeleteSubmit();
   await tick();

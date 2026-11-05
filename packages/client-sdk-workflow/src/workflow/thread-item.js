@@ -4,17 +4,19 @@ import { ROLE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
-  members: [ROLE.TITLE, ROLE.RENAME, ROLE.DELETE, ROLE.SUBSCRIPTION],
+  members: [ROLE.TITLE, ROLE.RENAME, ROLE.DELETE, ROLE.SUBSCRIPTION, ROLE.FAVORITE],
   mappings: {
     // the roles map into the thread record: the title text and the
-    // subscription checkbox's checked state. Rename and delete take the
-    // whole record: their button layouts derive the dialog text from its
-    // title and the disabled state from its thread id's absence (a thread
-    // being created is not addressable until resolved)
+    // subscription checkbox's checked state. Rename, delete and favorite
+    // take the whole record: their layouts derive the dialog text from its
+    // title (the star its checked state from its favorite flag) and the
+    // disabled state from its thread id's absence (a thread being created
+    // is not addressable until resolved)
     [ROLE.TITLE]: 'title',
     [ROLE.RENAME]: data => data.value,
     [ROLE.DELETE]: data => data.value,
     [ROLE.SUBSCRIPTION]: 'subscribed',
+    [ROLE.FAVORITE]: data => data.value,
   },
 });
 
@@ -73,6 +75,7 @@ export default class ThreadItem extends Workflow {
       this._views.on(ROLE.RENAME, 'submit', event => this._onViewRenameSubmit(event)),
       this._views.on(ROLE.DELETE, 'submit', () => this._onViewDeleteSubmit()),
       this._views.on(ROLE.SUBSCRIPTION, 'change', event => this._onViewSubscriptionChange(event)),
+      this._views.on(ROLE.FAVORITE, 'change', event => this._onViewFavoriteChange(event)),
     ];
   }
 
@@ -127,6 +130,11 @@ export default class ThreadItem extends Workflow {
       return;
     }
     checked ? history.subscribe(threadId) : history.unsubscribe(threadId);
+  }
+
+  _onViewFavoriteChange({ checked }) {
+    const { threadId, _superworkflow: history } = this;
+    threadId && history && history.favorite(threadId, checked);
   }
 
   // destroy //

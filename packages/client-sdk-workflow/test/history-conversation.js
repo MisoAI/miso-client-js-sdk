@@ -319,6 +319,22 @@ test('subscribe/unsubscribe: patches the record and calls the api', async () => 
   assert.is(isThreadUnread(history.get('t2')), true);
 });
 
+test('favorite: patches the record and calls the api, starring by default', async () => {
+  const { client, calls } = createClient();
+  const { history } = client.workflows;
+
+  history.start();
+  await tick();
+
+  history.favorite('t1');
+  assert.ok(calls.includes('POST threads/t1/favorite {"favorite":true}'));
+  assert.is(history.get('t1').favorite, true);
+
+  history.favorite('t2', false);
+  assert.ok(calls.includes('POST threads/t2/favorite {"favorite":false}'));
+  assert.is(history.get('t2').favorite, false);
+});
+
 test('conversation thread operations delegate to the history workflow', async () => {
   const { client, calls } = createClient();
   const { history, conversation } = client.workflows;
@@ -338,11 +354,47 @@ test('conversation thread operations delegate to the history workflow', async ()
   conversation.subscribe();
   assert.is(history.get('t2').subscribed, true);
 
+  conversation.favorite(false);
+  assert.ok(calls.includes('POST threads/t2/favorite {"favorite":false}'));
+  assert.is(history.get('t2').favorite, false);
+  assert.is(conversation.thread.favorite, false);
+  conversation.favorite();
+  assert.is(history.get('t2').favorite, true);
+  assert.is(conversation.thread.favorite, true);
+
   conversation.delete();
   assert.ok(calls.includes('POST threads/_delete {"thread_ids":["t2"]}'));
   assert.not.ok(history.get('t2'));
   assert.is(conversation.threadId, undefined); // the panel resets
   assert.is(conversation.thread.placeholder, true);
+});
+
+test('conversation: the favorite role maps the record and toggles the star', async () => {
+  const { client, calls } = createClient();
+  const { history, conversation } = client.workflows;
+
+  // the whole record, so the star derives its checked and disabled states
+  assert.is(conversation._roles.mappings[ROLE.FAVORITE], 'thread');
+
+  // new-thread mode: nothing to star yet
+  conversation._onViewFavoriteChange({ checked: true });
+  assert.not.ok(calls.some(call => call.includes('/favorite')));
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+  assert.is(conversation.thread.favorite, false);
+
+  conversation._onViewFavoriteChange({ checked: true });
+  assert.ok(calls.includes('POST threads/t1/favorite {"favorite":true}'));
+  assert.is(conversation.thread.favorite, true);
+  assert.is(history.get('t1').favorite, true);
+
+  conversation._onViewFavoriteChange({ checked: false });
+  assert.ok(calls.includes('POST threads/t1/favorite {"favorite":false}'));
+  assert.is(conversation.thread.favorite, false);
+  assert.is(history.get('t1').favorite, false);
 });
 
 test('conversation: the subscription role maps the state and toggles it', async () => {
@@ -529,6 +581,7 @@ test('conversation thread operations require a loaded thread', async () => {
   // new-thread mode: no server identity to operate on
   assert.throws(() => conversation.rename('Renamed'), /No thread is on display/);
   assert.throws(() => conversation.delete(), /No thread is on display/);
+  assert.throws(() => conversation.favorite(), /No thread is on display/);
 });
 
 test('delete: removes from the list and resets the open panel', async () => {
@@ -697,6 +750,29 @@ test('a failed subscription toggle rolls back', () => quietly(async () => {
   assert.is(history.get('t2').subscribed, true);
   await tick();
   assert.is(history.get('t2').subscribed, false);
+}));
+
+test('a failed favorite toggle rolls back in both panels', () => quietly(async () => {
+  const { client, failures } = createClient();
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t1');
+  await tick();
+
+  failures.favoriteThread = new Error('Nope');
+  history.favorite('t1');
+  assert.is(history.get('t1').favorite, true);
+  assert.is(conversation.thread.favorite, true);
+  await tick();
+  assert.is(history.get('t1').favorite, false);
+  assert.is(conversation.thread.favorite, false);
+
+  history.favorite('t2', false);
+  assert.is(history.get('t2').favorite, false);
+  await tick();
+  assert.is(history.get('t2').favorite, true);
 }));
 
 test('a failed delete is not rolled back', () => quietly(async () => {

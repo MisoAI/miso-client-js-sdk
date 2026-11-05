@@ -24,5 +24,6 @@ export { default as MisoTitleElement } from './miso-title.js';
 export { default as MisoRenameElement } from './miso-rename.js';
 export { default as MisoDeleteElement } from './miso-delete.js';
 export { default as MisoSubscriptionElement } from './miso-subscription.js';
+export { default as MisoFavoriteElement } from './miso-favorite.js';
 export { default as MisoMessagesElement } from './miso-messages.js';
 export { default as MisoErrorElement } from './miso-error.js';

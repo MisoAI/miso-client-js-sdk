@@ -8,28 +8,36 @@ const DEFAULT_CLASSNAME = 'miso-checkbox';
 
 function root(layout, state) {
   const { className, role, templates } = layout;
-  const checked = isChecked(state);
+  const checked = isChecked(layout, state);
   const roleAttr = role ? ` data-role="${role}"` : '';
+  const ariaLabel = label(layout, checked);
+  const ariaLabelAttr = ariaLabel ? ` aria-label="${escapeHtml(ariaLabel)}"` : '';
   const checkedAttr = checked ? ' data-checked' : '';
   const disabledAttr = layout._isDisabled(state) ? ' disabled' : '';
-  return `<button type="button" class="${className}" role="switch" aria-checked="${checked}"${roleAttr}${checkedAttr}${disabledAttr}>${templates.icon(layout, state)}${templates.text(layout, state)}</button>`;
+  return `<button type="button" class="${className}" role="switch" aria-checked="${checked}"${ariaLabelAttr}${roleAttr}${checkedAttr}${disabledAttr}>${templates.icon(layout, state)}${templates.text(layout, state)}</button>`;
 }
 
 function icon(layout, state) {
   const { icon, checkedIcon = icon } = layout.options;
-  const name = isChecked(state) ? checkedIcon : icon;
+  const name = isChecked(layout, state) ? checkedIcon : icon;
   return name ? getIcon(name) : '';
 }
 
 function text(layout, state) {
   const { className, options: { text, checkedText = text } } = layout;
-  const value = isChecked(state) ? checkedText : text;
+  const value = isChecked(layout, state) ? checkedText : text;
   return value ? `<span class="${className}__text">${escapeHtml(value)}</span>` : '';
 }
 
-// the checked state is the mapped data value, so it renders from data alone
-function isChecked({ value } = {}) {
-  return value === true;
+// the accessible name, for a control without a visible label (an icon only)
+function label({ options: { ariaLabel, checkedAriaLabel = ariaLabel } }, checked) {
+  return checked ? checkedAriaLabel : ariaLabel;
+}
+
+// the checked state is the mapped data value — put through the `value`
+// option when given — so it renders from data alone
+function isChecked({ options: { value: fn } }, { value } = {}) {
+  return (typeof fn === 'function' ? fn(value) : value) === true;
 }
 
 const DEFAULT_TEMPLATES = Object.freeze({
@@ -41,13 +49,16 @@ const DEFAULT_TEMPLATES = Object.freeze({
 /**
  * A checkbox that looks like a button: an icon and a label, each with an
  * optional checked variant (`icon`/`text` and `checkedIcon`/`checkedText`,
- * the latter falling back to the former). It is a switch — semantically a
+ * the latter falling back to the former). An icon-only control names itself
+ * via `ariaLabel`/`checkedAriaLabel` instead. It is a switch — semantically a
  * checkbox (`role="switch"`, `aria-checked`), visually a button — for
  * on/off state a user toggles, such as the answer-updates subscription of
  * the conversation panel (role `subscription`).
  *
  * The checked state comes from the data (the mapped value is the boolean —
- * e.g. role `subscription` maps to `'thread.subscribed'`), so a click emits
+ * e.g. role `subscription` maps to `'thread.subscribed'` — or the `value`
+ * option derives it from the mapped value, as the favorite star does off the
+ * whole thread record, the `disabled` option alongside), so a click emits
  * a `change` view event carrying the requested state (`{ checked }`) and
  * nothing else: the workflow acts on it and the new state arrives back down
  * the data path, like any other rendering.

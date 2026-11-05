@@ -33,6 +33,7 @@ export const ROLE = Object.freeze({
   RENAME: 'rename',
   DELETE: 'delete',
   SUBSCRIPTION: 'subscription',
+  FAVORITE: 'favorite',
 });
 
 const DATA_ROLE_SET = new Set([

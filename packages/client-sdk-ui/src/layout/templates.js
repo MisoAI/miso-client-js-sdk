@@ -36,8 +36,8 @@ export function question(layout, state, data) {
  * A thread item is a <miso-thread-item> container element hosting the thread
  * item subworkflow — the threads layout is a shell: it assigns the workflow
  * (and syncs the item-level attributes) in its post-render pass, and the
- * content renders through the thread workflow's own layouts: the title role
- * element in the body, plus the context menu (with the
+ * content renders through the thread workflow's own layouts: the favorite
+ * star and the title role elements in the body, plus the context menu (with the
  * rename/subscription/delete role elements) inserted as chrome by the workflow's item-container layout. The
  * item state renders as attributes right in the template (and stays in
  * sync thereafter): the thread identity, the selection, and the unread
@@ -56,9 +56,11 @@ export function thread(layout, state, data) {
   ].join('');
 }
 
+// the favorite star sits in front of the title
 export function threadBody(layout, data) {
   const { className, templates } = layout;
-  return `<miso-title class="${className}__title"></miso-title>` +
+  return `<miso-favorite class="${className}__favorite"></miso-favorite>` +
+    `<miso-title class="${className}__title"></miso-title>` +
     (templates.threadMenuBlock || threadMenuBlock)(layout, data);
 }
 
