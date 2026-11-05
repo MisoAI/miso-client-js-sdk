@@ -62,6 +62,8 @@ function translate(apiName, payload, { method = 'POST' } = {}) {
     switch (segments[2]) {
       case 'read': // POST threads/{id}/read -> POST thread/updates/dismiss_thread
         return { name: 'thread/updates/dismiss_thread', payload: { ...payload, thread_id } };
+      case 'favorite': // POST threads/{id}/favorite { favorite } -> POST thread/favorite
+        return { name: 'thread/favorite', payload: { ...payload, thread_id } };
       case 'subscribe':
         return { name: 'thread/updates/subscribe', payload: { ...payload, thread_id } };
       case 'unsubscribe':
@@ -88,7 +90,8 @@ function adaptThreadList(value) {
 
 /**
  * A v0 thread entry carries (id, time, question_id, title, subscribed,
- * has_new); the resource-style records read (thread_id, title, updated_at).
+ * has_new, favorite, favorited_at); the resource-style records read
+ * (thread_id, title, updated_at), with the rest passed through.
  * A thread is keyed by its root question, so question_id serves as the
  * thread id.
  */

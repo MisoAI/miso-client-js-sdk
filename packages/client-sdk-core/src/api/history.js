@@ -17,6 +17,7 @@ export default class UserHistory extends ApiBase {
    * List the user's threads.
    *
    * @param {Object} payload
+   * @param {boolean} [payload.favorite] - Omit to list all threads, `true` for starred threads only, `false` for unstarred threads only.
    * @param {Object} [options] - Request options.
    * @returns {Promise<Object>}
    */
@@ -89,6 +90,20 @@ export default class UserHistory extends ApiBase {
    */
   async markThreadAsRead(threadId, options) {
     return this._run(`threads/${threadId}/read`, undefined, options);
+  }
+
+  /**
+   * Star or unstar a thread. This sets the star to the given state instead of
+   * toggling it, so retries and repeated calls are safe.
+   *
+   * @param {string} threadId
+   * @param {Object} [payload]
+   * @param {boolean} [payload.favorite=true] - `true` to star the thread, `false` to unstar it.
+   * @param {Object} [options] - Request options.
+   * @returns {Promise<Object>} The thread's star state: `{ thread_id, favorite, favorited_at }`.
+   */
+  async favoriteThread(threadId, payload, options) {
+    return this._run(`threads/${threadId}/favorite`, payload, options);
   }
 
   /**

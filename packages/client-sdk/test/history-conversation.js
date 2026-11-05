@@ -273,4 +273,42 @@ test('lorem: update indicators and subscriptions over the v0 wire', async () => 
   assert.equal(await userHistory.getNotifications(), { has_new: false });
 });
 
+test('lorem: favorite a thread over the v0 wire', async () => {
+  const client = setup();
+  const rootId = await ask(client, 'What is miso soup?');
+  const otherId = await ask(client, 'How to cook ramen?');
+
+  const { userHistory } = client.api.ask;
+  const getThreadIds = async payload => (await userHistory.getThreads(payload)).threads.map(t => t.thread_id);
+
+  // threads start unstarred
+  const { threads } = await userHistory.getThreads({});
+  for (const { favorite, favorited_at } of threads) {
+    assert.is(favorite, false);
+    assert.is(favorited_at, null);
+  }
+
+  // starring is the default
+  const starred = await userHistory.favoriteThread(rootId);
+  assert.is(starred.thread_id, rootId);
+  assert.is(starred.favorite, true);
+  assert.type(starred.favorited_at, 'string');
+
+  // idempotent: starring again keeps the original favorited_at
+  assert.is((await userHistory.favoriteThread(rootId, { favorite: true })).favorited_at, starred.favorited_at);
+
+  // the list carries the star and filters by it
+  const entry = (await userHistory.getThreads({})).threads.find(t => t.thread_id === rootId);
+  assert.is(entry.favorite, true);
+  assert.is(entry.favorited_at, starred.favorited_at);
+  assert.equal(await getThreadIds({ favorite: true }), [rootId]);
+  assert.equal(await getThreadIds({ favorite: false }), [otherId]);
+
+  // unstarring clears favorited_at
+  const unstarred = await userHistory.favoriteThread(rootId, { favorite: false });
+  assert.is(unstarred.favorite, false);
+  assert.is(unstarred.favorited_at, null);
+  assert.equal(await getThreadIds({ favorite: true }), []);
+});
+
 test.run();
