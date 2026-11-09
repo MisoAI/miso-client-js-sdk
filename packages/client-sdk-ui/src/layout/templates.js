@@ -127,11 +127,13 @@ export function messageSourcesBlock({ className }) {
 }
 
 // the suggested follow-up questions of the message's answer, with their
-// heading — shown only once the answer is done (visible-when): the
-// composer holds the next question until then, so a suggestion offered
-// earlier could not be submitted anyway
+// heading — shown only once the answer is done: the composer holds the next
+// question until then, so a suggestion offered earlier could not be
+// submitted anyway. Hidden by a class rule off the item's own status, not
+// visible-when: the visible-when rules match any descendant of a container,
+// so the enclosing <miso-conversation>'s done status would show it too
 export function messageFollowUpQuestionsBlock({ className }) {
-  return `<div class="${className}__follow-up-questions-container" visible-when="done">` +
+  return `<div class="${className}__follow-up-questions-container">` +
     `<h3 class="${className}__follow-up-questions-phrase">Related questions you can explore</h3>` +
     `<miso-follow-up-questions class="${className}__follow-up-questions"></miso-follow-up-questions>` +
     `</div>`;

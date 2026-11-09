@@ -413,6 +413,12 @@
     &:not([data-live]):not([status~='ready']) .miso-messages__content {
       display: none;
     }
+    // the suggested follow-up questions show only once the item's own answer
+    // is done — keyed off the item's status, not visible-when, whose rules
+    // would also match the enclosing <miso-conversation>'s done status
+    &:not([status~='done']) .miso-messages__follow-up-questions-container {
+      display: none;
+    }
   }
   // the regular content of a message, packed so the erroneous presentation
   // can swap it out as one piece

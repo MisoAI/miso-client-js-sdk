@@ -347,4 +347,21 @@ test('an answerless record presents as loading; an unfinished one as ongoing', a
   assert.is(message.states.data.ongoing, undefined);
 });
 
+test('an errored record presents as erroneous, even with a partial answer', async () => {
+  const { client } = createClient();
+  const { conversation } = client.workflows;
+
+  const message = conversation._getMessageWorkflow('q9');
+  const error = new Error('polling failed');
+
+  // failed before any of the answer arrived
+  message.updateData({ session: message.session, value: { question_id: 'q9', error } });
+  assert.is(message.status, STATUS.ERRONEOUS);
+
+  // failed mid-generation: the partial answer does not keep it ready/ongoing
+  message.updateData({ session: message.session, value: { question_id: 'q9', answer: 'partial', finished: false, error } });
+  assert.is(message.status, STATUS.ERRONEOUS);
+  assert.is(message.states.data.ongoing, undefined);
+});
+
 test.run();

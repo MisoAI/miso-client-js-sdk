@@ -247,25 +247,33 @@ function writeErrorToMessage(data) {
   return { ...data, value: { ...value, error } };
 }
 
-// a record whose answer body has not arrived presents as loading — the
-// standard status mark, carried onto the <miso-message-item> element by the
-// container layout — while the conversation's answers request fetches the
-// content; a record settled by a failed content fetch (the `error` mark)
-// presents as erroneous instead, showing the item's visible-when notice
+// a record settled by a failed content fetch (the `error` mark) presents as
+// erroneous, showing the item's visible-when notice — whether or not part of
+// its answer had arrived before the failure; a record whose answer body has
+// not arrived presents as loading — the standard status mark, carried onto
+// the <miso-message-item> element by the container layout — while the
+// conversation's answers request fetches the content
 function writeStatusFromAnswer(data) {
   const { value } = data;
-  if (!value || value.answer !== undefined) {
+  if (!value) {
     return data;
   }
-  return { ...data, status: value.error ? STATUS.ERRONEOUS : STATUS.LOADING };
+  if (value.error) {
+    return trimObj({ ...data, status: STATUS.ERRONEOUS, ongoing: undefined });
+  }
+  if (value.answer === undefined) {
+    return { ...data, status: STATUS.LOADING };
+  }
+  return data;
 }
 
 // an unfinished answer keeps the ongoing flag on, so views (e.g. a
 // typewriter) treat the content as still streaming; message records may not
-// carry the answer_stage field that normally drives this
+// carry the answer_stage field that normally drives this. Only a ready
+// record streams: an erroneous one has stopped for good
 function writeOngoingFromFinished(data) {
-  const { value } = data;
-  if (!value || value.finished !== false) {
+  const { value, status } = data;
+  if (!value || value.finished !== false || status !== STATUS.READY) {
     return data;
   }
   return { ...data, ongoing: true };
