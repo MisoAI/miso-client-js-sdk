@@ -56,21 +56,26 @@ export function thread(layout, state, data) {
   ].join('');
 }
 
-// the favorite star sits in front of the title
+// the title takes the whole row: the item's actions (the favorite star and
+// the context menu button) overlay its right end
 export function threadBody(layout, data) {
   const { className, templates } = layout;
-  return `<miso-favorite class="${className}__favorite"></miso-favorite>` +
-    `<miso-title class="${className}__title"></miso-title>` +
+  return `<miso-title class="${className}__title"></miso-title>` +
     (templates.threadMenuBlock || threadMenuBlock)(layout, data);
 }
 
-// the item-menu data-roles are the contract with the thread workflow's
+// the item's actions — the favorite star (the checkbox layout, through the
+// thread workflow) and the context menu button — then the menu. The
+// item-menu data-roles are the contract with the thread workflow's
 // item-container layout, which drives the menu's open/close behavior; the
 // menu items are the thread workflow's own controls, rendered by the
 // generic button layout with a prompt (rename) or a confirm (delete) dialog,
 // and by the checkbox layout (the subscription toggle)
 export function threadMenuBlock({ className }) {
-  return `<button type="button" class="${className}__menu-button" data-role="item-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
+  return `<div class="${className}__actions">` +
+    `<miso-favorite class="${className}__favorite"></miso-favorite>` +
+    `<button type="button" class="${className}__menu-button" data-role="item-menu-button" aria-label="Thread actions" aria-haspopup="menu">${getIcon('dots-vertical')}</button>` +
+    `</div>` +
     `<div class="${className}__menu" data-role="item-menu" role="menu" hidden>` +
     `<miso-rename class="${className}__menu-item"></miso-rename>` +
     `<miso-subscription class="${className}__menu-item"></miso-subscription>` +

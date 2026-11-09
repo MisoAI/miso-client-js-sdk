@@ -49,8 +49,12 @@ export function createClient({
     async getThreads(payload) {
       const paged = payload && Object.keys(payload).length > 0;
       calls.push(paged ? `GET threads ${JSON.stringify(payload)}` : 'GET threads');
-      const all = threads.map(thread => ({ ...thread }));
-      const { start = 0, rows = all.length } = payload || {};
+      const { start = 0, favorite } = payload || {};
+      // the favorite filter: true lists the starred threads, false the rest
+      const all = threads
+        .filter(thread => favorite === undefined || (thread.favorite === true) === favorite)
+        .map(thread => ({ ...thread }));
+      const { rows = all.length } = payload || {};
       const page = all.slice(start, start + rows);
       return { threads: page, has_more: start + page.length < all.length };
     },

@@ -6,6 +6,7 @@
  * response-shape fallbacks live at the API boundary (`processResponse()` in
  * source.js), so only canonical fields are ever read.
  */
+import { THREAD_GROUP } from '../constants.js';
 
 /**
  * Settle a placeholder record into a real thread record, keyed by the thread
@@ -88,6 +89,87 @@ export function undoThreadOperation(thread, operation) {
  */
 export function isThreadUnread(thread) {
   return !!thread && thread.subscribed === true && thread.has_new === true;
+}
+
+/**
+ * The thread list groups: the key each group's records live under in the
+ * history workflow's value, and the list API filter that selects them.
+ */
+const THREAD_GROUPS = Object.freeze({
+  [THREAD_GROUP.ALL]: Object.freeze({ key: 'threads', filter: Object.freeze({}) }),
+  [THREAD_GROUP.FAVORITE]: Object.freeze({ key: 'favorite', filter: Object.freeze({ favorite: true }) }),
+  [THREAD_GROUP.UNFAVORITE]: Object.freeze({ key: 'unfavorite', filter: Object.freeze({ favorite: false }) }),
+});
+
+export const THREAD_GROUP_NAMES = Object.freeze(Object.keys(THREAD_GROUPS));
+
+/**
+ * Resolve a thread group name: an unknown or absent name means every thread.
+ */
+export function resolveThreadGroup(group) {
+  return THREAD_GROUPS[group] ? group : THREAD_GROUP.ALL;
+}
+
+/**
+ * The key a thread group's records live under in the history workflow's
+ * value: `threads` (all), `favorite`, `unfavorite`.
+ */
+export function getThreadGroupKey(group) {
+  return THREAD_GROUPS[resolveThreadGroup(group)].key;
+}
+
+/**
+ * The list API filter (payload fields) selecting a thread group.
+ */
+export function getThreadGroupFilter(group) {
+  return THREAD_GROUPS[resolveThreadGroup(group)].filter;
+}
+
+/**
+ * The thread group a view presents: its element's `group` attribute
+ * (`favorite`, `unfavorite`), every thread when absent.
+ */
+export function getViewThreadGroup(view) {
+  const element = view && view.element;
+  const group = element && typeof element.getAttribute === 'function' ? element.getAttribute('group') : undefined;
+  return resolveThreadGroup(group);
+}
+
+/**
+ * Whether a thread record belongs to the favorite group.
+ */
+export function isThreadFavorite(thread) {
+  return !!thread && thread.favorite === true;
+}
+
+/**
+ * Normalize a thread-list value to the grouped shape of the history
+ * workflow: `{ threads, favorite, unfavorite, paging }`, each group's records
+ * under its key (getThreadGroupKey) and its paging state under
+ * `paging[group]` (`{ has_more }`). It takes the grouped response of the
+ * initial load (`{ all, favorite, unfavorite }`, one list response per
+ * group), a single list response (every thread only), or an already
+ * normalized value (left alone, so re-processing is safe).
+ */
+export function normalizeThreadGroupsValue(value) {
+  if (!value || value.paging) {
+    return value;
+  }
+  if (Array.isArray(value) || value.all === undefined) {
+    const { has_more, ...rest } = normalizeThreadsValue(value);
+    return { ...rest, paging: { [THREAD_GROUP.ALL]: { has_more } } };
+  }
+  const result = {};
+  const paging = {};
+  for (const group of THREAD_GROUP_NAMES) {
+    if (value[group] === undefined) {
+      continue;
+    }
+    const { threads, has_more } = normalizeThreadsValue(value[group]);
+    result[getThreadGroupKey(group)] = threads;
+    paging[group] = { has_more };
+  }
+  return { ...result, paging };
 }
 
 /**

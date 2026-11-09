@@ -56,6 +56,9 @@
      (miso-history, miso-conversation); only the page layout is set here */
   .miso-history-demo miso-history {
     flex: 0 0 20rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
     padding-right: 1rem;
     border-right: 1px solid var(--miso-border-color-light);
   }
@@ -73,7 +76,14 @@
   <div class="miso-history-demo">
     <miso-history class="miso-history">
       <miso-new-thread></miso-new-thread>
-      <miso-threads></miso-threads>
+      <section class="miso-history__group miso-history__group--favorite">
+        <h3 class="miso-history__group-title">Favorites</h3>
+        <miso-threads group="favorite"></miso-threads>
+      </section>
+      <section class="miso-history__group">
+        <h3 class="miso-history__group-title">Recents</h3>
+        <miso-threads group="unfavorite"></miso-threads>
+      </section>
     </miso-history>
     <miso-conversation class="miso-conversation">
       <div class="miso-conversation__header" visible-when="nonempty">

@@ -1,4 +1,4 @@
-import { isThreadUnread } from '@miso.ai/client-sdk-workflow';
+import { isThreadUnread, getViewThreadGroup, fields } from '@miso.ai/client-sdk-workflow';
 import { STATUS, LAYOUT_TYPE, ROLE } from '../../constants.js';
 import CollectionLayout from './collection.js';
 import { listError, isSessionExpired, SESSION_EXPIRED_MESSAGE } from '../templates.js';
@@ -46,6 +46,12 @@ function errorMessage(layout, error) {
  * carries a context menu (vertical dots), but that is the thread workflow's
  * too: its item-container layout inserts and toggles it — the shell only
  * keeps menu clicks (by their item-menu data-roles) from selecting.
+ *
+ * The list presents one thread group of the history workflow, named by its
+ * element's `group` attribute (`favorite`, `unfavorite`; every thread when
+ * absent — the role mapping picks the group's records): the infinite scroll
+ * trigger asks for the next page of that group, as the `more` hub field's
+ * `group`.
  */
 export default class ThreadsLayout extends CollectionLayout {
 
@@ -161,6 +167,11 @@ export default class ThreadsLayout extends CollectionLayout {
       setOrRemoveAttribute(item, 'data-unread', isThreadUnread(value) ? '' : undefined);
       setOrRemoveAttribute(item, 'data-thread-id', value.thread_id || undefined);
     }
+  }
+
+  // the more trigger pages the group this list presents
+  _onTrigger() {
+    this._view.hub.trigger(fields.more(), { group: getViewThreadGroup(this._view) });
   }
 
   // a click on a thread item means selection — a navigation action, not a

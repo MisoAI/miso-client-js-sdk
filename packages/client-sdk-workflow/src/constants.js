@@ -158,6 +158,17 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
   TEMPLATES: 'templates',
 });
 
+/**
+ * The groups of the history thread list, each listed and paged on its own:
+ * every thread, the favorited (starred) threads, and the rest. A threads
+ * element picks the group it presents by its `group` attribute.
+ */
+export const THREAD_GROUP = Object.freeze({
+  ALL: 'all',
+  FAVORITE: 'favorite',
+  UNFAVORITE: 'unfavorite',
+});
+
 export const REQUEST_TYPE = Object.freeze({
   QUERY: 'query',
   REFINE: 'refine',

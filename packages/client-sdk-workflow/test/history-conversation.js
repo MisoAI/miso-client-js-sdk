@@ -118,10 +118,11 @@ test('history: the list pages through the more flow, until exhausted', async () 
   assert.is(history.exhausted, true);
   assert.ok(calls.includes('GET threads {"rows":3,"start":3}'));
 
-  // exhausted: a further more is ignored
+  // exhausted: a further more is ignored (the initial load's three group
+  // calls, plus the one page)
   history._more();
   await tick();
-  assert.is(calls.filter(c => c.startsWith('GET threads')).length, 2);
+  assert.is(calls.filter(c => c.startsWith('GET threads')).length, 4);
 });
 
 test('history: selection survives a more page', async () => {
@@ -150,7 +151,8 @@ test('history: the workflow never restarts itself — one session for life', asy
   await tick();
   history._more();
   await tick();
-  assert.is(calls.filter(c => c.startsWith('GET threads')).length, 2);
+  // the initial load's three group calls, plus the one page
+  assert.is(calls.filter(c => c.startsWith('GET threads')).length, 4);
   assert.is(history.session, session); // still the construction-time session
 });
 

@@ -144,6 +144,7 @@ export const defaultLayouts = Object.freeze({
     [ROLE.RENAME]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Rename', prompt: THREAD_RENAME_PROMPT }],
     [ROLE.DELETE]: [LAYOUT_TYPE.BUTTON, { ...THREAD_CONTROL_OPTIONS, text: 'Delete', confirm: THREAD_DELETE_CONFIRM }],
     [ROLE.SUBSCRIPTION]: [LAYOUT_TYPE.CHECKBOX, { text: 'Subscribe', checkedText: 'Unsubscribe' }],
+    // the star among the item's hover actions, left of the menu button
     [ROLE.FAVORITE]: [LAYOUT_TYPE.CHECKBOX, THREAD_FAVORITE_OPTIONS],
   }),
 

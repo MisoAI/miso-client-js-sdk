@@ -32,7 +32,6 @@
   gap: 0.5rem;
   width: 100%;
   padding: 0.5rem 0.75rem;
-  margin-bottom: 0.75rem;
   border: 1px solid var(--miso-border-color-light);
   border-radius: 0.5rem;
   background: none;
@@ -97,13 +96,6 @@
       }
     }
   }
-  // the favorite star in front of the title (miso-favorite: the checkbox
-  // layout, through the thread workflow; its default styles are below)
-  .miso-threads__favorite {
-    flex: none;
-    display: flex;
-    margin: -0.25rem 0 -0.25rem -0.25rem;
-  }
   // the title (miso-title: the generic text layout, through the thread
   // workflow); the single-line ellipsis lives on the inner text node
   .miso-threads__title {
@@ -125,15 +117,38 @@
   .miso-threads__item-body {
     position: relative;
 
-    // reveal the menu button on hover/focus
-    .miso-threads__menu-button {
+    // reveal the actions on hover/focus — over the title's right end,
+    // which fades out beneath them
+    .miso-threads__actions {
       visibility: hidden;
     }
-    &:hover .miso-threads__menu-button,
-    .miso-threads__menu-button:focus-visible,
-    &:has(.miso-threads__menu:not([hidden])) .miso-threads__menu-button {
-      visibility: visible;
+    &:hover,
+    &:focus-within,
+    &:has(.miso-threads__menu:not([hidden])) {
+      .miso-threads__actions {
+        visibility: visible;
+      }
+      .miso-threads__title {
+        -webkit-mask-image: linear-gradient(to left, transparent 3.25rem, #000 4.5rem);
+        mask-image: linear-gradient(to left, transparent 3.25rem, #000 4.5rem);
+      }
     }
+  }
+  // the item's actions take no room in the row: they overlay the title's
+  // end, so the title spans the whole row — the favorite star (the
+  // checkbox layout; its default styles are below), then the menu button
+  .miso-threads__actions {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+  }
+  .miso-threads__favorite {
+    flex: none;
+    display: flex;
   }
   .miso-threads__menu-button {
     flex: none;
@@ -143,7 +158,6 @@
     width: 1.5rem;
     height: 1.5rem;
     padding: 0;
-    margin: -0.25rem 0;
     border: none;
     border-radius: 0.25rem;
     background: none;
@@ -204,7 +218,8 @@
       color: var(--miso-danger-color);
     }
     // disabled while the thread is being created (no server identity yet)
-    .miso-button:disabled {
+    .miso-button:disabled,
+    .miso-checkbox:disabled {
       opacity: 0.45;
       cursor: default;
 
@@ -294,8 +309,8 @@
 }
 
 // the favorite star (role favorite: the checkbox layout, an icon-only
-// toggle) — in front of the thread list item titles and the conversation
-// title alike //
+// toggle) — among the thread list items' hover actions and in front of the
+// conversation title //
 .miso-checkbox[data-role="favorite"] {
   display: flex;
   align-items: center;
@@ -519,6 +534,29 @@
 .miso-history {
   display: block;
   overflow-y: auto;
+
+  // the thread groups, one <miso-threads group="..."> each under a heading
+  // (Favorites / Recents); a group's list pages by its own infinite scroll
+  // trigger, so the favorites page through before the recents below them
+  .miso-history__group {
+    margin-top: 1rem;
+  }
+  .miso-history__group-title {
+    margin: 0 0 0.375rem;
+    padding: 0 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--miso-text-color-gray);
+  }
+  // a group with nothing listed is hidden once its list has loaded; the
+  // favorites group shows only with favorites in it (so its loading and
+  // error states don't duplicate the recents' ones)
+  .miso-history__group:has(.miso-threads.ready):not(:has(.miso-threads__item)),
+  .miso-history__group--favorite:not(:has(.miso-threads__item)) {
+    display: none;
+  }
 }
 
 // the conversation panel: a column of header, messages and composer, in

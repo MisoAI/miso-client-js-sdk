@@ -30,7 +30,7 @@ function sendApi(client, { group, name, payload, options }) {
 function sendThreadsApi(api, name, payload = {}, options) {
   switch (name) {
     case 'list':
-      return api.getThreads(payload, options);
+      return payload.groups ? getThreadGroups(api, payload, options) : api.getThreads(payload, options);
     case 'get': {
       const { thread_id, ...rest } = payload;
       return api.getThread(thread_id, rest, options);
@@ -57,10 +57,23 @@ function sendThreadsApi(api, name, payload = {}, options) {
   throw new Error(`Unknown threads API: ${name}`);
 }
 
-function processResponse({ group, name }, response) {
+// a grouped list read: `groups` maps each group name to its list filter
+// (e.g. `{ all: {}, favorite: { favorite: true } }`), the rest of the payload
+// (the paging window) applying to every group — one list call per group, in
+// parallel, the responses keyed by group name
+async function getThreadGroups(api, { groups, ...payload }, options) {
+  const entries = await Promise.all(Object.entries(groups).map(async ([group, filter]) =>
+    [group, await api.getThreads({ ...payload, ...filter }, options)]));
+  return Object.fromEntries(entries);
+}
+
+function processResponse({ group, name, payload }, response) {
   if (group === API.GROUP.THREADS) {
     // thread records may identify themselves by root question id only
     if (name === 'list') {
+      if (payload && payload.groups && response) {
+        return Object.fromEntries(Object.entries(response).map(([key, value]) => [key, fallbackThreadsFields(value)]));
+      }
       return fallbackThreadsFields(response);
     }
     if (name === 'get') {
