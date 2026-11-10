@@ -523,6 +523,21 @@
     display: block;
     align-self: stretch;
   }
+  // the suggested follow-up questions as compact chips, wrapping side by
+  // side, so the block takes less height than the full-width option pills
+  // of the ask combo
+  .miso-messages__follow-up-questions {
+    --miso-option-list-item-padding: 0.375rem;
+    --miso-option-list-item-gap: 0.5rem;
+    --miso-option-list-font-size: 0.85rem;
+    // re-derived here: the :root declaration resolved against the default size
+    --miso-option-list-line-height: calc(var(--miso-option-list-font-size) * var(--miso-option-list-line-height-scale));
+
+    .miso-option-list__options {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
 }
 
 // default layouts //
