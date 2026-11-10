@@ -452,6 +452,32 @@ export default class History extends Workflow {
     });
   }
 
+  // a question is posted to a thread (by thread id, or placeholder id for one
+  // still being created): its latest activity is now, so the listed record
+  // takes the fresh updated_at — the commit's sort moving it to the top of
+  // every group listing it. A thread not listed yet (past the loaded pages)
+  // joins its groups off the panel's record: it now sorts above every
+  // loaded record, as it does server-side, so the paging offsets stay in
+  // line with the server's
+  _onConversationActivity(threadId, record) {
+    const updated_at = record && record.updated_at;
+    if (!threadId || !updated_at) {
+      return;
+    }
+    const listed = this.get(threadId);
+    if (!listed && !record.thread_id) {
+      return; // a placeholder not listed: nothing to place
+    }
+    const touched = listed ? { ...listed, updated_at } : toListedThread(record);
+    const patch = this._mapGroups((threads, group) => listed ?
+      threads.map(thread => thread === listed ? touched : thread) :
+      group === THREAD_GROUP.ALL ? [...threads, touched] : threads);
+    // the favorite and unfavorite groups take it in where they did not list
+    // it yet (a placeholder belongs in its groups already)
+    touched.thread_id && Object.assign(patch, this._regroupThread(patch, touched));
+    this._patchValue(patch);
+  }
+
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
@@ -619,6 +645,14 @@ function isMorePage({ request }) {
 // local, its placeholder record never counts toward the server's offsets
 function countServerThreads(threads) {
   return threads.filter(thread => thread.thread_id).length;
+}
+
+// a thread-detail record as a list record: the detail carries the thread's
+// question ids on top of the list properties, and the selection flag is
+// stamped by the list itself
+function toListedThread(record) {
+  const { questions_ids: _questionsIds, selected: _selected, ...thread } = record;
+  return thread;
 }
 
 function threadKeyOf(thread) {

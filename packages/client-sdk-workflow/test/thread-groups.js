@@ -241,4 +241,56 @@ test('history: a local patch after a more page is kept', async () => {
   assert.ok(history.get('t4').selected);
 });
 
+const groupedThreadDetail = id => ({ ...GROUPED_THREADS.find(t => t.thread_id === id), questions_ids: ['q1', 'q2'] });
+
+test('history: posting to an existing thread moves it to the top, in every group listing it', async () => {
+  const { client } = createClient({ threads: GROUPED_THREADS, threadDetail: groupedThreadDetail });
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  history.select('t4');
+  await tick();
+  const before = history.get('t4').updated_at;
+  conversation.send('Another question');
+  assert.ok(history.get('t4').updated_at > before);
+  assert.is(conversation.thread.updated_at, history.get('t4').updated_at);
+  assert.equal(ids(history.threads), ['t4', 't1', 't2', 't3', 't5']);
+  assert.equal(ids(history.getThreads('unfavorite')), ['t4', 't2', 't5']);
+  assert.ok(history.get('t4').selected);
+  // the record is still one object across the groups
+  assert.is(history.getThreads('unfavorite')[0], history.threads[0]);
+  await tick(30);
+  assert.equal(ids(history.threads), ['t4', 't1', 't2', 't3', 't5']);
+});
+
+test('history: posting to a thread past the loaded pages lists it on top', async () => {
+  const { client } = createClient({ threads: GROUPED_THREADS, threadDetail: groupedThreadDetail });
+  const { history, conversation } = client.workflows;
+  history.useApi('threads/list', { rows: 2 });
+
+  history.start();
+  await tick();
+  assert.equal(ids(history.threads), ['t1', 't2']);
+  conversation.load('t5');
+  await tick();
+  conversation.send('Another question');
+  assert.equal(ids(history.threads), ['t5', 't1', 't2']);
+  assert.equal(ids(history.getThreads('unfavorite')), ['t5', 't2', 't4']);
+  assert.equal(ids(history.getThreads('favorite')), ['t1', 't3']);
+  assert.is(history.get('t5').questions_ids, undefined);
+});
+
+test('history: a second question to a thread being created keeps it on top', async () => {
+  const { client } = createClient({ threads: GROUPED_THREADS });
+  const { history, conversation } = client.workflows;
+
+  history.start();
+  await tick();
+  conversation.send('A brand new question');
+  conversation.send('A follow-up before it settles');
+  assert.ok(history.threads[0].placeholder_id);
+  assert.is(history.threads.length, 6);
+});
+
 test.run();

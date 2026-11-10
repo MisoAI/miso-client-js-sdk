@@ -300,6 +300,10 @@ export default class Conversation extends Workflow {
     }
     // starting a new thread, unless one is loaded or already being created
     const placeholder = (this.threadId || (this.thread && this.thread.placeholder_id)) ? undefined : this._startPlaceholderThread(question);
+    // posting to an existing thread (or one still being created) is activity
+    // on it: its record is stamped with a fresh updated_at, here and on the
+    // listed side, which moves it to the top of the thread list
+    const thread = placeholder ? undefined : this._touchThread(data.value.thread);
     const messages = data.value.messages || [];
     const last = messages[messages.length - 1];
     // the local placeholder id keys the message (its item binding and its
@@ -319,7 +323,7 @@ export default class Conversation extends Workflow {
       ...data,
       value: {
         ...data.value,
-        ...(placeholder ? { thread: placeholder } : {}),
+        ...(placeholder ? { thread: placeholder } : thread ? { thread } : {}),
         messages: [...messages, message],
       },
     });
@@ -412,6 +416,21 @@ export default class Conversation extends Workflow {
     const peer = this._peer;
     peer && peer._onConversationNew(thread);
     return thread;
+  }
+
+  // stamp the thread on display with a fresh updated_at for a question posted
+  // to it, announcing the activity to the history workflow (which moves its
+  // listed record to the top), if constructed. Returns the stamped record
+  _touchThread(thread) {
+    const threadId = thread && (thread.thread_id || thread.placeholder_id);
+    if (!threadId) {
+      return undefined;
+    }
+    // TODO: client side time is not reliable, don't use it for comparison with server time
+    const touched = { ...thread, updated_at: new Date().toISOString() };
+    const peer = this._peer;
+    peer && peer._onConversationActivity(threadId, touched);
+    return touched;
   }
 
   /**
