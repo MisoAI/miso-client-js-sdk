@@ -131,16 +131,19 @@ test('lorem: deleting the open thread resets the panel', async () => {
 
 test('lorem: opening an unread thread marks it as read', async () => {
   const client = setup();
-  // server-side threads with activity the user has not seen yet
-  MisoClient.lorem.api.ask.userHistory.generateThreads({ rows: 8 }, { seed: 11 });
+  // two threads; only the subscribed one receives server-side activity the
+  // user has not seen yet
+  const threadId = await ask(client, 'What is miso soup?');
+  const readId = await ask(client, 'How to cook ramen?');
+  await client.api.ask.userHistory.subscribeThread(threadId);
+  MisoClient.lorem.api.ask.userHistory.touchThread(threadId);
 
   const { history, conversation } = client.workflows;
   history.start();
   await tick();
 
-  const unread = history.threads.filter(t => t.has_new);
-  assert.ok(unread.length > 0, 'expect some generated threads to be unread');
-  const threadId = unread[0].thread_id;
+  assert.is(history.get(threadId).has_new, true);
+  assert.is(history.get(readId).has_new, false);
 
   history.select(threadId);
   await tick();
