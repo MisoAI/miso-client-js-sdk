@@ -162,6 +162,8 @@ export const WORKFLOW_CONFIGURABLE = Object.freeze({
  * The groups of the history thread list, each listed and paged on its own:
  * every thread, the favorited (starred) threads, and the rest. A threads
  * element picks the group it presents by its `group` attribute.
+ *
+ * @since 1.14.2
  */
 export const THREAD_GROUP = Object.freeze({
   ALL: 'all',

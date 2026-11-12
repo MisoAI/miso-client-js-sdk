@@ -116,6 +116,7 @@ export class ThreadOperations {
    * @memberof module:workflow~ThreadOperations
    * @param {string} threadId - The thread ID.
    * @param {boolean} [value=true] - `true` to favorite, `false` to unfavorite.
+   * @since 1.14.2
    */
   favorite(threadId, value = true) {
     this._applyThreadOperation({ type: 'favorite', threadId, favorite: !!value });

@@ -19,7 +19,7 @@ class UserHistory extends ApiBase {
    * List the user's threads.
    *
    * @param {Object} payload
-   * @param {boolean} [payload.favorite] - Omit to list all threads, `true` for starred threads only, `false` for unstarred threads only.
+   * @param {boolean} [payload.favorite] - Omit to list all threads, `true` for starred threads only, `false` for unstarred threads only. Since 1.14.2.
    * @param {Object} [options] - Request options.
    * @returns {Promise<Object>}
    */
@@ -103,6 +103,7 @@ class UserHistory extends ApiBase {
    * @param {boolean} [payload.favorite=true] - `true` to star the thread, `false` to unstar it.
    * @param {Object} [options] - Request options.
    * @returns {Promise<Object>} The thread's star state: `{ thread_id, favorite, favorited_at }`.
+   * @since 1.14.2
    */
   async favoriteThread(threadId, payload, options) {
     return this._run(`threads/${threadId}/favorite`, payload, options);

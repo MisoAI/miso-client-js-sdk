@@ -432,6 +432,7 @@ class Conversation extends Workflow {
    *
    * @param {boolean} [value=true] - `true` to favorite, `false` to unfavorite.
    * @throws {Error} If no thread is loaded.
+   * @since 1.14.2
    */
   favorite(value = true) {
     ThreadOperations.prototype.favorite.call(this, this._requireThreadId('favorite'), value);

@@ -135,6 +135,7 @@ class History extends Workflow {
    *
    * @param {string} [group='all'] - `'all'`, `'favorite'`, or `'unfavorite'`.
    * @returns {Object[]}
+   * @since 1.14.2
    */
   getThreads(group = THREAD_GROUP.ALL) {
     const data = this._hub.states[fields.data()];
@@ -165,6 +166,7 @@ class History extends Workflow {
    *
    * @param {string} [group='all'] - `'all'`, `'favorite'`, or `'unfavorite'`.
    * @returns {boolean}
+   * @since 1.14.2
    */
   isExhausted(group = THREAD_GROUP.ALL) {
     const data = this._hub.states[fields.data()];
