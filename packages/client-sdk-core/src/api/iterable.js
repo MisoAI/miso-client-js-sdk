@@ -1,3 +1,5 @@
+/** @module core */
+
 import { polling, signals, StallTimeoutAbortController } from '@miso.ai/commons';
 
 /**
@@ -107,6 +109,8 @@ export class IterableApiStub {
    * Compose the polling fetch: () => [response, finished, revision].
    * Overridable by a subclass with its own finish or revision semantics
    * (e.g. Answers, whose question ids may run dry).
+   *
+   * @private
    */
   _fetch() {
     return async ({ signal } = {}) => {

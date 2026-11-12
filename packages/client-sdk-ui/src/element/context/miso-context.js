@@ -4,7 +4,7 @@ import { getClient } from '../utils.js';
 /**
  * The base of the context elements, which bind to a group of workflows rather than to one.
  */
-export default class MisoContextElement extends MisoStubElement {
+class MisoContextElement extends MisoStubElement {
 
   static get observedAttributes() {
     return MisoStubElement.observedAttributes;
@@ -54,3 +54,5 @@ export default class MisoContextElement extends MisoStubElement {
   _onContext() {}
 
 }
+
+export default MisoContextElement;

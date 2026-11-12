@@ -7,7 +7,7 @@ import { ROLE } from '../../constants.js';
  * or every thread when absent. It is read as the list renders and pages, so
  * set it before the element is connected.
  */
-export default class MisoThreadsElement extends MisoComponentElement {
+class MisoThreadsElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -20,3 +20,5 @@ export default class MisoThreadsElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoThreadsElement;

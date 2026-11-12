@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The affiliate products that come with the answer.
  */
-export default class MisoAffiliationElement extends MisoComponentElement {
+class MisoAffiliationElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoAffiliationElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoAffiliationElement;

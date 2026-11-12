@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The question being answered.
  */
-export default class MisoQuestionElement extends MisoComponentElement {
+class MisoQuestionElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoQuestionElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoQuestionElement;

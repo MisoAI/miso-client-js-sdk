@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The title of a thread.
  */
-export default class MisoTitleElement extends MisoComponentElement {
+class MisoTitleElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoTitleElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoTitleElement;

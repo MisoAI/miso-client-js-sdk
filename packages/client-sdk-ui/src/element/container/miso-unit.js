@@ -9,7 +9,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
 /**
  * The base of the container elements whose workflow is picked by the `unit-id` attribute.
  */
-export default class MisoUnitElement extends MisoContainerElement {
+class MisoUnitElement extends MisoContainerElement {
 
   static get observedAttributes() {
     return OBSERVED_ATTRIBUTES;
@@ -56,3 +56,5 @@ export default class MisoUnitElement extends MisoContainerElement {
   }
 
 }
+
+export default MisoUnitElement;

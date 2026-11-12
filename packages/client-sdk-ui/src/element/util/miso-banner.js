@@ -3,7 +3,7 @@ const TAG_NAME = 'miso-banner';
 /**
  * Miso's banner.
  */
-export default class MisoBannerElement extends HTMLElement {
+class MisoBannerElement extends HTMLElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -15,3 +15,5 @@ export default class MisoBannerElement extends HTMLElement {
   }
 
 }
+
+export default MisoBannerElement;

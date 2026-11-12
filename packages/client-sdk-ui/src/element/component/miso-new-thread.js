@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The button that starts a new chat thread.
  */
-export default class MisoNewThreadElement extends MisoComponentElement {
+class MisoNewThreadElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoNewThreadElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoNewThreadElement;

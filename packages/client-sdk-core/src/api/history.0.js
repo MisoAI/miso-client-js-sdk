@@ -1,9 +1,12 @@
+/** @module core */
+
 import UserHistory from './history.js';
 
 /**
  * The user history API as deployed today (version 0): a flat, POST-only
  * surface where a thread is addressed by the `question_id` of its root
  * question, with its own request/response shapes.
+ * @extends module:core~UserHistory
  * @see https://miso-docs.apidocumentation.com/api/genai/user-history
  *
  * It adapts the v0 wire format behind the interface of UserHistory in
@@ -14,7 +17,7 @@ import UserHistory from './history.js';
  * version-agnostic. When the resource-style API ships, switching the SDK
  * over means using UserHistory in ask.js again.
  */
-export default class UserHistoryV0 extends UserHistory {
+class UserHistoryV0 extends UserHistory {
 
   async _run(apiName, payload, options = {}) {
     const { name, payload: v0Payload, adapt } = translate(apiName, payload, options);
@@ -120,3 +123,5 @@ function adaptThreadDetail(thread_id, value) {
   const { question_ids = [], ...rest } = value;
   return { ...rest, thread_id, questions_ids: question_ids };
 }
+
+export default UserHistoryV0;

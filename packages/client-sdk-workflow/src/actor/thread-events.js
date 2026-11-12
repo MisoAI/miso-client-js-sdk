@@ -22,7 +22,7 @@
  * operation, error }` — the very operation object — and the panels undo
  * what the operation did to their data (_onThreadOperationError).
  */
-export default class ThreadEvents {
+class ThreadEvents {
 
   constructor() {
     this._subscribers = new Set();
@@ -40,3 +40,5 @@ export default class ThreadEvents {
   }
 
 }
+
+export default ThreadEvents;

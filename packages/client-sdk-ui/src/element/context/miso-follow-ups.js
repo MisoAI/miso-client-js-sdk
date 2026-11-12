@@ -5,7 +5,7 @@ const TAG_NAME = 'miso-follow-ups';
 /**
  * The place where the follow-up Ask workflows are rendered, one section per follow-up question.
  */
-export default class MisoFollowUpsElement extends MisoContextElement {
+class MisoFollowUpsElement extends MisoContextElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -88,3 +88,5 @@ export default class MisoFollowUpsElement extends MisoContextElement {
   }
 
 }
+
+export default MisoFollowUpsElement;

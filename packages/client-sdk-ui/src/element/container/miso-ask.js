@@ -14,7 +14,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
 /**
  * The container of an Ask workflow.
  */
-export default class MisoAskElement extends MisoContainerElement {
+class MisoAskElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -125,3 +125,5 @@ export default class MisoAskElement extends MisoContainerElement {
   }
 
 }
+
+export default MisoAskElement;

@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import Workflow from './base.js';
 import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
@@ -16,7 +18,13 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   },
 });
 
-export default class AnswerBasedWorkflow extends Workflow {
+/**
+ * The base class of workflows that answer a question, such as {@link module:workflow~Ask Ask}.
+ *
+ * @extends module:workflow~Workflow
+ * @mixes module:workflow~Linkable
+ */
+class AnswerBasedWorkflow extends Workflow {
 
   // constructor //
   _initProperties(args) {
@@ -96,15 +104,42 @@ export default class AnswerBasedWorkflow extends Workflow {
   }
 
   // properties //
+  /**
+   * The question ID of the current answer, available once the question is
+   * accepted by the API.
+   *
+   * @type {string|undefined}
+   */
   get questionId() {
     return this._questionId;
   }
 
   // query //
+  /**
+   * Read the query from the page URL and, if present, run it. Once a query
+   * runs, the URL is kept in sync with it.
+   *
+   * @param {Object} [options]
+   * @param {string} [options.param='q'] - The URL parameter of the query.
+   * @param {string} [options.sourceParam='qs'] - The URL parameter of the question source.
+   * @param {boolean} [options.setValue=true] - Put the query into the search box.
+   * @param {boolean} [options.focus=true] - Focus the search box when there is no query in the URL.
+   * @param {boolean} [options.updateUrl=true] - Update the URL as new queries run.
+   */
   autoQuery(options = {}) {
     autoQueryFn.call(this, options);
   }
 
+  /**
+   * Ask a question. Starts a new session, replacing the current answer.
+   *
+   * If a link function is set by `useLink()`, navigate to the URL it gives
+   * instead.
+   *
+   * @param {Object} args
+   * @param {string} [args.q] - The question.
+   * @param {string} [args.questionId] - Show the answer of an existing question, instead of asking one.
+   */
   query(args) {
     // TODO: also accept "question", "questionSource"?
     if (!args.q && !args.questionId) {
@@ -263,3 +298,5 @@ enableUseLink(AnswerBasedWorkflow.prototype);
 Object.assign(AnswerBasedWorkflow, {
   ROLES_OPTIONS,
 });
+
+export default AnswerBasedWorkflow;

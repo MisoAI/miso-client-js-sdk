@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { Component, isNullLike, mergeInteractions } from '@miso.ai/commons';
 import { Hub, SessionMaker, DataActor, ViewsActor, InteractionsActor, TrackersActor, proxyTrackers, fields } from '../actor/index.js';
 import * as sources from '../source.js';
@@ -22,7 +24,26 @@ const ROLES_OPTIONS = Object.freeze({
   },
 });
 
-export default class Workflow extends Component {
+/**
+ * The base class of all workflows. A workflow runs a feature, such as Ask or
+ * Search: it calls the Miso API, renders the data to the elements bound to
+ * it, and tracks the interactions on them. Get workflows from
+ * `client.workflows`.
+ *
+ * Each query or load starts a new session, which replaces the data of the
+ * previous one.
+ *
+ * Lifecycle events are emitted at most once per session: `loading`,
+ * `ready`, `done`, `error`, `finally` (after `done` or `error`), and
+ * `interrupt` (when a new session starts before the current one is done).
+ *
+ * @extends Component
+ * @mixes module:workflow~Configurable
+ * @example
+ * const workflow = client.workflows.ask;
+ * workflow.on('done', () => console.log('answered'));
+ */
+class Workflow extends Component {
 
   constructor(args) {
     super(args.name || 'workflow', args.plugin);
@@ -116,29 +137,63 @@ export default class Workflow extends Component {
   }
 
   // properties //
+  /**
+   * The UUID of the current session.
+   *
+   * @type {string|undefined}
+   * @private
+   */
   get uuid() {
     // TODO: review this
     return this.session && this.session.uuid;
   }
 
+  /**
+   * The current session.
+   *
+   * @type {Object}
+   * @private
+   */
   get session() {
     return this._hub.states[fields.session()];
   }
 
+  /**
+   * The current states of the workflow, by field name, such as `data`. For
+   * debugging.
+   *
+   * @type {Object}
+   */
   get states() {
     return this._hub.states;
   }
 
+  /**
+   * The status of the data: `initial`, `loading`, `ready`, or `erroneous`.
+   *
+   * @type {string|undefined}
+   */
   get status() {
     const data = this._hub.states[fields.data()];
     return data && data.status;
   }
 
+  /**
+   * The views of the workflow: the elements bound to it, by role.
+   *
+   * @type {Object}
+   */
   get views() {
     return this._views.interface;
   }
 
   // lifecycle //
+  /**
+   * Start a new session, discarding the data of the current one, along with
+   * any API call in progress.
+   *
+   * @returns {this}
+   */
   restart() {
     this._emitInterruptEventIfNecessary();
     this._sessions.restart();
@@ -216,6 +271,19 @@ export default class Workflow extends Component {
     this.updateData(response);
   }
 
+  /**
+   * Update the workflow with data from your own source, instead of calling
+   * the API. The data must carry the current session, or it is ignored.
+   *
+   * @param {Object} data
+   * @param {Object} data.session - The current session, `workflow.session`.
+   * @param {*} [data.value] - The data value, in the shape of the API response.
+   * @param {Object} [data.error] - The error, if the data failed to load.
+   * @returns {this}
+   * @throws {Error} If `data` or its session is missing.
+   * @example
+   * workflow.updateData({ session: workflow.session, value: response });
+   */
   updateData(data) {
     if (!data) {
       throw new Error(`Data is required.`);
@@ -268,6 +336,15 @@ export default class Workflow extends Component {
 
   // TODO: notifyViewUpdateAll()
 
+  /**
+   * Tell the workflow that a view of a role is rendered, when the view is
+   * rendered by your own code. Lifecycle events are emitted off the view of
+   * the main role.
+   *
+   * @param {string} role - The role.
+   * @param {Object} [state] - The view state. Status defaults to `ready`.
+   * @returns {this}
+   */
   notifyViewUpdate(role, state) {
     state = {
       status: STATUS.READY,
@@ -279,6 +356,12 @@ export default class Workflow extends Component {
   }
 
   // trackers //
+  /**
+   * The trackers of the workflow, which track impressions, viewables, and
+   * clicks of the rendered items.
+   *
+   * @type {Object}
+   */
   get trackers() {
     return this._proxyTrackers;
   }
@@ -360,11 +443,22 @@ export default class Workflow extends Component {
   }
 
   // destroy //
+  /**
+   * Destroy the workflow, stopping any API call in progress, and emit a
+   * `destroy` event.
+   *
+   * @private
+   */
   destroy(options) {
     this._emit('destroy');
     this._destroy(options);
   }
 
+  /**
+   * Whether the workflow is destroyed.
+   *
+   * @type {boolean}
+   */
   get destroyed() {
     return !!this._destroyed;
   }
@@ -418,3 +512,5 @@ makeConfigurable(Workflow.prototype);
 Object.assign(Workflow, {
   ROLES_OPTIONS,
 });
+
+export default Workflow;

@@ -6,7 +6,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([ATTR_TRAIT]);
 /**
  * The base of the container and context elements, attaching the UI traits named in its `trait` attribute.
  */
-export default class MisoStubElement extends HTMLElement {
+class MisoStubElement extends HTMLElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -86,3 +86,5 @@ function getAvailableTraits(MisoClient) {
     return traits;
   }, {});
 }
+
+export default MisoStubElement;

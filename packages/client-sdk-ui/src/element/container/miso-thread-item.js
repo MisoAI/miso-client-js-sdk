@@ -22,7 +22,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * workflow as usual — getContainer() resolves to the closest container
  * ancestor.
  */
-export default class MisoThreadItemElement extends MisoContainerElement {
+class MisoThreadItemElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -92,3 +92,5 @@ export default class MisoThreadItemElement extends MisoContainerElement {
   }
 
 }
+
+export default MisoThreadItemElement;

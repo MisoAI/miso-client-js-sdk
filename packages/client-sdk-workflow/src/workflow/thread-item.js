@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
@@ -20,27 +22,38 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   },
 });
 
+// One thread item of the thread list: the item subworkflow behind a
+// <miso-thread-item> element, keyed by its thread id and managed by the ThreadItems
+// context (client.workflows.threadItems).
+//
+// A thread item never delivers data of its own: its data actor is off (the
+// construction-time active flag) and the
+// history workflow propagates its record in through updateData() on every
+// data commit — only when the record actually changed, so an update to one
+// thread re-renders that item's roles alone. Being a workflow of its own
+// gives each item its roles and layouts (title, rename, delete,
+// subscription — the generic text/button/checkbox layouts), so the item
+// presentation decomposes into role elements like the conversation panel's.
+//
+// The item is presentation only: its view events delegate to the
+// superworkflow's id-based operations (history.rename/delete/subscribe),
+// whose requests fire on the history workflow's hub — the events go out as
+// `thread` hub events on both panels' hubs and come back here down the
+// propagation path.
+
 /**
- * One thread item of the thread list: the item subworkflow behind a
- * <miso-thread-item> element, keyed by its thread id and managed by the ThreadItems
- * context (client.workflows.threadItems).
+ * The workflow of one thread in the thread list, behind a
+ * `<miso-thread-item>` element. Get one from
+ * `client.workflows.threadItems`.
  *
- * A thread item never delivers data of its own: its data actor is off (the
- * construction-time active flag) and the
- * history workflow propagates its record in through updateData() on every
- * data commit — only when the record actually changed, so an update to one
- * thread re-renders that item's roles alone. Being a workflow of its own
- * gives each item its roles and layouts (title, rename, delete,
- * subscription — the generic text/button/checkbox layouts), so the item
- * presentation decomposes into role elements like the conversation panel's.
+ * It shares the options of the history workflow, so configure
+ * `client.workflows.history` to customize thread items. Its data comes from
+ * the history workflow, and operations on it (rename, delete, ...) go
+ * through the history workflow as well.
  *
- * The item is presentation only: its view events delegate to the
- * superworkflow's id-based operations (history.rename/delete/subscribe),
- * whose requests fire on the history workflow's hub — the events go out as
- * `thread` hub events on both panels' hubs and come back here down the
- * propagation path.
+ * @extends module:workflow~Workflow
  */
-export default class ThreadItem extends Workflow {
+class ThreadItem extends Workflow {
 
   constructor(context, { threadId, placeholderId, superworkflow } = {}) {
     super({
@@ -80,10 +93,20 @@ export default class ThreadItem extends Workflow {
   }
 
   // properties //
+  /**
+   * The thread ID. Absent for a thread still being created.
+   *
+   * @type {string|undefined}
+   */
   get threadId() {
     return this._threadId;
   }
 
+  /**
+   * The thread record.
+   *
+   * @type {Object|undefined}
+   */
   get thread() {
     const data = this._hub.states[fields.data()];
     return data && data.value;
@@ -146,3 +169,5 @@ export default class ThreadItem extends Workflow {
   }
 
 }
+
+export default ThreadItem;

@@ -53,7 +53,7 @@ function errorMessage(layout, error) {
  * trigger asks for the next page of that group, as the `more` hub field's
  * `group`.
  */
-export default class ThreadsLayout extends CollectionLayout {
+class ThreadsLayout extends CollectionLayout {
 
   static get type() {
     return TYPE;
@@ -197,3 +197,5 @@ export default class ThreadsLayout extends CollectionLayout {
   }
 
 }
+
+export default ThreadsLayout;

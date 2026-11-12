@@ -63,7 +63,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
  * nothing else: the workflow acts on it and the new state arrives back down
  * the data path, like any other rendering.
  */
-export default class CheckboxLayout extends ButtonLayout {
+class CheckboxLayout extends ButtonLayout {
 
   static get type() {
     return TYPE;
@@ -101,3 +101,5 @@ export default class CheckboxLayout extends ButtonLayout {
   }
 
 }
+
+export default CheckboxLayout;

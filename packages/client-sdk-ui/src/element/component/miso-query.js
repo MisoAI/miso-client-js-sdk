@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The query box.
  */
-export default class MisoQueryElement extends MisoComponentElement {
+class MisoQueryElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoQueryElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoQueryElement;

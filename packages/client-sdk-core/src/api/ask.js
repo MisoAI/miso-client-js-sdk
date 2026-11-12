@@ -1,3 +1,5 @@
+/** @module core */
+
 import { API, defineValues, trimObj } from '@miso.ai/commons';
 import ApiBase from './base.js';
 import UserHistoryV0 from './history.0.js';
@@ -8,7 +10,7 @@ const { GROUP, NAME } = API;
 /**
  * Ask APIs, available as `client.api.ask`.
  */
-export default class Ask extends ApiBase {
+class Ask extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.ASK);
@@ -29,7 +31,7 @@ export default class Ask extends ApiBase {
    * without asking again.
    *
    * @param {Object|string} payload - Request payload, or a question ID.
-   * @param {Object} [options] - Request options, including the polling options of {@link IterableApiStub}.
+   * @param {Object} [options] - Request options, including the polling options of {@link module:core.IterableApiStub IterableApiStub}.
    * @returns {Promise<IterableApiStub>} The answer, which has a `questionId` property.
    * @example
    * const answer = await client.api.ask.questions({ question: 'What is Miso?' });
@@ -65,7 +67,7 @@ export default class Ask extends ApiBase {
    * Pass an array of question IDs as a shortcut of `{ question_ids }`.
    *
    * @param {Object|string[]} payload - Request payload, or an array of question IDs.
-   * @param {Object} [options] - Request options, including the polling options of {@link IterableApiStub}.
+   * @param {Object} [options] - Request options, including the polling options of {@link module:core.IterableApiStub IterableApiStub}.
    * @returns {Promise<IterableApiStub>}
    */
   async answers(payload, options = {}) {
@@ -103,14 +105,14 @@ export default class Ask extends ApiBase {
    * Search with a query, with an answer generated over time.
    *
    * If the response comes with a question ID, it is returned as an
-   * {@link IterableApiStub} with the response fields (such as the search
+   * {@link module:core.IterableApiStub IterableApiStub} with the response fields (such as the search
    * results) on it, to follow the answer. Otherwise the response is returned
    * as is.
    *
    * Pass a question ID instead of a payload to follow an existing search.
    *
    * @param {Object|string} payload - Request payload, or a question ID.
-   * @param {Object} [options] - Request options, including the polling options of {@link IterableApiStub}.
+   * @param {Object} [options] - Request options, including the polling options of {@link module:core.IterableApiStub IterableApiStub}.
    * @returns {Promise<IterableApiStub|Object>}
    */
   async search(payload, options = {}) {
@@ -190,6 +192,8 @@ class Answer extends IdBasedIterableApiStub {
  * settle out as their records come back finished (_settle). Each fetch's
  * issue order acts as the response revision, so a late, outdated response
  * is discarded by the polling.
+ *
+ * @extends module:core.IterableApiStub
  */
 class Answers extends IterableApiStub {
 
@@ -277,3 +281,5 @@ function mergeCustomApiIterator(api, options) {
     ...options,
   });
 }
+
+export default Ask;

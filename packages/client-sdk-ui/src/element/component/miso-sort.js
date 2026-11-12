@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The sort order selector of the search results.
  */
-export default class MisoSortElement extends MisoComponentElement {
+class MisoSortElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoSortElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoSortElement;

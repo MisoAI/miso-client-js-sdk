@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The query text the results are for.
  */
-export default class MisoKeywordsElement extends MisoComponentElement {
+class MisoKeywordsElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoKeywordsElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoKeywordsElement;

@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The total number of search results.
  */
-export default class MisoTotalElement extends MisoComponentElement {
+class MisoTotalElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoTotalElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoTotalElement;

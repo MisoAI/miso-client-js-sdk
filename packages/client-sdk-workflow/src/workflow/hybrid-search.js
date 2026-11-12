@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import SearchBasedWorkflow from './search-based.js';
 import AnswerBasedWorkflow from './answer-based.js';
 import { ROLE, WORKFLOW_CONFIGURABLE } from '../constants.js';
@@ -20,7 +22,16 @@ const EXTRA_OPTIONS = Object.freeze({
   }),
 });
 
-export default class HybridSearch extends SearchBasedWorkflow {
+/**
+ * The workflow of hybrid search, available as
+ * `client.workflows.hybridSearch`: search results, along with an answer
+ * generated for the query.
+ *
+ * @extends module:workflow~SearchBasedWorkflow
+ * @mixes module:workflow~PaginationConfigurable
+ * @mixes module:workflow~FiltersConfigurable
+ */
+class HybridSearch extends SearchBasedWorkflow {
 
   constructor(plugin, client) {
     super({
@@ -54,10 +65,20 @@ export default class HybridSearch extends SearchBasedWorkflow {
   }
 
   // properties //
+  /**
+   * The workflow of the answer section.
+   *
+   * @type {AnswerBasedWorkflow}
+   */
   get answer() {
     return this._answer;
   }
 
+  /**
+   * The question ID of the current answer.
+   *
+   * @type {string|undefined}
+   */
   get questionId() {
     return this._answer.questionId;
   }
@@ -150,3 +171,5 @@ export default class HybridSearch extends SearchBasedWorkflow {
 
 makeConfigurable(HybridSearch.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION, WORKFLOW_CONFIGURABLE.FILTERS]);
 makeAutocompletable(HybridSearch.prototype);
+
+export default HybridSearch;

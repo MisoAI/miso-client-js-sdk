@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { asArray } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
@@ -30,45 +32,57 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   },
 });
 
+// The thread-list panel of the chat history interface, backed by the user
+// history API. Loads the list of threads and manages thread-level operations
+// (select, rename, delete, mark as read).
+//
+// The list is the workflow's main api option: the endpoint is fixed, but
+// the paging window rides the payload (useApi('threads/list', { rows: N })),
+// and the list loads page by page — the more flow appends the next page
+// (`start` derived from the listed records), triggered by the threads
+// layout's infinite scroll, until the response says `has_more: false`
+// (the exhaustion is the response's own word, not a row-count inference).
+//
+// The list comes in groups (THREAD_GROUP): every thread (`all`, under
+// `threads`), the favorited ones (`favorite`) and the rest (`unfavorite`),
+// each its own list in the value, paged on its own — the initial load
+// lists all three in one request (one list call per group, the `favorite`
+// filter riding each), and _more(group) appends the next page of one
+// group. A record listed in more than one group is one and the same object
+// across them, and a favorite operation moves its thread between the
+// favorite and unfavorite groups.
+//
+// The workflow never restarts itself, and there is no soft reload: its
+// construction-time session serves for life, the list keeps itself in
+// sync through the operation events and the new-thread announcements, and
+// staleness is guarded by the data (one list request at a time, and a
+// more page must still line up with the listed records' offset), not by
+// session bumps. The hard reset is the generic workflow idiom: restart()
+// — a new session, in-flight requests discarded — then start().
+//
+// A peer of the Conversation workflow: the two are created independently,
+// and every call to the peer is guarded by its presence, so the thread list
+// works standalone. Thread operations are fire-and-forget requests carrying
+// their events, triggered off the request event as `thread` hub events — on
+// both peers' hubs — which each panel handles off its own hub
+// (_onThreadUpdated, ...). An operation that fails is rolled back the same
+// way: an `error` event names the operation, and each panel takes it back
+// on its own data.
+
 /**
- * The thread-list panel of the chat history interface, backed by the user
- * history API. Loads the list of threads and manages thread-level operations
- * (select, rename, delete, mark as read).
+ * The thread list of the chat history interface, available as
+ * `client.workflows.history`. Lists the user's past conversation threads,
+ * page by page as the list scrolls, and works with the conversation
+ * workflow (`client.workflows.conversation`) to show the selected thread.
  *
- * The list is the workflow's main api option: the endpoint is fixed, but
- * the paging window rides the payload (useApi('threads/list', { rows: N })),
- * and the list loads page by page — the more flow appends the next page
- * (`start` derived from the listed records), triggered by the threads
- * layout's infinite scroll, until the response says `has_more: false`
- * (the exhaustion is the response's own word, not a row-count inference).
+ * Threads are listed in groups: all threads (`'all'`), favorited ones
+ * (`'favorite'`), and the rest (`'unfavorite'`).
  *
- * The list comes in groups (THREAD_GROUP): every thread (`all`, under
- * `threads`), the favorited ones (`favorite`) and the rest (`unfavorite`),
- * each its own list in the value, paged on its own — the initial load
- * lists all three in one request (one list call per group, the `favorite`
- * filter riding each), and _more(group) appends the next page of one
- * group. A record listed in more than one group is one and the same object
- * across them, and a favorite operation moves its thread between the
- * favorite and unfavorite groups.
- *
- * The workflow never restarts itself, and there is no soft reload: its
- * construction-time session serves for life, the list keeps itself in
- * sync through the operation events and the new-thread announcements, and
- * staleness is guarded by the data (one list request at a time, and a
- * more page must still line up with the listed records' offset), not by
- * session bumps. The hard reset is the generic workflow idiom: restart()
- * — a new session, in-flight requests discarded — then start().
- *
- * A peer of the Conversation workflow: the two are created independently,
- * and every call to the peer is guarded by its presence, so the thread list
- * works standalone. Thread operations are fire-and-forget requests carrying
- * their events, triggered off the request event as `thread` hub events — on
- * both peers' hubs — which each panel handles off its own hub
- * (_onThreadUpdated, ...). An operation that fails is rolled back the same
- * way: an `error` event names the operation, and each panel takes it back
- * on its own data.
+ * @extends module:workflow~Workflow
+ * @mixes module:workflow~PaginationConfigurable
+ * @mixes module:workflow~ThreadOperations
  */
-export default class History extends Workflow {
+class History extends Workflow {
 
   constructor(plugin, client, events) {
     super({
@@ -107,13 +121,20 @@ export default class History extends Workflow {
   }
 
   // properties //
+  /**
+   * The listed threads, of all groups. Same as `getThreads('all')`.
+   *
+   * @type {Object[]}
+   */
   get threads() {
     return this.getThreads(THREAD_GROUP.ALL);
   }
 
   /**
-   * The listed records of a thread group (THREAD_GROUP): `all` (the
-   * default), `favorite` or `unfavorite`.
+   * Get the listed threads of a group.
+   *
+   * @param {string} [group='all'] - `'all'`, `'favorite'`, or `'unfavorite'`.
+   * @returns {Object[]}
    */
   getThreads(group = THREAD_GROUP.ALL) {
     const data = this._hub.states[fields.data()];
@@ -127,18 +148,23 @@ export default class History extends Workflow {
   }
 
   /**
-   * Whether the paging has stopped: the latest page's response said
-   * `has_more: false` (the list is complete) — or a page failed with its
-   * retries spent, parking the list (see _appendThreadsFromMoreResponse).
-   * A restart() wipes it with the data.
+   * Whether no more threads will be loaded into the list, as the list is
+   * complete, or a page failed to load.
+   *
+   * @type {boolean}
    */
   get exhausted() {
+    // the latest page's response said `has_more: false` — or a page failed
+    // with its retries spent, parking the list (see
+    // _appendThreadsFromMoreResponse). A restart() wipes it with the data
     return this.isExhausted(THREAD_GROUP.ALL);
   }
 
   /**
-   * Whether the paging of a thread group has stopped, as `exhausted` for
-   * the group of every thread.
+   * Whether no more threads will be loaded into a group, like `exhausted`.
+   *
+   * @param {string} [group='all'] - `'all'`, `'favorite'`, or `'unfavorite'`.
+   * @returns {boolean}
    */
   isExhausted(group = THREAD_GROUP.ALL) {
     const data = this._hub.states[fields.data()];
@@ -148,19 +174,24 @@ export default class History extends Workflow {
   }
 
   /**
-   * The id of the selected thread item. The selection lives in the data
-   * layer, as part of the committed value.
+   * The ID of the selected thread.
+   *
+   * @type {string|undefined}
    */
   get selectedId() {
+    // the selection lives in the data layer, as part of the committed value
     const data = this._hub.states[fields.data()];
     return (data && data.value && data.value.selectedThreadId) || undefined;
   }
 
   /**
-   * The listed record of a thread, by thread id — or, for a thread being
-   * created, by the placeholder id standing in for one.
+   * Get a listed thread by its thread ID.
+   *
+   * @param {string} threadId - The thread ID.
+   * @returns {Object|undefined}
    */
   get(threadId) {
+    // for a thread being created, by the placeholder id standing in for one
     return this._allListedThreads.find(thread => (thread.thread_id || thread.placeholder_id) === threadId);
   }
 
@@ -175,9 +206,10 @@ export default class History extends Workflow {
   // discarded) then start()
 
   /**
-   * Load the thread list. Idempotent: only a workflow that has not
-   * requested anything yet (status `initial`) takes off. To reload from
-   * scratch, restart() and start().
+   * Load the thread list. Does nothing if the list is already loaded or
+   * loading. To reload from scratch, call `restart()` then `start()`.
+   *
+   * @returns {this}
    */
   start() {
     if (this.status === STATUS.INITIAL) {
@@ -186,13 +218,11 @@ export default class History extends Workflow {
     return this;
   }
 
-  /**
-   * Load the next page of a thread group (THREAD_GROUP, every thread by
-   * default), appended below its listed threads — down the standard data
-   * path. Triggered by the threads layout as its infinite scroll trigger
-   * comes into view (the `more` hub field, carrying the layout's group),
-   * like the search-based workflows' more flow.
-   */
+  // load the next page of a thread group (THREAD_GROUP, every thread by
+  // default), appended below its listed threads — down the standard data
+  // path. Triggered by the threads layout as its infinite scroll trigger
+  // comes into view (the `more` hub field, carrying the layout's group),
+  // like the search-based workflows' more flow
   _more(group = THREAD_GROUP.ALL) {
     group = resolveThreadGroup(group);
     if (this.status !== STATUS.READY) {
@@ -233,7 +263,10 @@ export default class History extends Workflow {
   }
 
   /**
-   * Mark a thread as selected and load it into the conversation panel.
+   * Select a thread, and show it in the conversation panel.
+   *
+   * @param {string} threadId - The thread ID.
+   * @returns {this}
    */
   select(threadId) {
     if (!threadId) {
@@ -257,6 +290,13 @@ export default class History extends Workflow {
   // delete, specialized here with a guard — a thread still being created
   // has no server identity to operate on, so its placeholder id is ignored
   // until the resolution brings the thread id
+
+  /**
+   * Rename a thread.
+   *
+   * @param {string} threadId - The thread ID.
+   * @param {string} title - The new title.
+   */
   rename(threadId, title) {
     const thread = this.get(threadId);
     if (thread && thread.placeholder_id) {
@@ -265,6 +305,11 @@ export default class History extends Workflow {
     ThreadOperations.prototype.rename.call(this, threadId, title, thread && thread.title);
   }
 
+  /**
+   * Delete one or more threads.
+   *
+   * @param {string|string[]} threadIds - A thread ID, or an array of them.
+   */
   delete(threadIds) {
     threadIds = asArray(threadIds).filter(threadId => {
       const thread = this.get(threadId);
@@ -571,17 +616,15 @@ export default class History extends Workflow {
   }
 
   // threads as item subworkflows //
-  /**
-   * The thread workflow of the given thread: the item subworkflow behind a
-   * <miso-thread-item> element. Takes the thread record — the threads layout
-   * passes the item binding's value, which also covers a thread being
-   * created that has no thread id yet (keyed by its local placeholder id,
-   * adopting the thread id when the placeholder settles) — or a thread id,
-   * for an explicitly bound element. Created on demand from the threads
-   * context (client.workflows.threadItems) and seeded with the listed record,
-   * if present; from then on, every data commit propagates the record in
-   * through updateData().
-   */
+  // The thread workflow of the given thread: the item subworkflow behind a
+  // <miso-thread-item> element. Takes the thread record — the threads layout
+  // passes the item binding's value, which also covers a thread being
+  // created that has no thread id yet (keyed by its local placeholder id,
+  // adopting the thread id when the placeholder settles) — or a thread id,
+  // for an explicitly bound element. Created on demand from the threads
+  // context (client.workflows.threadItems) and seeded with the listed record,
+  // if present; from then on, every data commit propagates the record in
+  // through updateData().
   _getThreadWorkflow(thread) {
     const context = this._client.workflows.threadItems;
     if (typeof thread === 'string') {
@@ -677,19 +720,17 @@ function listedThreadsOf(value) {
   return result;
 }
 
-/**
- * Stamp the grouped value of a committed thread list: each group ordered by
- * latest activity, each record carrying its selection state — one and the
- * same record object for a thread listed in several groups (the first
- * listing's, in group order) — and each group's paging exhaustion in the
- * meta (`meta.groups[group].exhausted`, mirrored for every thread's group
- * at `meta.exhausted`): the response's own `has_more: false`, or a parking
- * carried in the meta (a failed page). A record whose flag already matches
- * keeps its identity — record identity tells the item subworkflows (and
- * their views) what actually changed, so a stamp-only pass must not touch
- * the unaffected records. The paging state rides the value into every
- * commit, so re-processing (a local patch) restamps consistently.
- */
+// Stamp the grouped value of a committed thread list: each group ordered by
+// latest activity, each record carrying its selection state — one and the
+// same record object for a thread listed in several groups (the first
+// listing's, in group order) — and each group's paging exhaustion in the
+// meta (`meta.groups[group].exhausted`, mirrored for every thread's group
+// at `meta.exhausted`): the response's own `has_more: false`, or a parking
+// carried in the meta (a failed page). A record whose flag already matches
+// keeps its identity — record identity tells the item subworkflows (and
+// their views) what actually changed, so a stamp-only pass must not touch
+// the unaffected records. The paging state rides the value into every
+// commit, so re-processing (a local patch) restamps consistently.
 function writeThreadGroupsToData(data) {
   const { value, status } = data;
   const { selectedThreadId, paging = {} } = value;
@@ -726,3 +767,5 @@ function writeThreadGroupsToData(data) {
 mixinThreadOperations(History.prototype);
 
 makeConfigurable(History.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION]);
+
+export default History;

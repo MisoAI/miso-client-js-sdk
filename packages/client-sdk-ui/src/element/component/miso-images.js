@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The images that come with the answer.
  */
-export default class MisoImagesElement extends MisoComponentElement {
+class MisoImagesElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoImagesElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoImagesElement;

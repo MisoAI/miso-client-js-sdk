@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { asArray, trimObj, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
@@ -22,7 +24,16 @@ const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   },
 });
 
-export default class SearchBasedWorkflow extends Workflow {
+/**
+ * The base class of workflows that search for products or results, such as
+ * {@link module:workflow~HybridSearch HybridSearch}.
+ *
+ * @extends module:workflow~Workflow
+ * @mixes module:workflow~PaginationConfigurable
+ * @mixes module:workflow~FiltersConfigurable
+ * @mixes module:workflow~Linkable
+ */
+class SearchBasedWorkflow extends Workflow {
 
   _initSubscriptions(args) {
     super._initSubscriptions(args);
@@ -48,20 +59,52 @@ export default class SearchBasedWorkflow extends Workflow {
   }
 
   // properties //
+  /**
+   * Whether no more results will be loaded, as all are loaded, or a page
+   * failed to load.
+   *
+   * @type {boolean}
+   */
   get exhausted() {
     const data = this._hub.states[fields.data()];
     return !!(data && data.meta && data.meta.exhausted);
   }
 
+  /**
+   * The index of the last loaded page of results, starting from 0.
+   *
+   * @type {number}
+   */
   get page() {
     return this._page;
   }
 
   // query //
+  /**
+   * Read the query from the page URL and, if present, run it. Once a query
+   * runs, the URL is kept in sync with it.
+   *
+   * @param {Object} [options]
+   * @param {string} [options.param='q'] - The URL parameter of the query.
+   * @param {string} [options.sourceParam='qs'] - The URL parameter of the question source.
+   * @param {boolean} [options.setValue=true] - Put the query into the search box.
+   * @param {boolean} [options.focus=true] - Focus the search box when there is no query in the URL.
+   * @param {boolean} [options.updateUrl=true] - Update the URL as new queries run.
+   */
   autoQuery(options = {}) {
     autoQueryFn.call(this, options);
   }
 
+  /**
+   * Search with a query. Starts a new session, replacing the current results
+   * and clearing the filters.
+   *
+   * If a link function is set by `useLink()`, navigate to the URL it gives
+   * instead.
+   *
+   * @param {Object} args
+   * @param {string} args.q - The query.
+   */
   query(args) {
     if (!args.q) {
       throw new Error(`q is required in query() call`);
@@ -308,3 +351,5 @@ enableUseLink(SearchBasedWorkflow.prototype);
 Object.assign(SearchBasedWorkflow, {
   ROLES_OPTIONS,
 });
+
+export default SearchBasedWorkflow;

@@ -27,7 +27,7 @@ function content(layout, { value }) {
  * host element hides while there is no question text to show. The author
  * label is configurable via the `author` option (message -> label text).
  */
-export default class QuestionLayout extends TextLayout {
+class QuestionLayout extends TextLayout {
 
   static get type() {
     return TYPE;
@@ -56,3 +56,5 @@ export default class QuestionLayout extends TextLayout {
   }
 
 }
+
+export default QuestionLayout;

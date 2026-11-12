@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { WORKFLOW_CONFIGURABLE, STATUS } from '../constants.js';
 import WorkflowContext from './context.js';
 import Ask from './ask.js';
@@ -24,7 +26,18 @@ function autoNextOptionsAsPredicate(options = DEFAULT_AUTO_NEXT_OPTIONS) {
   }
 }
 
-export default class Asks extends WorkflowContext {
+/**
+ * The Ask workflow context, available as `client.workflows.asks`. Manages
+ * the Ask workflows: the one of the first question, plus one for each
+ * follow-up question.
+ *
+ * Events emitted by the Ask workflows are also emitted here, with the
+ * source workflow as `event.workflow`.
+ *
+ * @extends module:workflow~WorkflowContext
+ * @mixes module:workflow~TemplatesConfigurable
+ */
+class Asks extends WorkflowContext {
 
   constructor(plugin, client) {
     super('asks', plugin, client);
@@ -42,18 +55,39 @@ export default class Asks extends WorkflowContext {
     this._active = this._root;
   }
 
+  /**
+   * The workflow of the first question. Same as `client.workflows.ask`.
+   *
+   * @type {Ask}
+   */
   get root() {
     return this._root;
   }
 
+  /**
+   * All Ask workflows.
+   *
+   * @type {Ask[]}
+   */
   get workflows() {
     return [this._root, ...this._byPqid.values()];
   }
 
+  /**
+   * The workflow of the latest question being asked or answered.
+   *
+   * @type {Ask}
+   */
   get active() {
     return this._active;
   }
 
+  /**
+   * Get a workflow by the question ID of its question.
+   *
+   * @param {string} questionId - The question ID.
+   * @returns {Ask|undefined}
+   */
   getByQuestionId(questionId) {
     if (typeof questionId !== 'string') {
       throw new Error(`Required ID to be a string: ${questionId}`);
@@ -61,6 +95,15 @@ export default class Asks extends WorkflowContext {
     return this._byQid.get(questionId);
   }
 
+  /**
+   * Get a workflow by the question ID of its parent question. Without a
+   * parent question ID, get the workflow of the first question.
+   *
+   * @param {string} [parentQuestionId] - The question ID of the parent question.
+   * @param {Object} [options]
+   * @param {boolean} [options.autoCreate=false] - Create the workflow if it does not exist.
+   * @returns {Ask|undefined}
+   */
   getByParentQuestionId(parentQuestionId, { autoCreate = false } = {}) {
     if (parentQuestionId === undefined) {
       return this._root;
@@ -76,6 +119,14 @@ export default class Asks extends WorkflowContext {
     return workflow;
   }
 
+  /**
+   * Destroy the workflows of all follow-up questions, and start over.
+   *
+   * @param {Object} [options]
+   * @param {boolean} [options.root=true] - Also reset the workflow of the first question.
+   * @param {boolean} [options.events] - Also remove the event listeners on this context.
+   *   Defaults to the value of `root`.
+   */
   reset({ root = true, events, ...options } = {}) {
     // clear event listeners on context
     if (events === undefined) {
@@ -96,6 +147,15 @@ export default class Asks extends WorkflowContext {
     }
   }
 
+  /**
+   * Prepare the workflow of the next follow-up question automatically, so a
+   * follow-up question can be asked right away.
+   *
+   * @param {boolean|string|Function} [options] - When to prepare the next
+   *   workflow: `true` (the default) when an answer is done, an event name
+   *   to wait for that event, or a function taking the event and returning
+   *   whether to prepare.
+   */
   autoNext(options) {
     this._autoNextFn = autoNextOptionsAsPredicate(options);
   }
@@ -141,3 +201,5 @@ export default class Asks extends WorkflowContext {
 
 makeConfigurable(Asks.prototype, [WORKFLOW_CONFIGURABLE.TEMPLATES]);
 makeAutocompletableContext(Asks.prototype);
+
+export default Asks;

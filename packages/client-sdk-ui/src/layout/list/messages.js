@@ -60,7 +60,7 @@ function errorMessage(layout, error) {
  * off the data — the last message's answer absent or unfinished — which
  * e.g. disables the search box while an answer is on its way.
  */
-export default class MessagesLayout extends CollectionLayout {
+class MessagesLayout extends CollectionLayout {
 
   static get type() {
     return TYPE;
@@ -220,6 +220,8 @@ export default class MessagesLayout extends CollectionLayout {
    * Scroll the containing scrollable to the bottom. Unless forced, only
    * applies while the user is pinned to the bottom — scrolling up to read
    * releases the pin, scrolling back down restores it.
+   *
+   * @private
    */
   _scrollToBottom({ force = false } = {}) {
     const scrollable = this._getScrollable();
@@ -346,3 +348,5 @@ export default class MessagesLayout extends CollectionLayout {
   }
 
 }
+
+export default MessagesLayout;

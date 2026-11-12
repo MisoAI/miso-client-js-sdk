@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import UnitWorkflow from './unit.js';
 import { fields } from '../actor/index.js';
 import { ROLE } from '../constants.js';
@@ -10,7 +12,23 @@ const ROLES_OPTIONS = mergeRolesOptions(UnitWorkflow.ROLES_OPTIONS, {
   members: [ROLE.RELATED_QUESTIONS, ROLE.QUERY],
 });
 
-export default class Explore extends UnitWorkflow {
+/**
+ * The workflow of an explore unit, which shows related questions, and a
+ * search box to ask a question, on a page other than the answer page.
+ * Get one from `client.workflows.explores`, or the default one from
+ * `client.workflows.explore`.
+ *
+ * Questions go to the answer page, by the URL given by the link function set
+ * by `useLink()`. Clicking a related question emits a `select` event.
+ *
+ * @extends module:workflow~UnitWorkflow
+ * @mixes module:workflow~Linkable
+ * @example
+ * const workflow = client.workflows.explore;
+ * workflow.useLink(q => `/answer?q=${encodeURIComponent(q)}`);
+ * workflow.start();
+ */
+class Explore extends UnitWorkflow {
 
   constructor(context, id) {
     super({
@@ -39,6 +57,10 @@ export default class Explore extends UnitWorkflow {
   }
 
   // configuration //
+  /**
+   * @deprecated Use `useApi({ product_id })` instead.
+   * @type {string}
+   */
   set productId(value) {
     console.warning('DEPRECATED: use useApi() instead');
     this.useApi({
@@ -46,6 +68,8 @@ export default class Explore extends UnitWorkflow {
     });
   }
 
+  // the product id is remembered, to be written on the generated question
+  // links as the question source
   useApi(...args) {
     const options = (typeof args[0] === 'object' ? args[0] : args[1]) || {};
     const { product_id } = options;
@@ -55,6 +79,19 @@ export default class Explore extends UnitWorkflow {
     return super.useApi(...args);
   }
 
+  /**
+   * Set the function giving the URL of the answer page for a question.
+   * Required before `start()`.
+   *
+   * @param {Function} fn - Takes the question and returns the URL.
+   * @param {Object} [options]
+   * @param {boolean} [options.showUrl] - Show the URLs on the related question links.
+   * @param {boolean} [options.open] - Set to `false` to navigate in the current window,
+   *   instead of opening a new one.
+   * @param {string} [options.target='_blank'] - The target of the new window.
+   * @param {string} [options.windowFeatures='noopener'] - The features of the new window.
+   * @returns {this}
+   */
   useLink(fn, options) {
     UseLinkMixin.prototype.useLink.call(this, fn, options);
     // also put options to layouts
@@ -67,6 +104,14 @@ export default class Explore extends UnitWorkflow {
   }
 
   // lifecycle //
+  /**
+   * Start the workflow, loading the related questions.
+   *
+   * @param {Object} [options]
+   * @param {boolean} [options.relatedQuestions=true] - Set to `false` to skip loading related questions.
+   * @returns {this}
+   * @throws {Error} If `useLink()` is not called yet.
+   */
   start({ relatedQuestions = true } = {}) {
     if (this._linkFn === undefined) {
       throw new Error('Must define link mapping function with useLink(fn) before calling start()');
@@ -129,6 +174,13 @@ export default class Explore extends UnitWorkflow {
     this.query({ q: value });
   }
 
+  /**
+   * Go to the answer page of a question, by the URL given by the link
+   * function.
+   *
+   * @param {Object} args
+   * @param {string} args.q - The question.
+   */
   query(args) {
     if (!args.q) {
       throw new Error(`q is required in query() call`);
@@ -153,3 +205,5 @@ export default class Explore extends UnitWorkflow {
 
 enableUseLink(Explore.prototype);
 makeAutocompletable(Explore.prototype);
+
+export default Explore;

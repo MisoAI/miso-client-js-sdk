@@ -2,7 +2,7 @@
  * The base of the combo elements, each a pre-built UI that starts itself.
  * @deprecated Use container and component elements instead.
  */
-export default class MisoComboElement extends HTMLElement {
+class MisoComboElement extends HTMLElement {
 
   constructor() {
     super();
@@ -34,3 +34,5 @@ export default class MisoComboElement extends HTMLElement {
   }
 
 }
+
+export default MisoComboElement;

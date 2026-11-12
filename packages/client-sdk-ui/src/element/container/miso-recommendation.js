@@ -5,7 +5,7 @@ const TAG_NAME = 'miso-recommendation';
 /**
  * The container of the Recommendation workflow of a unit.
  */
-export default class MisoRecommendationElement extends MisoUnitElement {
+class MisoRecommendationElement extends MisoUnitElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -20,3 +20,5 @@ export default class MisoRecommendationElement extends MisoUnitElement {
   }
 
 }
+
+export default MisoRecommendationElement;

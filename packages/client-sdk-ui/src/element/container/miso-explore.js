@@ -5,7 +5,7 @@ const TAG_NAME = 'miso-explore';
 /**
  * The container of the Explore workflow of a unit.
  */
-export default class MisoExploreElement extends MisoUnitElement {
+class MisoExploreElement extends MisoUnitElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -20,3 +20,5 @@ export default class MisoExploreElement extends MisoUnitElement {
   }
 
 }
+
+export default MisoExploreElement;

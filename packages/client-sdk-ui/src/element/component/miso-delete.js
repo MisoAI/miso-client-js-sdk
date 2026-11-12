@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The button that deletes a thread.
  */
-export default class MisoDeleteElement extends MisoComponentElement {
+class MisoDeleteElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoDeleteElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoDeleteElement;

@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The star toggle that favorites (stars) a thread.
  */
-export default class MisoFavoriteElement extends MisoComponentElement {
+class MisoFavoriteElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoFavoriteElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoFavoriteElement;

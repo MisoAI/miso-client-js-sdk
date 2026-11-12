@@ -6,7 +6,7 @@ const TAG_NAME = 'miso-ask-combo';
  * The pre-built Ask UI.
  * @deprecated Use `<miso-ask>` and its component elements instead.
  */
-export default class MisoAskComboElement extends MisoComboElement {
+class MisoAskComboElement extends MisoComboElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -21,3 +21,5 @@ export default class MisoAskComboElement extends MisoComboElement {
   }
 
 }
+
+export default MisoAskComboElement;

@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The toggle that subscribes a thread to answer updates.
  */
-export default class MisoSubscriptionElement extends MisoComponentElement {
+class MisoSubscriptionElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoSubscriptionElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoSubscriptionElement;

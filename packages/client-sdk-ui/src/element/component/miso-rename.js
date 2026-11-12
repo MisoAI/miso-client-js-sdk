@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The button that renames a thread.
  */
-export default class MisoRenameElement extends MisoComponentElement {
+class MisoRenameElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoRenameElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoRenameElement;

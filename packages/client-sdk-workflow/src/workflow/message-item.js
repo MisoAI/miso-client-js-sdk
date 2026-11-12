@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { defineValues, trimObj } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
@@ -21,25 +23,35 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   },
 });
 
+// One message (question-answer pair) of the conversation panel: the item
+// subworkflow behind a <miso-message-item> element, keyed by its question id and
+// managed by the MessageItems context (client.workflows.messageItems).
+//
+// An answer-based workflow that delivers its own data only when live: a
+// *live* message — one just posted in this session — posts its question and
+// streams the answer through its own data actor, exactly like the ask
+// workflow (post()); the conversation folds the stream back into its list.
+// A message that is *not* live has its data actor turned off (the `live`
+// flag at creation) and receives its record from the conversation workflow
+// through updateData() as data commits.
+//
+// Being a workflow of its own gives each message its own roles, layout
+// options, and trackers — so answer-content interactions (citation clicks,
+// answer link clicks, feedback) run through the standard answer-based
+// machinery and deduplicate at the message level.
+
 /**
- * One message (question-answer pair) of the conversation panel: the item
- * subworkflow behind a <miso-message-item> element, keyed by its question id and
- * managed by the MessageItems context (client.workflows.messageItems).
+ * The workflow of one message (a question and its answer) in the
+ * conversation panel, behind a `<miso-message-item>` element. Get one from
+ * `client.workflows.messageItems`.
  *
- * An answer-based workflow that delivers its own data only when live: a
- * *live* message — one just posted in this session — posts its question and
- * streams the answer through its own data actor, exactly like the ask
- * workflow (post()); the conversation folds the stream back into its list.
- * A message that is *not* live has its data actor turned off (the `live`
- * flag at creation) and receives its record from the conversation workflow
- * through updateData() as data commits.
+ * It shares the options of the conversation workflow, so configure
+ * `client.workflows.conversation` to customize messages. Interactions on the
+ * answer, such as citation clicks and feedback, are tracked per message.
  *
- * Being a workflow of its own gives each message its own roles, layout
- * options, and trackers — so answer-content interactions (citation clicks,
- * answer link clicks, feedback) run through the standard answer-based
- * machinery and deduplicate at the message level.
+ * @extends module:workflow~AnswerBasedWorkflow
  */
-export default class MessageItem extends AnswerBasedWorkflow {
+class MessageItem extends AnswerBasedWorkflow {
 
   // the parent question id is part of the message's identity, like the
   // question id: the lineage of a message never changes
@@ -108,22 +120,25 @@ export default class MessageItem extends AnswerBasedWorkflow {
   }
 
   // properties //
+  /**
+   * The message record.
+   *
+   * @type {Object|undefined}
+   */
   get message() {
     const data = this._hub.states[fields.data()];
     return data && data.value;
   }
 
   // query //
-  /**
-   * Post a live message's question: an ask-style query through the data
-   * actor, streaming the answer into this workflow's own data. The optimistic
-   * record rides the request and is merged under every data commit
-   * (writePostedMessageToData, like the keywords in the search-based
-   * workflow) — the response values carry only the answer content, so the
-   * record supplies the question and identity fields (question,
-   * placeholder_id, live, ...) throughout the stream, and the question shows
-   * from the request's loading commit on.
-   */
+  // Post a live message's question (called by Conversation.send()): an
+  // ask-style query through the data actor, streaming the answer into this
+  // workflow's own data. The optimistic record rides the request and is
+  // merged under every data commit (writePostedMessageToData, like the
+  // keywords in the search-based workflow) — the response values carry only
+  // the answer content, so the record supplies the question and identity
+  // fields (question, placeholder_id, live, ...) throughout the stream, and
+  // the question shows from the request's loading commit on.
   // TODO: bad name, use query()
   post(message, { qs } = {}) {
     this.query({ q: message.question, qs, message });
@@ -278,3 +293,5 @@ function writeOngoingFromFinished(data) {
   }
   return { ...data, ongoing: true };
 }
+
+export default MessageItem;

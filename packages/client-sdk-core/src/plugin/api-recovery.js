@@ -28,7 +28,7 @@ const MAX_RESENT = 10;
  * takes effect: managing them in one go (e.g. sharing a single token renewal)
  * is up to the application.
  */
-export default class ApiRecoveryPlugin {
+class ApiRecoveryPlugin {
 
   static get id() {
     return PLUGIN_ID;
@@ -122,3 +122,5 @@ class ApiRecovery {
   }
 
 }
+
+export default ApiRecoveryPlugin;

@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The error message shown when the workflow fails.
  */
-export default class MisoErrorElement extends MisoComponentElement {
+class MisoErrorElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoErrorElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoErrorElement;

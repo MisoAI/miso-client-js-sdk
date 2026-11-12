@@ -1,7 +1,17 @@
+/** @module workflow */
+
 import { defineValues, mergeInteractions } from '@miso.ai/commons';
 import Workflow from './base.js';
 
-export default class UnitWorkflow extends Workflow {
+/**
+ * The base class of workflows bound to a unit ID, such as {@link module:workflow~Explore Explore}.
+ * Get one from its context by the unit ID. The unit ID is reported in the
+ * interactions.
+ *
+ * @extends module:workflow~Workflow
+ * @property {string} id - The unit ID.
+ */
+class UnitWorkflow extends Workflow {
 
   _initProperties(args) {
     super._initProperties(args);
@@ -45,3 +55,5 @@ export default class UnitWorkflow extends Workflow {
 Object.assign(UnitWorkflow, {
   ROLES_OPTIONS: Workflow.ROLES_OPTIONS,
 });
+
+export default UnitWorkflow;

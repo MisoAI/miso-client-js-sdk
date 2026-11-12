@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * @deprecated Use `<miso-follow-up-questions>` (MisoFollowUpQuestionsElement) instead.
  */
-export default class MisoQuerySuggestionsElement extends MisoComponentElement {
+class MisoQuerySuggestionsElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoQuerySuggestionsElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoQuerySuggestionsElement;

@@ -1,3 +1,5 @@
+/** @module core */
+
 import { API } from '@miso.ai/commons';
 import ApiBase from './base.js';
 
@@ -7,7 +9,7 @@ const { GROUP } = API;
  * User history APIs, available as `client.api.ask.userHistory`, for the
  * current user's past conversation threads.
  */
-export default class UserHistory extends ApiBase {
+class UserHistory extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.ASK_USER_HISTORY);
@@ -149,3 +151,5 @@ export default class UserHistory extends ApiBase {
   }
 
 }
+
+export default UserHistory;

@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { trimObj, uuidv4, mergeInteractions, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
@@ -44,65 +46,79 @@ const ANSWERS_REQUEST = Object.freeze({
   options: Object.freeze({ method: 'POST' }),
 });
 
+// The conversation panel of the chat history interface, backed by the user
+// history API. Displays one thread at a time: load(threadId) starts a new
+// session (aborting an in-flight fetch) and fetches the thread detail.
+//
+// The workflow carries no api option at all: both of its requests spell
+// out their identity at the call site (the head thread request in load(),
+// the answers request in _requestAnswersIfNecessary — a fixed endpoint
+// with nothing for useApi() to customize), and the question posting
+// belongs to the live message workflow. The data flow
+// takes two requests per session, both going down the standard
+// data path — `_request()` → hub `request` → data actor → source → hub
+// `response` — in the manner of search-based workflows' query/more
+// requests, with the handling split by `request.type` (REQUEST_TYPE) on
+// the way in:
+//
+// 1. THREAD (head): `GET threads/{id}` retrieves the thread
+//    detail: the thread record — assumed to carry the same properties as
+//    the thread list API — and its turns, as question ids (or records
+//    without answer bodies). The panel pages from the bottom, chat-style:
+//    the head fetches the newest page only (order: desc, the pagination
+//    options' `rows`), reversed into display order.
+// 2. MORE (older page): the messages layout's infinite scroll trigger (at
+//    the top of the list) fires the `more` hub field as the user scrolls
+//    up, and _more() fetches the previous page (`after` = the oldest
+//    displayed question id), prepended above the displayed messages
+//    (`mergeOlderMessagesFromResponse`) — until a response says
+//    `has_more: false`, the exhaustion.
+// 3. ANSWERS (follow-up): when the head (or an older-page) data
+//    lands with unsettled messages, a polling request is issued — the
+//    answers api returns a polling iterable (question_ids given as a
+//    function, resolved per poll; _requestAnswersIfNecessary) that the data
+//    actor consumes like an ask answer stream. Its responses are merged
+//    into the head data's messages rather than replacing it, and its
+//    loading update keeps the head data on display
+//    (`mergeAnswersDataFromResponse`, in the manner of
+//    `concatItemsFromMoreResponse`). The content loads incrementally too:
+//    each poll's batch is capped (the pagination options' `answersRows`),
+//    newest unsettled first — the view is bottom-anchored, so those are
+//    the messages on (or nearest) the screen.
+//
+// A peer of the History workflow: the two are created independently and
+// coordinate by direct method calls only when both exist. Thread operations
+// are fire-and-forget requests carrying their events, triggered off the
+// request event as `thread` hub events — on both peers' hubs — which each
+// panel handles off its own hub (_onThreadUpdated, ...). History loads its selection into this panel
+// (_onThreadSelect); Conversation marks loaded threads as read and announces
+// the placeholder lifecycle of a thread being created to the listed side
+// (_onConversationNew, _onConversationResolve).
+//
+// The panel's items live as workflows of their own: the messages layout is
+// a shell rendering one <miso-message-item> element per record, each hosting a
+// message item subworkflow (_getMessageWorkflow) that this workflow feeds
+// through updateData() as data commits (_updateMessageWorkflows). All
+// answer-content rendering and interactions (citation clicks, link clicks,
+// feedback) happen on the message workflows; inline follow-up links submit
+// back through send() (_onFollowUpClick, delegated by the message workflow).
+
 /**
- * The conversation panel of the chat history interface, backed by the user
- * history API. Displays one thread at a time: load(threadId) starts a new
- * session (aborting an in-flight fetch) and fetches the thread detail.
+ * The conversation panel of the chat history interface, available as
+ * `client.workflows.conversation`. Shows one thread at a time, where the
+ * user can read the messages and ask follow-up questions, or start a new
+ * thread.
  *
- * The workflow carries no api option at all: both of its requests spell
- * out their identity at the call site (the head thread request in load(),
- * the answers request in _requestAnswersIfNecessary — a fixed endpoint
- * with nothing for useApi() to customize), and the question posting
- * belongs to the live message workflow. The data flow
- * takes two requests per session, both going down the standard
- * data path — `_request()` → hub `request` → data actor → source → hub
- * `response` — in the manner of search-based workflows' query/more
- * requests, with the handling split by `request.type` (REQUEST_TYPE) on
- * the way in:
+ * Works with the history workflow (`client.workflows.history`): selecting a
+ * thread in the list loads it here, and a new thread started here shows up
+ * in the list. Each message is backed by a {@link module:workflow~MessageItem MessageItem} workflow,
+ * which shares the options of this workflow.
  *
- * 1. THREAD (head): `GET threads/{id}` retrieves the thread
- *    detail: the thread record — assumed to carry the same properties as
- *    the thread list API — and its turns, as question ids (or records
- *    without answer bodies). The panel pages from the bottom, chat-style:
- *    the head fetches the newest page only (order: desc, the pagination
- *    options' `rows`), reversed into display order.
- * 2. MORE (older page): the messages layout's infinite scroll trigger (at
- *    the top of the list) fires the `more` hub field as the user scrolls
- *    up, and _more() fetches the previous page (`after` = the oldest
- *    displayed question id), prepended above the displayed messages
- *    (`mergeOlderMessagesFromResponse`) — until a response says
- *    `has_more: false`, the exhaustion.
- * 3. ANSWERS (follow-up): when the head (or an older-page) data
- *    lands with unsettled messages, a polling request is issued — the
- *    answers api returns a polling iterable (question_ids given as a
- *    function, resolved per poll; _requestAnswersIfNecessary) that the data
- *    actor consumes like an ask answer stream. Its responses are merged
- *    into the head data's messages rather than replacing it, and its
- *    loading update keeps the head data on display
- *    (`mergeAnswersDataFromResponse`, in the manner of
- *    `concatItemsFromMoreResponse`). The content loads incrementally too:
- *    each poll's batch is capped (the pagination options' `answersRows`),
- *    newest unsettled first — the view is bottom-anchored, so those are
- *    the messages on (or nearest) the screen.
- *
- * A peer of the History workflow: the two are created independently and
- * coordinate by direct method calls only when both exist. Thread operations
- * are fire-and-forget requests carrying their events, triggered off the
- * request event as `thread` hub events — on both peers' hubs — which each
- * panel handles off its own hub (_onThreadUpdated, ...). History loads its selection into this panel
- * (_onThreadSelect); Conversation marks loaded threads as read and announces
- * the placeholder lifecycle of a thread being created to the listed side
- * (_onConversationNew, _onConversationResolve).
- *
- * The panel's items live as workflows of their own: the messages layout is
- * a shell rendering one <miso-message-item> element per record, each hosting a
- * message item subworkflow (_getMessageWorkflow) that this workflow feeds
- * through updateData() as data commits (_updateMessageWorkflows). All
- * answer-content rendering and interactions (citation clicks, link clicks,
- * feedback) happen on the message workflows; inline follow-up links submit
- * back through send() (_onFollowUpClick, delegated by the message workflow).
+ * @extends module:workflow~Workflow
+ * @mixes module:workflow~Configurable
+ * @mixes module:workflow~PaginationConfigurable
  */
-export default class Conversation extends Workflow {
+class Conversation extends Workflow {
 
   constructor(plugin, client, events) {
     super({
@@ -154,11 +170,15 @@ export default class Conversation extends Workflow {
 
   // properties //
   /**
-   * The id of the thread on display, or being loaded. The identity lives in
-   * the data layer: the committed thread record, or — while the head request
-   * is in flight and no value is committed yet — the request itself.
+   * The ID of the thread on display, or being loaded. Absent for a new
+   * thread not yet created.
+   *
+   * @type {string|undefined}
    */
   get threadId() {
+    // the identity lives in the data layer: the committed thread record, or
+    // — while the head request is in flight and no value is committed yet —
+    // the request itself
     const { thread } = this;
     const id = thread && thread.thread_id;
     if (id) {
@@ -168,34 +188,51 @@ export default class Conversation extends Workflow {
     return (request && request.session === this.session && request.threadId) || undefined;
   }
 
+  /**
+   * The thread record on display.
+   *
+   * @type {Object|undefined}
+   */
   get thread() {
     const data = this._hub.states[fields.data()];
     return data && data.value && data.value.thread;
   }
 
+  /**
+   * The messages on display, oldest first.
+   *
+   * @type {Object[]}
+   */
   get messages() {
     const data = this._hub.states[fields.data()];
     return (data && data.value && data.value.messages) || [];
   }
 
   /**
-   * Whether the messages paging has stopped: the latest thread page said
-   * `has_more: false` — the displayed messages reach the thread's start.
-   * Wiped with the data on a reload (a new session).
+   * Whether no more older messages will be loaded, as the displayed messages
+   * reach the start of the thread, or a page failed to load.
+   *
+   * @type {boolean}
    */
   get exhausted() {
+    // the latest thread page said `has_more: false`, or a failed page parked
+    // the paging. Wiped with the data on a reload (a new session)
     const data = this._hub.states[fields.data()];
     return !!(data && data.meta && data.meta.exhausted);
   }
 
   // lifecycle //
   /**
-   * Load a thread into the conversation panel. Loading the current thread
-   * again is a no-op unless `force` is set. The head response carries the
-   * full thread record (the same properties as the thread list API), so the
-   * thread id is all a load needs.
+   * Load a thread into the conversation panel, and mark it as read.
+   *
+   * @param {string} threadId - The thread ID.
+   * @param {Object} [options]
+   * @param {boolean} [options.force=false] - Reload even if the thread is already on display.
+   * @returns {this}
    */
   load(threadId, { force = false } = {}) {
+    // the head response carries the full thread record (the same properties
+    // as the thread list API), so the thread id is all a load needs
     if (!threadId) {
       throw new Error(`threadId is required in load() call`);
     }
@@ -222,13 +259,11 @@ export default class Conversation extends Workflow {
     return this;
   }
 
-  /**
-   * Load the previous (older) page of the thread's messages, prepended
-   * above the displayed ones — same session, down the standard data path.
-   * Triggered by the messages layout as its infinite scroll trigger (at
-   * the top of the list) comes into view, like the thread list's more
-   * flow.
-   */
+  // Load the previous (older) page of the thread's messages, prepended
+  // above the displayed ones — same session, down the standard data path.
+  // Triggered by the messages layout as its infinite scroll trigger (at
+  // the top of the list) comes into view, like the thread list's more
+  // flow.
   _more() {
     if (this.status !== STATUS.READY) {
       throw new Error(`Can not call more() while loading.`);
@@ -269,27 +304,32 @@ export default class Conversation extends Workflow {
     });
   }
 
-  /**
-   * Send a question: a follow-up to the current thread, or, in new-thread
-   * mode (no thread loaded), the first question of a new thread. Either way,
-   * the question bubble is appended optimistically (`live` marks the pair as
-   * being generated in this session; the UI typewrites live answers), and
-   * the live message delivers itself: its item subworkflow posts the
-   * question and streams the answer, ask-style, with the last message as
-   * its parent — a new thread's first question simply has none, making it a
-   * root question. The stream folds back into this panel's record
-   * (_followLiveMessage).
-   *
-   * A new thread additionally starts from a placeholder record announced to
-   * the history workflow (which lists and selects it), settled once the
-   * stream brings the question id (the adoption announcement). The thread has no
-   * identity yet — the placeholder record is keyed by a local
-   * `placeholder_id` instead of a thread id, so nothing addresses it as a
-   * thread server-side. The follow survives this panel's session for the resolution alone,
-   * so the resolution lands even if the user leaves the panel before the
-   * response arrives.
-   */
+  // A follow-up or a new thread's first question, the question bubble is
+  // appended optimistically (`live` marks the pair as being generated in
+  // this session; the UI typewrites live answers), and the live message
+  // delivers itself: its item subworkflow posts the question and streams the
+  // answer, ask-style, with the last message as its parent — a new thread's
+  // first question simply has none, making it a root question. The stream folds back into this panel's
+  // record (_followLiveMessage).
+  //
+  // A new thread additionally starts from a placeholder record announced to
+  // the history workflow (which lists and selects it), settled once the
+  // stream brings the question id (the adoption announcement). The thread
+  // has no identity yet — the placeholder record is keyed by a local
+  // `placeholder_id` instead of a thread id, so nothing addresses it as a
+  // thread server-side. The follow survives this panel's session for the
+  // resolution alone, so the resolution lands even if the user leaves the
+  // panel before the response arrives.
   // TODO: bad name, use query()
+
+  /**
+   * Ask a question in the thread on display, or, if no thread is loaded,
+   * start a new thread with it. The question shows right away, and the
+   * answer shows as it is generated.
+   *
+   * @param {string} question - The question.
+   * @returns {this}
+   */
   send(question, { qs } = {}) {
     if (!question) {
       throw new Error(`question is required in send() call`);
@@ -333,16 +373,14 @@ export default class Conversation extends Workflow {
     return this;
   }
 
-  /**
-   * Follow a live message's own data stream, folding it back into this
-   * panel's record (keyed by the local placeholder id) while this session
-   * displays it. The follow is display-only: the resolution of a creating
-   * thread is the message workflow's own announcement (its question id,
-   * adopted or salvaged off an expired response -> _resolveLiveMessage),
-   * not the follow's business. It ends with the stream — or on the first
-   * commit after the panel has moved on, when there is nothing left to
-   * fold into.
-   */
+  // Follow a live message's own data stream, folding it back into this
+  // panel's record (keyed by the local placeholder id) while this session
+  // displays it. The follow is display-only: the resolution of a creating
+  // thread is the message workflow's own announcement (its question id,
+  // adopted or salvaged off an expired response -> _resolveLiveMessage),
+  // not the follow's business. It ends with the stream — or on the first
+  // commit after the panel has moved on, when there is nothing left to
+  // fold into.
   _followLiveMessage(workflow, message) {
     const { placeholder_id } = message;
     const session = this.session;
@@ -373,29 +411,55 @@ export default class Conversation extends Workflow {
   }
 
   // thread operations //
+  // thread-level operations on the thread on display: fire-and-forget
+  // requests carrying their events, which come back through the thread
+  // events subscriptions, to both panels. They require a loaded thread: a
+  // thread being created (or none at all) has no server identity to
+  // operate on
+
   /**
-   * Thread-level operations on the thread on display: fire-and-forget
-   * requests carrying their events, which come back through the thread
-   * events subscriptions, to both panels. They require a loaded thread: a
-   * thread being created (or none at all) has no server identity to
-   * operate on.
+   * Rename the thread on display.
+   *
+   * @param {string} title - The new title.
+   * @throws {Error} If no thread is loaded.
    */
   rename(title) {
     ThreadOperations.prototype.rename.call(this, this._requireThreadId('rename'), title, this.thread.title);
   }
 
+  /**
+   * Add the thread on display to, or remove it from, the favorites.
+   *
+   * @param {boolean} [value=true] - `true` to favorite, `false` to unfavorite.
+   * @throws {Error} If no thread is loaded.
+   */
   favorite(value = true) {
     ThreadOperations.prototype.favorite.call(this, this._requireThreadId('favorite'), value);
   }
 
+  /**
+   * Subscribe to answer updates of the thread on display.
+   *
+   * @throws {Error} If no thread is loaded.
+   */
   subscribe() {
     ThreadOperations.prototype.subscribe.call(this, this._requireThreadId('subscribe'));
   }
 
+  /**
+   * Unsubscribe from answer updates of the thread on display.
+   *
+   * @throws {Error} If no thread is loaded.
+   */
   unsubscribe() {
     ThreadOperations.prototype.unsubscribe.call(this, this._requireThreadId('unsubscribe'));
   }
 
+  /**
+   * Delete the thread on display. The panel then starts a new thread.
+   *
+   * @throws {Error} If no thread is loaded.
+   */
   delete() {
     ThreadOperations.prototype.delete.call(this, this._requireThreadId('delete'));
   }
@@ -434,12 +498,15 @@ export default class Conversation extends Workflow {
   }
 
   /**
-   * Enter new-thread mode: a fresh session presenting a placeholder thread
-   * with no messages, ready to take the first question. A no-op when the
-   * panel is already sitting on an untouched new thread — nothing has been
-   * asked, so there is nothing to reset — unless `force` is set.
+   * Start a new thread, with no messages, ready to take the first question.
+   * Does nothing if the panel is already on a new thread with nothing asked.
+   *
+   * @param {Object} [options]
+   * @param {boolean} [options.force=false] - Reset even if the panel is already on a new thread.
+   * @returns {this}
    */
   new({ force = false } = {}) {
+    // a fresh session presenting a placeholder thread
     if (!this.threadId && !(this.thread && this.thread.placeholder_id) && !force) {
       return this;
     }
@@ -591,14 +658,12 @@ export default class Conversation extends Workflow {
     return payload;
   }
 
-  /**
-   * The message's question lineage: the record supplies its own parent
-   * question id (the question chain may fork, so message order implies no
-   * lineage) and its miso_id, when it carries one; the thread id — the id
-   * of the thread's first question, by contract — is the root question id.
-   * The question source tells an update message (written by the
-   * answer-updates monitor) from an organic (typed) one.
-   */
+  // The message's question lineage: the record supplies its own parent
+  // question id (the question chain may fork, so message order implies no
+  // lineage) and its miso_id, when it carries one; the thread id — the id
+  // of the thread's first question, by contract — is the root question id.
+  // The question source tells an update message (written by the
+  // answer-updates monitor) from an organic (typed) one.
   _writeMessageInfoToInteraction(payload, { data, role }) {
     const message = data && data.value;
     if (!message) {
@@ -648,12 +713,10 @@ export default class Conversation extends Workflow {
     super._onResponse(response);
   }
 
-  /**
-   * Homogenize the value to the canonical { thread, messages } shape, by
-   * request type — but merge nothing: merging into the current data happens
-   * later, in _updateDataInHub, past the custom data processors, so each
-   * piece of data runs through them exactly once, in the one shape.
-   */
+  // Homogenize the value to the canonical { thread, messages } shape, by
+  // request type — but merge nothing: merging into the current data happens
+  // later, in _updateDataInHub, past the custom data processors, so each
+  // piece of data runs through them exactly once, in the one shape.
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
     if (!data.value) {
@@ -704,18 +767,16 @@ export default class Conversation extends Workflow {
   }
 
   // messages as item subworkflows //
-  /**
-   * The message workflow of the given message: the item subworkflow behind
-   * a <miso-message-item> element. Takes the message record — the messages
-   * layout passes the item binding's value, which also covers a just-posted
-   * message that has no question id yet (keyed by its local placeholder id,
-   * adopting the question id when the response arrives) — or a question id,
-   * for an explicitly bound element. Created on demand from the messages
-   * context (client.workflows.messageItems) and, unless live, seeded with the
-   * record on display, if present; from then on, every data commit
-   * propagates the record in through updateData(). A live message's workflow
-   * delivers its own data (post()), so it is never fed here.
-   */
+  // The message workflow of the given message: the item subworkflow behind
+  // a <miso-message-item> element. Takes the message record — the messages
+  // layout passes the item binding's value, which also covers a just-posted
+  // message that has no question id yet (keyed by its local placeholder id,
+  // adopting the question id when the response arrives) — or a question id,
+  // for an explicitly bound element. Created on demand from the messages
+  // context (client.workflows.messageItems) and, unless live, seeded with the
+  // record on display, if present; from then on, every data commit
+  // propagates the record in through updateData(). A live message's workflow
+  // delivers its own data (post()), so it is never fed here.
   _getMessageWorkflow(message) {
     const context = this._client.workflows.messageItems;
     if (typeof message === 'string') {
@@ -769,11 +830,9 @@ export default class Conversation extends Workflow {
     workflow.updateData({ session: workflow.session, value: message });
   }
 
-  /**
-   * Opening a thread marks it as read, right at load time. The unread state
-   * is read off the peer's listed record; with no history workflow around,
-   * no unread state is tracked and nothing is marked.
-   */
+  // Opening a thread marks it as read, right at load time. The unread state
+  // is read off the peer's listed record; with no history workflow around,
+  // no unread state is tracked and nothing is marked.
   _markAsReadIfNecessary(threadId) {
     /*
     const history = this._peer;
@@ -785,19 +844,14 @@ export default class Conversation extends Workflow {
     ThreadOperations.prototype.markAsRead.call(this, threadId);
   }
 
-  /**
-   * Settle a started new thread the moment its first question's id is
-   * known: by contract the thread id *is* that question id, so the
-   * resolution involves no server round trip at all. The history workflow,
-   * if constructed, settles its listed placeholder item (a no-op if already
-   * settled); the panel's own record settles only if the thread is still on
-   * display — the user may have moved on, and the listed side settles all
-   * the same.
-   */
-  // a live message adopted (or salvaged) its question id — for a root
-  // question that IS the new thread's id, by contract: settle the
-  // placeholder on the listed side and, if still displayed, on this panel.
-  // A departed workflow needs nothing more here: the sweep destroyed it
+  // Settle a started new thread the moment its first question's id is
+  // known: by contract the thread id *is* that question id, so the
+  // resolution involves no server round trip at all. The history workflow,
+  // if constructed, settles its listed placeholder item (a no-op if already
+  // settled); the panel's own record settles only if the thread is still on
+  // display — the user may have moved on, and the listed side settles all
+  // the same. Called when a live message adopted (or salvaged) its question
+  // id. A departed workflow needs nothing more here: the sweep destroyed it
   // uniformly, its resolution arriving off the expired-response salvage
   _resolveLiveMessage(placeholderId, questionId) {
     const peer = this._peer;
@@ -809,22 +863,20 @@ export default class Conversation extends Workflow {
     }
   }
 
-  /**
-   * The head data tells whether there are answer contents to fetch: any
-   * (non-live) message whose answer is absent or unfinished starts the
-   * answers polling — one request per session, answered by the answers api
-   * with a polling iterable the data actor consumes like an ask answer
-   * stream. The question ids are given as a function, resolved by the api
-   * for every poll off the current data: settled messages drop out between
-   * polls and new ones (e.g. further pages, later) are picked up — an
-   * unfinished answer is re-polled regardless of how the panel got here
-   * (posted in this session, or reloaded mid-generation) — until nothing is
-   * left, ending the stream; asking the actor whether an answers request of
-   * this session is still being served tells a running poll from a settled
-   * one, so a later unsettled batch starts a new one.
-   * The actor supplies the abort on new session; the api-layer polling
-   * drops a late, outdated response.
-   */
+  // The head data tells whether there are answer contents to fetch: any
+  // (non-live) message whose answer is absent or unfinished starts the
+  // answers polling — one request per session, answered by the answers api
+  // with a polling iterable the data actor consumes like an ask answer
+  // stream. The question ids are given as a function, resolved by the api
+  // for every poll off the current data: settled messages drop out between
+  // polls and new ones (e.g. further pages, later) are picked up — an
+  // unfinished answer is re-polled regardless of how the panel got here
+  // (posted in this session, or reloaded mid-generation) — until nothing is
+  // left, ending the stream; asking the actor whether an answers request of
+  // this session is still being served tells a running poll from a settled
+  // one, so a later unsettled batch starts a new one.
+  // The actor supplies the abort on new session; the api-layer polling
+  // drops a late, outdated response.
   _requestAnswersIfNecessary(data) {
     if (this._data.isServing(request => request.type === REQUEST_TYPE.ANSWERS && request.session === this.session)) {
       return; // the running poll picks up new unsettled messages by itself
@@ -866,3 +918,5 @@ mixinThreadOperationSupport(Conversation.prototype);
 makeConfigurable(Conversation.prototype);
 
 makeConfigurable(Conversation.prototype, [WORKFLOW_CONFIGURABLE.PAGINATION]);
+
+export default Conversation;

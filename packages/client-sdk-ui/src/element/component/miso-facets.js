@@ -4,7 +4,7 @@ import { ROLE } from '../../constants.js';
 /**
  * The facet filters of the search results.
  */
-export default class MisoFacetsElement extends MisoComponentElement {
+class MisoFacetsElement extends MisoComponentElement {
 
   constructor() {
     super({
@@ -17,3 +17,5 @@ export default class MisoFacetsElement extends MisoComponentElement {
   }
 
 }
+
+export default MisoFacetsElement;

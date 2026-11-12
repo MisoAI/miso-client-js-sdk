@@ -1,3 +1,5 @@
+/** @module core */
+
 import { trimObj, Component, uuidv4, defineValues, isInBrowser } from '@miso.ai/commons';
 import { root, register, init } from './root.js';
 import { Api } from './api/index.js';
@@ -23,6 +25,7 @@ const currentScript = isInBrowser ? document.currentScript : undefined;
  * With the full SDK, plugins also add features to each instance, such as
  * `client.ui` (UI elements and layouts) and `client.workflows` (Ask, Search, etc.).
  *
+ * @extends Component
  * @example
  * import MisoClient from '@miso.ai/client-sdk';
  *
@@ -227,6 +230,8 @@ class MisoClient extends Component {
 
   /**
    * Used by shopify plugin.
+   *
+   * @private
    */
   _readConfigFromScriptUrl() {
     const url = currentScript.src || currentScript.href; // might be <link> as well
@@ -242,7 +247,7 @@ class MisoClient extends Component {
  * Utility functions.
  *
  * @member {Object} helpers
- * @memberof MisoClient
+ * @memberof module:core~MisoClient
  */
 MisoClient.helpers = helpers;
 

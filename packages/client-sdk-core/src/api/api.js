@@ -1,3 +1,5 @@
+/** @module core */
+
 import { Component } from '@miso.ai/commons';
 import ApiHelpers from './helpers.js';
 import Interactions from './interactions.js';
@@ -18,10 +20,12 @@ import Recommendation from './recommendation.js';
  *   Defaults to `options.request.retry` of the client, which is 0.
  * - `bulk` - Send the request with others in a single bulk request.
  *
- * Some Ask APIs return an {@link IterableApiStub} instead, for answers that
+ * Some Ask APIs return an {@link module:core.IterableApiStub IterableApiStub} instead, for answers that
  * are generated over time.
+ *
+ * @extends Component
  */
-export default class Api extends Component {
+class Api extends Component {
 
   constructor(client, root) {
     super('api', client);
@@ -34,3 +38,5 @@ export default class Api extends Component {
   }
 
 }
+
+export default Api;

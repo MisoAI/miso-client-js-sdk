@@ -22,7 +22,7 @@ const OBSERVED_ATTRIBUTES = Object.freeze([
  * ...) bind to the message workflow as usual — getContainer() resolves to
  * the closest container ancestor.
  */
-export default class MisoMessageItemElement extends MisoContainerElement {
+class MisoMessageItemElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -92,3 +92,5 @@ export default class MisoMessageItemElement extends MisoContainerElement {
   }
 
 }
+
+export default MisoMessageItemElement;

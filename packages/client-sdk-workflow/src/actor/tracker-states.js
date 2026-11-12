@@ -14,7 +14,7 @@ const UNTRACKED_STATES = Object.freeze({
  * Tracking states for a session to keep track of the tracking status of each product.
  * For each entry there are status of impression, viewable, and click events.
  */
-export default class States {
+class States {
 
   constructor(sessionId, getKey) {
     this.sessionId = sessionId;
@@ -51,3 +51,5 @@ export default class States {
   }
 
 }
+
+export default States;

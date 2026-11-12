@@ -155,8 +155,36 @@ export class EventEmitter {
   }
 
   // TODO: use constructor options
+  // keep in sync with the EventSubscribable docs below
   _injectSubscribeInterface(target) {
     delegateGetters(target, this, ['on', 'once']);
   }
 
 }
+
+/**
+ * The methods to listen to events, injected by an EventEmitter into its
+ * target, such as a {@link Component}.
+ *
+ * @mixin EventSubscribable
+ */
+
+/**
+ * Listen to an event.
+ *
+ * @function on
+ * @memberof EventSubscribable
+ * @param {string} name - The event name, or `'*'` for all events.
+ * @param {Function} callback - Called with `(data, meta)` on every event,
+ *   where `meta` carries the event `name` and the timestamp `ts`.
+ * @returns {Function} A function to remove the listener.
+ */
+
+/**
+ * Wait for the next occurrence of an event.
+ *
+ * @function once
+ * @memberof EventSubscribable
+ * @param {string} name - The event name.
+ * @returns {Promise<{ data: *, meta: Object }>} The event, with its data and meta.
+ */

@@ -242,6 +242,7 @@ export default class PluginRoot extends Registry {
   /**
    * [browser only]
    * @param {string} id
+   * @private
    */
   async _registerStdRemotely(id) {
     const { version } = this._root;

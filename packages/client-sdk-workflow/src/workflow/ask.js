@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { defineValues, trimObj, mergeInteractions } from '@miso.ai/commons';
 import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
@@ -14,7 +16,19 @@ const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
   },
 });
 
-export default class Ask extends AnswerBasedWorkflow {
+/**
+ * The workflow of a question and its answer. Get the one for the first
+ * question from `client.workflows.ask`.
+ *
+ * Each follow-up question is answered by an Ask workflow of its own, chained
+ * after the one of its parent question by `next` and `previous`. All of them
+ * are managed by {@link module:workflow~Asks Asks}, available as `client.workflows.asks`.
+ *
+ * @extends module:workflow~AnswerBasedWorkflow
+ * @property {string|undefined} parentQuestionId - The question ID of the
+ *   parent question. Absent for the first question.
+ */
+class Ask extends AnswerBasedWorkflow {
 
   constructor(context, parentQuestionId) {
     super({
@@ -61,20 +75,41 @@ export default class Ask extends AnswerBasedWorkflow {
   }
 
   // properties //
+  /**
+   * The question ID of the first question in the chain.
+   *
+   * @type {string|undefined}
+   */
   get rootQuestionId() {
     return this._context.root.questionId;
   }
 
+  /**
+   * The workflow of the parent question.
+   *
+   * @type {Ask|undefined}
+   */
   get previous() {
     const { parentQuestionId } = this;
     return parentQuestionId ? this._context.getByQuestionId(parentQuestionId) : undefined;
   }
 
+  /**
+   * The workflow of the follow-up question, if it exists.
+   *
+   * @type {Ask|undefined}
+   */
   get next() {
     const { questionId } = this;
     return questionId ? this._context.getByParentQuestionId(questionId) : undefined;
   }
 
+  /**
+   * Get the workflow of the follow-up question, creating it if it does not
+   * exist. Available once this question has a question ID.
+   *
+   * @returns {Ask|undefined}
+   */
   getOrCreateNext() {
     const { questionId } = this;
     return questionId ? this._context.getByParentQuestionId(questionId, { autoCreate: true }) : undefined;
@@ -229,3 +264,5 @@ export default class Ask extends AnswerBasedWorkflow {
 }
 
 makeAutocompletable(Ask.prototype);
+
+export default Ask;

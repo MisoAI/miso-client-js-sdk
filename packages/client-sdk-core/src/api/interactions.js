@@ -1,3 +1,5 @@
+/** @module core */
+
 import { API } from '@miso.ai/commons';
 import ApiBase from './base.js';
 
@@ -6,7 +8,7 @@ const { GROUP, NAME } = API;
 /**
  * Interactions APIs, available as `client.api.interactions`.
  */
-export default class Interactions extends ApiBase {
+class Interactions extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.INTERACTIONS);
@@ -70,3 +72,5 @@ export default class Interactions extends ApiBase {
   }
 
 }
+
+export default Interactions;

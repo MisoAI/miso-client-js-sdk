@@ -93,6 +93,8 @@ export default class UiPlugin extends Component {
   /**
    * Seed the workflow plugin's defaults store with the presentational default
    * options: layouts of each workflow, plus UI templates.
+   *
+   * @private
    */
   _seedWorkflowDefaults(workflowDefaults) {
     for (const [name, layouts] of Object.entries(defaultLayouts)) {

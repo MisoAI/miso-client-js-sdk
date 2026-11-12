@@ -61,7 +61,7 @@ const DEFAULT_TEMPLATES = Object.freeze({
  * their thread record has no thread id yet (a thread being created is not
  * addressable), enabling in place when the resolution patches the record.
  */
-export default class ButtonLayout extends TemplateBasedLayout {
+class ButtonLayout extends TemplateBasedLayout {
 
   static get type() {
     return TYPE;
@@ -136,6 +136,8 @@ export default class ButtonLayout extends TemplateBasedLayout {
   /**
    * The current value of the control: the role's mapped data value, as of
    * the latest render, put through the `value` option when given.
+   *
+   * @private
    */
   _currentValue() {
     const state = this._element && this._rendered.get(this._element);
@@ -150,3 +152,5 @@ export default class ButtonLayout extends TemplateBasedLayout {
   }
 
 }
+
+export default ButtonLayout;

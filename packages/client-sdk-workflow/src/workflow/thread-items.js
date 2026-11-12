@@ -1,21 +1,29 @@
+/** @module workflow */
+
 import WorkflowContext from './context.js';
 import ThreadItem from './thread-item.js';
 
+// The context managing thread workflows — the item subworkflows behind
+// <miso-thread-item> elements in the thread list — keyed by thread id, in the
+// manner of the message workflows' context (MessageItems). Workflows are created
+// by elements (through the history workflow's _getThreadWorkflow), not by
+// data: the history workflow propagates records only into instances that
+// exist.
+//
+// A workflow for a thread being created has no thread id yet: it is keyed by
+// the local placeholder id its record carries, and adopts the thread id when
+// the placeholder settles (_resolvePlaceholder, announced by the history
+// workflow) — one workflow, one continuous element binding across the
+// settle.
+
 /**
- * The context managing thread workflows — the item subworkflows behind
- * <miso-thread-item> elements in the thread list — keyed by thread id, in the
- * manner of the message workflows' context (MessageItems). Workflows are created
- * by elements (through the history workflow's _getThreadWorkflow), not by
- * data: the history workflow propagates records only into instances that
- * exist.
+ * The thread item workflow context, available as
+ * `client.workflows.threadItems`. Each item of the thread list, a `<miso-thread-item>` element, is backed
+ * by a {@link module:workflow~ThreadItem ThreadItem} workflow.
  *
- * A workflow for a thread being created has no thread id yet: it is keyed by
- * the local placeholder id its record carries, and adopts the thread id when
- * the placeholder settles (_resolvePlaceholder, announced by the history
- * workflow) — one workflow, one continuous element binding across the
- * settle.
+ * @extends module:workflow~WorkflowContext
  */
-export default class ThreadItems extends WorkflowContext {
+class ThreadItems extends WorkflowContext {
 
   constructor(plugin, client) {
     super('thread-items', plugin, client);
@@ -23,15 +31,25 @@ export default class ThreadItems extends WorkflowContext {
     this._byPlaceholderId = new Map();
   }
 
+  /**
+   * All thread item workflows.
+   *
+   * @type {ThreadItem[]}
+   */
   get workflows() {
     return [...new Set([...this._byTid.values(), ...this._byPlaceholderId.values()])];
   }
 
   /**
-   * The workflow of a thread record: by its thread id, falling back to the
-   * local placeholder id.
+   * Get the workflow of a thread.
+   *
+   * @param {Object} thread - The thread record.
+   * @param {Object} [options]
+   * @param {boolean} [options.autoCreate=false] - Create the workflow if it does not exist.
+   * @returns {ThreadItem|undefined}
    */
   get(thread, { autoCreate = false, superworkflow } = {}) {
+    // by thread id, falling back to the local placeholder id
     const { thread_id, placeholder_id } = thread || {};
     let workflow = (thread_id && this._byTid.get(thread_id)) || (placeholder_id && this._byPlaceholderId.get(placeholder_id)) || undefined;
     if (!workflow && autoCreate && (thread_id || placeholder_id)) {
@@ -43,6 +61,14 @@ export default class ThreadItems extends WorkflowContext {
     return workflow;
   }
 
+  /**
+   * Get the workflow of a thread by its thread ID.
+   *
+   * @param {string} threadId - The thread ID.
+   * @param {Object} [options]
+   * @param {boolean} [options.autoCreate=false] - Create the workflow if it does not exist.
+   * @returns {ThreadItem|undefined}
+   */
   getByThreadId(threadId, { autoCreate = false } = {}) {
     if (typeof threadId !== 'string') {
       throw new Error(`Required ID to be a string: ${threadId}`);
@@ -57,6 +83,9 @@ export default class ThreadItems extends WorkflowContext {
     workflow && workflow._writeThreadId(threadId);
   }
 
+  /**
+   * Destroy all thread item workflows.
+   */
   reset(options) {
     for (const workflow of this.workflows) {
       workflow.destroy(options);
@@ -66,3 +95,5 @@ export default class ThreadItems extends WorkflowContext {
   }
 
 }
+
+export default ThreadItems;

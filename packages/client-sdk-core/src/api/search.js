@@ -1,3 +1,5 @@
+/** @module core */
+
 import { API } from '@miso.ai/commons';
 import ApiBase from './base.js';
 
@@ -6,7 +8,7 @@ const { GROUP, NAME } = API;
 /**
  * Search APIs, available as `client.api.search`.
  */
-export default class Search extends ApiBase {
+class Search extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.SEARCH);
@@ -46,3 +48,5 @@ export default class Search extends ApiBase {
   }
 
 }
+
+export default Search;

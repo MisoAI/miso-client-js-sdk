@@ -26,7 +26,7 @@ const TYPE = LAYOUT_TYPE.ITEM_CONTAINER;
  * container's own layout's — so the layout is inert on the list panel
  * itself, whose options bag it shares with the items.
  */
-export default class ItemContainerLayout extends ContainerLayout {
+class ItemContainerLayout extends ContainerLayout {
 
   static get type() {
     return TYPE;
@@ -97,3 +97,5 @@ export default class ItemContainerLayout extends ContainerLayout {
   }
 
 }
+
+export default ItemContainerLayout;

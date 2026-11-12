@@ -9,7 +9,7 @@
  * 
  * The callback is invoked whenever the engagement status toggles.
  */
-export default class UserEngagementObserver {
+class UserEngagementObserver {
 
   constructor(callback) {
     this._callback = callback;
@@ -79,3 +79,5 @@ export default class UserEngagementObserver {
   }
 
 }
+
+export default UserEngagementObserver;

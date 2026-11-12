@@ -24,13 +24,20 @@ function buildPath(name, parent) {
   return Object.freeze([...(parent && parent.meta && parent.meta.path || []), ...(name ? [name] : [])]);
 }
 
-export default class Component {
+/**
+ * The base class of the SDK objects, such as the client and the workflows.
+ * A component belongs to a tree of components, and emits events.
+ *
+ * @mixes EventSubscribable
+ */
+class Component {
 
   constructor(name, parent) {
     const meta = buildMeta(name, parent);
     defineValues(this, { meta });
   
     const error = this._error = this._error.bind(this);
+    // injects on() and once() (EventSubscribable)
     this._events = new EventEmitter({ target: this, error, replays: ['child'] });
 
     this._warn =  this._warn.bind(this);
@@ -52,3 +59,5 @@ export default class Component {
 }
 
 defineTypeByKey(Component, 'miso:component');
+
+export default Component;

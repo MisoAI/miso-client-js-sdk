@@ -5,7 +5,7 @@ const TAG_NAME = 'miso-search';
 /**
  * The container of the Search workflow.
  */
-export default class MisoSearchElement extends MisoContainerElement {
+class MisoSearchElement extends MisoContainerElement {
 
   static get tagName() {
     return TAG_NAME;
@@ -20,3 +20,5 @@ export default class MisoSearchElement extends MisoContainerElement {
   }
 
 }
+
+export default MisoSearchElement;

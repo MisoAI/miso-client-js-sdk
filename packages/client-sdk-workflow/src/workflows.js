@@ -1,3 +1,5 @@
+/** @module workflow */
+
 import { Component, defineValues } from '@miso.ai/commons';
 import { ThreadEvents } from './actor/index.js';
 import { Asks, HybridSearch, Explores, Search, Recommendations, History, Conversation, MessageItems, ThreadItems } from './workflow/index.js';
@@ -14,8 +16,10 @@ import * as sources from './source.js';
  * `error` for one that failed. Either way the payload names the source
  * `workflow`, and a thread event is marked as such: `{ workflow,
  * threadEvent: true, ...event }`.
+ *
+ * @extends Component
  */
-export default class Workflows extends Component {
+class Workflows extends Component {
 
   constructor(plugin, client) {
     super('workflows', client);
@@ -113,3 +117,5 @@ export default class Workflows extends Component {
   }
 
 }
+
+export default Workflows;

@@ -39,7 +39,7 @@ function logoPropToAttr(value) {
 /**
  * The base of the container elements, which bind their component elements to one workflow.
  */
-export default class MisoContainerElement extends MisoStubElement {
+class MisoContainerElement extends MisoStubElement {
 
   static get observedAttributes() {
     return OBSERVED_ATTRIBUTES;
@@ -163,3 +163,5 @@ export default class MisoContainerElement extends MisoStubElement {
   }
 
 }
+
+export default MisoContainerElement;

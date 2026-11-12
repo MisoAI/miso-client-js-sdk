@@ -1,3 +1,5 @@
+/** @module core */
+
 import { API } from '@miso.ai/commons';
 import ApiBase from './base.js';
 
@@ -6,7 +8,7 @@ const { GROUP, NAME } = API;
 /**
  * Recommendation APIs, available as `client.api.recommendation`.
  */
-export default class Recommendation extends ApiBase {
+class Recommendation extends ApiBase {
 
   constructor(api) {
     super(api, GROUP.RECOMMENDATION);
@@ -79,3 +81,5 @@ export default class Recommendation extends ApiBase {
   }
 
 }
+
+export default Recommendation;

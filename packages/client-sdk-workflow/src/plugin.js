@@ -16,7 +16,7 @@ const PLUGIN_ID = 'std:workflow';
  * their defaults from the store at creation. The store is exposed to other
  * plugins through the `workflows` extension point.
  */
-export default class WorkflowPlugin extends Component {
+class WorkflowPlugin extends Component {
 
   static get id() {
     return PLUGIN_ID;
@@ -73,3 +73,5 @@ export default class WorkflowPlugin extends Component {
   }
 
 }
+
+export default WorkflowPlugin;

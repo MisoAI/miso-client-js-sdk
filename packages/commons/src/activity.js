@@ -10,7 +10,7 @@
  * Options:
  * - throttle: minimum ms between callback invocations
  */
-export default class UserActivityObserver {
+class UserActivityObserver {
 
   constructor(callback, { throttle } = {}) {
     this._callback = callback;
@@ -62,3 +62,5 @@ export default class UserActivityObserver {
   */
 
 }
+
+export default UserActivityObserver;

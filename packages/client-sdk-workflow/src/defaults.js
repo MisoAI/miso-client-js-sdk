@@ -9,7 +9,7 @@
  * For now, only layout options (`layouts`) are picked up by the UI plugin.
  * Defaults must be set before the workflow instance is created.
  */
-export default class WorkflowDefaults {
+class WorkflowDefaults {
 
   constructor({ onSet } = {}) {
     this._onSet = onSet;
@@ -56,3 +56,5 @@ function mergeFeatureOptions(base, overrides) {
 function isPlainObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
+
+export default WorkflowDefaults;
