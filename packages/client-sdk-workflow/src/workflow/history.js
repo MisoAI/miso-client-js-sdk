@@ -548,6 +548,10 @@ class History extends Workflow {
   _updateDataInHub(data, oldData) {
     data = this._appendThreadsFromMoreResponse(data);
     super._updateDataInHub(data, oldData);
+  }
+
+  _postUpdateData(data, oldData) {
+    super._postUpdateData(data, oldData);
     this._updateThreadWorkflows();
   }
 

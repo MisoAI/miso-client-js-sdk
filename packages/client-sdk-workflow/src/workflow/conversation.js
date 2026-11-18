@@ -743,8 +743,8 @@ class Conversation extends Workflow {
   }
 
   _updateDataInHub(data, oldData) {
-    // captured before the merge: it restores the head request on the merged
-    // data, and swaps the current data in for a valueless update
+    // the merge restores the head request on the merged data, and swaps the
+    // current data in for a valueless update
     const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.ANSWERS) {
       // an erroneous end of the answers stream — its polling already
@@ -759,11 +759,18 @@ class Conversation extends Workflow {
       data = mergeOlderMessagesFromResponse(oldData, data);
     }
     super._updateDataInHub(data, oldData);
+  }
+
+  // data is the incoming data, before the merge: its request type is the
+  // page's own, while the committed (merged) data carries the head request
+  _postUpdateData(data, oldData) {
+    super._postUpdateData(data, oldData);
     // propagate the committed records into the message item subworkflows
     this._updateMessageWorkflows();
+    const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.THREAD || type === REQUEST_TYPE.MORE) {
-      // the page data tells whether there are answer contents to fetch
-      this._requestAnswersIfNecessary(data);
+      // the committed page data tells whether there are answer contents to fetch
+      this._requestAnswersIfNecessary(this._hub.states[fields.data()]);
     }
   }
 

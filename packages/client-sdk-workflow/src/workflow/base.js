@@ -321,6 +321,7 @@ class Workflow extends Component {
     }
 
     this._updateDataInHub(data, oldData);
+    this._postUpdateData(data, oldData);
   }
 
   _defaultProcessData(data, oldData) {
@@ -333,6 +334,11 @@ class Workflow extends Component {
   _updateDataInHub(data) {
     this._hub.update(fields.data(), data);
   }
+
+  // Called after the data is committed to the hub, with the processed data
+  // passed to _updateDataInHub (before any merging done there) and the data
+  // before the update. The committed data is in the hub.
+  _postUpdateData(data, oldData) {}
 
   // TODO: notifyViewUpdateAll()
 
