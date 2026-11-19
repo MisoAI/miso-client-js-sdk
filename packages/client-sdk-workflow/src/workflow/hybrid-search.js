@@ -127,10 +127,12 @@ class HybridSearch extends SearchBasedWorkflow {
     return data;
   }
 
-  _updateDataInHub(data, oldData) {
+  _mergeData(data, oldData) {
+    // dispatched off the data before the carry-over, ahead of the commit
     this._dispatchDataToAnswerWorkflow(data);
+    data = super._mergeData(data, oldData);
     data = carryOverQuestionIdToData(data, oldData); // TODO: may as well move to process data
-    super._updateDataInHub(data, oldData);
+    return data;
   }
 
   _dispatchDataToAnswerWorkflow(data) {

@@ -270,9 +270,9 @@ class SearchBasedWorkflow extends Workflow {
     updateQueryParametersInUrl.call(this, data);
   }
 
-  _updateDataInHub(data, oldData) {
-    data = this._appendResultsFromMoreRequest(data);
-    super._updateDataInHub(data, oldData);
+  _mergeData(data, oldData) {
+    data = super._mergeData(data, oldData);
+    return this._appendResultsFromMoreRequest(data);
   }
 
   _appendResultsFromMoreRequest(data) {

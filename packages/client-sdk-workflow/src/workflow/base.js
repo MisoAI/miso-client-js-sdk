@@ -320,8 +320,9 @@ class Workflow extends Component {
       data = process(data, oldData);
     }
 
-    this._updateDataInHub(data, oldData);
-    this._postUpdateData(data, oldData);
+    const merged = this._mergeData(data, oldData);
+    this._updateDataInHub(merged);
+    this._postUpdateData(merged, data, oldData);
   }
 
   _defaultProcessData(data, oldData) {
@@ -331,14 +332,21 @@ class Workflow extends Component {
     return data;
   }
 
+  // Merge the processed data into the current data, past the data
+  // processors, so each piece of data runs through them exactly once, alone.
+  // Returns the data to commit.
+  _mergeData(data, oldData) {
+    return data;
+  }
+
   _updateDataInHub(data) {
     this._hub.update(fields.data(), data);
   }
 
-  // Called after the data is committed to the hub, with the processed data
-  // passed to _updateDataInHub (before any merging done there) and the data
-  // before the update. The committed data is in the hub.
-  _postUpdateData(data, oldData) {}
+  // Called after the data is committed to the hub, with the committed
+  // (merged) data, the processed data before the merge, and the data before
+  // the update.
+  _postUpdateData(merged, data, oldData) {}
 
   // TODO: notifyViewUpdateAll()
 

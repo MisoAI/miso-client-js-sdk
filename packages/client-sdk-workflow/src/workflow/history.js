@@ -545,14 +545,14 @@ class History extends Workflow {
     return writeThreadGroupsToData({ ...data, value });
   }
 
-  _updateDataInHub(data, oldData) {
-    data = this._appendThreadsFromMoreResponse(data);
-    super._updateDataInHub(data, oldData);
+  _mergeData(data, oldData) {
+    data = super._mergeData(data, oldData);
+    return this._appendThreadsFromMoreResponse(data);
   }
 
-  _postUpdateData(data, oldData) {
-    super._postUpdateData(data, oldData);
-    this._updateThreadWorkflows();
+  _postUpdateData(merged, data, oldData) {
+    super._postUpdateData(merged, data, oldData);
+    this._dispatchDataToThreadWorkflows(merged);
   }
 
   // merge a more page into its group of the current data past the data
@@ -647,12 +647,12 @@ class History extends Workflow {
   // propagate the committed records — only ever into existing thread
   // workflows: instances are created by elements (_getThreadWorkflow), not by
   // data, so nothing is constructed when <miso-thread-item> is not in play
-  _updateThreadWorkflows() {
+  _dispatchDataToThreadWorkflows(data) {
     const context = this._client.workflows._threadItems;
     if (!context) {
       return;
     }
-    for (const thread of this._allListedThreads) {
+    for (const thread of listedThreadsOf(data && data.value)) {
       const workflow = context.get(thread);
       workflow && this._updateThreadWorkflow(workflow, thread);
     }

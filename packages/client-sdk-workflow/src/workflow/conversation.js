@@ -98,7 +98,7 @@ const ANSWERS_REQUEST = Object.freeze({
 // The panel's items live as workflows of their own: the messages layout is
 // a shell rendering one <miso-message-item> element per record, each hosting a
 // message item subworkflow (_getMessageWorkflow) that this workflow feeds
-// through updateData() as data commits (_updateMessageWorkflows). All
+// through updateData() as data commits (_dispatchDataToMessageWorkflows). All
 // answer-content rendering and interactions (citation clicks, link clicks,
 // feedback) happen on the message workflows; inline follow-up links submit
 // back through send() (_onFollowUpClick, delegated by the message workflow).
@@ -716,7 +716,7 @@ class Conversation extends Workflow {
 
   // Homogenize the value to the canonical { thread, messages } shape, by
   // request type — but merge nothing: merging into the current data happens
-  // later, in _updateDataInHub, past the custom data processors, so each
+  // later, in _mergeData, past the custom data processors, so each
   // piece of data runs through them exactly once, in the one shape.
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
@@ -742,9 +742,8 @@ class Conversation extends Workflow {
     }
   }
 
-  _updateDataInHub(data, oldData) {
-    // the merge restores the head request on the merged data, and swaps the
-    // current data in for a valueless update
+  _mergeData(data, oldData) {
+    data = super._mergeData(data, oldData);
     const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.ANSWERS) {
       // an erroneous end of the answers stream — its polling already
@@ -758,19 +757,19 @@ class Conversation extends Workflow {
     } else if (type === REQUEST_TYPE.MORE) {
       data = mergeOlderMessagesFromResponse(oldData, data);
     }
-    super._updateDataInHub(data, oldData);
+    return data;
   }
 
-  // data is the incoming data, before the merge: its request type is the
-  // page's own, while the committed (merged) data carries the head request
-  _postUpdateData(data, oldData) {
-    super._postUpdateData(data, oldData);
+  _postUpdateData(merged, data, oldData) {
+    super._postUpdateData(merged, data, oldData);
     // propagate the committed records into the message item subworkflows
-    this._updateMessageWorkflows();
+    this._dispatchDataToMessageWorkflows(merged);
+    // the request type is the page's own, read off the data before the
+    // merge: the merged data carries the head request
     const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.THREAD || type === REQUEST_TYPE.MORE) {
-      // the committed page data tells whether there are answer contents to fetch
-      this._requestAnswersIfNecessary(this._hub.states[fields.data()]);
+      // the merged page data tells whether there are answer contents to fetch
+      this._requestAnswersIfNecessary(merged);
     }
   }
 
@@ -817,12 +816,13 @@ class Conversation extends Workflow {
   // propagate the committed records — only ever into existing message
   // workflows: instances are created by elements (_getMessageWorkflow), not
   // by data, so nothing is constructed when <miso-message-item> is not in play
-  _updateMessageWorkflows() {
+  _dispatchDataToMessageWorkflows(data) {
     const context = this._client.workflows._messageItems;
     if (!context) {
       return;
     }
-    for (const message of this.messages) {
+    const messages = (data && data.value && data.value.messages) || [];
+    for (const message of messages) {
       if (message.live) {
         continue; // a live message's workflow delivers its own data
       }
