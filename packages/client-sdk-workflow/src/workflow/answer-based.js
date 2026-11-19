@@ -5,7 +5,7 @@ import { fields, FeedbackActor } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { processAffiliationData } from './affiliations.js';
 import { mergeRolesOptions, autoQuery as autoQueryFn, updateQueryParametersInUrl, DEFAULT_AUTO_QUERY_PARAM } from './options/index.js';
-import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeAnswerInfoToInteraction } from './processors.js';
+import { mappingAnswerData, mappingReasoningData, writeAnswerStageToMeta, writeAnswerInfoToInteraction, buildMetadataFromQuestion } from './processors.js';
 import { enableUseLink } from './use-link.js';
 import { isTracked, markAsTracked } from '../util/trackers.js';
 
@@ -217,6 +217,10 @@ class AnswerBasedWorkflow extends Workflow {
 
   _writeQuestionIdFromData({ value }) {
     value && this._writeQuestionId(value.question_id);
+  }
+
+  _buildMetadata(data) {
+    return { ...super._buildMetadata(data), ...buildMetadataFromQuestion(data) };
   }
 
   // interactions //

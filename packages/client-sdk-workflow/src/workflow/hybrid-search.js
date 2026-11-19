@@ -9,7 +9,7 @@ import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 
 import { mergeApiPayloads } from '@miso.ai/commons';
 import { STATUS, REQUEST_TYPE } from '../constants.js';
-import { writeMisoIdToSession, writeQuestionSourceToPayload, disableAnswerForNonQueryRequest, carryOverQuestionIdToData, writeAnswerInfoToInteraction } from './processors.js';
+import { writeMisoIdToSession, writeQuestionSourceToPayload, disableAnswerForNonQueryRequest, carryOverQuestionIdToData, writeAnswerInfoToInteraction, buildMetadataFromQuestion } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, SearchBasedWorkflow.ROLES_OPTIONS, {
@@ -154,6 +154,10 @@ class HybridSearch extends SearchBasedWorkflow {
         this._answer._queryWithQuestionId(data);
         break;
     }
+  }
+
+  _buildMetadata(data) {
+    return { ...super._buildMetadata(data), ...buildMetadataFromQuestion(data) };
   }
 
   // interactions //

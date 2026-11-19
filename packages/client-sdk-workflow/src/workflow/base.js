@@ -12,8 +12,9 @@ import {
   writeMisoIdToMeta,
   buildBaseInteraction,
   writeSessionInfoToInteraction,
-  writeRequestInfoToInteraction,
-  writeRequestMetadataToInteraction,
+  writeMetadataToInteraction,
+  buildMetadataFromRequest,
+  writeMetadataToData,
   writeAffiliationInfoToInteraction,
 } from './processors.js';
 
@@ -320,7 +321,7 @@ class Workflow extends Component {
       data = process(data, oldData);
     }
 
-    const merged = this._mergeData(data, oldData);
+    const merged = this._writeMetadataToData(this._mergeData(data, oldData));
     this._updateDataInHub(merged);
     this._postUpdateData(merged, data, oldData);
   }
@@ -337,6 +338,15 @@ class Workflow extends Component {
   // Returns the data to commit.
   _mergeData(data, oldData) {
     return data;
+  }
+
+  _writeMetadataToData(data) {
+    return writeMetadataToData(data, this._buildMetadata(data));
+  }
+
+  // the interaction context of the data: see buildMetadataFromRequest
+  _buildMetadata(data) {
+    return buildMetadataFromRequest(data);
   }
 
   _updateDataInHub(data) {
@@ -407,8 +417,7 @@ class Workflow extends Component {
     payload = this._writeApiInfoToInteraction(payload, args);
     payload = this._writeMisoIdToInteraction(payload, args);
     payload = writeSessionInfoToInteraction(payload, args);
-    payload = writeRequestInfoToInteraction(payload, args);
-    payload = writeRequestMetadataToInteraction(payload, args);
+    payload = writeMetadataToInteraction(payload, args);
     payload = writeAffiliationInfoToInteraction(payload, args);
     return payload;
   }

@@ -346,6 +346,32 @@ export function writeUnanswerableToMeta(data) {
   };
 }
 
+// metadata //
+// The data's metadata: the context every interaction on the data carries in
+// its custom context (writeMetadataToInteraction). Built off the committed
+// data, past the merge, so it follows the request actually on display.
+
+// off the request payload: the query, filters, and question, with the
+// request metadata (e.g. question_source) taking precedence
+export function buildMetadataFromRequest(data) {
+  const { q, fq, question, metadata } = (data && data.request && data.request.payload) || {};
+  return trimObj({ question, q, fq, ...metadata });
+}
+
+// off the answer in the value: the response may update the question, taking
+// precedence over the one in request payload
+export function buildMetadataFromQuestion(data) {
+  const { question_id, question } = (data && data.value) || {};
+  return trimObj({ question_id, question });
+}
+
+export function writeMetadataToData(data, metadata) {
+  if (!data) {
+    return data;
+  }
+  return trimObj({ ...data, metadata: Object.keys(metadata).length ? metadata : undefined });
+}
+
 // interactions //
 export function buildBaseInteraction(args) {
   const { role, type, items, ...rest } = args;
@@ -410,42 +436,14 @@ export function writeSessionInfoToInteraction(payload, args) {
   });
 }
 
-export function writeRequestMetadataToInteraction(payload, args) {
-  const { data } = args;
-  if (!data) {
-    return payload;
-  }
-  const metadata = data.request && data.request.payload && data.request.payload.metadata;
+export function writeMetadataToInteraction(payload, { data } = {}) {
+  const metadata = data && data.metadata;
   if (!metadata) {
     return payload;
   }
   return mergeInteractions(payload, {
     context: {
       custom_context: metadata,
-    },
-  });
-}
-
-export function writeRequestInfoToInteraction(payload, args) {
-  const { data } = args;
-  if (!data) {
-    return payload;
-  }
-  const requestPayload = data.request && data.request.payload;
-  if (!requestPayload) {
-    return payload;
-  }
-  const { q, fq } = requestPayload;
-  const existing = payload.context && payload.context.custom_context;
-  // the question may have been written from the response (see writeQuestionInfoToInteraction), which takes precedence
-  const question = (existing && existing.question) || requestPayload.question;
-  return mergeInteractions(payload, {
-    context: {
-      custom_context: {
-        question,
-        q,
-        fq,
-      },
     },
   });
 }
@@ -468,28 +466,9 @@ export function writeAffiliationInfoToInteraction(payload, args) {
 }
 
 export function writeAnswerInfoToInteraction(payload, args) {
-  payload = writeQuestionInfoToInteraction(payload, args);
   payload = writeAnswerClickInfoToInteraction(payload, args);
   payload = writeEventTargetToInteraction(payload, args);
   return payload;
-}
-
-export function writeQuestionInfoToInteraction(payload = {}, { data } = {}) {
-  if (!data) {
-    return payload;
-  }
-  const { request = {}, value = {} } = data;
-  const { question_source } = request.payload && request.payload.metadata || {};
-  const { question_id, question } = value;
-  return mergeInteractions(payload, {
-    context: {
-      custom_context: trimObj({
-        question_source,
-        question_id,
-        question, // the response may update the question, taking precedence over the one in request payload
-      }),
-    },
-  });
 }
 
 export function writeAnswerClickInfoToInteraction(payload, args) {
