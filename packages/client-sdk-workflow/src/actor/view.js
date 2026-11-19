@@ -138,8 +138,8 @@ export default class ViewActor {
       return;
     }
 
-    const { session, status, ongoing, request, meta, value } = data;
-    const baseState = { session, status, ongoing, request, meta, data: value, ...getDataEmptyness(this.role, data) };
+    const { session, status, ongoing, meta, value } = data;
+    const baseState = { session, status, ongoing, meta, data: value, ...getDataEmptyness(this.role, data) };
 
     // render
     const notifyUpdate = (state = {}, options) => {

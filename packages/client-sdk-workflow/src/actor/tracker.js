@@ -84,11 +84,6 @@ export default class Tracker {
     return (state && state.meta && state.meta.miso_id) || undefined;
   }
 
-  _getRequestPayload() {
-    const { request } = this._getViewState() || {};
-    return request && request.payload;
-  }
-
   _getViewState() {
     return this._hub.states[fields.view(this._role)];
   }

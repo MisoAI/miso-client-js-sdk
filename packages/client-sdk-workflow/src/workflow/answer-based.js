@@ -226,12 +226,6 @@ class AnswerBasedWorkflow extends Workflow {
     return payload;
   }
 
-  _getQuestionSourceFromViewState(args) {
-    const { request } = this._hub.states[fields.view(args.role)] || {};
-    const { payload } = request || {};
-    return (payload && payload.metadata && payload.metadata.question_source) || undefined;
-  }
-
   // handlers //
   // the search box submits as a `submit` view event on the query role,
   // routed into the query flow
