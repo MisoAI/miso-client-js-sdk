@@ -265,9 +265,10 @@ class SearchBasedWorkflow extends Workflow {
     return data;
   }
 
-  _updateData(data) {
-    super._updateData(data);
-    updateQueryParametersInUrl.call(this, data);
+  _postUpdateData(merged, data, oldData) {
+    super._postUpdateData(merged, data, oldData);
+    // update URL if autoQuery.updateUrl is not false
+    updateQueryParametersInUrl.call(this, merged);
   }
 
   _mergeData(data, oldData) {

@@ -42,13 +42,13 @@ export function autoQuery(options = {}) {
   }
 }
 
-export function updateQueryParametersInUrl({ value, request }) {
+export function updateQueryParametersInUrl({ value, metadata }) {
   if (!this._autoQuery || !this._autoQuery.updateUrl) {
     return;
   }
   const { param, sourceParam } = this._autoQuery;
-  const query = (value && (value.question || value.keyword)) || (request && request.payload && (request.payload.question || request.payload.q));
-  const querySource = request && request.payload && request.payload.metadata && request.payload.metadata.question_source;
+  const query = (value && (value.question || value.keyword)) || (metadata && (metadata.question || metadata.q));
+  const querySource = metadata && metadata.question_source;
 
   if (!query) {
     return; // at initial phase

@@ -197,9 +197,12 @@ class AnswerBasedWorkflow extends Workflow {
       return;
     }
     super._updateData(data);
+  }
 
+  _postUpdateData(merged, data, oldData) {
+    super._postUpdateData(merged, data, oldData);
     // update URL if autoQuery.updateUrl is not false
-    updateQueryParametersInUrl.call(this, data);
+    updateQueryParametersInUrl.call(this, merged);
   }
 
   _shallHandleAsHeadResponse(data) {

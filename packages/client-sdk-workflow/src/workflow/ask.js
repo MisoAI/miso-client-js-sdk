@@ -136,8 +136,8 @@ class Ask extends AnswerBasedWorkflow {
   }
 
   // data //
-  _updateData(data) {
-    super._updateData(data);
+  _postUpdateData(merged, data, oldData) {
+    super._postUpdateData(merged, data, oldData);
     this._triggerSuggestionsRefreshIfNecessary();
   }
 
