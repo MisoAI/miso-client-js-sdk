@@ -309,7 +309,7 @@ class SearchBasedWorkflow extends Workflow {
     }
     // concat records if it's from "more" request (the loading commit merges
     // here too: the products stay in the value through the loading status)
-    return concatItemsFromMoreResponse(currentData, data, { role: this._roles.main });
+    return concatItemsFromMoreResponse(data, currentData, { role: this._roles.main });
   }
 
   // view actions //

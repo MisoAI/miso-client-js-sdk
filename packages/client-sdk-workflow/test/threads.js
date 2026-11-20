@@ -81,7 +81,7 @@ test('mergeAnswersIntoMessages', () => {
 
 test('mergeAnswersDataFromResponse: valueless update keeps current data', () => {
   const oldData = { request: { name: 'threads/t1' }, value: { messages: [] } };
-  assert.is(mergeAnswersDataFromResponse(oldData, { request: { type: 'answers' } }), oldData);
+  assert.is(mergeAnswersDataFromResponse({ request: { type: 'answers' } }, oldData), oldData);
 });
 
 test('mergeAnswersDataFromResponse: merges and restores the head request', () => {
@@ -96,7 +96,7 @@ test('mergeAnswersDataFromResponse: merges and restores the head request', () =>
     request: { name: 'answers', type: 'answers' },
     value: { messages: [{ question_id: 'q1', answer: 'A1' }] },
   };
-  const merged = mergeAnswersDataFromResponse(oldData, newData);
+  const merged = mergeAnswersDataFromResponse(newData, oldData);
   assert.is(merged.request, headRequest);
   assert.is(merged.status, 'ready');
   assert.equal(merged.value.thread, { thread_id: 't1' });
@@ -110,7 +110,7 @@ test('mergeAnswersDataFromResponse: a new thread carries no request', () => {
     request: { name: 'answers', type: 'answers' },
     value: { messages: [{ question_id: 'q1', answer: 'A1' }] },
   };
-  assert.is(mergeAnswersDataFromResponse(oldData, newData).request, undefined);
+  assert.is(mergeAnswersDataFromResponse(newData, oldData).request, undefined);
 });
 
 test('mergeOlderMessagesFromResponse: a new thread carries no request', () => {
@@ -120,7 +120,7 @@ test('mergeOlderMessagesFromResponse: a new thread carries no request', () => {
     meta: { exhausted: true },
     value: { messages: [{ question_id: 'q1' }] },
   };
-  const merged = mergeOlderMessagesFromResponse(oldData, newData);
+  const merged = mergeOlderMessagesFromResponse(newData, oldData);
   assert.is(merged.request, undefined);
   assert.is(merged.meta.exhausted, true);
   assert.equal(merged.value.messages, [{ question_id: 'q1' }, { question_id: 'q2' }]);

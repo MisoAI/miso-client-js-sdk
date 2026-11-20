@@ -239,7 +239,7 @@ export function writeMisoIdAsRootMisoId(data) {
   };
 }
 
-export function concatItemsFromMoreResponse(oldData, newData, { role = ROLE.PRODUCTS } = {}) {
+export function concatItemsFromMoreResponse(newData, oldData, { role = ROLE.PRODUCTS } = {}) {
   if (!newData.value) {
     return oldData;
   }
@@ -348,8 +348,9 @@ export function writeUnanswerableToMeta(data) {
 
 // metadata //
 // The data's metadata: the context every interaction on the data carries in
-// its custom context (writeMetadataToInteraction). Built off the committed
-// data, past the merge, so it follows the request actually on display.
+// its custom context (writeMetadataToInteraction). Derived off the incoming
+// data, before the merge, like the other derived fields; the base merge
+// accumulates it within a session, and a new session starts it afresh.
 
 // off the request payload: the query, filters, and question, with the
 // request metadata (e.g. question_source) taking precedence
@@ -370,6 +371,22 @@ export function writeMetadataToData(data, metadata) {
     return data;
   }
   return trimObj({ ...data, metadata: Object.keys(metadata).length ? metadata : undefined });
+}
+
+// merge the new data's metadata over the old one's: the metadata accumulates
+// within a session (the caller sees to the session)
+export function mergeMetadata(data, oldData) {
+  const oldMetadata = oldData && oldData.metadata;
+  if (!oldMetadata) {
+    return data;
+  }
+  return {
+    ...data,
+    metadata: {
+      ...oldMetadata,
+      ...data.metadata,
+    },
+  };
 }
 
 // interactions //

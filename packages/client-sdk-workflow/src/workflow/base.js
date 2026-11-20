@@ -15,6 +15,7 @@ import {
   writeMetadataToInteraction,
   buildMetadataFromRequest,
   writeMetadataToData,
+  mergeMetadata,
   writeAffiliationInfoToInteraction,
 } from './processors.js';
 
@@ -316,12 +317,14 @@ class Workflow extends Component {
 
   _updateData(data) {
     const oldData = this._hub.states[fields.data()];
+    // derivation: everything derived off the incoming data itself
     data = this._defaultProcessData(data, oldData);
     for (const process of this._options.resolved.dataProcessor) {
       data = process(data, oldData);
     }
 
-    const merged = this._writeMetadataToData(this._mergeData(data, oldData));
+    // merging into the current data
+    const merged = this._mergeData(data, oldData);
     this._updateDataInHub(merged);
     this._postUpdateData(merged, data, oldData);
   }
@@ -330,18 +333,20 @@ class Workflow extends Component {
     data = writeRequestFromPreviousData(data, oldData);
     data = writeDataStatus(data);
     data = writeMisoIdToMeta(data);
+    data = writeMetadataToData(data, this._buildMetadata(data));
     return data;
   }
 
   // Merge the processed data into the current data, past the data
   // processors, so each piece of data runs through them exactly once, alone.
-  // Returns the data to commit.
+  // Returns the data to commit. Subclasses call super first.
   _mergeData(data, oldData) {
-    return data;
-  }
-
-  _writeMetadataToData(data) {
-    return writeMetadataToData(data, this._buildMetadata(data));
+    // a new session starts afresh: nothing of the old data carries over
+    if (!oldData || !oldData.session || oldData.session.uuid !== data.session.uuid) {
+      return data;
+    }
+    // within a session, the metadata accumulates
+    return mergeMetadata(data, oldData);
   }
 
   // the interaction context of the data: see buildMetadataFromRequest

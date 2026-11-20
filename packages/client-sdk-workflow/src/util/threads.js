@@ -302,7 +302,7 @@ function headRequestOf(oldData) {
  * head request is restored on the merged data, so the answers request stays
  * an internal detail of the data flow.
  */
-export function mergeAnswersDataFromResponse(oldData, newData) {
+export function mergeAnswersDataFromResponse(newData, oldData) {
   if (!newData.value) {
     return oldData;
   }
@@ -330,7 +330,7 @@ export function mergeAnswersDataFromResponse(oldData, newData) {
  * displayed question id): if the display has moved on and the cursor no
  * longer lines up, the stale page is dropped.
  */
-export function mergeOlderMessagesFromResponse(oldData, newData) {
+export function mergeOlderMessagesFromResponse(newData, oldData) {
   if (!newData.value) {
     // the more request's loading commit keeps the current data on display;
     // a failed page (retries spent) additionally parks the paging as

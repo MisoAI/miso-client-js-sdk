@@ -753,9 +753,9 @@ class Conversation extends Workflow {
       // unsettled messages start a fresh stream of their own
       data = data.error
         ? writeAnswersErrorToMessages(oldData, data.error)
-        : mergeAnswersDataFromResponse(oldData, data);
+        : mergeAnswersDataFromResponse(data, oldData);
     } else if (type === REQUEST_TYPE.MORE) {
-      data = mergeOlderMessagesFromResponse(oldData, data);
+      data = mergeOlderMessagesFromResponse(data, oldData);
     }
     return data;
   }
