@@ -84,7 +84,7 @@ test('mergeAnswersDataFromResponse: valueless update keeps current data', () => 
   assert.is(mergeAnswersDataFromResponse({ request: { type: 'answers' } }, oldData), oldData);
 });
 
-test('mergeAnswersDataFromResponse: merges and restores the head request', () => {
+test('mergeAnswersDataFromResponse: merges into the head data', () => {
   const headRequest = { name: 'threads/t1', type: 'thread' };
   const oldData = {
     request: headRequest,
@@ -97,23 +97,13 @@ test('mergeAnswersDataFromResponse: merges and restores the head request', () =>
     value: { messages: [{ question_id: 'q1', answer: 'A1' }] },
   };
   const merged = mergeAnswersDataFromResponse(newData, oldData);
-  assert.is(merged.request, headRequest);
+  assert.is(merged.request, newData.request);
   assert.is(merged.status, 'ready');
   assert.equal(merged.value.thread, { thread_id: 't1' });
   assert.equal(merged.value.messages, [{ question_id: 'q1', answer: 'A1' }]);
 });
 
-test('mergeAnswersDataFromResponse: a new thread carries no request', () => {
-  // a thread started in the page has no head request
-  const oldData = { value: { thread: { thread_id: 'q1' }, messages: [{ question_id: 'q1' }] } };
-  const newData = {
-    request: { name: 'answers', type: 'answers' },
-    value: { messages: [{ question_id: 'q1', answer: 'A1' }] },
-  };
-  assert.is(mergeAnswersDataFromResponse(newData, oldData).request, undefined);
-});
-
-test('mergeOlderMessagesFromResponse: a new thread carries no request', () => {
+test('mergeOlderMessagesFromResponse: prepends the page', () => {
   const oldData = { value: { thread: { thread_id: 'q2' }, messages: [{ question_id: 'q2' }] } };
   const newData = {
     request: { type: 'more', payload: { after: 'q2' } },
@@ -121,7 +111,7 @@ test('mergeOlderMessagesFromResponse: a new thread carries no request', () => {
     value: { messages: [{ question_id: 'q1' }] },
   };
   const merged = mergeOlderMessagesFromResponse(newData, oldData);
-  assert.is(merged.request, undefined);
+  assert.is(merged.request, newData.request);
   assert.is(merged.meta.exhausted, true);
   assert.equal(merged.value.messages, [{ question_id: 'q1' }, { question_id: 'q2' }]);
 });

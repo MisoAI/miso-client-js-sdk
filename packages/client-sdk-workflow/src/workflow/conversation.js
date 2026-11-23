@@ -361,6 +361,7 @@ class Conversation extends Workflow {
     });
     this.updateData({
       ...data,
+      action: { name: 'send', placeholderId: message.placeholder_id },
       value: {
         ...data.value,
         ...(placeholder ? { thread: placeholder } : thread ? { thread } : {}),
@@ -407,7 +408,7 @@ class Conversation extends Workflow {
       return;
     }
     const messages = data.value.messages.map(m => m.placeholder_id === placeholderId ? { ...m, ...value } : m);
-    this.updateData({ ...data, value: { ...data.value, messages } });
+    this.updateData({ ...data, action: { name: 'patch-live-message', placeholderId }, value: { ...data.value, messages } });
   }
 
   // thread operations //
@@ -565,7 +566,7 @@ class Conversation extends Workflow {
     }
     const thread = fn(data.value.thread);
     if (thread !== data.value.thread) {
-      this.updateData({ ...data, value: { ...data.value, thread } });
+      this.updateData({ ...data, action: { name: 'patch-thread', threadId }, value: { ...data.value, thread } });
     }
   }
 
@@ -720,7 +721,8 @@ class Conversation extends Workflow {
   // piece of data runs through them exactly once, in the one shape.
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
-    if (!data.value) {
+    // a patch edits the value on display, in shape already
+    if (!data.value || data.action) {
       return data;
     }
     switch (data.request && data.request.type) {
@@ -744,6 +746,10 @@ class Conversation extends Workflow {
 
   _mergeData(data, oldData) {
     data = super._mergeData(data, oldData);
+    // a patch carries the whole value: nothing to merge
+    if (data.action) {
+      return data;
+    }
     const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.ANSWERS) {
       // an erroneous end of the answers stream — its polling already
@@ -764,12 +770,12 @@ class Conversation extends Workflow {
     super._postUpdateData(merged, data, oldData);
     // propagate the committed records into the message item subworkflows
     this._dispatchDataToMessageWorkflows(merged);
-    // the request type is the page's own, read off the data before the
-    // merge: the merged data carries the head request
-    const type = data.request && data.request.type;
+    // a page response may bring answer contents to fetch — and only a page
+    // response: the answers request's own loading commit lands here before
+    // the request is served, so checking on it would re-issue the request
+    const type = !data.action && data.request && data.request.type;
     if (type === REQUEST_TYPE.THREAD || type === REQUEST_TYPE.MORE) {
-      // the merged page data tells whether there are answer contents to fetch
-      this._requestAnswersIfNecessary(merged);
+      this._requestAnswersIfNecessary();
     }
   }
 
@@ -867,11 +873,15 @@ class Conversation extends Workflow {
     const data = this._hub.states[fields.data()];
     const thread = data && data.value && data.value.thread;
     if (!this.destroyed && thread && thread.placeholder_id === placeholderId) {
-      this.updateData({ ...data, value: { ...data.value, thread: settlePlaceholder(thread, questionId) } });
+      this.updateData({
+        ...data,
+        action: { name: 'resolve-live-message', placeholderId, questionId },
+        value: { ...data.value, thread: settlePlaceholder(thread, questionId) },
+      });
     }
   }
 
-  // The head data tells whether there are answer contents to fetch: any
+  // The current data tells whether there are answer contents to fetch: any
   // (non-live) message whose answer is absent or unfinished starts the
   // answers polling — one request per session, answered by the answers api
   // with a polling iterable the data actor consumes like an ask answer
@@ -885,11 +895,12 @@ class Conversation extends Workflow {
   // one, so a later unsettled batch starts a new one.
   // The actor supplies the abort on new session; the api-layer polling
   // drops a late, outdated response.
-  _requestAnswersIfNecessary(data) {
+  _requestAnswersIfNecessary() {
     if (this._data.isServing(request => request.type === REQUEST_TYPE.ANSWERS && request.session === this.session)) {
       return; // the running poll picks up new unsettled messages by itself
     }
-    if (!getUnsettledQuestionIds(data.value).length) {
+    const data = this._hub.states[fields.data()];
+    if (!getUnsettledQuestionIds(data && data.value).length) {
       return;
     }
     this._request({

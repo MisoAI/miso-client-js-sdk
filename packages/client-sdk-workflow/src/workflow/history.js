@@ -605,9 +605,7 @@ class History extends Workflow {
     // page may overlap what is on display
     const listed = new Set(threads.map(thread => thread.thread_id));
     const fresh = value.threads.filter(thread => !listed.has(thread.thread_id));
-    // the merged data is the current data with the group extended: the head
-    // request is kept, so later local patches (which carry the committed
-    // request along) never re-enter this merge
+    // the merged data is the current data with the group extended
     return writeThreadGroupsToData({
       ...current,
       value: {
@@ -671,7 +669,7 @@ class History extends Workflow {
     if (!data || !data.value) {
       return; // the list is not loaded yet, nothing to patch
     }
-    this.updateData({ ...data, value: { ...data.value, ...patch } });
+    this.updateData({ ...data, action: { name: 'patch-value' }, value: { ...data.value, ...patch } });
   }
 
 
@@ -686,8 +684,8 @@ class History extends Workflow {
 }
 
 // helpers //
-function isMorePage({ request }) {
-  return !!request && request.type === REQUEST_TYPE.MORE;
+function isMorePage({ action, request }) {
+  return !action && !!request && request.type === REQUEST_TYPE.MORE;
 }
 
 // the listed records with a server identity: a thread still being created is

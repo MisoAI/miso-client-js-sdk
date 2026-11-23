@@ -238,17 +238,22 @@ test('select: conversation workflow loads the thread and merges answers', async 
   assert.ok(calls.some(c => c.startsWith('POST ask/answers') && c.includes('"question_ids":["q1","q2"]')));
 });
 
-test('conversation: data keeps the head request; answers request stays internal', async () => {
+test('conversation: a patch takes effect past an answers merge', async () => {
   const { client } = createClient();
   const { conversation } = client.workflows;
 
   conversation.load('t1');
   await tick();
 
-  const { request } = conversation.states.data;
-  assert.is(request.name, 'get');
-  assert.is(request.payload.thread_id, 't1');
-  assert.is(request.type, REQUEST_TYPE.THREAD);
+  // the committed data carries the latest response's own request
+  const data = conversation.states.data;
+  assert.is(data.request.type, REQUEST_TYPE.ANSWERS);
+
+  // a patch copies it along, but names itself, so it is not routed as an
+  // answers response
+  conversation.updateData({ ...data, action: { name: 'test-patch' }, value: { ...data.value, thread: { ...data.value.thread, title: 'Patched' } } });
+  assert.is(conversation.thread.title, 'Patched');
+  assert.is(conversation.messages.length, 2);
 });
 
 test('select: an unread thread is marked as read once loaded', async () => {
@@ -1191,7 +1196,7 @@ test('conversation: a new unsettled message is picked up by the running poll', a
   // question id up on the next poll — no restart (as further pages of
   // messages will rely on, later)
   const data = conversation.states.data;
-  conversation.updateData({ ...data, value: { ...data.value, messages: [...data.value.messages, { question_id: 'q3' }] } });
+  conversation.updateData({ ...data, action: { name: 'test-patch' }, value: { ...data.value, messages: [...data.value.messages, { question_id: 'q3' }] } });
   await tick(30);
   assert.ok(polledIds.some(ids => ids.includes('q3') && ids.includes('q1')));
 
@@ -1262,9 +1267,6 @@ test('conversation: send posts a follow-up and appends the message pair', async 
   assert.ok(call);
   assert.ok(call.includes('"parent_question_id":"q2"'));
   assert.ok(call.includes('"question_source":"_organic"'));
-
-  // the head request stays on the committed data
-  assert.is(conversation.states.data.request.type, REQUEST_TYPE.THREAD);
 });
 
 test('inline follow-up links submit through send()', async () => {

@@ -281,6 +281,11 @@ class Workflow extends Component {
    * @param {Object} data.session - The current session, `workflow.session`.
    * @param {*} [data.value] - The data value, in the shape of the API response.
    * @param {Object} [data.error] - The error, if the data failed to load.
+   * @param {Object} [data.action] - What produced the update, when it is not
+   *   a response: a local patch of the current data names itself here (e.g.
+   *   `{ name: 'patch-thread', threadId }`), so the data pipeline can tell it
+   *   from a response — a patch is a copy of the current data, its request
+   *   included, so the request alone does not tell.
    * @returns {this}
    * @throws {Error} If `data` or its session is missing.
    * @example

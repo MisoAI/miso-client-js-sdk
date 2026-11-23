@@ -281,26 +281,11 @@ export function normalizeAnswersValue(value) {
 }
 
 /**
- * The request a merged page of the conversation data carries: the head
- * request, restored, so the page's own request (answers, older messages)
- * stays an internal detail of the data flow. A thread started in the page
- * has no head request, and the merged data carries none either: were the
- * page's request kept, every later commit (live message patches, thread
- * patches, follow-ups) would carry its type, re-entering the page's merge
- * and getting dropped.
- */
-function headRequestOf(oldData) {
-  return oldData ? oldData.request : undefined;
-}
-
-/**
  * Merge an answers response data — its value normalized to `{ messages }` by
  * the workflow's default data pass — into the current (head) data, in the
  * manner of concatItemsFromMoreResponse: a valueless update (the loading
  * update of the answers request) keeps the current data, so the head data
- * stays on display; a response merges into the head data's messages. The
- * head request is restored on the merged data, so the answers request stays
- * an internal detail of the data flow.
+ * stays on display; a response merges into the head data's messages.
  */
 export function mergeAnswersDataFromResponse(newData, oldData) {
   if (!newData.value) {
@@ -310,9 +295,8 @@ export function mergeAnswersDataFromResponse(newData, oldData) {
   const messages = mergeAnswersIntoMessages(oldValue.messages || [], newData.value.messages || []);
   return {
     ...newData,
-    request: headRequestOf(oldData),
-    // the current meta rides along, like the head request: it carries e.g.
-    // the paging exhaustion, which an answers batch knows nothing about
+    // the current meta rides along: it carries e.g. the paging exhaustion,
+    // which an answers batch knows nothing about
     meta: { ...(oldData && oldData.meta), ...newData.meta },
     value: { ...oldValue, messages },
   };
@@ -322,9 +306,8 @@ export function mergeAnswersDataFromResponse(newData, oldData) {
  * Merge an older messages page (a more-typed thread detail response, its
  * value homogenized to `{ thread, messages }` in display order) into the
  * current data: the page's messages are prepended above the displayed
- * ones — the displayed thread record stays (the page's copy is redundant),
- * and the head request is restored, so the paging stays an internal detail
- * of the data flow, like the answers merge. A valueless update (the more
+ * ones — the displayed thread record stays (the page's copy is redundant).
+ * A valueless update (the more
  * request's loading commit) keeps the current data on display. The page
  * was requested against the messages on display (`after` = the oldest
  * displayed question id): if the display has moved on and the cursor no
@@ -353,7 +336,6 @@ export function mergeOlderMessagesFromResponse(newData, oldData) {
   const fresh = (newData.value.messages || []).filter(message => !displayed.has(message.question_id));
   return {
     ...newData,
-    request: headRequestOf(oldData),
     // the page's meta may carry the exhaustion (has_more: false)
     meta: { ...(oldData && oldData.meta), ...newData.meta },
     value: { ...oldValue, messages: [...fresh, ...oldMessages] },
