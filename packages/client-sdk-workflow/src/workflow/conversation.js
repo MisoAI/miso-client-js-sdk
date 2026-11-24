@@ -4,7 +4,7 @@ import { trimObj, uuidv4, mergeInteractions, API } from '@miso.ai/commons';
 import Workflow from './base.js';
 import { fields } from '../actor/index.js';
 import { getThreadRequest, ThreadOperations, mixinThreadOperationSupport } from './thread-operations.js';
-import { ROLE, STATUS, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
+import { ROLE, STATUS, REQUEST_TYPE, THREAD_OPERATION, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { writeThreadAsRead, writeHasMoreExhaustionToData, writeAnswerInfoToInteraction } from './processors.js';
 import { isThreadUnread, isUpdateMessage, settlePlaceholder, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, getThreadChanges, mergeMessages } from '../util/threads.js';
@@ -536,17 +536,17 @@ class Conversation extends Workflow {
   // a failed one back
   _onThreadEvent(event) {
     switch (event.type) {
-      case 'rename':
-      case 'mark-as-read':
-      case 'favorite':
-      case 'subscribe':
-      case 'unsubscribe':
+      case THREAD_OPERATION.RENAME:
+      case THREAD_OPERATION.MARK_AS_READ:
+      case THREAD_OPERATION.FAVORITE:
+      case THREAD_OPERATION.SUBSCRIBE:
+      case THREAD_OPERATION.UNSUBSCRIBE:
         this._onThreadUpdated(event);
         break;
-      case 'delete':
+      case THREAD_OPERATION.DELETE:
         this._onThreadDeleted(event);
         break;
-      case 'delete-all':
+      case THREAD_OPERATION.DELETE_ALL:
         this._onAllThreadsDeleted();
         break;
       case 'error':

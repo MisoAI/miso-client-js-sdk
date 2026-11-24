@@ -6,7 +6,7 @@
  * response-shape fallbacks live at the API boundary (`processResponse()` in
  * source.js), so only canonical fields are ever read.
  */
-import { THREAD_GROUP } from '../constants.js';
+import { THREAD_GROUP, THREAD_OPERATION } from '../constants.js';
 import { mergeItems } from './items.js';
 
 /**
@@ -27,15 +27,15 @@ export function settlePlaceholder(placeholder, threadId) {
  */
 export function getThreadChanges({ type, title, favorite }) {
   switch (type) {
-    case 'rename':
+    case THREAD_OPERATION.RENAME:
       return { title };
-    case 'favorite':
+    case THREAD_OPERATION.FAVORITE:
       return { favorite };
-    case 'mark-as-read':
+    case THREAD_OPERATION.MARK_AS_READ:
       return { has_new: false };
-    case 'subscribe':
+    case THREAD_OPERATION.SUBSCRIBE:
       return { subscribed: true };
-    case 'unsubscribe':
+    case THREAD_OPERATION.UNSUBSCRIBE:
       return { subscribed: false };
   }
   return undefined;
@@ -50,13 +50,13 @@ export function getThreadChanges({ type, title, favorite }) {
  */
 export function getThreadUndoChanges({ type, oldTitle, favorite }) {
   switch (type) {
-    case 'rename':
+    case THREAD_OPERATION.RENAME:
       return { title: oldTitle };
-    case 'favorite':
+    case THREAD_OPERATION.FAVORITE:
       return { favorite: !favorite };
-    case 'subscribe':
+    case THREAD_OPERATION.SUBSCRIBE:
       return { subscribed: false };
-    case 'unsubscribe':
+    case THREAD_OPERATION.UNSUBSCRIBE:
       return { subscribed: true };
   }
   return undefined;

@@ -2,12 +2,13 @@
 
 import { API, asArray, mixin, kebabToSnake, trimObj } from '@miso.ai/commons';
 import { fields } from '../actor/index.js';
-import { REQUEST_TYPE } from '../constants.js';
+import { REQUEST_TYPE, THREAD_OPERATION, THREADS_API_NAME } from '../constants.js';
 import { undoThreadOperation } from '../util/threads.js';
 
 // The id-based thread operations of the chat-history workflows. Each method
-// describes its operation — `{ type, ... }`: the type is the method's name
-// in kebab case (`mark-as-read`, `delete-all`), the rest its arguments (the
+// describes its operation — `{ type, ... }`: the type is one of
+// THREAD_OPERATION (the method's name in kebab case: `mark-as-read`,
+// `delete-all`), the rest its arguments (the
 // thread id(s), the new title) — builds its request payload, and issues the two (_applyThreadOperation). What an
 // operation does to a thread record is the panels' reading of its type
 // (getThreadChanges).
@@ -68,7 +69,7 @@ export class ThreadOperations {
   rename(threadId, title, oldTitle) {
     // the title being replaced rides along (an undocumented argument, filled
     // in by the callers), so the operation can be taken back if it fails
-    this._applyThreadOperation({ type: 'rename', threadId, title, oldTitle });
+    this._applyThreadOperation({ type: THREAD_OPERATION.RENAME, threadId, title, oldTitle });
   }
 
   /**
@@ -79,7 +80,7 @@ export class ThreadOperations {
    * @param {string} threadId - The thread ID.
    */
   markAsRead(threadId) {
-    this._applyThreadOperation({ type: 'mark-as-read', threadId });
+    this._applyThreadOperation({ type: THREAD_OPERATION.MARK_AS_READ, threadId });
   }
 
   /**
@@ -90,7 +91,7 @@ export class ThreadOperations {
    * @param {string} threadId - The thread ID.
    */
   subscribe(threadId) {
-    this._applyThreadOperation({ type: 'subscribe', threadId });
+    this._applyThreadOperation({ type: THREAD_OPERATION.SUBSCRIBE, threadId });
   }
 
   /**
@@ -105,7 +106,7 @@ export class ThreadOperations {
     // the unread fact (has_new) is untouched — subscribed and has_new are
     // independent, and the unread presentation (isThreadUnread) derives from
     // both, so the red dot hides all the same
-    this._applyThreadOperation({ type: 'unsubscribe', threadId });
+    this._applyThreadOperation({ type: THREAD_OPERATION.UNSUBSCRIBE, threadId });
   }
 
   /**
@@ -119,7 +120,7 @@ export class ThreadOperations {
    * @since 1.14.2
    */
   favorite(threadId, value = true) {
-    this._applyThreadOperation({ type: 'favorite', threadId, favorite: !!value });
+    this._applyThreadOperation({ type: THREAD_OPERATION.FAVORITE, threadId, favorite: !!value });
   }
 
   /**
@@ -131,7 +132,7 @@ export class ThreadOperations {
    */
   delete(threadIds) {
     threadIds = Object.freeze(asArray(threadIds));
-    this._applyThreadOperation({ type: 'delete', threadIds });
+    this._applyThreadOperation({ type: THREAD_OPERATION.DELETE, threadIds });
   }
 
   /**
@@ -141,7 +142,7 @@ export class ThreadOperations {
    * @memberof module:workflow~ThreadOperations
    */
   deleteAll() {
-    this._applyThreadOperation({ type: 'delete-all' });
+    this._applyThreadOperation({ type: THREAD_OPERATION.DELETE_ALL });
   }
 
 }
@@ -182,7 +183,7 @@ export class ThreadOperationSupport {
 // filters, later — ride the payload, so it is configurable.) The payload
 // carries the message paging window (order, rows, after).
 export function getThreadRequest(threadId, payload) {
-  return threadRequest('get', { thread_id: threadId, ...payload });
+  return threadRequest(THREADS_API_NAME.GET, { thread_id: threadId, ...payload });
 }
 
 function threadRequest(name, payload) {

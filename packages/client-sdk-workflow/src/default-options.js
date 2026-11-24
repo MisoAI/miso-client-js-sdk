@@ -1,5 +1,5 @@
 import { API } from '@miso.ai/commons';
-import { EVENT_TYPE } from './constants.js';
+import { EVENT_TYPE, THREADS_API_NAME } from './constants.js';
 import { DEFAULT_TRACKER_OPTIONS } from './workflow/options/index.js';
 
 /**
@@ -180,7 +180,7 @@ export default Object.freeze({
     // absent), and list filters will ride the same payload later
     api: {
       group: API.GROUP.THREADS,
-      name: 'list',
+      name: THREADS_API_NAME.LIST,
     },
     // the thread list's infinite scroll: the threads layout triggers the
     // `more` hub field as its trigger scrolls into view, and the next page

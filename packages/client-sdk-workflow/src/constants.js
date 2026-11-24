@@ -1,3 +1,5 @@
+import { kebabToSnake } from '@miso.ai/commons';
+
 export const DEFAULT_UNIT_ID = 'default';
 
 export const ROLE = Object.freeze({
@@ -169,6 +171,34 @@ export const THREAD_GROUP = Object.freeze({
   ALL: 'all',
   FAVORITE: 'favorite',
   UNFAVORITE: 'unfavorite',
+});
+
+/**
+ * The thread operations of the chat-history workflows (the `type` of an
+ * operation, as the `thread` events carry it). Each is issued as the request
+ * of the snake case of its type on the `threads` API group (THREADS_API_NAME).
+ */
+export const THREAD_OPERATION = Object.freeze({
+  RENAME: 'rename',
+  FAVORITE: 'favorite',
+  MARK_AS_READ: 'mark-as-read',
+  SUBSCRIBE: 'subscribe',
+  UNSUBSCRIBE: 'unsubscribe',
+  DELETE: 'delete',
+  DELETE_ALL: 'delete-all',
+});
+
+/**
+ * The request names on the `threads` API group (`API.GROUP.THREADS`): the
+ * thread list and detail reads, and the thread operations (the snake case of
+ * their types, as _applyThreadOperation names their requests) — simple
+ * names, interpreted by the data source (source.js) onto the user history
+ * API.
+ */
+export const THREADS_API_NAME = Object.freeze({
+  LIST: 'list',
+  GET: 'get',
+  ...Object.fromEntries(Object.entries(THREAD_OPERATION).map(([key, type]) => [key, kebabToSnake(type)])),
 });
 
 export const REQUEST_TYPE = Object.freeze({

@@ -1,4 +1,5 @@
 import { API } from '@miso.ai/commons';
+import { THREADS_API_NAME } from './constants.js';
 import { normalizeThreadValue, normalizeThreadGroupsValue, normalizeAnswersValue, getThreadGroupOfFilter } from './util/threads.js';
 
 export function api(client) {
@@ -30,29 +31,29 @@ function sendApi(client, { group, name, payload, options }) {
 // thread id in the payload, interpreted onto the user history API
 function sendThreadsApi(api, name, payload = {}, options) {
   switch (name) {
-    case 'list':
+    case THREADS_API_NAME.LIST:
       return payload.groups ? getThreadGroups(api, payload, options) : api.getThreads(payload, options);
-    case 'get': {
+    case THREADS_API_NAME.GET: {
       const { thread_id, ...rest } = payload;
       return api.getThread(thread_id, rest, options);
     }
-    case 'rename': {
+    case THREADS_API_NAME.RENAME: {
       const { thread_id, ...changes } = payload;
       return api.updateThread(thread_id, changes, options);
     }
-    case 'favorite': {
+    case THREADS_API_NAME.FAVORITE: {
       const { thread_id, ...rest } = payload;
       return api.favoriteThread(thread_id, rest, options);
     }
-    case 'mark_as_read':
+    case THREADS_API_NAME.MARK_AS_READ:
       return api.markThreadAsRead(payload.thread_id, options);
-    case 'subscribe':
+    case THREADS_API_NAME.SUBSCRIBE:
       return api.subscribeThread(payload.thread_id, options);
-    case 'unsubscribe':
+    case THREADS_API_NAME.UNSUBSCRIBE:
       return api.unsubscribeThread(payload.thread_id, options);
-    case 'delete':
+    case THREADS_API_NAME.DELETE:
       return api.deleteThreads(payload, options);
-    case 'delete_all':
+    case THREADS_API_NAME.DELETE_ALL:
       return api.deleteAllThreads(options);
   }
   throw new Error(`Unknown threads API: ${name}`);
@@ -89,13 +90,13 @@ function processResponse({ group, name, payload }, response) {
     case API.GROUP.THREADS:
       // thread records may identify themselves by root question id only
       switch (name) {
-        case 'list':
+        case THREADS_API_NAME.LIST:
           if (payload && payload.groups && response) {
             return normalizeThreadGroupsValue(
               Object.fromEntries(Object.entries(response).map(([key, value]) => [key, fallbackThreadsFields(value)])));
           }
           return normalizeThreadGroupsValue(fallbackThreadsFields(response), { group: getThreadGroupOfFilter(payload) });
-        case 'get':
+        case THREADS_API_NAME.GET:
           return normalizeThreadValue(fallbackThreadFields(response), { descending: !!(payload && payload.order === 'desc') });
       }
       break;

@@ -5,7 +5,8 @@ export const GROUP = Object.freeze({
   INTERACTIONS: 'interactions',
   ASK_USER_HISTORY: 'ask/user_history',
   // the thread requests of the chat-history workflows, with simple names
-  // (list, get, update, mark_as_read, ...) interpreted by the data source
+  // (list, get, rename, mark_as_read, ...: THREADS_API_NAME in the workflow
+  // package) interpreted by the data source
   THREADS: 'threads',
 });
 
