@@ -7,10 +7,11 @@ import { ROLE, STATUS, REQUEST_TYPE, THREAD_GROUP, WORKFLOW_CONFIGURABLE } from 
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { mixinThreadOperations, ThreadOperations } from './thread-operations.js';
 import {
-  settlePlaceholder, normalizeThreadsValue, normalizeThreadGroupsValue, sortThreadsByLatest, getThreadChanges,
-  undoThreadOperation, THREAD_GROUP_NAMES, resolveThreadGroup, getThreadGroupKey, getThreadGroupFilter,
-  getViewThreadGroup, isThreadFavorite,
+  settlePlaceholder, normalizeThreadsValue, normalizeThreadGroupsValue, sortThreadsByLatest, compareThreadsByLatest,
+  getThreadChanges, undoThreadOperation, THREAD_GROUP_NAMES, resolveThreadGroup, getThreadGroupKey,
+  getThreadGroupFilter, getViewThreadGroup, isThreadInGroup,
 } from '../util/threads.js';
+import { mergeItems } from '../util/items.js';
 
 // the list requests are idempotent reads, so transient failures (network,
 // timeout, 5xx) are worth another try or two at the fetch layer — a failed
@@ -275,7 +276,7 @@ class History extends Workflow {
       throw new Error(`threadId is required in select() call`);
     }
     const thread = this.get(threadId);
-    this._patchValue({ selectedThreadId: threadId });
+    this._patchList({ name: 'select', threadId }, { selectedThreadId: threadId });
     this._emit('select', Object.freeze({ threadId, thread }));
     // a thread being created has no server identity to load: the placeholder
     // id never addresses the API, and the panel either already displays the
@@ -328,7 +329,7 @@ class History extends Workflow {
     if (!this.selectedId) {
       return;
     }
-    this._patchValue({ selectedThreadId: undefined });
+    this._patchList({ name: 'deselect' }, { selectedThreadId: undefined });
     this._emit('new', {});
     const peer = this._peer;
     peer && peer.new();
@@ -388,72 +389,30 @@ class History extends Workflow {
 
   _onThreadUpdated(operation) {
     const changes = getThreadChanges(operation);
-    this._patchThread(operation.threadId, thread => ({ ...thread, ...changes }), { regroup: operation.type === 'favorite' });
+    this._patchThread(operation.threadId, thread => ({ ...thread, ...changes }));
   }
 
   _onThreadOperationError({ operation }) {
-    this._patchThread(operation.threadId, thread => undoThreadOperation(thread, operation), { regroup: operation.type === 'favorite' });
+    this._patchThread(operation.threadId, thread => undoThreadOperation(thread, operation));
   }
 
-  // patch a thread's record in every group listing it; a favorite change
-  // (or its rollback) also moves the thread into the group its flag now
-  // says — out of the other one
-  _patchThread(threadId, fn, { regroup = false } = {}) {
-    const patch = this._mapGroups(threads => threads.map(thread => thread.thread_id === threadId ? fn(thread) : thread));
-    if (regroup) {
-      const thread = listedThreadsOf(patch).find(thread => thread.thread_id === threadId);
-      thread && Object.assign(patch, this._regroupThread(patch, thread));
+  // patch a listed thread's record — in every group listing it, and, for a
+  // favorite change (or its rollback), into the group its flag now says
+  // (_mergePatch)
+  _patchThread(threadId, fn) {
+    const listed = this._allListedThreads.find(thread => thread.thread_id === threadId);
+    const thread = listed && fn(listed);
+    if (!thread || thread === listed) {
+      return;
     }
-    this._patchValue(patch);
-  }
-
-  // the favorite and unfavorite groups, with the thread taken out of the one
-  // its favorite flag no longer matches and listed in the one it does — only
-  // the groups loaded already. It joins a group only where the server lists
-  // it within the loaded records too: the group is fully loaded, or the
-  // thread sorts above the last loaded record (both lists ordered by latest
-  // activity) — past them it arrives with a later page instead, so the
-  // paging offsets stay in line with the server's
-  _regroupThread(value, thread) {
-    const patch = {};
-    const favorite = isThreadFavorite(thread);
-    for (const [group, belongs] of [[THREAD_GROUP.FAVORITE, favorite], [THREAD_GROUP.UNFAVORITE, !favorite]]) {
-      const key = getThreadGroupKey(group);
-      const threads = value[key];
-      if (!threads) {
-        continue;
-      }
-      const others = threads.filter(t => t.thread_id !== thread.thread_id);
-      const last = others[others.length - 1];
-      const within = this.isExhausted(group) || !last ||
-        String(thread.updated_at || '').localeCompare(String(last.updated_at || '')) >= 0;
-      patch[key] = belongs && within ? [...others, thread] : others;
-    }
-    return patch;
-  }
-
-  // a value patch mapping each loaded group's list of records through fn
-  _mapGroups(fn) {
-    const data = this._hub.states[fields.data()];
-    const value = (data && data.value) || {};
-    const patch = {};
-    for (const group of THREAD_GROUP_NAMES) {
-      const key = getThreadGroupKey(group);
-      if (value[key]) {
-        patch[key] = fn(value[key], group);
-      }
-    }
-    return patch;
+    this._patchList({ name: 'patch-thread', threadId }, { threads: [thread] });
   }
 
   // a deletion is not rolled back if it fails: the records stay off the
   // list until a hard reset (restart() + start()) brings the server's word
   _onThreadDeleted({ threadIds }) {
-    const removed = new Set(threadIds);
-    this._patchValue({
-      ...this._mapGroups(threads => threads.filter(thread => !removed.has(thread.thread_id))),
-      ...(threadIds && threadIds.includes(this.selectedId) ? { selectedThreadId: undefined } : {}),
-    });
+    this._patchList({ name: 'delete-threads', remove: threadIds },
+      threadIds && threadIds.includes(this.selectedId) ? { selectedThreadId: undefined } : {});
     // a deleted thread's item subworkflow has nothing left to present
     const context = this._client.workflows._threadItems;
     if (context) {
@@ -465,47 +424,46 @@ class History extends Workflow {
   }
 
   _onAllThreadsDeleted() {
-    this._patchValue({ ...this._mapGroups(() => []), selectedThreadId: undefined });
+    this._patchList({ name: 'delete-all-threads', remove: this._allListedThreads.map(threadKeyOf) }, { selectedThreadId: undefined });
     const context = this._client.workflows._threadItems;
     context && context.reset();
   }
 
   // called by the conversation workflow //
   // a new thread is started in the conversation panel: list its placeholder
-  // as the selected item (its fresh timestamp sorts it to the top) — in
-  // every thread's group and, not being a favorite, the unfavorite one. The
-  // record has no thread id yet, so it is selected by its placeholder id
+  // as the selected item (its fresh timestamp sorts it to the top) — in the
+  // groups it belongs to: every thread's and, not being a favorite, the
+  // unfavorite one. The record has no thread id yet, so it is selected by
+  // its placeholder id
   _onConversationNew(thread) {
-    this._patchValue({
-      ...this._mapGroups((threads, group) => group === THREAD_GROUP.FAVORITE ? threads : [...threads, thread]),
-      selectedThreadId: thread.placeholder_id,
-    });
+    this._patchList({ name: 'new-thread', placeholderId: thread.placeholder_id },
+      { threads: [thread], selectedThreadId: thread.placeholder_id });
   }
 
   // the new thread is created server-side: the thread id is the only thing
   // the resolution gains — settle the listed placeholder item around it
   _onConversationResolve(placeholderId, threadId) {
-    if (!this.get(placeholderId)) {
+    const listed = this.get(placeholderId);
+    if (!listed) {
       return; // already settled (announced from both the live and the expired path)
     }
     // the item subworkflow adopts the thread id first, so the settled record
     // propagates into the same workflow the placeholder was keyed to
     const context = this._client.workflows._threadItems;
     context && context._resolvePlaceholder(placeholderId, threadId);
-    this._patchValue({
-      ...this._mapGroups(threads => threads.map(thread =>
-        thread.placeholder_id === placeholderId ? settlePlaceholder(thread, threadId) : thread)),
+    this._patchList({ name: 'resolve-thread', placeholderId, threadId, rekey: { [placeholderId]: threadId } }, {
+      threads: [settlePlaceholder(listed, threadId)],
       ...(this.selectedId === placeholderId ? { selectedThreadId: threadId } : {}),
     });
   }
 
   // a question is posted to a thread (by thread id, or placeholder id for one
   // still being created): its latest activity is now, so the listed record
-  // takes the fresh updated_at — the commit's sort moving it to the top of
-  // every group listing it. A thread not listed yet (past the loaded pages)
-  // joins its groups off the panel's record: it now sorts above every
-  // loaded record, as it does server-side, so the paging offsets stay in
-  // line with the server's
+  // takes the fresh updated_at — the sort moving it to the top of every
+  // group listing it. A thread not listed yet (past the loaded pages) joins
+  // its groups off the panel's record: it now sorts above every loaded
+  // record, as it does server-side, so the paging offsets stay in line with
+  // the server's
   _onConversationActivity(threadId, record) {
     const updated_at = record && record.updated_at;
     if (!threadId || !updated_at) {
@@ -515,20 +473,18 @@ class History extends Workflow {
     if (!listed && !record.thread_id) {
       return; // a placeholder not listed: nothing to place
     }
-    const touched = listed ? { ...listed, updated_at } : toListedThread(record);
-    const patch = this._mapGroups((threads, group) => listed ?
-      threads.map(thread => thread === listed ? touched : thread) :
-      group === THREAD_GROUP.ALL ? [...threads, touched] : threads);
-    // the favorite and unfavorite groups take it in where they did not list
-    // it yet (a placeholder belongs in its groups already)
-    touched.thread_id && Object.assign(patch, this._regroupThread(patch, touched));
-    this._patchValue(patch);
+    this._patchList({ name: 'touch-thread', threadId }, { threads: [listed ? { ...listed, updated_at } : toListedThread(record)] });
   }
 
   // data //
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
     if (!data.value) {
+      return data;
+    }
+    // a patch carries its change only, merged into the list past the
+    // processor passes (_mergePatch)
+    if (data.action) {
       return data;
     }
     // a more page runs the pipeline alone, in its own shape (one group's
@@ -547,7 +503,45 @@ class History extends Workflow {
 
   _mergeData(data, oldData) {
     data = super._mergeData(data, oldData);
-    return this._appendThreadsFromMoreResponse(data);
+    if (data.action) {
+      return this._mergePatch(data, oldData);
+    }
+    if (isMorePage(data)) {
+      return this._appendThreadsFromMoreResponse(data, oldData);
+    }
+    return data;
+  }
+
+  // Merge a patch into the list on display. A patch carries its change only
+  // — the thread records to put in (`threads` in its value), so each runs
+  // the data processors once, and the selection, if changed — while its
+  // action names the keys to take out (`remove`) or changing (`rekey`). A
+  // record put in replaces its listing in every loaded group, leaves a group
+  // it no longer belongs to (a favorite change), and joins one it belongs
+  // to only where the server lists it within the loaded records too: the
+  // group is fully loaded, or the record sorts above the last loaded one —
+  // past them it arrives with a later page instead, so the paging offsets
+  // stay in line with the server's
+  _mergePatch(data, oldData) {
+    if (!oldData || !oldData.value) {
+      return data;
+    }
+    const { action, value = {} } = data;
+    const { threads: upsert = [], ...valuePatch } = value;
+    const { remove = [], rekey = {} } = action;
+    const groups = mapGroupsOf(oldData.value, (threads, group) => mergeItems(threads, { upsert, remove, rekey }, {
+      keyOf: threadKeyOf,
+      compare: compareThreadsByLatest,
+      belongs: thread => isThreadInGroup(thread, group),
+      within: (thread, listed) => isGroupExhausted(oldData, group) || listed.length === 0 ||
+        compareThreadsByLatest(thread, listed[listed.length - 1]) <= 0,
+    }));
+    return writeThreadGroupsToData({
+      ...oldData,
+      action,
+      metadata: data.metadata,
+      value: { ...oldData.value, ...valuePatch, ...groups },
+    });
   }
 
   _postUpdateData(merged, data, oldData) {
@@ -558,18 +552,14 @@ class History extends Workflow {
   // merge a more page into its group of the current data past the data
   // processor passes, like the search-based more flow: each page runs the
   // pipeline once, alone
-  _appendThreadsFromMoreResponse(data) {
+  _appendThreadsFromMoreResponse(data, oldData) {
     const { request, value } = data;
-    if (!request || request.type !== REQUEST_TYPE.MORE) {
-      return data;
-    }
-    const current = this._hub.states[fields.data()];
     const group = resolveThreadGroup(request.threadGroup);
     if (!value) {
       // the more request's loading commit: keep the current list — and its
       // ready status — on display
-      if (!data.error || !current || !current.value) {
-        return current || data;
+      if (!data.error || !oldData || !oldData.value) {
+        return oldData || data;
       }
       // a failed page (retries spent — see LIST_REQUEST_OPTIONS): with the
       // ready status retained, the trigger would re-arm and refire into
@@ -577,42 +567,45 @@ class History extends Workflow {
       // the group as exhausted, breaking the loop; its paging resumes only
       // with a hard reset (restart() + start())
       return writeThreadGroupsToData({
-        ...current,
+        ...oldData,
         meta: {
-          ...current.meta,
+          ...oldData.meta,
           groups: {
-            ...(current.meta && current.meta.groups),
+            ...(oldData.meta && oldData.meta.groups),
             [group]: { exhausted: true },
           },
         },
       });
     }
-    if (!current || !current.value) {
+    if (!oldData || !oldData.value) {
       return data; // nothing to merge into (not expected: a more needs a ready list)
     }
     const key = getThreadGroupKey(group);
-    const threads = current.value[key] || [];
+    const threads = oldData.value[key] || [];
     // the page was requested against the group on display: if it has
     // changed while the page was in flight — a deletion removed a record,
     // a created thread settled, a favorite moved one in or out — the
     // offsets no longer line up, so the stale page is dropped (the trigger
     // re-arms and refetches from the fresh offset)
     if (request.payload.start !== countServerThreads(threads)) {
-      return current;
+      return oldData;
     }
     // a record listed already is dropped from the page: a thread created
     // server-side since the first page shifts the server's offsets, so a
-    // page may overlap what is on display
-    const listed = new Set(threads.map(thread => thread.thread_id));
-    const fresh = value.threads.filter(thread => !listed.has(thread.thread_id));
-    // the merged data is the current data with the group extended
+    // page may overlap what is on display — the listed record (and any
+    // local change on it) stays
+    const listed = new Set(threads.map(threadKeyOf));
+    const fresh = value.threads.filter(thread => !listed.has(threadKeyOf(thread)));
+    // the merged data is the current data with the group extended: the page
+    // is the next window of the group, so its records join regardless of
+    // where the loaded ones end
     return writeThreadGroupsToData({
-      ...current,
+      ...oldData,
       value: {
-        ...current.value,
-        [key]: [...threads, ...fresh],
+        ...oldData.value,
+        [key]: mergeItems(threads, { upsert: fresh }, { keyOf: threadKeyOf, compare: compareThreadsByLatest }),
         paging: {
-          ...current.value.paging,
+          ...oldData.value.paging,
           [group]: { has_more: value.has_more },
         },
       },
@@ -663,13 +656,15 @@ class History extends Workflow {
     workflow.updateData({ session: workflow.session, value: thread });
   }
 
-  // patch the committed value — the threads, the selection, or both at once
-  _patchValue(patch) {
+  // patch the list on display: the action names the change (and the keys to
+  // take out or changing), the value carries the records to put in
+  // (`threads`) and the selection, if changed (_mergePatch)
+  _patchList(action, value) {
     const data = this._hub.states[fields.data()];
     if (!data || !data.value) {
       return; // the list is not loaded yet, nothing to patch
     }
-    this.updateData({ ...data, action: { name: 'patch-value' }, value: { ...data.value, ...patch } });
+    this.updateData({ session: data.session, action, value });
   }
 
 
@@ -686,6 +681,23 @@ class History extends Workflow {
 // helpers //
 function isMorePage({ action, request }) {
   return !action && !!request && request.type === REQUEST_TYPE.MORE;
+}
+
+// a value patch mapping each loaded group's list of records through fn
+function mapGroupsOf(value, fn) {
+  const patch = {};
+  for (const group of THREAD_GROUP_NAMES) {
+    const key = getThreadGroupKey(group);
+    if (value[key]) {
+      patch[key] = fn(value[key], group);
+    }
+  }
+  return patch;
+}
+
+function isGroupExhausted(data, group) {
+  const groups = data && data.meta && data.meta.groups;
+  return !!(groups && groups[group] && groups[group].exhausted);
 }
 
 // the listed records with a server identity: a thread still being created is

@@ -249,9 +249,9 @@ test('conversation: a patch takes effect past an answers merge', async () => {
   const data = conversation.states.data;
   assert.is(data.request.type, REQUEST_TYPE.ANSWERS);
 
-  // a patch copies it along, but names itself, so it is not routed as an
-  // answers response
-  conversation.updateData({ ...data, action: { name: 'test-patch' }, value: { ...data.value, thread: { ...data.value.thread, title: 'Patched' } } });
+  // a patch carries its change only, and names itself, so it is not routed
+  // as an answers response but merged into the data on display
+  conversation.updateData({ session: data.session, action: { name: 'test-patch' }, value: { thread: { ...data.value.thread, title: 'Patched' } } });
   assert.is(conversation.thread.title, 'Patched');
   assert.is(conversation.messages.length, 2);
 });
@@ -1196,7 +1196,7 @@ test('conversation: a new unsettled message is picked up by the running poll', a
   // question id up on the next poll — no restart (as further pages of
   // messages will rely on, later)
   const data = conversation.states.data;
-  conversation.updateData({ ...data, action: { name: 'test-patch' }, value: { ...data.value, messages: [...data.value.messages, { question_id: 'q3' }] } });
+  conversation.updateData({ session: data.session, action: { name: 'test-patch' }, value: { messages: [{ question_id: 'q3' }] } });
   await tick(30);
   assert.ok(polledIds.some(ids => ids.includes('q3') && ids.includes('q1')));
 

@@ -7,6 +7,7 @@
  * source.js), so only canonical fields are ever read.
  */
 import { THREAD_GROUP } from '../constants.js';
+import { mergeItems } from './items.js';
 
 /**
  * Settle a placeholder record into a real thread record, keyed by the thread
@@ -143,6 +144,21 @@ export function isThreadFavorite(thread) {
 }
 
 /**
+ * Whether a thread record belongs to a thread group: every thread belongs to
+ * `all`, and its favorite flag tells `favorite` from `unfavorite`.
+ */
+export function isThreadInGroup(thread, group) {
+  switch (resolveThreadGroup(group)) {
+    case THREAD_GROUP.FAVORITE:
+      return isThreadFavorite(thread);
+    case THREAD_GROUP.UNFAVORITE:
+      return !isThreadFavorite(thread);
+    default:
+      return true;
+  }
+}
+
+/**
  * Normalize a thread-list value to the grouped shape of the history
  * workflow: `{ threads, favorite, unfavorite, paging }`, each group's records
  * under its key (getThreadGroupKey) and its paging state under
@@ -192,7 +208,14 @@ export function normalizeThreadsValue(value) {
  * timestamps keep their relative order, after the timestamped ones.
  */
 export function sortThreadsByLatest(threads = []) {
-  return [...threads].sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
+  return [...threads].sort(compareThreadsByLatest);
+}
+
+/**
+ * Compare two threads by latest activity: the more recent sorts first.
+ */
+export function compareThreadsByLatest(a, b) {
+  return String(b.updated_at || '').localeCompare(String(a.updated_at || ''));
 }
 
 /**
@@ -260,12 +283,13 @@ export function getUnsettledQuestionIds(value) {
  * its item. A reload of the thread starts over. Settled records keep their
  * identity, so only the errored items see a change.
  */
-export function writeAnswersErrorToMessages(data, error = true) {
+function writeAnswersErrorToMessages(data, error = true) {
   const value = data && data.value;
   if (!value || !value.messages) {
     return data;
   }
-  const messages = value.messages.map(message => isMessageUnsettled(message) ? { ...message, error } : message);
+  const marked = value.messages.filter(isMessageUnsettled).map(message => ({ ...message, error }));
+  const messages = mergeMessages(value.messages, { upsert: marked }, { within: () => false });
   return { ...data, value: { ...value, messages } };
 }
 
@@ -285,9 +309,17 @@ export function normalizeAnswersValue(value) {
  * the workflow's default data pass — into the current (head) data, in the
  * manner of concatItemsFromMoreResponse: a valueless update (the loading
  * update of the answers request) keeps the current data, so the head data
- * stays on display; a response merges into the head data's messages.
+ * stays on display; a response merges into the head data's messages. An
+ * erroneous end of the answers stream — its polling already tolerated
+ * transient failures — settles every message still waiting with the error
+ * mark (writeAnswersErrorToMessages): the items present it (visible-when),
+ * the paging unblocks, and the poll is not re-issued; a later page's
+ * unsettled messages start a fresh stream of their own.
  */
 export function mergeAnswersDataFromResponse(newData, oldData) {
+  if (newData.error) {
+    return writeAnswersErrorToMessages(oldData, newData.error);
+  }
   if (!newData.value) {
     return oldData;
   }
@@ -331,27 +363,45 @@ export function mergeOlderMessagesFromResponse(newData, oldData) {
   if (!first || first.question_id !== after) {
     return oldData;
   }
-  // a record displayed already is dropped from the page, just in case
+  // a record displayed already is dropped from the page, just in case — the
+  // displayed record (and its answer content) stays
   const displayed = new Set(oldMessages.map(message => message.question_id));
   const fresh = (newData.value.messages || []).filter(message => !displayed.has(message.question_id));
   return {
     ...newData,
     // the page's meta may carry the exhaustion (has_more: false)
     meta: { ...(oldData && oldData.meta), ...newData.meta },
-    value: { ...oldValue, messages: [...fresh, ...oldMessages] },
+    value: { ...oldValue, messages: mergeMessages(oldMessages, { upsert: fresh }, { position: 'start' }) },
   };
 }
 
 /**
- * Merge question-answer records into messages by question id.
+ * Merge question-answer records into messages by question id: an answer
+ * fills its message's record in, field by field; an answer of no listed
+ * message is ignored.
  */
 export function mergeAnswersIntoMessages(messages, answers) {
-  const byId = new Map();
-  for (const answer of answers) {
-    answer.question_id && byId.set(answer.question_id, answer);
-  }
-  return messages.map(message => {
-    const answer = byId.get(message.question_id);
-    return answer ? { ...message, ...answer } : message;
+  return mergeMessages(messages, { upsert: answers.filter(answer => answer.question_id) }, {
+    keyOf: message => message.question_id,
+    merge: (message, answer) => ({ ...message, ...answer }),
+    within: () => false,
   });
+}
+
+/**
+ * A message's identity in the list: its local placeholder id, for a message
+ * posted in the page — it survives the settle, as the question id arrives —
+ * or its question id. The messages layout keys its items the same way.
+ */
+export function messageKeyOf(message) {
+  return message.placeholder_id || message.question_id;
+}
+
+/**
+ * Merge message changes into the messages on display (mergeItems): keyed by
+ * messageKeyOf, in display order — no sort, the records joining at the end
+ * by default (a posted question), or at the start (an older page).
+ */
+export function mergeMessages(messages, changes, options = {}) {
+  return mergeItems(messages, changes, { keyOf: messageKeyOf, ...options });
 }

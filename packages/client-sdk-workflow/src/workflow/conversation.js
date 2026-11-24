@@ -7,7 +7,7 @@ import { getThreadRequest, ThreadOperations, mixinThreadOperationSupport } from 
 import { ROLE, STATUS, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { writeThreadAsRead, writeHasMoreExhaustionToData, writeAnswerInfoToInteraction } from './processors.js';
-import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, writeAnswersErrorToMessages, getThreadChanges } from '../util/threads.js';
+import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, getThreadChanges, mergeMessages } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -360,12 +360,11 @@ class Conversation extends Workflow {
       live: true,
     });
     this.updateData({
-      ...data,
+      session: data.session,
       action: { name: 'send', placeholderId: message.placeholder_id },
       value: {
-        ...data.value,
         ...(placeholder ? { thread: placeholder } : thread ? { thread } : {}),
-        messages: [...messages, message],
+        messages: [message],
       },
     });
     const workflow = this._getMessageWorkflow(message);
@@ -407,8 +406,11 @@ class Conversation extends Workflow {
     if (!data || !data.value || !data.value.messages) {
       return;
     }
-    const messages = data.value.messages.map(m => m.placeholder_id === placeholderId ? { ...m, ...value } : m);
-    this.updateData({ ...data, action: { name: 'patch-live-message', placeholderId }, value: { ...data.value, messages } });
+    this.updateData({
+      session: data.session,
+      action: { name: 'patch-live-message', placeholderId },
+      value: { messages: [{ ...value, placeholder_id: placeholderId }] },
+    });
   }
 
   // thread operations //
@@ -566,7 +568,7 @@ class Conversation extends Workflow {
     }
     const thread = fn(data.value.thread);
     if (thread !== data.value.thread) {
-      this.updateData({ ...data, action: { name: 'patch-thread', threadId }, value: { ...data.value, thread } });
+      this.updateData({ session: data.session, action: { name: 'patch-thread', threadId }, value: { thread } });
     }
   }
 
@@ -746,30 +748,49 @@ class Conversation extends Workflow {
 
   _mergeData(data, oldData) {
     data = super._mergeData(data, oldData);
-    // a patch carries the whole value: nothing to merge
     if (data.action) {
-      return data;
+      return this._mergePatch(data, oldData);
     }
     const type = data.request && data.request.type;
     if (type === REQUEST_TYPE.ANSWERS) {
-      // an erroneous end of the answers stream — its polling already
-      // tolerated transient failures — settles every message still waiting
-      // with the error mark: the items present it (visible-when), the
-      // paging unblocks, and the poll is not re-issued; a later page's
-      // unsettled messages start a fresh stream of their own
-      data = data.error
-        ? writeAnswersErrorToMessages(oldData, data.error)
-        : mergeAnswersDataFromResponse(data, oldData);
+      data = mergeAnswersDataFromResponse(data, oldData);
     } else if (type === REQUEST_TYPE.MORE) {
       data = mergeOlderMessagesFromResponse(data, oldData);
     }
     return data;
   }
 
+  // A patch carries its change only — the thread record, and the messages
+  // posted or changed — so each record runs the data processors once; it
+  // merges into the current data here: the thread record replaces the one on
+  // display, and the messages merge into the ones on display, field by field
+  // (mergeMessages) — a live message's streamed value updates its record
+  // only while on display (a late value never lands in another thread),
+  // while the other patches' messages join at the end
+  _mergePatch(data, oldData) {
+    if (!oldData || !oldData.value) {
+      return data;
+    }
+    const { action, value = {} } = data;
+    const oldValue = oldData.value;
+    const messages = value.messages ? mergeMessages(oldValue.messages || [], { upsert: value.messages }, {
+      merge: (message, patch) => ({ ...message, ...patch }),
+      within: () => action.name !== 'patch-live-message',
+    }) : oldValue.messages;
+    return {
+      ...oldData,
+      action,
+      metadata: data.metadata,
+      value: {
+        ...oldValue,
+        ...(value.thread ? { thread: value.thread } : {}),
+        messages,
+      },
+    };
+  }
+
   _postUpdateData(merged, data, oldData) {
     super._postUpdateData(merged, data, oldData);
-    // propagate the committed records into the message item subworkflows
-    this._dispatchDataToMessageWorkflows(merged);
     // a page response may bring answer contents to fetch — and only a page
     // response: the answers request's own loading commit lands here before
     // the request is served, so checking on it would re-issue the request
@@ -777,6 +798,8 @@ class Conversation extends Workflow {
     if (type === REQUEST_TYPE.THREAD || type === REQUEST_TYPE.MORE) {
       this._requestAnswersIfNecessary();
     }
+    // propagate the committed records into the message item subworkflows
+    this._dispatchDataToMessageWorkflows(merged);
   }
 
   // messages as item subworkflows //
@@ -874,9 +897,9 @@ class Conversation extends Workflow {
     const thread = data && data.value && data.value.thread;
     if (!this.destroyed && thread && thread.placeholder_id === placeholderId) {
       this.updateData({
-        ...data,
+        session: data.session,
         action: { name: 'resolve-live-message', placeholderId, questionId },
-        value: { ...data.value, thread: settlePlaceholder(thread, questionId) },
+        value: { thread: settlePlaceholder(thread, questionId) },
       });
     }
   }
