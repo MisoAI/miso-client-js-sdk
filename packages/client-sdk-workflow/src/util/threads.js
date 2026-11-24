@@ -127,6 +127,16 @@ export function getThreadGroupFilter(group) {
 }
 
 /**
+ * The thread group a list API filter (payload fields) selects — the inverse
+ * of getThreadGroupFilter: the `favorite` filter tells the favorite and
+ * unfavorite groups, its absence every thread.
+ */
+export function getThreadGroupOfFilter(filter) {
+  const favorite = filter && filter.favorite;
+  return favorite === true ? THREAD_GROUP.FAVORITE : favorite === false ? THREAD_GROUP.UNFAVORITE : THREAD_GROUP.ALL;
+}
+
+/**
  * The thread group a view presents: its element's `group` attribute
  * (`favorite`, `unfavorite`), every thread when absent.
  */
@@ -164,16 +174,18 @@ export function isThreadInGroup(thread, group) {
  * under its key (getThreadGroupKey) and its paging state under
  * `paging[group]` (`{ has_more }`). It takes the grouped response of the
  * initial load (`{ all, favorite, unfavorite }`, one list response per
- * group), a single list response (every thread only), or an already
- * normalized value (left alone, so re-processing is safe).
+ * group), a single list response — of the given group (every thread by
+ * default), e.g. a more page — or an already normalized value (left alone,
+ * so re-processing is safe).
  */
-export function normalizeThreadGroupsValue(value) {
+export function normalizeThreadGroupsValue(value, { group = THREAD_GROUP.ALL } = {}) {
   if (!value || value.paging) {
     return value;
   }
   if (Array.isArray(value) || value.all === undefined) {
-    const { has_more, ...rest } = normalizeThreadsValue(value);
-    return { ...rest, paging: { [THREAD_GROUP.ALL]: { has_more } } };
+    const { threads, has_more } = normalizeThreadsValue(value);
+    group = resolveThreadGroup(group);
+    return { [getThreadGroupKey(group)]: threads, paging: { [group]: { has_more } } };
   }
   const result = {};
   const paging = {};
@@ -225,7 +237,8 @@ export function compareThreadsByLatest(a, b) {
  * the messages start as `{ question_id }` records, to be filled in by the
  * answers follow-up request. A page fetched newest-first (order: desc)
  * passes `descending`, so the messages come out in display (ascending)
- * order either way.
+ * order either way. The page's paging word (`has_more`) is the page's, not
+ * the thread's: it is lifted out of the thread record onto the value.
  */
 export function normalizeThreadValue(value, { descending = false } = {}) {
   // messages already present -> already normalized (and possibly merged with
@@ -235,7 +248,8 @@ export function normalizeThreadValue(value, { descending = false } = {}) {
   }
   const ids = value.questions_ids || [];
   const messages = (descending ? [...ids].reverse() : ids).map(question_id => ({ question_id }));
-  return { thread: value, messages };
+  const { has_more, ...thread } = value;
+  return has_more === undefined ? { thread: value, messages } : { thread, messages, has_more };
 }
 
 /**
@@ -371,7 +385,11 @@ export function mergeOlderMessagesFromResponse(newData, oldData) {
     ...newData,
     // the page's meta may carry the exhaustion (has_more: false)
     meta: { ...(oldData && oldData.meta), ...newData.meta },
-    value: { ...oldValue, messages: mergeMessages(oldMessages, { upsert: fresh }, { position: 'start' }) },
+    value: {
+      ...oldValue,
+      has_more: newData.value.has_more,
+      messages: mergeMessages(oldMessages, { upsert: fresh }, { position: 'start' }),
+    },
   };
 }
 

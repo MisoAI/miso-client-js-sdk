@@ -38,6 +38,15 @@ test('normalizeThreadValue', () => {
   });
 });
 
+test('normalizeThreadValue: the paging word is lifted onto the value', () => {
+  const normalized = normalizeThreadValue({ thread_id: 't1', questions_ids: ['q2', 'q1'], has_more: false }, { descending: true });
+  assert.equal(normalized, {
+    thread: { thread_id: 't1', questions_ids: ['q2', 'q1'] },
+    messages: [{ question_id: 'q1' }, { question_id: 'q2' }],
+    has_more: false,
+  });
+});
+
 test('normalizeThreadValue: idempotent', () => {
   // re-processing (e.g. a local patch) must not reset merged messages
   const normalized = normalizeThreadValue({ thread_id: 't1', questions_ids: ['q1'] });

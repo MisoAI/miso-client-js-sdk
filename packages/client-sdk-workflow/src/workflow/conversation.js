@@ -7,7 +7,7 @@ import { getThreadRequest, ThreadOperations, mixinThreadOperationSupport } from 
 import { ROLE, STATUS, REQUEST_TYPE, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { writeThreadAsRead, writeHasMoreExhaustionToData, writeAnswerInfoToInteraction } from './processors.js';
-import { isThreadUnread, isUpdateMessage, settlePlaceholder, normalizeThreadValue, normalizeAnswersValue, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, getThreadChanges, mergeMessages } from '../util/threads.js';
+import { isThreadUnread, isUpdateMessage, settlePlaceholder, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, getThreadChanges, mergeMessages } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -717,30 +717,24 @@ class Conversation extends Workflow {
     super._onResponse(response);
   }
 
-  // Homogenize the value to the canonical { thread, messages } shape, by
-  // request type — but merge nothing: merging into the current data happens
-  // later, in _mergeData, past the custom data processors, so each
-  // piece of data runs through them exactly once, in the one shape.
+  // The value comes in the canonical { thread, messages } shape already —
+  // the data source aligns the responses (source.js), as the patches carry
+  // it — so the pass derives only, and merges nothing: merging into the
+  // current data happens later, in _mergeData, past the custom data
+  // processors, so each piece of data runs through them exactly once.
   _defaultProcessData(data, oldData) {
     data = super._defaultProcessData(data, oldData);
-    // a patch edits the value on display, in shape already
     if (!data.value || data.action) {
       return data;
     }
     switch (data.request && data.request.type) {
-      case REQUEST_TYPE.ANSWERS:
-        // TODO: we will pull partial data later
-        return { ...data, value: { messages: normalizeAnswersValue(data.value) } };
       case REQUEST_TYPE.THREAD:
-      case REQUEST_TYPE.MORE: {
-        // the exhaustion is the page's own word (has_more), read off the
-        // raw value before it is homogenized away into the thread record;
-        // a desc-fetched page reverses into display (ascending) order
+        // the exhaustion is the page's own word (has_more); the thread on
+        // display is read by definition
         data = writeHasMoreExhaustionToData(data);
-        const { payload } = data.request;
-        const value = normalizeThreadValue(data.value, { descending: !!(payload && payload.order === 'desc') });
-        return { ...data, value: data.request.type === REQUEST_TYPE.THREAD ? writeThreadAsRead(value) : value };
-      }
+        return { ...data, value: writeThreadAsRead(data.value) };
+      case REQUEST_TYPE.MORE:
+        return writeHasMoreExhaustionToData(data);
       default:
         return data;
     }

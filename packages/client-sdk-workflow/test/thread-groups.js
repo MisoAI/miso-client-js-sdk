@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { STATUS, THREAD_GROUP, getViewThreadGroup, getThreadGroupKey, normalizeThreadGroupsValue } from '../src/index.js';
+import { STATUS, THREAD_GROUP, getViewThreadGroup, getThreadGroupKey, normalizeThreadGroupsValue, getThreadGroupOfFilter } from '../src/index.js';
 import { createClient, tick } from './dummy.js';
 
 const ids = threads => threads.map(t => t.thread_id || t.placeholder_id);
@@ -40,9 +40,20 @@ test('helpers: normalizeThreadGroupsValue', () => {
   assert.equal(normalizeThreadGroupsValue({ threads: [t], has_more: false }), {
     threads: [t], paging: { all: { has_more: false } },
   });
+  // a single list response of another group, e.g. a more page
+  assert.equal(normalizeThreadGroupsValue([t], { group: THREAD_GROUP.FAVORITE }), {
+    favorite: [t], paging: { favorite: { has_more: undefined } },
+  });
   // already normalized: left alone
   const normalized = { threads: [t], paging: {} };
   assert.is(normalizeThreadGroupsValue(normalized), normalized);
+});
+
+test('helpers: getThreadGroupOfFilter', () => {
+  assert.is(getThreadGroupOfFilter({}), THREAD_GROUP.ALL);
+  assert.is(getThreadGroupOfFilter(undefined), THREAD_GROUP.ALL);
+  assert.is(getThreadGroupOfFilter({ favorite: true, start: 10 }), THREAD_GROUP.FAVORITE);
+  assert.is(getThreadGroupOfFilter({ favorite: false }), THREAD_GROUP.UNFAVORITE);
 });
 
 test('history: the initial load lists every group in one request', async () => {

@@ -1,4 +1,5 @@
 import { API } from '@miso.ai/commons';
+import { normalizeThreadValue, normalizeThreadGroupsValue, normalizeAnswersValue, getThreadGroupOfFilter } from './util/threads.js';
 
 export function api(client) {
   return async (request) => {
@@ -67,20 +68,55 @@ async function getThreadGroups(api, { groups, ...payload }, options) {
   return Object.fromEntries(entries);
 }
 
+// Align a response to the value shape its workflow takes in updateData(), so
+// every input of a workflow's data pipeline — responses and local patches
+// alike — comes in the one shape:
+// - the chat-history thread list (History): `{ threads, favorite,
+//   unfavorite, paging }`, the groups listed (a more page lists its own
+//   group only, told by its list filter), each group's paging word under
+//   `paging[group]`
+// - a thread detail page (Conversation): `{ thread, messages, has_more }`
+// - an answers batch (Conversation): `{ messages }` — each value of the
+//   polling stream
 function processResponse({ group, name, payload }, response) {
-  if (group === API.GROUP.THREADS) {
-    // thread records may identify themselves by root question id only
-    if (name === 'list') {
-      if (payload && payload.groups && response) {
-        return Object.fromEntries(Object.entries(response).map(([key, value]) => [key, fallbackThreadsFields(value)]));
+  switch (group) {
+    case API.GROUP.ASK:
+      switch (name) {
+        case API.NAME.ANSWERS:
+          return mapResponse(response, value => ({ messages: normalizeAnswersValue(value) }));
       }
-      return fallbackThreadsFields(response);
-    }
-    if (name === 'get') {
-      return fallbackThreadFields(response);
-    }
+      break;
+    case API.GROUP.THREADS:
+      // thread records may identify themselves by root question id only
+      switch (name) {
+        case 'list':
+          if (payload && payload.groups && response) {
+            return normalizeThreadGroupsValue(
+              Object.fromEntries(Object.entries(response).map(([key, value]) => [key, fallbackThreadsFields(value)])));
+          }
+          return normalizeThreadGroupsValue(fallbackThreadsFields(response), { group: getThreadGroupOfFilter(payload) });
+        case 'get':
+          return normalizeThreadValue(fallbackThreadFields(response), { descending: !!(payload && payload.order === 'desc') });
+      }
+      break;
   }
   return response;
+}
+
+// map a response — a value, or a stream of them (an async iterable, its head
+// response, if any, riding along as `_response`, as the data actor reads it)
+function mapResponse(response, fn) {
+  if (!response || !response[Symbol.asyncIterator]) {
+    return response === undefined ? response : fn(response);
+  }
+  return {
+    _response: response._response === undefined ? undefined : fn(response._response),
+    async *[Symbol.asyncIterator]() {
+      for await (const value of response) {
+        yield value === undefined ? value : fn(value);
+      }
+    },
+  };
 }
 
 /**

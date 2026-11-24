@@ -7,7 +7,7 @@ import { ROLE, STATUS, REQUEST_TYPE, THREAD_GROUP, WORKFLOW_CONFIGURABLE } from 
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { mixinThreadOperations, ThreadOperations } from './thread-operations.js';
 import {
-  settlePlaceholder, normalizeThreadsValue, normalizeThreadGroupsValue, sortThreadsByLatest, compareThreadsByLatest,
+  settlePlaceholder, sortThreadsByLatest, compareThreadsByLatest,
   getThreadChanges, undoThreadOperation, THREAD_GROUP_NAMES, resolveThreadGroup, getThreadGroupKey,
   getThreadGroupFilter, getViewThreadGroup, isThreadInGroup,
 } from '../util/threads.js';
@@ -405,7 +405,7 @@ class History extends Workflow {
     if (!thread || thread === listed) {
       return;
     }
-    this._patchList({ name: 'patch-thread', threadId }, { threads: [thread] });
+    this._patchList({ name: 'patch-thread', threadId }, { upsert: [thread] });
   }
 
   // a deletion is not rolled back if it fails: the records stay off the
@@ -437,7 +437,7 @@ class History extends Workflow {
   // its placeholder id
   _onConversationNew(thread) {
     this._patchList({ name: 'new-thread', placeholderId: thread.placeholder_id },
-      { threads: [thread], selectedThreadId: thread.placeholder_id });
+      { upsert: [thread], selectedThreadId: thread.placeholder_id });
   }
 
   // the new thread is created server-side: the thread id is the only thing
@@ -452,7 +452,7 @@ class History extends Workflow {
     const context = this._client.workflows._threadItems;
     context && context._resolvePlaceholder(placeholderId, threadId);
     this._patchList({ name: 'resolve-thread', placeholderId, threadId, rekey: { [placeholderId]: threadId } }, {
-      threads: [settlePlaceholder(listed, threadId)],
+      upsert: [settlePlaceholder(listed, threadId)],
       ...(this.selectedId === placeholderId ? { selectedThreadId: threadId } : {}),
     });
   }
@@ -473,7 +473,7 @@ class History extends Workflow {
     if (!listed && !record.thread_id) {
       return; // a placeholder not listed: nothing to place
     }
-    this._patchList({ name: 'touch-thread', threadId }, { threads: [listed ? { ...listed, updated_at } : toListedThread(record)] });
+    this._patchList({ name: 'touch-thread', threadId }, { upsert: [listed ? { ...listed, updated_at } : toListedThread(record)] });
   }
 
   // data //
@@ -487,17 +487,17 @@ class History extends Workflow {
     if (data.action) {
       return data;
     }
-    // a more page runs the pipeline alone, in its own shape (one group's
-    // `{ threads, has_more }`), and is merged into the current data past
-    // the processor passes (_appendThreadsFromMoreResponse)
+    // the value comes in the grouped shape already (the data source aligns
+    // the responses, source.js); a more page — its own group only — runs
+    // the pipeline alone, and is merged into the current data past the
+    // processor passes (_appendThreadsFromMoreResponse)
     if (isMorePage(data)) {
-      return { ...data, value: normalizeThreadsValue(data.value) };
+      return data;
     }
-    // the selection is part of the value: local patches carry their own
-    // (including an explicit undefined to clear it), while a fresh server
-    // response has the current selection carried over
+    // the selection is part of the value: a fresh server response has the
+    // current selection carried over
     const selectedThreadId = oldData && oldData.value && oldData.value.selectedThreadId;
-    const value = { selectedThreadId, ...normalizeThreadGroupsValue(data.value) };
+    const value = { selectedThreadId, ...data.value };
     return writeThreadGroupsToData({ ...data, value });
   }
 
@@ -513,7 +513,7 @@ class History extends Workflow {
   }
 
   // Merge a patch into the list on display. A patch carries its change only
-  // — the thread records to put in (`threads` in its value), so each runs
+  // — the thread records to put in (`upsert` in its value), so each runs
   // the data processors once, and the selection, if changed — while its
   // action names the keys to take out (`remove`) or changing (`rekey`). A
   // record put in replaces its listing in every loaded group, leaves a group
@@ -527,7 +527,7 @@ class History extends Workflow {
       return data;
     }
     const { action, value = {} } = data;
-    const { threads: upsert = [], ...valuePatch } = value;
+    const { upsert = [], ...valuePatch } = value;
     const { remove = [], rekey = {} } = action;
     const groups = mapGroupsOf(oldData.value, (threads, group) => mergeItems(threads, { upsert, remove, rekey }, {
       keyOf: threadKeyOf,
@@ -595,7 +595,7 @@ class History extends Workflow {
     // page may overlap what is on display — the listed record (and any
     // local change on it) stays
     const listed = new Set(threads.map(threadKeyOf));
-    const fresh = value.threads.filter(thread => !listed.has(threadKeyOf(thread)));
+    const fresh = (value[key] || []).filter(thread => !listed.has(threadKeyOf(thread)));
     // the merged data is the current data with the group extended: the page
     // is the next window of the group, so its records join regardless of
     // where the loaded ones end
@@ -606,7 +606,7 @@ class History extends Workflow {
         [key]: mergeItems(threads, { upsert: fresh }, { keyOf: threadKeyOf, compare: compareThreadsByLatest }),
         paging: {
           ...oldData.value.paging,
-          [group]: { has_more: value.has_more },
+          [group]: { has_more: value.paging && value.paging[group] && value.paging[group].has_more },
         },
       },
     });
@@ -658,7 +658,7 @@ class History extends Workflow {
 
   // patch the list on display: the action names the change (and the keys to
   // take out or changing), the value carries the records to put in
-  // (`threads`) and the selection, if changed (_mergePatch)
+  // (`upsert`) and the selection, if changed (_mergePatch)
   _patchList(action, value) {
     const data = this._hub.states[fields.data()];
     if (!data || !data.value) {
