@@ -94,6 +94,17 @@ export function writeRequestFromPreviousData(data, oldData) {
   };
 }
 
+// whether the data shows an answer still on its way: requested but not
+// arrived yet, or arrived but still being generated
+export function isAnswerPending(data) {
+  if (!data) {
+    return false;
+  }
+  const { status, ongoing, value } = data;
+  return status === STATUS.LOADING ||
+    (status === STATUS.READY && (!!ongoing || (!!value && value.finished === false)));
+}
+
 export function writeDataStatus(data) {
   const status = getStatus(data);
   const ongoing = status === STATUS.READY ? data.ongoing : undefined;

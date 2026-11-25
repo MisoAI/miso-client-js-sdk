@@ -64,6 +64,17 @@ miso-ask-combo,
       }
     }
   }
+  // a question's suggested follow-up questions hide once a follow-up
+  // question is asked — by any means: a suggestion, an inline link, the
+  // follow-up's own query box — i.e. once the next follow-up section's query
+  // container leaves the initial status (a section prepared ahead by
+  // autoNext stays initial until then)
+  .miso-ask-combo__answer:has(~ .miso-ask-combo__follow-ups > .miso-ask-combo__follow-up:first-child > .miso-ask-combo__query-container[status]:not([status~="initial"])),
+  .miso-ask-combo__follow-up:has(+ .miso-ask-combo__follow-up > .miso-ask-combo__query-container[status]:not([status~="initial"])) {
+    .miso-ask-combo__follow-up-questions-container {
+      display: none !important;
+    }
+  }
   .miso-ask-combo__query-suggestions-container + .miso-ask-combo__query-container {
     margin-top: var(--miso-ask-combo-section-spacing);
   }

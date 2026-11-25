@@ -270,6 +270,22 @@ export function isMessageUnsettled(message) {
 }
 
 /**
+ * Whether a live message — one posted in this session — is still awaiting
+ * its answer: posted, but neither finished nor settled by a failure (the
+ * `error` mark, which a failed posting or stream writes onto the record).
+ */
+export function isLiveMessagePending(message) {
+  return !!(message && message.live && !message.error && !message.finished);
+}
+
+/**
+ * Whether any live message of the value is still awaiting its answer.
+ */
+export function hasPendingLiveMessage(value) {
+  return !!(value && value.messages && value.messages.some(isLiveMessagePending));
+}
+
+/**
  * Question ids of messages whose answers are not settled: absent or still
  * being generated (finished: false) — driving the answers polling. Live
  * messages are excluded: their content streams in from the posting request.

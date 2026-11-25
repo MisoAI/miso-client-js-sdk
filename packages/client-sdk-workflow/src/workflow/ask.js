@@ -5,7 +5,7 @@ import AnswerBasedWorkflow from './answer-based.js';
 import { fields } from '../actor/index.js';
 import { ROLE, STATUS, QUESTION_SOURCE } from '../constants.js';
 import { mergeRolesOptions } from './options/index.js';
-import { writeQuestionSourceToPayload, mappingSuggestionsData, mappingFollowUpQuestionsData } from './processors.js';
+import { writeQuestionSourceToPayload, mappingSuggestionsData, mappingFollowUpQuestionsData, isAnswerPending } from './processors.js';
 import { makeAutocompletable } from './autocompletable.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(AnswerBasedWorkflow.ROLES_OPTIONS, {
@@ -215,6 +215,12 @@ class Ask extends AnswerBasedWorkflow {
   _submitFollowUpQuestion({ q = '', qs } = {}) {
     q = q.trim();
     if (!q) {
+      return;
+    }
+    // hold while any question of the chain is still being answered: a
+    // consecutive submit (e.g. a double click on a suggested question)
+    // would restart the follow-up workflow, firing another API call
+    if (this._context.workflows.some(workflow => isAnswerPending(workflow._hub.states[fields.data()]))) {
       return;
     }
     const next = this.getOrCreateNext();

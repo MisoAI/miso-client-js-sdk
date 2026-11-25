@@ -7,7 +7,7 @@ import { getThreadRequest, ThreadOperations, mixinThreadOperationSupport } from 
 import { ROLE, STATUS, REQUEST_TYPE, THREAD_OPERATION, QUESTION_SOURCE, WORKFLOW_CONFIGURABLE } from '../constants.js';
 import { mergeRolesOptions, makeConfigurable } from './options/index.js';
 import { writeThreadAsRead, writeHasMoreExhaustionToData, writeAnswerInfoToInteraction } from './processors.js';
-import { isThreadUnread, isUpdateMessage, settlePlaceholder, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, getThreadChanges, mergeMessages } from '../util/threads.js';
+import { isThreadUnread, isUpdateMessage, hasPendingLiveMessage, settlePlaceholder, getUnsettledQuestionIds, mergeAnswersDataFromResponse, mergeOlderMessagesFromResponse, getThreadChanges, mergeMessages } from '../util/threads.js';
 
 const ROLES_OPTIONS = mergeRolesOptions(Workflow.ROLES_OPTIONS, {
   main: ROLE.MESSAGES,
@@ -640,9 +640,15 @@ class Conversation extends Workflow {
   }
 
   _submitFollowUpQuestion({ q, qs } = {}) {
+    // hold while a question posted in this session is still being answered:
+    // a consecutive submit (e.g. a double click on a suggested question)
+    // would post another question right away. Read off the data — the
+    // optimistic record lands synchronously in send() — rather than the
+    // view state, which only follows the render
+    const data = this._hub.states[fields.data()];
     const { ongoing } = this._hub.states[fields.view(ROLE.MESSAGES)] || {};
-    if (ongoing) {
-      return; // an answer is still being displayed; hold, as the search box does
+    if (ongoing || hasPendingLiveMessage(data && data.value)) {
+      return;
     }
     q = q ? q.trim() : '';
     q && this.send(q, { qs });
